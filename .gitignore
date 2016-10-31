@@ -1,0 +1,12 @@
+build/
+uploads/
+*.pyc
+*.swp
+.DS_Store
+MANIFEST
+dist
+
+/config.codekit
+/ease/settings.py
+/ease/settings/base.py
+/ease/settings/prod.py
