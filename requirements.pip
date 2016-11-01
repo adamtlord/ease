@@ -1,0 +1,8 @@
+Django==1.10.2
+Fabric
+psycopg2
+
+django_compressor
+django-extensions
+django-localflavor
+
