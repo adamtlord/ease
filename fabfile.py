@@ -19,8 +19,8 @@ MYSQL_EXEC_CMD = '%s -e' % MYSQL_USER_PASSWD
 env.use_ssh_config = getattr(settings, 'FABRIC_USE_SSH_CONFIG', False)
 
 
-def get_remote_mysql_pass_arg():
-    """Return password argument for mysql commands (if pw is set)"""
+def get_remote_psql_pass_arg():
+    """Return password argument for psql commands (if pw is set)"""
     if env.database['PASSWORD']:
         return '-p\'%s\'' % env.database['PASSWORD']
     else:
@@ -33,16 +33,16 @@ def prod():
     env.user = 'easerideapp'
     env.hosts = SSH_HOSTS
     env.database = PROD_DATABASES['default']
-    env.remote_mysql_pw_arg = get_remote_mysql_pass_arg()
+    env.remote_psql_pw_arg = get_remote_psql_pass_arg()
     env.PYTHON_DIR = '/usr/local/bin/python2.7'
-    env.CODE_DIR = '/home/easerideapp/webapps/ease/ease/'
+    env.CODE_DIR = '/home/easerideapp/webapps/django_app/ease'
 
 
 def _launch(full=False):
     """Launch new code. Does a git pull, migrate and bounce"""
-    DUMP_FILENAME = 'launchdump-%s.sql.gz' % datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    run('mysqldump --host=%s -u%s %s %s | gzip > /tmp/%s' % (
-        env.database['HOST'], env.database['USER'], env.remote_mysql_pw_arg, env.database['NAME'], DUMP_FILENAME))
+    # DUMP_FILENAME = 'launchdump-%s.sql.gz' % datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    # run('mysqldump --host=%s -u%s %s %s | gzip > /tmp/%s' % (
+    #     env.database['HOST'], env.database['USER'], env.remote_psql_pw_arg, env.database['NAME'], DUMP_FILENAME))
 
     with cd(env.CODE_DIR):
         run('git pull')
@@ -57,12 +57,12 @@ def _launch(full=False):
 
 
 def quicklaunch():
-    """Launch new code. Does a git pull, migrate and bounce"""
+    """Launch new code. Does a git pull, collectstatic, and bounce"""
     _launch(full=False)
 
 
 def launch():
-    """Launch new code. Does a git pull, migrate and bounce"""
+    """Launch new code. Does a git pull, migrate, install requirements, collectstatic and bounce"""
     _launch(full=True)
 
 
@@ -100,7 +100,7 @@ def bounce():
 
 #     if confirm('This may replace your db (you will get opportunity to specify which one). You sure?'):
 #         run('mysqldump --host=%s -u%s %s %s | gzip > /tmp/%s' % (
-#             env.database['HOST'], env.database['USER'], env.remote_mysql_pw_arg, env.database['NAME'],
+#             env.database['HOST'], env.database['USER'], env.remote_psql_pw_arg, env.database['NAME'],
 #             DUMP_FILENAME))
 #         get('/tmp/%s' % DUMP_FILENAME, os.path.basename(DUMP_FILENAME))  # download db
 #         local('gzip -d %s' % os.path.basename(DUMP_FILENAME))  # ungzip

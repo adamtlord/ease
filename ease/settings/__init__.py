@@ -1,8 +1,5 @@
 from __future__ import absolute_import
-import os
 
-# import defaults
-from .base import *
 
 overrides = __import__(
     ENV,
