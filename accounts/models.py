@@ -2,13 +2,17 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-from common.models import Location
 
-
-class Contact(Location):
+class Contact(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return '{}, {}'.format(self.last_name, self.first_name)
 
 
 class CustomerProfile(Contact):
@@ -35,9 +39,11 @@ class CustomerProfile(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+    home = models.ForeignKey('common.Location')
 
 
 class LovedOne(Contact):
     customer = models.ForeignKey(CustomerProfile)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     text_updates = models.BooleanField(default=False)
+    address = models.ForeignKey('common.Location')

@@ -5,8 +5,9 @@ from localflavor.us.models import PhoneNumberField, USStateField, USZipCodeField
 
 
 class Location(models.Model):
-    address1 = models.CharField(max_length=100, blank=True, null=True)
-    address2 = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=50)
+    street1 = models.CharField(max_length=100, blank=True, null=True)
+    street2 = models.CharField(max_length=100, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     state = USStateField(blank=True, null=True)
     zip_code = USZipCodeField(blank=True, null=True)
