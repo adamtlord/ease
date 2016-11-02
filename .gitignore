@@ -7,7 +7,7 @@ MANIFEST
 dist
 
 /config.codekit
-/ease/settings.py
+/ease/_settings.py
 /ease/settings/base.py
 /ease/settings/prod.py
 /ease/settings/dev.py
