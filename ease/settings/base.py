@@ -12,7 +12,6 @@ USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
 USE_L10N = True
-SECRET_KEY = 'vjne0crnziu3yp(!(_%6x#53++haump-$-$$w2j5$g0%=)$@lt'
 DEFAULT_CHARSET = 'utf-8'
 ROOT_URLCONF = 'ease.urls'
 
