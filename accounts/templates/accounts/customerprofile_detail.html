@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ customer }}</h1>
+    <a href="{% url 'customer_update' customer.pk %}">Update</a>
+    <p>{{ customer.home }}<br>
+        {{ customer.home.street1 }}<br>
+        {% if customer.home.street2 %}
+            {{ customer.home.street2 }}<br>
+        {% endif %}
+        {{ customer.home.city }}, {{ customer.home.state }} {{ customer.home.zip_code }}</p>
+{% endblock %}

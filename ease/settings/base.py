@@ -100,3 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Django Registration
+ACCOUNT_ACTIVATION_DAYS = 7

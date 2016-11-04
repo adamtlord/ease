@@ -1,0 +1,15 @@
+{% extends "registration/registration_base.html" %}
+{% load custom_tags %}
+
+{% block title %}Register for an account{% endblock %}
+{% block content %}
+
+<h2>Get yourself an account</h2>
+<form method="post" action="" class="add-control">{% csrf_token %}
+{% for field in form %}
+{% render_form_field field %}
+{% endfor %}
+<input type="submit" value="Get It">
+</form>
+
+{% endblock %}

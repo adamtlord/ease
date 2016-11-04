@@ -13,3 +13,6 @@ class Location(models.Model):
     zip_code = USZipCodeField(blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True, default="U.S.A.")
     phone = PhoneNumberField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name

@@ -1,0 +1,17 @@
+{% extends "registration/email_base.html" %}
+
+
+{% block content %}
+You (or someone pretending to be you) have asked to register an account at
+{{ site.name }}.  If this wasn't you, please ignore this email
+and your address will be removed from our records.<br /><br />
+
+To activate this account, please click the following link within the next
+{{ expiration_days }} days:<br /><br />
+
+<a href="http://{{site.domain}}/accounts/activate/{{ activation_key }}" target ="_blank" title="Activation Link" style="text-decoration: none;">http://{{site.domain}}/accounts/activate/{{ activation_key }}</a><br /><br />
+
+Sincerely,<br /><br />
+{{ site.name }} Management
+
+{% endblock %}

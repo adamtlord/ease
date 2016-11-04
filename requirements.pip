@@ -6,3 +6,4 @@ django_compressor
 django-extensions
 django-localflavor
 django-common-helpers
+django-registration

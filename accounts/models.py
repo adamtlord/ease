@@ -12,7 +12,7 @@ class Contact(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return '{}, {}'.format(self.last_name, self.first_name)
+        return '{} {}'.format(self.first_name, self.last_name)
 
 
 class CustomerProfile(Contact):
@@ -39,11 +39,11 @@ class CustomerProfile(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    home = models.ForeignKey('common.Location')
+    home = models.OneToOneField('common.Location', on_delete=models.CASCADE)
 
 
 class LovedOne(Contact):
     customer = models.ForeignKey(CustomerProfile)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     text_updates = models.BooleanField(default=False)
-    address = models.ForeignKey('common.Location')
+    address = models.OneToOneField('common.Location', on_delete=models.CASCADE)
