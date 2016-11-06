@@ -3,5 +3,9 @@
 {% block bodyclass %}login{% endblock %}
 {% block navbar %}{% endblock %}
 {% block content %}
-	{% include 'registration/fragments/login_form.html' %}
+<div class="row">
+    <div class="col-sm-4 col-sm-offset-4">
+	   {% include 'registration/fragments/login_form.html' %}
+    </div>
+</div>
 {% endblock %}

@@ -1,10 +1,17 @@
 from django.contrib import admin
 
 from accounts.models import CustomerProfile, LovedOne
+from rides.models import Destination
+
+
+class DestinationInline(admin.StackedInline):
+    model = Destination
 
 
 class CustomerProfileAdmin(admin.ModelAdmin):
-    pass
+    inlines = [
+        DestinationInline
+    ]
 
 
 class LovedOneAdmin(admin.ModelAdmin):
