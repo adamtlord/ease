@@ -1,6 +1,31 @@
 {% extends 'base.html' %}
+{% load custom_tags %}
 
+{% block title %}Create Customer{% endblock title %}
 {% block content %}
-    <h2>Customers</h2>
-    Create
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+        <h2>Create a New Customer</h2>
+        <form action="" class="form" method="POST">{% csrf_token %}
+            {% for field in form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <h3>Home Address</h3>
+            {% for field in home_form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <h3>Destinations</h3>
+            {{ destination_formset.management_form }}
+            {% for form in destination_formset.forms %}
+                {% for field in form %}
+                    {% render_form_field field %}
+                {% endfor %}
+            {% endfor %}
+
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Create" />
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
