@@ -3,6 +3,5 @@ from common import views
 
 urlpatterns = [
     url(r'^$', views.homepage, name='homepage'),
-    url(r'^accounts/', include('registration.backends.hmac.urls')),
-    url(r'^customers/', include('accounts.urls')),
+    url(r'^accounts/', include('registration.backends.hmac.urls'))
 ]

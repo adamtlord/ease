@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 from common.models import Location
+from rides.models import Destination
 
 
 class Contact(models.Model):
@@ -41,6 +42,10 @@ class CustomerProfile(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
+
+    @property
+    def home(self):
+        return Destination.objects.get(customer=self)
 
 
 class LovedOne(Contact, Location):

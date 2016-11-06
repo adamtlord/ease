@@ -3,7 +3,7 @@
 
 <html>
     <head>
-        <title>Ease</title>
+        <title>Arrive Rides | {% block title %}{% endblock %}</title>
 
         <meta name="keywords" content="" />
         <meta name="description" content="{% block meta_description %}{% endblock %}" />
@@ -20,6 +20,7 @@
 
     <body>
         <div class="container">
+            {% include 'fragments/messages.html' %}
             {% block content %}
             {% endblock content %}
         </div>
