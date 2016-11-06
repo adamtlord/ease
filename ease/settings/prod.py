@@ -12,13 +12,14 @@ ALLOWED_HOSTS = [
 
 SSH_HOSTS = 'easerideapp.webfactional.com'
 STATIC_URL = '%sstatic/' % WWW_ROOT
-STATIC_ROOT = '/home/easerideapp/webapps/static'
+STATIC_ROOT = '/home/easerideapp/webapps/ease_staticserve'
 MEDIA_URL = '%suploads/' % WWW_ROOT
-MEDIA_ROOT = '/home/easerideapp/webapps/uploads'
+MEDIA_ROOT = '/home/easerideapp/webapps/ease_uploadsserve'
 
 STATICFILES_DIRS = [
     '/home/easerideapp/webapps/django_app/ease/static'
 ]
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
