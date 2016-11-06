@@ -12,18 +12,9 @@
         <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.ico">
 
         {% compress css %}
-            {% if not is_dev %}
-                <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/index.less">
-            {% endif %}
+            <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/index.css">
         {% endcompress %}
 
-        {% if is_dev %}
-            <script>
-                less = {logLevel:1}
-            </script>
-            <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/index.less">
-            <script type="text/javascript" src="{{ STATIC_URL }}js/less.min.js"></script>
-        {% endif %}
         {% block header_includes %}{% endblock header_includes %}
     </head>
 
