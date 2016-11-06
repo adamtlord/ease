@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+from common.models import Location
+
 
 class Contact(models.Model):
     first_name = models.CharField(max_length=50)
@@ -39,11 +41,9 @@ class CustomerProfile(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    home = models.OneToOneField('common.Location', on_delete=models.CASCADE)
 
 
-class LovedOne(Contact):
+class LovedOne(Contact, Location):
     customer = models.ForeignKey(CustomerProfile)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     text_updates = models.BooleanField(default=False)
-    address = models.OneToOneField('common.Location', on_delete=models.CASCADE)

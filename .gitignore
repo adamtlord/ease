@@ -8,5 +8,4 @@ dist
 
 /config.codekit
 /ease/_settings.py
-/ease/settings/prod.py
-/ease/settings/dev.py
+/ease/secret_settings.py
