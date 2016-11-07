@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load custom_tags %}
 
-{% block title %}Create Customer{% endblock title %}
+{% block title %}Update Customer {{ customer }}{% endblock title %}
 {% block content %}
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
-        <h2>Create a New Customer</h2>
+        <h2>Update Customer {{ customer }}</h2>
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
                 {% if errors|length == 1 %}
@@ -39,7 +39,7 @@
             {% endfor %}
 
             <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Create" />
+                <input type="submit" class="btn btn-primary" value="Update" />
             </div>
         </form>
     </div>

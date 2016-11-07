@@ -20,11 +20,20 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/accounts\/templates\/accounts\/customerprofile_form.html": {
+	"\/accounts\/templates\/accounts\/customerprofile_list.html": {
 		"fileType": 8192,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/accounts\/templates\/accounts\/customerprofile_form.html",
+		"inputAbbreviatedPath": "\/accounts\/templates\/accounts\/customerprofile_list.html",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
+	"\/accounts\/templates\/accounts\/customerprofile_update.html": {
+		"fileType": 8192,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/accounts\/templates\/accounts\/customerprofile_update.html",
 		"outputAbbreviatedPath": "No Output Path",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
