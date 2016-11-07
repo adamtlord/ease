@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from django.db import models
 
 from common.models import Location
-from rides.models import Destination
 
 
 class Contact(models.Model):
@@ -35,7 +34,7 @@ class CustomerProfile(Contact):
 
     known_as = models.CharField(max_length=50, blank=True, null=True)
     date_joined = models.DateField(auto_now_add=True)
-    dob = models.DateField(blank=True, null=True)
+    dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
     most_recent_ride = models.DateTimeField(blank=True, null=True)
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
@@ -45,7 +44,11 @@ class CustomerProfile(Contact):
 
     @property
     def home(self):
-        return Destination.objects.get(customer=self)
+        return self.destination_set.filter(home=True).first()
+
+    @property
+    def destinations(self):
+        return self.destination_set.exclude(home=True)
 
 
 class LovedOne(Contact, Location):

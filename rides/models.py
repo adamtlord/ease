@@ -11,6 +11,7 @@ class Destination(Location):
     home = models.BooleanField(default=False)
 
     def __unicode__(self):
-        nickname = ' ({})'.format(self.nickname) if self.nickname and self.nickname != self.name else ''
-
-        return '{}{}'.format(self.name, nickname)
+        if self.name and self.nickname:
+            return '{} ({}) - {}'.format(self.nickname, self.name, self.customer)
+        else:
+            return '{} - {}'.format(self.name, self.customer)
