@@ -19,11 +19,7 @@
     </head>
 
     <body>
-        {% include 'fragments/navbar.html' %}
-        <div class="container">
-            {% include 'fragments/messages.html' %}
-            {% block content %}
-            {% endblock content %}
-        </div>
+        {% block body %}
+        {% endblock body %}
     </body>
 </html>
