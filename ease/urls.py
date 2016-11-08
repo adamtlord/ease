@@ -7,8 +7,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^', include('common.urls')),
-    url(r'^customers/', include('accounts.urls')),
+    url(r'^', include('marketing.urls')),
+    url(r'^concierge/', include('concierge.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
 
