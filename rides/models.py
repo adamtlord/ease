@@ -15,3 +15,13 @@ class Destination(Location):
             return '{} ({}) - {}'.format(self.nickname, self.name, self.customer)
         else:
             return '{} - {}'.format(self.name, self.customer)
+
+
+class Ride(models.Model):
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    customer = models.ForeignKey('accounts.CustomerProfile')
+    start = models.ForeignKey('rides.Destination', related_name='starting_point')
+    destination = models.ForeignKey('rides.Destination', related_name='ending_point')
+    cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)

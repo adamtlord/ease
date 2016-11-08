@@ -8,8 +8,6 @@ CUSTOMER_FIELDS = [
     'email',
     'known_as',
     'dob',
-    # 'most_recent_ride',
-    # 'spent_to_date',
     'residence_type',
     'residence_instructions',
     'special_assistance',
