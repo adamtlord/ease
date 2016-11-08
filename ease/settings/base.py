@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 
     'accounts',
     'common',
+    'concierge',
+    'marketing',
     'rides',
 ]
 

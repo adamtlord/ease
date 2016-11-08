@@ -17,7 +17,7 @@ class Contact(models.Model):
         return '{} {}'.format(self.first_name, self.last_name)
 
 
-class CustomerProfile(Contact):
+class Customer(Contact):
     APARTMENT = 'AP'
     ASSISTED_LIVING = 'AL'
     RETIREMENT_COMMUNITY = 'RT'
@@ -52,6 +52,6 @@ class CustomerProfile(Contact):
 
 
 class LovedOne(Contact, Location):
-    customer = models.ForeignKey(CustomerProfile)
+    customer = models.ForeignKey(Customer)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     text_updates = models.BooleanField(default=False)

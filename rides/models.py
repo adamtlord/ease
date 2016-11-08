@@ -7,7 +7,7 @@ from common.models import Location
 
 class Destination(Location):
     nickname = models.CharField(max_length=50, blank=True, null=True)
-    customer = models.ForeignKey('accounts.CustomerProfile')
+    customer = models.ForeignKey('accounts.Customer')
     home = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -20,7 +20,7 @@ class Destination(Location):
 class Ride(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    customer = models.ForeignKey('accounts.CustomerProfile')
+    customer = models.ForeignKey('accounts.Customer')
     start = models.ForeignKey('rides.Destination', related_name='starting_point')
     destination = models.ForeignKey('rides.Destination', related_name='ending_point')
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
