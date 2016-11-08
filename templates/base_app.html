@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block body %}
+    {% include 'fragments/navbar.html' %}
+    <div class="container">
+        {% include 'fragments/messages.html' %}
+        {% block content %}
+        {% endblock content %}
+    </div>
+{% endblock body %}
