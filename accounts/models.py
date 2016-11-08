@@ -35,7 +35,7 @@ class CustomerProfile(Contact):
     known_as = models.CharField(max_length=50, blank=True, null=True)
     date_joined = models.DateField(auto_now_add=True)
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
-    most_recent_ride = models.DateTimeField(blank=True, null=True)
+    last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
     residence_instructions = models.TextField(blank=True, null=True)
