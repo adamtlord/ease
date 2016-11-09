@@ -7,3 +7,5 @@ django-extensions
 django-localflavor
 django-common-helpers
 django-registration
+
+googlemaps==2.4.4

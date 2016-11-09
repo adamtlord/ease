@@ -8,6 +8,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^', include('marketing.urls')),
+    url(r'^accounts/', include('accounts.urls')),
     url(r'^concierge/', include('concierge.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

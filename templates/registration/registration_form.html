@@ -4,12 +4,21 @@
 {% block title %}Register for an account{% endblock %}
 {% block content %}
 
-<h2>Get yourself an account</h2>
-<form method="post" action="" class="add-control">{% csrf_token %}
-{% for field in form %}
-{% render_form_field field %}
-{% endfor %}
-<input type="submit" value="Get It">
-</form>
+<div class="page-header">
+    <h1>Register for an Account</h1>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <form method="post" action="" class="add-control">{% csrf_token %}
+            {% for field in form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <div class="form-actions">
+                <input type="submit" value="Sign Up" class="btn btn-primary btn-lg">
+            </div>
+        </form>
+    </div>
+</div>
 
 {% endblock %}

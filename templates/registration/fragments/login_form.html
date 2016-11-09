@@ -1,7 +1,7 @@
 {% load custom_tags %}
 <form method="post" action="{% url 'auth_login' %}" class="form-signin">
 	{% csrf_token %}
-	<h2>Sign in</h2>
+	<h2>Customer Login</h2>
 	{% if form.non_field_errors %}
 		<p class="alert alert-danger"><i class="fa fa-warning"></i> Your username/password combination is wrong, butterfingers.</p>
 	{% endif %}
