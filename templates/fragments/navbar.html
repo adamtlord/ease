@@ -1,10 +1,12 @@
 <nav class="navbar">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'homepage' %}">Arrive Rides</a>
+            <a class="navbar-brand" href="{% url 'homepage' %}">Arrive</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-        <!--     <li><a href="{% url 'customer_list' %}">Customers</a></li> -->
+            {% if request.user.is_staff %}
+                <li><a href="{% url 'customer_list' %}">Customers</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>

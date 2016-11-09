@@ -3,12 +3,31 @@ from __future__ import unicode_literals
 from django.db import models
 
 from common.models import Location
+from common.utils import geocode_address
 
 
 class Destination(Location):
     nickname = models.CharField(max_length=50, blank=True, null=True)
     customer = models.ForeignKey('accounts.Customer')
     home = models.BooleanField(default=False)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+
+    @property
+    def ltlng(self):
+        return '{},{}'.format(self.lattitude, self.longitute)
+
+    def save(self, *args, **kwargs):
+        super(Destination, self).save(*args, **kwargs)
+        if not (self.latitude and self.longitude):
+            address_string = '{} {} {} {} {}'.format(self.street1, self.street2, self.city, self.state, self.zip_code)
+            try:
+                ltlng = geocode_address(address_string)
+                self.latitude = ltlng[0]
+                self.longitude = ltlng[1]
+            except Exception:
+                pass
+            super(Destination, self).save(*args, **kwargs)
 
     def __unicode__(self):
         if self.name and self.nickname:

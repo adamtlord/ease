@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import inlineformset_factory
@@ -8,12 +9,14 @@ from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, Updat
 from rides.models import Destination
 
 
+@staff_member_required
 def dashboard(request, template='concierge/dashboard.html'):
     d = {}
 
     return render(request, template, d)
 
 
+@staff_member_required
 def customer_list(request, template='concierge/customer_list.html'):
     d = {}
     d['customers'] = Customer.objects.all()
@@ -21,6 +24,7 @@ def customer_list(request, template='concierge/customer_list.html'):
     return render(request, template, d)
 
 
+@staff_member_required
 def customer_create(request, template='concierge/customer_create.html'):
 
     DestinationFormSet = inlineformset_factory(Customer,
@@ -63,6 +67,7 @@ def customer_create(request, template='concierge/customer_create.html'):
     return render(request, template, d)
 
 
+@staff_member_required
 def customer_detail(request, pk, template='concierge/customer_detail.html'):
     d = {}
     d['customer'] = get_object_or_404(Customer, pk=pk)
@@ -70,6 +75,7 @@ def customer_detail(request, pk, template='concierge/customer_detail.html'):
     return render(request, template, d)
 
 
+@staff_member_required
 def customer_update(request, pk, template='concierge/customer_update.html'):
 
     customer = get_object_or_404(Customer, pk=pk)
@@ -85,8 +91,8 @@ def customer_update(request, pk, template='concierge/customer_update.html'):
         destination_formset = DestinationFormSet(request.POST, instance=customer, queryset=Destination.objects.exclude(home=True))
 
         if all([form.is_valid(), home_form.is_valid(), destination_formset.is_valid()]):
-            new_customer = form.save()
-            home_address = home_form.save()
+            form.save()
+            home_form.save()
             destination_formset.save()
 
             messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
@@ -106,6 +112,7 @@ def customer_update(request, pk, template='concierge/customer_update.html'):
     return render(request, template, d)
 
 
+@staff_member_required
 def customer_delete(request, pk):
     messages.add_message(request, messages.SUCCESS, 'Deleted')
     return redirect(reverse('customer_list'))
