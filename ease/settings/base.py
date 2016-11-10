@@ -104,6 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Django Registration
+# Django Registration/Accounts
+AUTH_USER_MODEL = 'accounts.CustomUser'
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True

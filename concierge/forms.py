@@ -13,6 +13,9 @@ CUSTOMER_FIELDS = [
     'residence_instructions',
     'special_assistance',
     'notes',
+    'home_phone',
+    'mobile_phone',
+    'preferred_phone',
 ]
 
 UPDATE_HOME_FIELDS = [
@@ -21,7 +24,6 @@ UPDATE_HOME_FIELDS = [
     'city',
     'state',
     'zip_code',
-    'phone',
 ]
 
 CREATE_HOME_FIELDS = UPDATE_HOME_FIELDS + [
