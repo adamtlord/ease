@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from accounts.models import CustomUser, Customer, LovedOne, UserProfile
+from accounts.models import CustomUser, Customer, LovedOne, UserProfile, Rider
 from rides.models import Destination
 
 
@@ -84,16 +84,21 @@ class DestinationInline(admin.StackedInline):
     model = Destination
 
 
+class LovedOneInline(admin.StackedInline):
+    model = LovedOne
+
+
+class RiderInline(admin.StackedInline):
+    model = Rider
+
+
 class CustomerAdmin(admin.ModelAdmin):
     inlines = [
-        DestinationInline
+        LovedOneInline,
+        RiderInline,
+        DestinationInline,
     ]
-
-
-class LovedOneAdmin(admin.ModelAdmin):
-    pass
 
 
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)
-admin.site.register(LovedOne, LovedOneAdmin)
