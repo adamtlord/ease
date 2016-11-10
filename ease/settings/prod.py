@@ -7,7 +7,8 @@ DOMAIN_NAME = 'easerideapp.webfactional.com'
 WWW_ROOT = 'http://%s/' % DOMAIN_NAME
 
 ALLOWED_HOSTS = [
-    'easerideapp.webfactional.com'
+    'easerideapp.webfactional.com',
+    'app.arriverides.com'
 ]
 
 SSH_HOSTS = 'easerideapp.webfactional.com'
