@@ -279,12 +279,12 @@ textarea {
   line-height: inherit;
 }
 a {
-  color: #337ab7;
+  color: #0346b2;
   text-decoration: none;
 }
 a:hover,
 a:focus {
-  color: #23527c;
+  color: #022867;
   text-decoration: underline;
 }
 a:focus {
@@ -515,11 +515,11 @@ mark,
   color: #777777;
 }
 .text-primary {
-  color: #337ab7;
+  color: #0346b2;
 }
 a.text-primary:hover,
 a.text-primary:focus {
-  color: #286090;
+  color: #023280;
 }
 .text-success {
   color: #3c763d;
@@ -551,11 +551,11 @@ a.text-danger:focus {
 }
 .bg-primary {
   color: #fff;
-  background-color: #337ab7;
+  background-color: #0346b2;
 }
 a.bg-primary:hover,
 a.bg-primary:focus {
-  background-color: #286090;
+  background-color: #023280;
 }
 .bg-success {
   background-color: #dff0d8;
@@ -4578,26 +4578,26 @@ fieldset[disabled] .btn-default.focus {
 }
 .btn-primary {
   color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
+  background-color: #0346b2;
+  border-color: #033c99;
 }
 .btn-primary:focus,
 .btn-primary.focus {
   color: #fff;
-  background-color: #286090;
-  border-color: #122b40;
+  background-color: #023280;
+  border-color: #000b1c;
 }
 .btn-primary:hover {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #023280;
+  border-color: #02245d;
 }
 .btn-primary:active,
 .btn-primary.active,
 .open > .dropdown-toggle.btn-primary {
   color: #fff;
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: #023280;
+  border-color: #02245d;
 }
 .btn-primary:active:hover,
 .btn-primary.active:hover,
@@ -4609,8 +4609,8 @@ fieldset[disabled] .btn-default.focus {
 .btn-primary.active.focus,
 .open > .dropdown-toggle.btn-primary.focus {
   color: #fff;
-  background-color: #204d74;
-  border-color: #122b40;
+  background-color: #02245d;
+  border-color: #000b1c;
 }
 .btn-primary:active,
 .btn-primary.active,
@@ -4626,11 +4626,11 @@ fieldset[disabled] .btn-primary:focus,
 .btn-primary.disabled.focus,
 .btn-primary[disabled].focus,
 fieldset[disabled] .btn-primary.focus {
-  background-color: #337ab7;
-  border-color: #2e6da4;
+  background-color: #0346b2;
+  border-color: #033c99;
 }
 .btn-primary .badge {
-  color: #337ab7;
+  color: #0346b2;
   background-color: #fff;
 }
 .btn-success {
@@ -4862,7 +4862,7 @@ fieldset[disabled] .btn-danger.focus {
   background-color: #fff;
 }
 .btn-link {
-  color: #337ab7;
+  color: #0346b2;
   font-weight: normal;
   border-radius: 0;
 }
@@ -4883,7 +4883,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #23527c;
+  color: #022867;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -6231,7 +6231,7 @@ select[multiple].input-group-sm > .add-control input[type="color"] {
 .nav .open > a:hover,
 .nav .open > a:focus {
   background-color: #eeeeee;
-  border-color: #337ab7;
+  border-color: #0346b2;
 }
 .nav .nav-divider {
   height: 1px;
@@ -6324,7 +6324,7 @@ select[multiple].input-group-sm > .add-control input[type="color"] {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
   color: #fff;
-  background-color: #337ab7;
+  background-color: #0346b2;
 }
 .nav-stacked > li {
   float: none;
@@ -7142,11 +7142,11 @@ a.label:focus {
   background-color: #5e5e5e;
 }
 .label-primary {
-  background-color: #337ab7;
+  background-color: #0346b2;
 }
 .label-primary[href]:hover,
 .label-primary[href]:focus {
-  background-color: #286090;
+  background-color: #023280;
 }
 .label-success {
   background-color: #5cb85c;
@@ -7210,7 +7210,7 @@ a.badge:focus {
 }
 .list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
-  color: #337ab7;
+  color: #0346b2;
   background-color: #fff;
 }
 .list-group-item > .badge {
@@ -7946,6 +7946,25 @@ textarea.form-controller input[type="color"] {
 .add-control input[type="tel"],
 .add-control input[type="color"] {
   padding: 6px 9px;
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 50px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background-color: transparent;
+}
+.footer p {
+  color: #777777;
+  font-size: 14px;
+  margin: 14px 0;
 }
 nav.navbar {
   background-color: aliceblue;
