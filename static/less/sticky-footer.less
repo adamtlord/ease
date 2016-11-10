@@ -1,0 +1,19 @@
+html {
+    position:relative;
+    min-height:100%;
+}
+body {
+    margin-bottom: @footer-height;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: @footer-height;
+    background-color: @footer-bg;
+    p {
+        .text-muted;
+        font-size: @font-size-small;
+        margin: (@footer-height - @line-height-computed) / 2 0;
+    }
+}

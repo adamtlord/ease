@@ -22,7 +22,17 @@
         {% block navbar %}
             {% include 'fragments/navbar.html' %}
         {% endblock navbar %}
+
         {% block body %}
         {% endblock body %}
+
+        {% block footer %}
+            {% include 'fragments/footer.html' %}
+        {% endblock %}
+
+        {% if is_prod %}
+            {% include 'fragments/ga.html' %}
+        {% endif %}
     </body>
+
 </html>
