@@ -4,7 +4,7 @@ IS_PROD = True
 
 
 DOMAIN_NAME = 'app.arriverides.com'
-WWW_ROOT = 'http://%s/' % DOMAIN_NAME
+WWW_ROOT = 'https://%s/' % DOMAIN_NAME
 
 ALLOWED_HOSTS = [
     'app.arriverides.com'
