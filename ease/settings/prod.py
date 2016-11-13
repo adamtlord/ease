@@ -3,15 +3,14 @@ from .base import *
 IS_PROD = True
 
 
-DOMAIN_NAME = 'easerideapp.webfactional.com'
+DOMAIN_NAME = 'app.arriverides.com'
 WWW_ROOT = 'http://%s/' % DOMAIN_NAME
 
 ALLOWED_HOSTS = [
-    'easerideapp.webfactional.com',
     'app.arriverides.com'
 ]
 
-SSH_HOSTS = 'easerideapp.webfactional.com'
+SSH_HOSTS = 'app.arriverides.com'
 STATIC_URL = '%sstatic/' % WWW_ROOT
 STATIC_ROOT = '/home/easerideapp/webapps/ease_staticserve'
 MEDIA_URL = '%suploads/' % WWW_ROOT
