@@ -6,6 +6,6 @@ uploads/
 MANIFEST
 dist
 
-/ease/config.codekit
+/config.codekit
 /ease/_settings.py
-/ease/secret_settings.py
+/ease/settings/secret_settings.py
