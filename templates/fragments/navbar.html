@@ -7,8 +7,12 @@
             {% if request.user.is_staff %}
                 <li><a href="{% url 'customer_list' %}">Customers</a></li>
             {% endif %}
-            <li><a href="#">{{ request.user }}</a></li>
-            <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+            {% if request.user.is_authenticated %}
+                {% if not request.user.is_staff %}
+                    <li><a href="{% url 'profile' %}">{{ request.user }}</a></li>
+                {% endif %}
+                <li><a href="{% url 'auth_logout' %}">Log out</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>

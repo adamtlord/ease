@@ -2,7 +2,7 @@ from django import forms
 from registration.forms import RegistrationForm
 from accounts.const import TEXT_UPDATE_CHOICES
 from accounts.models import CustomUser, UserProfile, Customer, Rider, LovedOne
-from rides.models import Destination
+
 
 CUSTOM_USER_FIELDS = [
     'email',
@@ -21,14 +21,6 @@ CUSTOMER_FIELDS = [
     'residence_instructions'
 ]
 
-HOME_FIELDS = [
-    'name',
-    'street1',
-    'street2',
-    'city',
-    'state',
-    'zip_code',
-]
 
 RIDER_FIELDS = [
     'first_name',
@@ -36,7 +28,7 @@ RIDER_FIELDS = [
     'mobile_phone'
 ]
 
-LOVEDONE_UPDATE_FIELDS = [
+LOVEDONE_NOTIFY_FIELDS = [
     'first_name',
     'last_name',
     'mobile_phone',
@@ -121,21 +113,6 @@ class CustomerForm(forms.ModelForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
-class HomeForm(forms.ModelForm):
-    street1 = forms.CharField(label="Address")
-
-    class Meta:
-        model = Destination
-        fields = HOME_FIELDS
-
-    def __init__(self, *args, **kwargs):
-        super(HomeForm, self).__init__(*args, **kwargs)
-        for field in HOME_FIELDS:
-            self.fields[field].widget.attrs['class'] = 'form-control'
-        for field in ['street1', 'city', 'state', 'zip_code']:
-            self.fields[field].required = True
-
-
 class RiderForm(forms.ModelForm):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
@@ -167,15 +144,18 @@ class CustomerPreferencesForm(forms.ModelForm):
 
 
 class LovedOneForm(forms.ModelForm):
-    mobile_phone = forms.CharField(label="Mobile phone number")
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    mobile_phone = forms.CharField(label="Mobile phone number", required=False)
+    relationship = forms.CharField(required=False)
 
     class Meta:
         model = LovedOne
-        fields = LOVEDONE_UPDATE_FIELDS
+        fields = LOVEDONE_NOTIFY_FIELDS
 
     def __init__(self, *args, **kwargs):
         super(LovedOneForm, self).__init__(*args, **kwargs)
-        for field in LOVEDONE_UPDATE_FIELDS:
+        for field in LOVEDONE_NOTIFY_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
-        for field in ['first_name', 'last_name', 'mobile_phone']:
-            self.fields[field].required = True
+        # for field in ['first_name', 'last_name', 'mobile_phone']:
+        #     self.fields[field].required = True

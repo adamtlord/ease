@@ -29,6 +29,13 @@ class Destination(Location):
                 pass
             super(Destination, self).save(*args, **kwargs)
 
+    @property
+    def fullname(self):
+        if self.name and self.nickname:
+            return '{} ({})'.format(self.nickname, self.name)
+        else:
+            return self.name if self.name else self.nickname
+
     def __unicode__(self):
         if self.name and self.nickname:
             return '{} ({}) - {}'.format(self.nickname, self.name, self.customer)

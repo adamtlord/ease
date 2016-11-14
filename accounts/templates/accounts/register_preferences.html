@@ -29,11 +29,8 @@
             {% endif %}
             {% render_form_field preferences_form.send_updates %}
             <fieldset id="lovedone_fields">
-                {{ lovedone_formset.management_form }}
-                {% for form in lovedone_formset.forms %}
-                    {% for field in form %}
-                        {% render_form_field field %}
-                    {% endfor %}
+                {% for field in lovedone_form %}
+                    {% render_form_field field %}
                 {% endfor %}
             </fieldset>
             <div class="form-actions">

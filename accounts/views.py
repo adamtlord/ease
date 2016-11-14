@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 
 from common.decorators import anonymous_required
 from accounts.models import Customer, LovedOne
-from accounts.forms import CustomUserRegistrationForm, CustomerForm, HomeForm, RiderForm, CustomerPreferencesForm, LovedOneForm
+from accounts.forms import CustomUserRegistrationForm, CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
 
@@ -51,15 +51,17 @@ def register_self(request, template='accounts/register.html'):
             home_address.home = True
             home_address.save()
             # populate and save rider info
-            rider = rider_form.save(commit=False)
-            rider.customer = new_customer
-            rider.save()
+            rider_data = rider_form.cleaned_data
+            if rider_data.get('first_name', None) or rider_data.get('last_name', None) or rider_data.get('mobile_phone', None):
+                rider = rider_form.save(commit=False)
+                rider.customer = new_customer
+                rider.save()
 
             authenticated_user = auth.authenticate(username=new_user.get_username(), password=register_form.cleaned_data['password1'])
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
-            return redirect('profile')
+            return redirect('register_self_preferences')
 
     d = {
         'self': True,
@@ -77,30 +79,26 @@ def register_self_preferences(request, template='accounts/register_preferences.h
 
     customer = request.user.get_customer()
 
-    LovedOneFormset = inlineformset_factory(Customer,
-                                            LovedOne,
-                                            form=LovedOneForm,
-                                            can_delete=False,
-                                            extra=1)
-
     if request.method == 'GET':
         preferences_form = CustomerPreferencesForm(instance=customer)
-        lovedone_formset = LovedOneFormset(instance=customer)
+        lovedone_form = LovedOneForm()
     else:
         preferences_form = CustomerPreferencesForm(request.POST, instance=customer)
-        lovedone_formset = LovedOneFormset(request.POST, instance=customer)
+        lovedone_form = LovedOneForm(request.POST)
 
-        if preferences_form.is_valid() and lovedone_formset.is_valid():
+        if preferences_form.is_valid() and lovedone_form.is_valid():
             preferences_form.save()
-            lovedone_formset.save()
+            lovedone = lovedone_form.save(commit=False)
+            lovedone.customer = customer
+            lovedone.save()
 
-            return redirect('profile')
+            return redirect('register_self_destinations')
 
     d = {
         'self': True,
         'lovedone': False,
         'preferences_form': preferences_form,
-        'lovedone_formset': lovedone_formset
+        'lovedone_form': lovedone_form
     }
     return render(request, template, d)
 
@@ -120,7 +118,6 @@ def register_self_destinations(request, template='accounts/register_destinations
         destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
         home_form = HomeForm(instance=home)
     else:
-
         destination_formset = DestinationFormset(request.POST, instance=customer)
         home_form = HomeForm(request.POST, instance=home)
 
@@ -171,4 +168,11 @@ def register_lovedone(request, template='accounts/register.html'):
 @login_required
 def profile(request, template='accounts/profile.html'):
 
-    return render(request, template)
+    user = request.user
+    customer = user.get_customer()
+
+    d = {
+        'customer': customer,
+        'riders': customer.rider_set.all()
+    }
+    return render(request, template, d)

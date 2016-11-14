@@ -8359,6 +8359,9 @@ textarea.add-control input[type="color"] {
   margin: 22px 0;
   border-top: 1px solid #eeeeee;
 }
+fieldset + fieldset legend {
+  padding-top: 22px;
+}
 .hero {
   padding-top: 30px;
   padding-bottom: 30px;

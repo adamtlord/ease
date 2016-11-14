@@ -3,6 +3,7 @@ from django import forms
 from rides.models import Destination
 
 HOME_FIELDS = [
+    'name',
     'street1',
     'street2',
     'city',
@@ -12,7 +13,8 @@ HOME_FIELDS = [
 
 DESTINATION_FIELDS = HOME_FIELDS + [
     'name',
-    'nickname'
+    'nickname',
+    'customer'
 ]
 
 
@@ -29,6 +31,8 @@ class DestinationForm(forms.ModelForm):
 
 
 class HomeForm(forms.ModelForm):
+    street1 = forms.CharField(label="Address")
+
     class Meta:
         model = Destination
         fields = HOME_FIELDS
@@ -37,3 +41,5 @@ class HomeForm(forms.ModelForm):
         super(HomeForm, self).__init__(*args, **kwargs)
         for field in HOME_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
+        for field in ['street1', 'city', 'state', 'zip_code']:
+            self.fields[field].required = True

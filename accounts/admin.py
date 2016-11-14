@@ -49,7 +49,7 @@ class UserChangeForm(forms.ModelForm):
 
 
 class UserProfileInlineForm(forms.ModelForm):
-    source = forms.CharField()
+    source = forms.CharField(required=False)
 
     class Meta:
         model = UserProfile
