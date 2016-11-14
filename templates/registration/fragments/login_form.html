@@ -13,6 +13,6 @@
 		<input type="password" class="form-control input-lg" placeholder="Password" name="password">
 		{% if form.password.errors %}<p class="help-block">{{ form.password.errors }}</p>{% endif %}
 	</div>
-	<input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'homepage' %}{% endif %}" />
+	<input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'profile' %}{% endif %}" />
 	<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 </form>

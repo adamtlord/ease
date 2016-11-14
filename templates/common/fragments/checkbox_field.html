@@ -8,7 +8,7 @@
         <span class="help-block">{{ help_text }}</span>
     {% endif %}
     {% if form_field.errors %}
-        <span class="help-block">{{ form_field.errors }}</span>
+        {{ form_field.errors }}
     {% endif %}
 </div>
 {% if form_field.errors %}</div>{% endif %}

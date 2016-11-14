@@ -1,0 +1,45 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block title %}Create an Account{% endblock title %}
+{% block content %}
+<div class="page-header">
+    <h2>Set up notifications</h2>
+</div>
+<p>Whenever Arrive arranges a ride for you, you’ll have the option to send your trip information to a friend or family member.
+    If you decide to do this, it means that person will receive a text message letting them know that you’re about to be picked up.
+    The message will contain a hyperlink, and if they have a smartphone they’ll be able to see the location of the car you’re riding in,
+    from the time you’re picked up until the time you’re dropped off. You can make this decision on a trip-by-trip basis.</p>
+
+<div class="row">
+    <div class="col-sm-6">
+        <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+            {% if errors %}
+                {% if errors|length == 1 %}
+                    Please correct the error below.
+                {% else %}
+                    Please correct the errors below.
+                {% endif %}
+                {{ preferences_form.non_field_errors }}
+                {% for dict in lovedone_formset.errors %}
+                    {% for error in dict.values %}
+                        {{ error }}
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            {% render_form_field preferences_form.send_updates %}
+            <fieldset id="lovedone_fields">
+                {{ lovedone_formset.management_form }}
+                {% for form in lovedone_formset.forms %}
+                    {% for field in form %}
+                        {% render_form_field field %}
+                    {% endfor %}
+                {% endfor %}
+            </fieldset>
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Save Preferences" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

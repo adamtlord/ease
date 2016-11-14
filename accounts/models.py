@@ -9,9 +9,9 @@ from django.dispatch import receiver
 from django.utils import timezone
 from localflavor.us.models import PhoneNumberField
 
-
 from common.models import Location
 from accounts.managers import CustomUserManager
+from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -49,6 +49,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def get_customer(self):
+        return self.customer
+
     def __unicode__(self):
         return self.get_full_name()
 
@@ -68,9 +71,25 @@ def create_user_profile(sender, **kwargs):
 
 class UserProfile(models.Model):
     """Profile for User, automatically created in User.save()."""
+    FRIEND_FAMILY = 'FRIEND_FAMILY'
+    AD_ONLINE = 'AD_ONLINE'
+    AD_PRINT = 'AD_PRINT'
+    MEDIA = 'MEDIA'
+    OTHER = 'OTHER'
+
+    SOURCE_CHOICES = (
+        (None, ''),
+        (FRIEND_FAMILY, 'Friend or family member'),
+        (AD_ONLINE, 'Online ad'),
+        (AD_PRINT, 'Print ad'),
+        (MEDIA, 'Media or news coverage'),
+        (OTHER, 'Other'),
+    )
+
     user = models.OneToOneField(CustomUser, related_name='profile')
     registration_complete = models.BooleanField(default=False)
     on_behalf = models.BooleanField(default=False)
+    source = models.CharField(max_length=255, choices=SOURCE_CHOICES, null=True, blank=True)
 
     def __unicode__(self):
         return "%s's profile" % self.user
@@ -114,7 +133,7 @@ class Customer(Contact):
         (MOBILE_PHONE, 'Mobile'),
     )
 
-    user = models.ForeignKey(CustomUser)
+    user = models.OneToOneField(CustomUser)
     known_as = models.CharField(max_length=50, blank=True, null=True)
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
     last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
@@ -125,6 +144,7 @@ class Customer(Contact):
     notes = models.TextField(blank=True, null=True)
     home_phone = PhoneNumberField(blank=True, null=True)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
+    send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
 
     @property
     def home(self):
@@ -139,30 +159,14 @@ class Rider(Contact):
     """ An additional rider on an account. Must share a residence with primary customer. """
     customer = models.ForeignKey(Customer)
     relationship = models.CharField(max_length=100, blank=True, null=True)
-    text_updates = models.BooleanField(default=False)
+    send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
 
 
-class LovedOne(Contact, Location):
+class LovedOne(Location, Contact):
     """ A friend or family member who may be the account holder or may wish to receive updates.
         Possibly use these as destinations, or destination choices?
     """
 
-    TEXT_UPDATES_NEVER = 0
-    TEXT_UPDATES_ALWAYS = 1
-    TEXT_UPDATES_SOMETIMES = 2
-    TEXT_UPDATES_MAYBE = 3
-
-    TEXT_UPDATE_CHOICES = (
-        (TEXT_UPDATES_ALWAYS, 'Yes, every time'),
-        (TEXT_UPDATES_SOMETIMES, 'Yes, on some trips'),
-        (TEXT_UPDATES_MAYBE, 'Not sure'),
-        (TEXT_UPDATES_NEVER, 'No'),
-    )
-
     customer = models.ForeignKey(Customer)
     relationship = models.CharField(max_length=100, blank=True, null=True)
-    text_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
-
-    @property
-    def mobile_phone(self):
-        return self.customer.mobile_phone
+    receive_updates = models.BooleanField(default=False)

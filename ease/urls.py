@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 from django.views.defaults import page_not_found, server_error
 
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^', include('marketing.urls')),
+    url(r'^$', auth_views.login, {'template_name': 'registration/login.html'}, name='homepage'),
     url(r'^accounts/', include('accounts.urls')),
     url(r'^concierge/', include('concierge.urls')),
     url(r'^admin/', include(admin.site.urls)),

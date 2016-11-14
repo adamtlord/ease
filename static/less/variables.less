@@ -357,16 +357,20 @@
 // //##
 
 // // Basics of a navbar
-// @navbar-height:                    50px;
-// @navbar-margin-bottom:             @line-height-computed;
-@navbar-border-radius:             0;
+@logo-ratio:                        66.86/100;
+@logo-width:                        100px;
+@logo-height:                       @logo-width * @logo-ratio;
+@navbar-height:                     80px;
+@navbar-margin-bottom:              @line-height-computed / 2;
+@navbar-border-radius:              0;
+@logo-padding-vertical:           (@navbar-height - @logo-height) / 2;
 // @navbar-padding-horizontal:        floor((@grid-gutter-width / 2));
-// @navbar-padding-vertical:          ((@navbar-height - @line-height-computed) / 2);
+@navbar-padding-vertical:          ((@navbar-height - @line-height-computed) / 2);
 // @navbar-collapse-max-height:       340px;
 
 // @navbar-default-color:             #777;
-@navbar-default-bg:                aliceblue;
-@navbar-default-border:            darken(@navbar-default-bg, 6.5%);
+@navbar-default-bg:                @body-bg;
+@navbar-default-border:            @body-bg;
 
 // // Navbar links
 // @navbar-default-link-color:                #777;

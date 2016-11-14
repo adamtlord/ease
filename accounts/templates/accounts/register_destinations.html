@@ -1,0 +1,65 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block title %}Create an Account{% endblock title %}
+{% block content %}
+<div class="page-header">
+    <h2>{% if self %}Where do you go most frequently?{% else %}Add Destinations{% endif %}</h2>
+</div>
+
+<p>A benefit of using Arrive is that we store your favorite destinations for you,
+    so it’s easy to order rides. You can call us and say, “I’m going to the hair salon,”
+    instead of needing to look up the address every time. If you’re ready, we can go ahead
+    and store some destinations for you now. Don’t worry, you can always add more, either
+    by logging into your account or by giving us a call.</p>
+
+<p>Where do you go most frequently?</p>
+
+<form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
+    {% if errors %}
+        {% if errors|length == 1 %}
+            Please correct the error below.
+        {% else %}
+            Please correct the errors below.
+        {% endif %}
+        {{ home_form.non_field_errors }}
+        {% for dict in destination_formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-6 col-sm-push-6">
+            <h3>Your Home</h3>
+            <fieldset class="destination">
+                {% render_form_field home_form.name %}
+                {% render_form_field home_form.nickname %}
+                {% render_form_field home_form.street1 %}
+                {% render_form_field home_form.street2 '', 'no-label' %}
+                {% render_form_field home_form.city %}
+                {% render_form_field home_form.state %}
+                {% render_form_field home_form.zip_code %}
+            </fieldset>
+        </div>
+        <div class="col-sm-6 col-sm-pull-6">
+            <h3>Your Destinations</h3>
+            {{ destination_formset.management_form }}
+            {% for form in destination_formset.forms %}
+                <fieldset class="destination">
+                    {% render_form_field form.name %}
+                    {% render_form_field form.nickname %}
+                    {% render_form_field form.street1 %}
+                    {% render_form_field form.street2 '', 'no-label' %}
+                    {% render_form_field form.city %}
+                    {% render_form_field form.state %}
+                    {% render_form_field form.zip_code %}
+                </fieldset>
+            {% endfor %}
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Save Destinations" />
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

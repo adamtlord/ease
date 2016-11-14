@@ -1,5 +1,5 @@
 .req {
-    color: @brand-danger;
+    color: @state-danger-text;
     span& {
         padding-left:2px;
     }
@@ -11,4 +11,25 @@
 
 .help-block {
     font-size:@font-size-small;
+}
+
+.form-group {
+    .errorlist {
+        .list-unstyled;
+        .alert;
+        .alert-danger;
+        font-size:@font-size-small;
+        border-top-width:0;
+    }
+    &.no-label label {
+        display: none;
+    }
+}
+
+.add-destinations {
+    .destination + .destination {
+        padding:@line-height-computed 0 0;
+        margin:@line-height-computed 0;
+        border-top:1px solid @gray-lighter;
+    }
 }

@@ -48,9 +48,18 @@ class UserChangeForm(forms.ModelForm):
         return self.initial["password"]
 
 
+class UserProfileInlineForm(forms.ModelForm):
+    source = forms.CharField()
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
+    form = UserProfileInlineForm
     verbose_name_plural = 'user profile'
 
 
