@@ -170,3 +170,6 @@ class LovedOne(Location, Contact):
     customer = models.ForeignKey(Customer)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return '{} {} ({})'.format(self.first_name, self.last_name, self.relationship)
