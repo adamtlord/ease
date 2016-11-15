@@ -15,6 +15,9 @@ CUSTOM_USER_FIELDS = [
 ]
 
 CUSTOMER_FIELDS = [
+    'first_name',
+    'last_name',
+    'email',
     'home_phone',
     'mobile_phone',
     'preferred_phone',
@@ -33,6 +36,12 @@ LOVEDONE_NOTIFY_FIELDS = [
     'last_name',
     'mobile_phone',
     'relationship'
+]
+
+LOVEDONE_USER_FIELDS = [
+    'relationship',
+    'mobile_phone',
+    'receive_updates'
 ]
 
 
@@ -66,7 +75,7 @@ class CustomUserRegistrationForm(RegistrationForm):
         required=False
     )
     source_other = forms.CharField(
-        label=None,
+        label="Please specify:",
         max_length=255,
         required=False
     )
@@ -92,14 +101,13 @@ class CustomUserRegistrationForm(RegistrationForm):
         for field in CUSTOM_USER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs.pop('autofocus', None)
-        self.fields['first_name'].widget.attrs['autofocus'] = 'autofocus'
 
 
 class CustomerForm(forms.ModelForm):
     residence_instructions = forms.CharField(
         label="Anything we should know about this home pickup location?",
         help_text="For instance, is there a steep driveway and we should send the driver to the end of it? Is there a gate code?",
-        widget=forms.Textarea,
+        widget=forms.Textarea(attrs={'rows': 5}),
         required=False
     )
 
@@ -157,5 +165,23 @@ class LovedOneForm(forms.ModelForm):
         super(LovedOneForm, self).__init__(*args, **kwargs)
         for field in LOVEDONE_NOTIFY_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
-        # for field in ['first_name', 'last_name', 'mobile_phone']:
-        #     self.fields[field].required = True
+
+
+class LovedOnePreferencesForm(forms.ModelForm):
+
+    receive_updates = forms.TypedChoiceField(
+        coerce=lambda x: x == 'True',
+        choices=((True, 'Yes'), (False, 'No')),
+        widget=forms.RadioSelect,
+        label="Would you like to receive ride updates?",
+        required=True,
+        help_text="We will only request this message be sent to you if the rider agrees to it.")
+
+    class Meta:
+        model = LovedOne
+        fields = LOVEDONE_USER_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(LovedOnePreferencesForm, self).__init__(*args, **kwargs)
+        for field in ['relationship', 'mobile_phone']:
+            self.fields[field].widget.attrs['class'] = 'form-control'

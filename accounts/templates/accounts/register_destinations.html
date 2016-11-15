@@ -1,19 +1,34 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
+{% load map_tags %}
 
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
+
 <div class="page-header">
-    <h2>{% if self %}Where do you go most frequently?{% else %}Add Destinations{% endif %}</h2>
+    <h2>{% if self %}Where do you{% endif %}{% if lovedone %}Where does your loved one{% endif %} go most frequently?</h2>
 </div>
 
-<p>A benefit of using Arrive is that we store your favorite destinations for you,
-    so it’s easy to order rides. You can call us and say, “I’m going to the hair salon,”
-    instead of needing to look up the address every time. If you’re ready, we can go ahead
-    and store some destinations for you now. Don’t worry, you can always add more, either
-    by logging into your account or by giving us a call.</p>
+{% if self %}
+    <p>A benefit of using Arrive is that we store your favorite destinations for you,
+        so it’s easy to order rides. You can call us and say, “I’m going to the hair salon,”
+        instead of needing to look up the address every time. If you’re ready, we can go ahead
+        and store some destinations for you now. Don’t worry, you can always add more, either
+        by logging into your account or by giving us a call.</p>
 
-<p>Where do you go most frequently?</p>
+    <p>Where do you go most frequently?</p>
+{% endif %}
+
+{% if lovedone %}
+    <p>A benefit of using Arrive is that we store our members’ favorite destinations, so it’s easy
+        to order rides. They can call us and say, “I’m going to the hair salon,” instead of needing
+        to look up the address every time. If you’re ready, we can go ahead and store some destinations
+        for you now. Don’t worry, you can always add more, either by logging into your account or by
+        giving us a call. We’ll also collect more destinations from the member during their orientation
+        session.</p>
+
+    <p>Where does your loved one go most frequently?</p>
+{% endif %}
 
 <form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
     {% if errors %}
@@ -30,20 +45,19 @@
         {% endfor %}
     {% endif %}
     <div class="row">
-        <div class="col-sm-6 col-sm-push-6">
-            <h3>Your Home</h3>
-            <fieldset class="destination">
-                {% render_form_field home_form.name %}
-                {% render_form_field home_form.nickname %}
-                {% render_form_field home_form.street1 %}
-                {% render_form_field home_form.street2 '', 'no-label' %}
-                {% render_form_field home_form.city %}
-                {% render_form_field home_form.state %}
-                {% render_form_field home_form.zip_code %}
-            </fieldset>
+        <div class="col-sm-4 col-sm-push-8">
+            <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Home</h3>
+            {{ home.street1 }}<br>
+            {% if home.street2 %}
+                {{ home.street2 }}<br>
+            {% endif %}
+            {{ home.city }},
+            {{ home.state }}
+            {{ home.zip_code }}
+            {% static_map home %}
         </div>
-        <div class="col-sm-6 col-sm-pull-6">
-            <h3>Your Destinations</h3>
+        <div class="col-sm-8 col-sm-pull-4">
+            <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Destinations</h3>
             {{ destination_formset.management_form }}
             {% for form in destination_formset.forms %}
                 <fieldset class="destination">

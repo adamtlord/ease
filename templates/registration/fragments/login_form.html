@@ -1,18 +1,13 @@
 {% load custom_tags %}
-<form method="post" action="{% url 'auth_login' %}" class="form-signin">
+<form method="post" action="{% url 'auth_login' %}" class="form-signin add-control">
 	{% csrf_token %}
 	<h2>Customer Login</h2>
 	{% if form.non_field_errors %}
-		<p class="alert alert-danger"><i class="fa fa-warning"></i> Your username/password combination is wrong, butterfingers.</p>
+		<p class="alert alert-danger"><i class="fa fa-warning"></i> Oops! Looks like your username/password combination is wrong</p>
 	{% endif %}
-	<div class="form-group{% if form.username.errors %} has-error{% endif %}">
-		<input type="text" class="form-control input-lg" placeholder="Username" autofocus="" maxlength="254" name="username">
-		{% if form.username.errors %}<p class="help-block">{{ form.username.errors }}</p>{% endif %}
-	</div>
-	<div class="form-group{% if form.password.errors %} has-error{% endif %}">
-		<input type="password" class="form-control input-lg" placeholder="Password" name="password">
-		{% if form.password.errors %}<p class="help-block">{{ form.password.errors }}</p>{% endif %}
-	</div>
+	{% for field in form %}
+		{% render_form_field field %}
+	{% endfor %}
 	<input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'profile' %}{% endif %}" />
 	<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 </form>

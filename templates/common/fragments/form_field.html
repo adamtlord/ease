@@ -4,7 +4,7 @@
     </label>
     {{ form_field }}
     {% if form_field.help_text %}
-        <span class="help-block">{{ form_field.help_text }}</span>
+        <span class="help-block">{{ form_field.help_text|safe }}</span>
     {% endif %}
     {% if form_field.errors %}
         {{ form_field.errors }}

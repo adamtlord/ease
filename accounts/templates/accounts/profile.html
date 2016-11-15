@@ -1,22 +1,27 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
+{% load map_tags %}
 
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
 <div class="page-header">
-    <h2>{{ request.user }}'s Profile</h2>
+    <h2>{{ request.user }}'s Profile
+    {% if lovedone %}
+        <small>Customer: {{ customer }}</small>
+    {% endif %}
+    </h2>
 </div>
 <div class="row">
     <div class="col-sm-8">
-        <h4>About You</h3>
+        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %}</h3>
         <table class="table table-striped">
             <tbody>
                 <tr>
-                    <th>Your Name:</th>
+                    <th>{% if not lovedone %}Your {% endif %}Name:</th>
                     <td>{{ customer.first_name }} {{ customer.last_name }}</td>
                 </tr>
                 <tr>
-                    <th>Your Contact Info:</th>
+                    <th>{% if not lovedone %}Your {% endif %}Contact Info:</th>
                     <td>{{ customer.email }}<br>
                         {% if customer.home_phone %}
                             {{ customer.home_phone }} (H)<br>
@@ -38,7 +43,7 @@
     </div>
     {% if riders %}
         <div class="col-sm-4">
-            <h4>These people are also on your account:</h4>
+            <h4>These people are also on {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} account:</h4>
             <ul>
                 {% for rider in riders %}
                 <li>{{ rider.first_name }} {{ rider.last_name }}</li>
@@ -53,8 +58,8 @@
         <table class="table table-striped">
             <tbody>
                 <tr>
-                    <th>Your Home:</th>
-                    <td>{{ customer.home.street1 }}<br>
+                    <th width="30%">{% if not lovedone %}Your {% endif %}Home:</th>
+                    <td width="30%">{{ customer.home.street1 }}<br>
                         {% if customer.home.street2 %}
                             {{ customer.home.street2 }}<br>
                         {% endif %}
@@ -62,9 +67,10 @@
                         {{ customer.home.state }}
                         {{ customer.home.zip_code }}
                     </td>
+                    <td width="40%">{% static_map customer.home %}</td>
                 </tr>
                 <tr>
-                    <th colspan="2">Your Destinations:</th>
+                    <th colspan="3">{% if not lovedone %}Your {% endif %}Destinations:</th>
                 </tr>
                 {% for destination in customer.destinations %}
                     <tr>
@@ -79,12 +85,13 @@
                             {{ destination.state }}
                             {{ destination.zip_code }}
                         </td>
+                        <td></td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% if customer.rides %}
-            <h4>Your Rides</h4>
+            <h4>{% if not lovedone %}Your {% endif %}Rides</h4>
             <table class="table table-striped">
                 <tbody>
                     <tr>

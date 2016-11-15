@@ -7672,7 +7672,7 @@ button.close {
   }
 }
 .form-actions {
-  padding-bottom: 22px;
+  padding: 22px 0;
 }
 .form-controller select,
 .form-controller textarea,
@@ -7947,6 +7947,14 @@ textarea.form-controller input[type="color"] {
 .add-control input[type="color"] {
   padding: 6px 9px;
 }
+.radio label {
+  width: 100%;
+  margin-bottom: 5px;
+}
+input[type="radio"],
+input[type="checkbox"] {
+  margin-top: 3px;
+}
 html {
   position: relative;
   min-height: 100%;
@@ -8076,6 +8084,14 @@ nav.navbar .navbar-brand {
 }
 nav.navbar .navbar-brand img {
   width: 120px;
+}
+nav.navbar.registration .navbar-header {
+  text-align: center;
+  float: none;
+}
+nav.navbar.registration .navbar-header .navbar-brand {
+  float: none;
+  display: inline-block;
 }
 .req {
   color: #a94442;
@@ -8354,6 +8370,9 @@ textarea.add-control input[type="color"] {
 .form-group.no-label label {
   display: none;
 }
+.form-group.no-help .help-block {
+  display: none;
+}
 .add-destinations .destination + .destination {
   padding: 22px 0 0;
   margin: 22px 0;
@@ -8361,6 +8380,9 @@ textarea.add-control input[type="color"] {
 }
 fieldset + fieldset legend {
   padding-top: 22px;
+}
+label + .radio {
+  margin-top: 0;
 }
 .hero {
   padding-top: 30px;

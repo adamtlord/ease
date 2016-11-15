@@ -1,0 +1,49 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+
+{% block title %}Create an Account{% endblock title %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Welcome!</h2>
+</div>
+
+{% if self %}
+    <p>Welcome to Arrive! We’re so glad you’re here.</p>
+
+    <p>Your order information is <strong>XXXX-XXXX-XXXXX</strong>.</p>
+
+    <p>You are currently signed up for <strong>XX</strong> plan. You will/won’t be charged monthly.</p>
+
+    <p>We make sure to talk to each of our new members individually, to make sure we have
+        complete profile information for you and to answer any questions you have.
+        We’ll be in touch within the next business day to have that conversation.
+        If you just can’t wait to order your first ride, though, feel free!
+        Here’s the members-only concierge line:
+    </p>
+
+    <p class="lead">XXX-XXX-XXXX</p>
+
+    <p>To update your account, <a href="{% url 'profile' %}">go here</a>.</p>
+{% endif %}
+
+{% if lovedone %}
+    <p>Thanks for signing your loved one up for Arrive! We’ll take good care of them.</p>
+
+    <p>Your order information is <strong>XXXX-XXXX-XXXXX</strong>.</p>
+
+    <p>You are currently signed up for <strong>XX</strong> plan. You will/won't be charged monthly.</p>
+
+    <p>We make sure to talk to each of our new members individually, to make sure we have
+        complete profile information for you and to answer any questions they have.
+        We’ll be in touch with the member within the next business day to have that conversation.
+        If they’re ready to start riding now, though, have at it! Here’s the members’-only concierge line:
+    </p>
+
+    <p class="lead">XXX-XXX-XXXX</p>
+
+    <p>To update your account, <a href="{% url 'profile' %}">go here</a>.</p>
+{% endif %}
+
+{% endblock %}

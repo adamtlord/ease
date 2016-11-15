@@ -24,6 +24,9 @@
     &.no-label label {
         display: none;
     }
+    &.no-help .help-block {
+        display:none;
+    }
 }
 
 .add-destinations {
@@ -39,4 +42,8 @@ fieldset + fieldset {
         padding-top:@line-height-computed;
 
     }
+}
+
+label + .radio {
+    margin-top:0;
 }

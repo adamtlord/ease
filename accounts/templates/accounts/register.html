@@ -23,8 +23,15 @@
             {% endif %}
             <fieldset>
                 <legend>Primary Rider's Information</legend>
-                {% render_form_field register_form.first_name %}
-                {% render_form_field register_form.last_name %}
+                {% if lovedone %}
+                    {% render_form_field customer_form.first_name %}
+                    {% render_form_field customer_form.last_name %}
+                    {% render_form_field customer_form.email %}
+                {% endif %}
+                {% if self %}
+                    {% render_form_field register_form.first_name %}
+                    {% render_form_field register_form.last_name %}
+                {% endif %}
                 {% render_form_field customer_form.home_phone %}
                 {% render_form_field customer_form.mobile_phone %}
                 {% render_form_field customer_form.preferred_phone %}
@@ -36,14 +43,7 @@
                 {% render_form_field register_form.password2 %}
             </fieldset>
             <fieldset>
-                <legend>Secondary Rider's Information</legend>
-                <span class="help-block">Must share the same residence.</span>
-                {% render_form_field rider_form.first_name %}
-                {% render_form_field rider_form.last_name %}
-                {% render_form_field rider_form.mobile_phone %}
-            </fieldset>
-            <fieldset>
-                <legend>Home Address</legend>
+                <legend>{% if lovedone %}Primary Customer's {% endif %}Home Address</legend>
                 {% render_form_field home_form.street1 %}
                 {% render_form_field home_form.street2 '' 'no-label' %}
                 {% render_form_field home_form.city %}
@@ -51,8 +51,17 @@
                 {% render_form_field home_form.zip_code %}
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
+            <fieldset>
+                <legend>Secondary Rider's Information</legend>
+                <span class="help-block">Must share the same residence.</span>
+                {% render_form_field rider_form.first_name %}
+                {% render_form_field rider_form.last_name %}
+                {% render_form_field rider_form.mobile_phone %}
+            </fieldset>
             {% render_form_field register_form.source %}
-            {% render_form_field register_form.source_other '' 'no-label' %}
+            <div id="source_other" style="display:none;">
+            {% render_form_field register_form.source_other %}
+            </div>
 
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary" value="Create" />
@@ -60,4 +69,7 @@
         </form>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/min/registration-min.js"></script>
 {% endblock %}

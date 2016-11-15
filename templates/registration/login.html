@@ -3,9 +3,11 @@
 {% block bodyclass %}login{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-sm-4 col-sm-offset-4">
-	   {% include 'registration/fragments/login_form.html' %}
-    </div>
-</div>
+{% include 'registration/fragments/login_form.html' %}
+<hr>
+<p><a href="{% url 'auth_password_reset' %}">Forgot your password?</a></p>
+<p>
+    <a href="{% url 'register_self' %}">Create an account for yourself</a><br>
+    <a href="{% url 'register_lovedone' %}">Create an account for someone else</a>
+</p>
 {% endblock %}
