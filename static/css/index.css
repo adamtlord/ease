@@ -8384,6 +8384,9 @@ fieldset + fieldset legend {
 label + .radio {
   margin-top: 0;
 }
+form.form-login .form-actions {
+  padding-top: 0;
+}
 .hero {
   padding-top: 30px;
   padding-bottom: 30px;

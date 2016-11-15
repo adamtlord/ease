@@ -4,10 +4,14 @@
 
 {% block content %}
 {% include 'registration/fragments/login_form.html' %}
-<hr>
 <p><a href="{% url 'auth_password_reset' %}">Forgot your password?</a></p>
-<p>
-    <a href="{% url 'register_self' %}">Create an account for yourself</a><br>
-    <a href="{% url 'register_lovedone' %}">Create an account for someone else</a>
+<hr>
+<div class="row">
+    <div class="col-sm-6">
+        <a href="{% url 'register_self' %}" class="btn btn-success btn-block">Create an account <br>for yourself</a><br>
+    </div>
+    <div class="col-sm-6">
+        <a href="{% url 'register_lovedone' %}" class="btn btn-success btn-block">Create an account <br>for someone else</a>
+    </div>
 </p>
 {% endblock %}
