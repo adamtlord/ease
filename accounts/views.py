@@ -2,12 +2,10 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.forms import inlineformset_factory
-# from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-# from django.forms import inlineformset_factory
 
 from common.decorators import anonymous_required
-from accounts.models import Customer, LovedOne
+from accounts.models import Customer
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from rides.models import Destination
@@ -120,10 +118,8 @@ def register_self_destinations(request, template='accounts/register_destinations
 
     if request.method == 'GET':
         destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
-        # home_form = HomeForm(instance=home)
     else:
         destination_formset = DestinationFormset(request.POST, instance=customer)
-        # home_form = HomeForm(request.POST, instance=home)
 
         if destination_formset.is_valid():
 
@@ -346,8 +342,8 @@ def profile_edit(request, template='accounts/profile_edit.html'):
             return redirect('profile')
 
     d = {
-        'self': not customer.profile.on_behalf,
-        'lovedone': customer.profile.on_behalf,
+        'self': not user.profile.on_behalf,
+        'lovedone': user.profile.on_behalf,
         'customer_form': customer_form,
         'home_form': home_form,
         'rider_form': rider_form

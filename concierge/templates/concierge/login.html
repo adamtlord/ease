@@ -1,30 +1,20 @@
-{% extends "base_app.html" %}
+{% extends "registration/registration_base.html" %}
 {% load custom_tags %}
 
 {% block title %}Concierge Login{% endblock %}
-{% block bodyclass %}login{% endblock %}
-{% block navbar %}{% endblock %}
-
 {% block content %}
-<div class="row">
-    <div class="col-sm-4 col-sm-offset-4">
-        <form method="post" action="{% url 'auth_login' %}" class="form-signin">
-            {% csrf_token %}
-            <h2>Concierge Login</h2>
-            {% if form.non_field_errors %}
-                <p class="alert alert-danger"><i class="fa fa-warning"></i> Your username/password combination is wrong, butterfingers.</p>
-            {% endif %}
-            <div class="form-group{% if form.username.errors %} has-error{% endif %}">
-                <input type="text" class="form-control input-lg" placeholder="Username" autofocus="" maxlength="254" name="username">
-                {% if form.username.errors %}<p class="help-block">{{ form.username.errors }}</p>{% endif %}
-            </div>
-            <div class="form-group{% if form.password.errors %} has-error{% endif %}">
-                <input type="password" class="form-control input-lg" placeholder="Password" name="password">
-                {% if form.password.errors %}<p class="help-block">{{ form.password.errors }}</p>{% endif %}
-            </div>
-            <input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'dashboard' %}{% endif %}" />
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        </form>
-    </div>
-</div>
+
+<form method="post" action="{% url 'concierge_login' %}" class="form-login add-control">
+    {% csrf_token %}
+    <h2>Concierge Login</h2>
+    {% if form.non_field_errors %}
+        <p class="alert alert-danger"><i class="fa fa-warning"></i> Oops! Looks like your username/password combination is wrong</p>
+    {% endif %}
+    {% for field in form %}
+        {% render_form_field field %}
+    {% endfor %}
+    <input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'dashboard' %}{% endif %}" />
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+</form>
+
 {% endblock %}

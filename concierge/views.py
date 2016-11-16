@@ -9,8 +9,14 @@ from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, Updat
 from rides.models import Destination
 
 
-@staff_member_required
 def dashboard(request, template='concierge/dashboard.html'):
+    if not request.user.is_authenticated:
+        return redirect('concierge_login')
+
+    if not request.user.is_staff:
+        messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
+        return redirect('profile')
+
     d = {}
 
     return render(request, template, d)

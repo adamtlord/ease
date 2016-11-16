@@ -24,8 +24,8 @@
                     {% render_form_field register_form.first_name %}
                     {% render_form_field register_form.last_name %}
                 {% endif %}
-                {% render_form_field customer_form.home_phone %}
-                {% render_form_field customer_form.mobile_phone %}
+                {% render_form_field customer_form.home_phone '', 'phone-mask' %}
+                {% render_form_field customer_form.mobile_phone '', 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
             </fieldset>
             <fieldset>
@@ -34,7 +34,7 @@
                 {% render_form_field home_form.street2 '' 'no-label' %}
                 {% render_form_field home_form.city %}
                 {% render_form_field home_form.state %}
-                {% render_form_field home_form.zip_code %}
+                {% render_form_field home_form.zip_code '', 'zip-mask' %}
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
             <fieldset>
@@ -42,7 +42,7 @@
                 <span class="help-block">Must share the same residence.</span>
                 {% render_form_field rider_form.first_name %}
                 {% render_form_field rider_form.last_name %}
-                {% render_form_field rider_form.mobile_phone %}
+                {% render_form_field rider_form.mobile_phone '', 'phone-mask' %}
             </fieldset>
 
             <div class="form-actions">
@@ -51,4 +51,7 @@
         </form>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/min/registration-min.js"></script>
 {% endblock %}

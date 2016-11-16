@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block header_includes %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/lib/jquery.mask.min.js"></script>
+{% endblock header_includes %}
 {% block body %}
     <div class="container">
         {% include 'fragments/messages.html' %}
