@@ -119,6 +119,7 @@ class Customer(Contact):
     SKILLED_NURSING = 'SN'
 
     RESIDENCE_TYPE_CHOICES = (
+        (None, ''),
         (APARTMENT, 'Apartment'),
         (ASSISTED_LIVING, 'Assisted Living Facility'),
         (RETIREMENT_COMMUNITY, 'Retirement Community'),
@@ -154,6 +155,10 @@ class Customer(Contact):
     @property
     def destinations(self):
         return self.destination_set.exclude(home=True)
+
+    @property
+    def rider(self):
+        return self.rider_set.first()
 
 
 class Rider(Contact):

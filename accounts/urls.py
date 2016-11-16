@@ -5,7 +5,9 @@ from accounts.views import (register_self, register_self_preferences,
                             register_lovedone, profile,
                             register_lovedone_preferences,
                             register_lovedone_destinations,
-                            register_lovedone_complete)
+                            register_lovedone_complete,
+                            profile_edit,
+                            destinations_edit)
 
 urlpatterns = [
     url(r'^register/$', register_self, name='register_self'),
@@ -17,5 +19,7 @@ urlpatterns = [
     url(r'^register-lovedone/destinations/$', register_lovedone_destinations, name='register_lovedone_destinations'),
     url(r'^register-lovedone/complete/$', register_lovedone_complete, name='register_lovedone_complete'),
     url(r'^profile/$', profile, name='profile'),
+    url(r'^profile/edit/$', profile_edit, name='profile_edit'),
+    url(r'^destinations/edit/$', destinations_edit, name='destinations_edit'),
     url(r'^', include('registration.backends.simple.urls')),
 ]

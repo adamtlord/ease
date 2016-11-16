@@ -237,7 +237,7 @@ def register_lovedone_preferences(request, template='accounts/register_preferenc
             user.profile.receive_updates = new_loved_one.receive_updates
             user.profile.save()
 
-            return redirect('register_lovedone_complete.html')
+            return redirect('register_lovedone_complete')
 
     d = {
         'self': False,
@@ -297,11 +297,93 @@ def profile(request, template='accounts/profile.html'):
 
     user = request.user
     customer = user.get_customer()
-    home = customer.home
 
     d = {
         'customer': customer,
         'riders': customer.rider_set.all(),
         'lovedone': user.profile.on_behalf
+    }
+    return render(request, template, d)
+
+
+@login_required
+def profile_edit(request, template='accounts/profile_edit.html'):
+
+    user = request.user
+    customer = user.get_customer()
+    home = customer.home
+    rider = customer.rider
+
+    if request.method == 'GET':
+        customer_form = CustomerForm(prefix='cust', instance=customer)
+        home_form = HomeForm(prefix='home', instance=home)
+        rider_form = RiderForm(prefix='rider', instance=rider)
+    else:
+        customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
+        home_form = HomeForm(request.POST, prefix='home', instance=home)
+        rider_form = RiderForm(request.POST, prefix='rider', instance=rider)
+        if all([
+                customer_form.is_valid(),
+                home_form.is_valid(),
+                rider_form.is_valid()]):
+
+            # populate and save customer
+            customer_form.save(commit=False)
+            customer.user_id = user.id
+            customer_form.save()
+            # populate and save home address
+            home_form.save()
+            # populate and save rider info
+            if rider is None:
+                rider_data = rider_form.cleaned_data
+                if rider_data.get('first_name', None) or rider_data.get('last_name', None) or rider_data.get('mobile_phone', None):
+                    rider = rider_form.save(commit=False)
+                    rider.customer = customer
+                    rider.save()
+            else:
+                rider.save()
+
+            return redirect('profile')
+
+    d = {
+        'self': not customer.profile.on_behalf,
+        'lovedone': customer.profile.on_behalf,
+        'customer_form': customer_form,
+        'home_form': home_form,
+        'rider_form': rider_form
+        }
+    return render(request, template, d)
+
+
+@login_required
+def destinations_edit(request, template='accounts/destinations_edit.html'):
+
+    user = request.user
+    customer = user.get_customer()
+    home = customer.destination_set.filter(home=True).first()
+
+    DestinationFormset = inlineformset_factory(Customer,
+                                               Destination,
+                                               form=DestinationForm,
+                                               can_delete=True)
+
+    if request.method == 'GET':
+        destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
+
+    else:
+        destination_formset = DestinationFormset(request.POST, instance=customer)
+
+        if destination_formset.is_valid():
+
+            destination_formset.save()
+
+            return redirect('profile')
+
+    d = {
+        'self': not user.profile.on_behalf,
+        'lovedone': user.profile.on_behalf,
+        'customer': customer,
+        'destination_formset': destination_formset,
+        'home': home
     }
     return render(request, template, d)

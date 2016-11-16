@@ -13,16 +13,16 @@
 </div>
 <div class="row">
     <div class="col-sm-8">
-        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %}</h3>
+        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %} <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary">Edit</a></h3>
         <table class="table table-striped">
             <tbody>
                 <tr>
-                    <th>{% if not lovedone %}Your {% endif %}Name:</th>
-                    <td>{{ customer.first_name }} {{ customer.last_name }}</td>
+                    <th width="30%">{% if not lovedone %}Your {% endif %}Name:</th>
+                    <td width="70%">{{ customer.first_name }} {{ customer.last_name }}</td>
                 </tr>
                 <tr>
                     <th>{% if not lovedone %}Your {% endif %}Contact Info:</th>
-                    <td>{{ customer.email }}<br>
+                    <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a><br>
                         {% if customer.home_phone %}
                             {{ customer.home_phone }} (H)<br>
                         {% endif %}
@@ -30,13 +30,25 @@
                             {{ customer.mobile_phone }} (M)<br>
                         {% endif %}
                         {% if customer.home_phone and customer.mobile_phone %}
-                            You prefer to be called on your {% if customer.preferred_phone == 'h' %}home{% else %}mobile{% endif %} phone.
+                            <em>You prefer to be called on your {% if customer.preferred_phone == 'h' %}home{% else %}mobile{% endif %} phone.</em>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <th>Customer Since:</th>
                     <td>{{ customer.user.date_joined|date:"DATE_FORMAT" }}</td>
+                </tr>
+                <tr>
+                    <th>{% if not lovedone %}Your {% endif %}Home:</th>
+                    <td>{{ customer.home.street1 }}<br>
+                        {% if customer.home.street2 %}
+                            {{ customer.home.street2 }}<br>
+                        {% endif %}
+                        {{ customer.home.city }},
+                        {{ customer.home.state }}
+                        {{ customer.home.zip_code }}
+                        <div>{% static_map customer.home %}</div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -52,57 +64,40 @@
         </div>
     {% endif %}
 </div>
-<div class="row">
-    <div class="col-sm-8">
-        <h4>Addresses</h4>
-        <table class="table table-striped">
-            <tbody>
-                <tr>
-                    <th width="30%">{% if not lovedone %}Your {% endif %}Home:</th>
-                    <td width="30%">{{ customer.home.street1 }}<br>
-                        {% if customer.home.street2 %}
-                            {{ customer.home.street2 }}<br>
-                        {% endif %}
-                        {{ customer.home.city }},
-                        {{ customer.home.state }}
-                        {{ customer.home.zip_code }}
-                    </td>
-                    <td width="40%">{% static_map customer.home %}</td>
-                </tr>
-                <tr>
-                    <th colspan="3">{% if not lovedone %}Your {% endif %}Destinations:</th>
-                </tr>
-                {% for destination in customer.destinations %}
-                    <tr>
-                        <td></td>
-                        <td>
-                            {{ destination.fullname }}<br>
-                            {{ destination.street1 }}<br>
-                            {% if destination.street2 %}
-                                {{ destination.street2 }}<br>
-                            {% endif %}
-                            {{ destination.city }},
-                            {{ destination.state }}
-                            {{ destination.zip_code }}
-                        </td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% if customer.rides %}
-            <h4>{% if not lovedone %}Your {% endif %}Rides</h4>
-            <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <th></th>
-                        <td>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        {% endif %}
-    </div>
-</div>
+
+<h4>{% if not lovedone %}Your {% endif %}Destinations <a href="{% url 'destinations_edit' %}" class="btn btn-sm btn-primary">Edit</a></h4>
+<table class="table table-striped">
+    <tbody>
+
+        {% for destination in customer.destinations %}
+            <tr>
+                <th width="33%">{{ destination.fullname }}<th>
+                <td width="33%">
+                    {{ destination.street1 }}<br>
+                    {% if destination.street2 %}
+                        {{ destination.street2 }}<br>
+                    {% endif %}
+                    {{ destination.city }},
+                    {{ destination.state }}
+                    {{ destination.zip_code }}
+                </td>
+                <td width="33%">{% static_map destination %}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if customer.rides %}
+    <h4>{% if not lovedone %}Your {% endif %}Rides</h4>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th></th>
+                <td>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endif %}
+
 
 {% endblock %}
