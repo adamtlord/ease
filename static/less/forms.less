@@ -29,12 +29,17 @@
     }
 }
 
-.add-destinations {
-    .destination + .destination {
-        padding:@line-height-computed 0 0;
-        margin:@line-height-computed 0;
-        border-top:1px solid @gray-lighter;
-    }
+.stacked-fieldset {
+    padding:@line-height-computed 0 0;
+    margin:@line-height-computed 0;
+    border-top:1px solid @gray-lighter;
+}
+
+
+fieldset.destination + fieldset.destination,
+fieldset.lovedone + fieldset.lovedone,
+fieldset.rider + fieldset.rider {
+    .stacked-fieldset;
 }
 
 fieldset + fieldset {

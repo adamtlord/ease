@@ -3,10 +3,12 @@
 
 {% block title %}Update Customer {{ customer }}{% endblock title %}
 {% block content %}
-<div class="row">
-    <div class="col-sm-6">
-        <h2>Update Customer {{ customer }}</h2>
-        <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+<div class="page-header">
+    <h1>Editing {{ customer }}</h1>
+</div>
+<form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    <div class="row">
+        <div class="col-sm-6">
             {% if errors %}
                 {% if errors|length == 1 %}
                     Please correct the error below.
@@ -22,26 +24,94 @@
                 {% endfor %}
             {% endif %}
 
-            {% for field in form %}
-                {% render_form_field field %}
-            {% endfor %}
+            <h3>Customer Info</h3>
+            <fieldset>
+                {% render_form_field customer_form.first_name %}
+                {% render_form_field customer_form.last_name %}
+                {% render_form_field customer_form.email %}
+                {% render_form_field customer_form.known_as %}
+                {% render_form_field customer_form.dob %}
+                {% render_form_field customer_form.home_phone %}
+                {% render_form_field customer_form.mobile_phone %}
+                {% render_form_field customer_form.preferred_phone %}
+                {% render_form_field customer_form.send_updates %}
+                {% render_form_field customer_form.special_assistance %}
+                {% render_form_field customer_form.notes %}
+            </fieldset>
 
             <h3>Home Address</h3>
-            {% for field in home_form %}
-                {% render_form_field field %}
-            {% endfor %}
+            <fieldset>
+                {% render_form_field home_form.street1 %}
+                {% render_form_field home_form.street2 '' 'no-label' %}
+                {% render_form_field home_form.city %}
+                {% render_form_field home_form.state %}
+                {% render_form_field home_form.zip_code %}
+                {% render_form_field customer_form.residence_type %}
+                {% render_form_field customer_form.residence_instructions %}
+            </fieldset>
+
             <h3>Destinations</h3>
             {{ destination_formset.management_form }}
             {% for form in destination_formset.forms %}
-                {% for field in form %}
-                    {% render_form_field field %}
-                {% endfor %}
+                <fieldset class="destination">
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% render_form_field form.name %}
+                    {% render_form_field form.nickname %}
+                    {% render_form_field form.street1 %}
+                    {% render_form_field form.street2 '' 'no-label' %}
+                    {% render_form_field form.city %}
+                    {% render_form_field form.state %}
+                    {% render_form_field form.zip_code %}
+                </fieldset>
             {% endfor %}
+            <button id="add_destination_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Destination</button>
+        </div>
+        <div class="col-sm-6">
+            <h3>Loved Ones</h3>
+            {{ lovedone_formset.management_form }}
+            {% for form in lovedone_formset.forms %}
+                <fieldset class="lovedone">
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% render_form_field form.first_name %}
+                    {% render_form_field form.last_name %}
+                    {% render_form_field form.relationship %}
+                    {% render_form_field form.email %}
+                    {% render_form_field form.mobile_phone %}
+                    {% render_form_field form.receive_updates %}
+                    {% render_form_field form.street1 %}
+                    {% render_form_field form.street2 '' 'no-label' %}
+                    {% render_form_field form.city %}
+                    {% render_form_field form.state %}
+                    {% render_form_field form.zip_code %}
+                </fieldset>
+            {% endfor %}
+            <button id="add_lovedone_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Loved One</button>
 
-            <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Update" />
-            </div>
-        </form>
+            <h3>Riders <small>(Must share the same residence)</small></h3>
+            {{ rider_formset.management_form }}
+            {% for form in rider_formset.forms %}
+                <fieldset class="rider">
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    {% for field in form %}
+                        {% render_form_field field %}
+                    {% endfor %}
+                </fieldset>
+            {% endfor %}
+            <button type="button" id="add_rider_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Riders</button>
+
+        </div>
     </div>
-</div>
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary btn-lg btn-block" value="Update" />
+    </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/min/registration-min.js"></script>
 {% endblock %}

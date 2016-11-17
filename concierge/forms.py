@@ -1,7 +1,24 @@
 from django import forms
 
-from accounts.models import Customer
+from accounts.models import Customer, LovedOne, Rider
 from rides.models import Destination
+
+CONTACT_FIELDS = [
+    'first_name',
+    'last_name',
+    'email',
+    'mobile_phone',
+]
+
+LOCATION_FIELDS = [
+    # 'name',
+    'street1',
+    'street2',
+    'city',
+    'state',
+    'zip_code',
+    # 'country',
+]
 
 CUSTOMER_FIELDS = [
     'first_name',
@@ -16,6 +33,7 @@ CUSTOMER_FIELDS = [
     'home_phone',
     'mobile_phone',
     'preferred_phone',
+    'send_updates'
 ]
 
 UPDATE_HOME_FIELDS = [
@@ -35,8 +53,30 @@ DESTINATION_FIELDS = CREATE_HOME_FIELDS + [
     'customer'
 ]
 
+LOVED_ONE_FIELDS = CONTACT_FIELDS + LOCATION_FIELDS + [
+    'relationship',
+    'customer'
+]
+
+RIDER_FIELDS = [
+    'first_name',
+    'last_name',
+    'mobile_phone',
+    'customer'
+]
+
 
 class CustomerForm(forms.ModelForm):
+    residence_instructions = forms.CharField(
+        label="Anything we should know about this home pickup location?",
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False
+    )
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False
+    )
+
     class Meta:
         model = Customer
         fields = CUSTOMER_FIELDS
@@ -82,4 +122,30 @@ class UpdateHomeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UpdateHomeForm, self).__init__(*args, **kwargs)
         for field in UPDATE_HOME_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class LovedOneForm(forms.ModelForm):
+
+    class Meta:
+        model = LovedOne
+        fields = LOVED_ONE_FIELDS + ['receive_updates']
+
+    def __init__(self, *args, **kwargs):
+        super(LovedOneForm, self).__init__(*args, **kwargs)
+        for field in LOVED_ONE_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+class RiderForm(forms.ModelForm):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    mobile_phone = forms.CharField(required=False)
+
+    class Meta:
+        model = Rider
+        fields = RIDER_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(RiderForm, self).__init__(*args, **kwargs)
+        for field in RIDER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'

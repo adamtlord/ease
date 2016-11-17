@@ -8373,7 +8373,14 @@ textarea.add-control input[type="color"] {
 .form-group.no-help .help-block {
   display: none;
 }
-.add-destinations .destination + .destination {
+.stacked-fieldset {
+  padding: 22px 0 0;
+  margin: 22px 0;
+  border-top: 1px solid #eeeeee;
+}
+fieldset.destination + fieldset.destination,
+fieldset.lovedone + fieldset.lovedone,
+fieldset.rider + fieldset.rider {
   padding: 22px 0 0;
   margin: 22px 0;
   border-top: 1px solid #eeeeee;

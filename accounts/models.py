@@ -160,6 +160,9 @@ class Customer(Contact):
     def rider(self):
         return self.rider_set.first()
 
+    def __unicode__(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
 
 class Rider(Contact):
     """ An additional rider on an account. Must share a residence with primary customer. """
