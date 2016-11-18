@@ -23,8 +23,25 @@ input[type="radio"], input[type="checkbox"] {
     .tt-menu {
         width:100%;
         border: 1px solid @input-border;
-        padding: @padding-large-vertical @padding-large-horizontal;
+        padding: @padding-large-vertical 0;
         margin-top: -1px;
         border-top-width: 0;
+    }
+    .tt-suggestion {
+        line-height:1.8;
+        padding: 3px @padding-large-horizontal;
+    }
+    .tt-hint {
+      color: @gray-light;
+    }
+    .tt-suggestion:hover {
+      cursor: pointer;
+      color: #fff;
+      background-color: @brand-primary;
+    }
+    .tt-suggestion.tt-cursor {
+      color: #fff;
+      background-color: @brand-primary;
+
     }
 }

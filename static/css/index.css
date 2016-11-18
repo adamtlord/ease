@@ -7964,9 +7964,25 @@ input[type="checkbox"] {
 .twitter-typeahead .tt-menu {
   width: 100%;
   border: 1px solid #ccc;
-  padding: 10px 16px;
+  padding: 10px 0;
   margin-top: -1px;
   border-top-width: 0;
+}
+.twitter-typeahead .tt-suggestion {
+  line-height: 1.8;
+  padding: 3px 16px;
+}
+.twitter-typeahead .tt-hint {
+  color: #777777;
+}
+.twitter-typeahead .tt-suggestion:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #0346b2;
+}
+.twitter-typeahead .tt-suggestion.tt-cursor {
+  color: #fff;
+  background-color: #0346b2;
 }
 html {
   position: relative;

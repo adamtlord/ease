@@ -1,23 +1,32 @@
 $(function() {
     var customers = new Bloodhound({
         datumTokenizer: function(obj) {
-            return obj.tokens
+            return obj.tokens;
         },
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         identify: function(obj) {
-            return obj.id
+            return obj.id;
         },
         prefetch: {
             url: '/concierge/customers/search',
-            cache: false
+            cache: false,
+            transform: function(response){
+                return response.customers;
+            },
         }
     });
-
-    $('#customer_search .typeahead').typeahead(null, {
-        name: 'customers',
+    var options = {
+        highlight: true,
+        hint: true,
+        minLength: 2
+    }
+    $('#customer_search .typeahead').typeahead(options, {
         display: function(obj) {
-            return obj.display
+            return [obj.name, obj.home_phone, obj.mobile_phone].join(' ');
         },
+        name: 'customers',
         source: customers
+    }).on('typeahead:select', function(event, suggestion){
+        location.href += 'customers/' + suggestion.id;
     });
 });

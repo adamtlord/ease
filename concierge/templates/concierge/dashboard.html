@@ -6,10 +6,10 @@
     <h1>Concierge Dashboard</h1>
 </div>
 <div id="customer_search">
-  <input class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone">
+  <input class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone" autofocus>
 </div>
 {% endblock content %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/typeahead.bundle.min.js"></script>
-<script src="{{ STATIC_URL }}js/apps/customer_search.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/customer_search.js"></script>
 {% endblock scripts %}

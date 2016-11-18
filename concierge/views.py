@@ -162,7 +162,9 @@ def customer_search_data(request):
     customer_list = list()
     for customer in customers:
         customer_list.append({
-            'display': '{}  {}  {}'.format(customer.full_name, customer.home_phone, customer.mobile_phone),
+            'name': customer.full_name,
+            'home_phone': customer.home_phone,
+            'mobile_phone': customer.mobile_phone,
             'id': customer.id,
             'tokens': [
                 customer.first_name,
@@ -171,5 +173,7 @@ def customer_search_data(request):
                 customer.mobile_phone
                 ]
             })
-
-    return JsonResponse(customer_list, safe=False)
+    d = {
+        'customers': customer_list
+    }
+    return JsonResponse(d)
