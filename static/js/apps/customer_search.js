@@ -10,7 +10,7 @@ $(function() {
         prefetch: {
             url: '/concierge/customers/search',
             cache: false,
-            transform: function(response){
+            transform: function(response) {
                 return response.customers;
             },
         }
@@ -22,11 +22,21 @@ $(function() {
     }
     $('#customer_search .typeahead').typeahead(options, {
         display: function(obj) {
-            return [obj.name, obj.home_phone, obj.mobile_phone].join(' ');
+            var mobile = obj.mobile_phone ? ' ' + obj.mobile_phone : '';
+            return obj.name + ' ' + obj.home_phone + mobile;
         },
         name: 'customers',
         source: customers
-    }).on('typeahead:select', function(event, suggestion){
-        location.href += 'customers/' + suggestion.id;
-    });
+    }).on('typeahead:select', function(event, suggestion) {
+        goToCustomer(suggestion.id);
+    }).on('keypress', function(e) {
+            if (e.keyCode === 13) {
+                $("#customer_search .tt-suggestion:first-child").trigger('click');
+            }
+        });
+
+    function goToCustomer(id) {
+        return window.location.href = '/concierge/customers/' + id;
+    }
+
 });

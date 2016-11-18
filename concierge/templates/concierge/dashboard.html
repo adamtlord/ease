@@ -5,9 +5,10 @@
 <div class="page-header">
     <h1>Concierge Dashboard</h1>
 </div>
-<div id="customer_search">
-  <input class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone" autofocus>
-</div>
+<form id="customer_search">
+  <input id="customer_id" class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone" autofocus>
+
+</form>
 {% endblock content %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/typeahead.bundle.min.js"></script>

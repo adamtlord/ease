@@ -7906,6 +7906,14 @@ textarea.form-controller input[type="tel"],
 textarea.form-controller input[type="color"] {
   height: auto;
 }
+.page-header .nav {
+  margin-top: 22px;
+}
+@media (min-width: 768px) {
+  .page-header .nav {
+    float: right;
+  }
+}
 .page-header {
   margin-top: 22px;
 }
@@ -7963,9 +7971,9 @@ input[type="checkbox"] {
 }
 .twitter-typeahead .tt-menu {
   width: 100%;
+  background: #fff;
   border: 1px solid #ccc;
   padding: 10px 0;
-  margin-top: -1px;
   border-top-width: 0;
 }
 .twitter-typeahead .tt-suggestion {
@@ -8108,12 +8116,12 @@ fieldset[disabled] nav.navbar .btn-link:focus {
   }
 }
 nav.navbar .navbar-brand {
-  padding-top: 6.57px;
-  padding-bottom: 6.57px;
+  padding-top: 13px;
+  padding-bottom: 13px;
 }
 nav.navbar .navbar-brand .logo {
   width: 120px;
-  height: 80.232px;
+  height: 54px;
 }
 nav.navbar .navbar-brand .logo .letter {
   fill: #0346b2;

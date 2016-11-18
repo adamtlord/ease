@@ -2,14 +2,18 @@
 {% load map_tags %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>{{ customer }} <a class="btn btn-sm btn-default" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
+    <div class="page-header row">
+        <div class="col-sm-6">
+            <h1>{{ customer }} <a class="btn btn-sm btn-default" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
+        </div>
+        <div class="col-sm-6">
+            <ul class="nav nav-pills">
+                <li role="presentation" class="active"><a href="#">Home</a></li>
+                <li role="presentation"><a href="#">Profile</a></li>
+                <li role="presentation"><a href="#">Messages</a></li>
+            </ul>
+        </div>
     </div>
-    <ul class="nav nav-pills">
-        <li role="presentation" class="active"><a href="#">Home</a></li>
-        <li role="presentation"><a href="#">Profile</a></li>
-        <li role="presentation"><a href="#">Messages</a></li>
-    </ul>
     <h3>Customer Information</h3>
     <table class="table table-striped">
         <tbody>
