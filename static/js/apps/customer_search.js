@@ -15,12 +15,12 @@ $(function() {
             },
         }
     });
-    var options = {
+    var tt_options = {
         highlight: true,
         hint: true,
         minLength: 2
-    }
-    $('#customer_search .typeahead').typeahead(options, {
+    };
+    $('#customer_search .typeahead').typeahead(tt_options, {
         display: function(obj) {
             var mobile = obj.mobile_phone ? ' ' + obj.mobile_phone : '';
             return obj.name + ' ' + obj.home_phone + mobile;
@@ -30,13 +30,13 @@ $(function() {
     }).on('typeahead:select', function(event, suggestion) {
         goToCustomer(suggestion.id);
     }).on('keypress', function(e) {
-            if (e.keyCode === 13) {
-                $("#customer_search .tt-suggestion:first-child").trigger('click');
-            }
-        });
+        if (e.keyCode === 13) {
+            $("#customer_search .tt-suggestion:first-child").trigger('click');
+        }
+    });
 
     function goToCustomer(id) {
-        return window.location.href = '/concierge/customers/' + id;
+        window.location.href = '/concierge/customers/' + id;
     }
 
 });
