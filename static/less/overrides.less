@@ -6,7 +6,7 @@
 }
 .form-control {
     &:extend(.form-control all);
-    padding: @padding-base-vertical @padding-base-vertical * 1.5;
+    padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .5;
 }
 .radio label {
     width:100%;
@@ -17,4 +17,14 @@ input[type="radio"], input[type="checkbox"] {
 }
 .label {
     padding-bottom: 0.1em;
+}
+.twitter-typeahead {
+    width:100%;
+    .tt-menu {
+        width:100%;
+        border: 1px solid @input-border;
+        padding: @padding-large-vertical @padding-large-horizontal;
+        margin-top: -1px;
+        border-top-width: 0;
+    }
 }

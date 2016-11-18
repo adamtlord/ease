@@ -7706,7 +7706,7 @@ button.close {
   -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-  padding: 6px 9px;
+  padding: 6px 9px 3px;
 }
 .form-controller select:focus,
 .form-controller textarea:focus,
@@ -7945,7 +7945,7 @@ textarea.form-controller input[type="color"] {
 .add-control input[type="search"],
 .add-control input[type="tel"],
 .add-control input[type="color"] {
-  padding: 6px 9px;
+  padding: 6px 9px 3px;
 }
 .radio label {
   width: 100%;
@@ -7957,6 +7957,16 @@ input[type="checkbox"] {
 }
 .label {
   padding-bottom: 0.1em;
+}
+.twitter-typeahead {
+  width: 100%;
+}
+.twitter-typeahead .tt-menu {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 10px 16px;
+  margin-top: -1px;
+  border-top-width: 0;
 }
 html {
   position: relative;
@@ -8085,8 +8095,12 @@ nav.navbar .navbar-brand {
   padding-top: 6.57px;
   padding-bottom: 6.57px;
 }
-nav.navbar .navbar-brand img {
+nav.navbar .navbar-brand .logo {
   width: 120px;
+  height: 80.232px;
+}
+nav.navbar .navbar-brand .logo .letter {
+  fill: #0346b2;
 }
 nav.navbar.registration .navbar-header {
   text-align: center;
@@ -8134,7 +8148,7 @@ span.req {
   -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
-  padding: 6px 9px;
+  padding: 6px 9px 3px;
 }
 .add-control select:focus,
 .add-control textarea:focus,

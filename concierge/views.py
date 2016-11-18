@@ -162,9 +162,7 @@ def customer_search_data(request):
     customer_list = list()
     for customer in customers:
         customer_list.append({
-            'name': customer.full_name,
-            'home_phone': customer.home_phone,
-            'mobile_phone': customer.mobile_phone,
+            'display': '{}  {}  {}'.format(customer.full_name, customer.home_phone, customer.mobile_phone),
             'id': customer.id,
             'tokens': [
                 customer.first_name,

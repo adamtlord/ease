@@ -4,8 +4,12 @@ nav.navbar {
     .navbar-brand {
         padding-top:@logo-padding-vertical;
         padding-bottom:@logo-padding-vertical;
-        img {
-            width:120px;
+        .logo {
+            width:@navbar-logo-width;
+            height: @logo-ratio * @navbar-logo-width;
+            .letter {
+                fill: @brand-primary;
+            }
         }
     }
     &.registration {
