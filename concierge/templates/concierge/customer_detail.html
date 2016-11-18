@@ -3,8 +3,13 @@
 
 {% block content %}
     <div class="page-header">
-        <h1>{{ customer }} <a class="btn btn-sm btn-primary" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
+        <h1>{{ customer }} <a class="btn btn-sm btn-default" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
     </div>
+    <ul class="nav nav-pills">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="#">Profile</a></li>
+        <li role="presentation"><a href="#">Messages</a></li>
+    </ul>
     <h3>Customer Information</h3>
     <table class="table table-striped">
         <tbody>
@@ -40,12 +45,7 @@
                 </tr>
             {% endif %}
             <tr>
-                <th>Home: {% if customer.residence_type %}
-                        <span class="label label-default">
-                            {{ customer.residence_type }}
-                        </span>
-                    {% endif %}
-                </th>
+                <th>Home:</th>
                 <td>
                     {{ customer.home.street1 }}<br>
                     {% if customer.home.street2 %}
@@ -54,6 +54,11 @@
                     {{ customer.home.city }},
                     {{ customer.home.state }}
                     {{ customer.home.zip_code }}
+                    {% if customer.residence_type %}
+                        <br><span class="label label-default">
+                            {{ customer.get_residence_type_display }}
+                        </span>
+                    {% endif %}
 
                     {% if customer.residence_instructions %}
                         <hr>
@@ -79,25 +84,29 @@
 </table>
 
 <h3>Destinations</h3>
-<table class="table table-striped">
-    <tbody>
-        {% for destination in customer.destinations %}
-            <tr>
-                <th width="33%">{{ destination.fullname }}<th>
-                <td width="33%">
-                    {{ destination.street1 }}<br>
-                    {% if destination.street2 %}
-                        {{ destination.street2 }}<br>
-                    {% endif %}
-                    {{ destination.city }},
-                    {{ destination.state }}
-                    {{ destination.zip_code }}
-                </td>
-                <td width="33%">{% static_map destination %}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% if customer.destinations %}
+    <table class="table table-striped">
+        <tbody>
+            {% for destination in customer.destinations %}
+                <tr>
+                    <th width="33%">{{ destination.fullname }}<th>
+                    <td width="33%">
+                        {{ destination.street1 }}<br>
+                        {% if destination.street2 %}
+                            {{ destination.street2 }}<br>
+                        {% endif %}
+                        {{ destination.city }},
+                        {{ destination.state }}
+                        {{ destination.zip_code }}
+                    </td>
+                    <td width="33%">{% static_map destination %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="alert alert-warning">No destinations entered for this customer!</p>
+{% endif %}
 {% if customer.rides %}
     <h3>Rides</h3>
     <table class="table table-striped">

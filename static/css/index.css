@@ -7955,6 +7955,9 @@ input[type="radio"],
 input[type="checkbox"] {
   margin-top: 3px;
 }
+.label {
+  padding-bottom: 0.1em;
+}
 html {
   position: relative;
   min-height: 100%;

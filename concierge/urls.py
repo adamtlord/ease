@@ -1,7 +1,9 @@
 from django.contrib.auth import views as auth_views
 from django.conf.urls import url
 
-from concierge.views import dashboard, customer_list, customer_create, customer_detail, customer_update, customer_delete
+from concierge.views import (dashboard, customer_list, customer_create,
+customer_detail, customer_update, customer_delete, customer_search_data)
+
 
 urlpatterns = [
     url(r'^$', dashboard, name='dashboard'),
@@ -11,4 +13,6 @@ urlpatterns = [
     url(r'^customers/(?P<pk>\d+)/$', customer_detail, name='customer_detail'),
     url(r'^customers/(?P<pk>\d+)/update/$', customer_update, name='customer_update'),
     url(r'^customers/(?P<pk>\d+)/delete/$', customer_delete, name='customer_delete'),
+
+    url(r'^customers/search/$', customer_search_data, name='customer_search_data'),
 ]

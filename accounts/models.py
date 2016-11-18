@@ -149,6 +149,10 @@ class Customer(Contact):
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
 
     @property
+    def full_name(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
+    @property
     def home(self):
         return self.destination_set.filter(home=True).first()
 

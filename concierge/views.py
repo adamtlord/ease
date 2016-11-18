@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import inlineformset_factory
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import Customer, LovedOne, Rider
 from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm
@@ -153,3 +154,24 @@ def customer_update(request, pk, template='concierge/customer_update.html'):
 def customer_delete(request, pk):
     messages.add_message(request, messages.SUCCESS, 'Deleted')
     return redirect(reverse('customer_list'))
+
+
+# AJAX VIEWS
+def customer_search_data(request):
+    customers = Customer.objects.all()
+    customer_list = list()
+    for customer in customers:
+        customer_list.append({
+            'name': customer.full_name,
+            'home_phone': customer.home_phone,
+            'mobile_phone': customer.mobile_phone,
+            'id': customer.id,
+            'tokens': [
+                customer.first_name,
+                customer.last_name,
+                customer.home_phone,
+                customer.mobile_phone
+                ]
+            })
+
+    return JsonResponse(customer_list, safe=False)

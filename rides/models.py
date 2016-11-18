@@ -44,10 +44,20 @@ class Destination(Location):
 
 
 class Ride(models.Model):
+    customer = models.ForeignKey('accounts.Customer')
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    customer = models.ForeignKey('accounts.Customer')
     start = models.ForeignKey('rides.Destination', related_name='starting_point')
     destination = models.ForeignKey('rides.Destination', related_name='ending_point')
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
+    service = models.CharField(max_length=64, blank=True, null=True)
+    external_id = models.CharField(max_length=64, blank=True, null=True)
+
+
+class Notification(models.Model):
+    customer = models.ForeignKey('accounts.Customer')
+    rider = models.ForeignKey('accounts.Rider', blank=True, null=True)
+    ride = models.ForeignKey(Ride)
+    lovedone = models.ForeignKey('accounts.LovedOne')
+    sent = models.DateTimeField(blank=True, null=True)
