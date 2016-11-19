@@ -2,91 +2,60 @@
 {% load map_tags %}
 
 {% block content %}
-    <div class="page-header row">
-        <div class="col-sm-6">
-            <h1>{{ customer }} <a class="btn btn-sm btn-default" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
-        </div>
-        <div class="col-sm-6">
-            <ul class="nav nav-pills">
-                <li role="presentation" class="active"><a href="#">Home</a></li>
-                <li role="presentation"><a href="#">Profile</a></li>
-                <li role="presentation"><a href="#">Messages</a></li>
-            </ul>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1>{{ customer }} <a class="btn btn-sm btn-default" href="{% url 'customer_update' customer.pk %}">Edit</a></h1>
+            </div>
+            <div class="col-sm-6">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="active"><a href="#">Home</a></li>
+                    <li role="presentation"><a href="#">Profile</a></li>
+                    <li role="presentation"><a href="#">Messages</a></li>
+                </ul>
+            </div>
         </div>
     </div>
-    <h3>Customer Information</h3>
-    <table class="table table-striped">
-        <tbody>
-            <tr>
-                <th width="33%">Contact Info:</th>
-                <td width="33%"><a href="mailto:{{ customer.email }}">{{ customer.email }}</a><br>
-                    {% if customer.home_phone %}
-                        {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
-                    {% endif %}
-                    {% if customer.mobile_phone %}
-                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
-                    {% endif %}
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <th>Customer Since:</th>
-                <td>{{ customer.user.date_joined|date:"DATE_FORMAT" }}</td>
-                <td></td>
-            </tr>
-            {% if customer.known_as %}
-                <tr>
-                    <th>Known as:</th>
-                    <td>{{ customer.known_as }}</td>
-                    <td></td>
-                </tr>
-            {% endif %}
+    <div class="row">
+        <div class="col-sm-8">
+            {% if customer.known_as %}<h4>{{ customer.known_as }}</h4>{% endif %}
             {% if customer.dob %}
-                <tr>
-                    <th>DOB:</th>
-                    <td>{{ customer.dob }}</td>
-                    <td></td>
-                </tr>
+                Born {{ customer.dob }} ({{ customer.age }} years old)
             {% endif %}
-            <tr>
-                <th>Home:</th>
-                <td>
-                    {{ customer.home.street1 }}<br>
-                    {% if customer.home.street2 %}
-                        {{ customer.home.street2 }}<br>
-                    {% endif %}
-                    {{ customer.home.city }},
-                    {{ customer.home.state }}
-                    {{ customer.home.zip_code }}
-                    {% if customer.residence_type %}
-                        <br><span class="label label-default">
-                            {{ customer.get_residence_type_display }}
-                        </span>
-                    {% endif %}
-
-                    {% if customer.residence_instructions %}
-                        <hr>
-                        <p>Residence Instructions: {{ customer.residence_instructions }}</p>
-                    {% endif %}
-                </td>
-                <td>{% static_map customer.home %}</td>
-            </tr>
-        {% if riders %}
-            <tr>
-                <th>Riders</th>
-                <td>
+            {{ customer.home.street1 }}<br>
+            {% if customer.home.street2 %}
+                {{ customer.home.street2 }}<br>
+            {% endif %}
+            {{ customer.home.city }},
+            {{ customer.home.state }}
+            {{ customer.home.zip_code }}
+            {% if customer.residence_type %}
+                <br><span class="label label-default">
+                    {{ customer.get_residence_type_display }}
+                </span>
+            {% endif %}
+            {% if customer.residence_instructions %}
+                <p>Residence Instructions: {{ customer.residence_instructions }}</p>
+            {% endif %}
+            {% if customer.home_phone %}
+                {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+            {% endif %}
+            {% if customer.mobile_phone %}
+                {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+            {% endif %}
+            <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
+            {% if riders %}
+                <ul>
                     {% for rider in riders %}
-                        {{ rider.first_name }} {{ rider.last_name }}
-                        {% if not forloop.last %}
-                            <hr>
-                        {% endif %}
+                        <li>{{ rider.first_name }} {{ rider.last_name }}</li>
                     {% endfor %}
-                </td>
-            </tr>
-        {% endif %}
-    </tbody>
-</table>
-
+                </ul>
+            {% endif %}
+        </div>
+        <div class="col-sm-4">
+            <a href="#" class="btn btn-success btn-block btn-lg">Start a New Ride</a>
+        </div>
+    </div>
 <h3>Destinations</h3>
 {% if customer.destinations %}
     <table class="table table-striped">

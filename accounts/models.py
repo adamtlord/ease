@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 
+import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
@@ -151,6 +154,10 @@ class Customer(Contact):
     @property
     def full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
+
+    @property
+    def age(self):
+        return relativedelta(datetime.datetime.now(), self.dob).years
 
     @property
     def home(self):

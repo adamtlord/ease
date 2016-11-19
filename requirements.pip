@@ -1,6 +1,7 @@
 Django==1.10.2
 Fabric
 psycopg2
+python-dateutil
 
 django_compressor
 django-extensions
