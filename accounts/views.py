@@ -19,13 +19,13 @@ def register_self(request, template='accounts/register.html'):
         return redirect('homepage')
 
     if request.method == 'GET':
-        register_form = CustomUserRegistrationForm(prefix='reg')
-        customer_form = CustomerForm(prefix='cust')
+        register_form = CustomUserRegistrationForm(prefix='reg', lovedone=False)
+        customer_form = CustomerForm(prefix='cust', is_self=True)
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
     else:
-        register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
-        customer_form = CustomerForm(request.POST, prefix='cust')
+        register_form = CustomUserRegistrationForm(request.POST, prefix='reg', lovedone=False)
+        customer_form = CustomerForm(request.POST, prefix='cust', is_self=True)
         home_form = HomeForm(request.POST, prefix='home')
         rider_form = RiderForm(request.POST, prefix='rider')
 
@@ -64,6 +64,9 @@ def register_self(request, template='accounts/register.html'):
             auth.login(request, authenticated_user)
 
             return redirect('register_self_preferences')
+        else:
+            errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
+            print errors
 
     d = {
         'self': True,
@@ -155,14 +158,16 @@ def register_lovedone(request, template='accounts/register.html'):
         messages.info(request, "Registration is temporarily closed. We are sorry for the inconvenience.")
         return redirect('homepage')
 
+    errors = []
+    error_count = []
     if request.method == 'GET':
-        register_form = CustomUserRegistrationForm(prefix='reg')
-        customer_form = CustomerForm(prefix='cust')
+        register_form = CustomUserRegistrationForm(prefix='reg', lovedone=True)
+        customer_form = CustomerForm(prefix='cust', is_self=False)
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
     else:
-        register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
-        customer_form = CustomerForm(request.POST, prefix='cust')
+        register_form = CustomUserRegistrationForm(request.POST, prefix='reg', lovedone=True)
+        customer_form = CustomerForm(request.POST, prefix='cust', is_self=False)
         home_form = HomeForm(request.POST, prefix='home')
         rider_form = RiderForm(request.POST, prefix='rider')
 
@@ -199,14 +204,18 @@ def register_lovedone(request, template='accounts/register.html'):
             auth.login(request, authenticated_user)
 
             return redirect('register_lovedone_preferences')
-
+        else:
+            errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
+            error_count = sum([len(d) for d in errors])
     d = {
         'self': False,
         'lovedone': True,
         'register_form': register_form,
         'customer_form': customer_form,
         'home_form': home_form,
-        'rider_form': rider_form
+        'rider_form': rider_form,
+        'errors': errors,
+        'error_count': error_count
         }
     return render(request, template, d)
 
@@ -233,7 +242,7 @@ def register_lovedone_preferences(request, template='accounts/register_preferenc
             user.profile.receive_updates = new_loved_one.receive_updates
             user.profile.save()
 
-            return redirect('register_lovedone_complete')
+            return redirect('register_lovedone_destinations')
 
     d = {
         'self': False,

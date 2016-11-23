@@ -59,7 +59,7 @@ class Ride(models.Model):
     customer = models.ForeignKey('accounts.Customer')
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
-    start = models.ForeignKey('rides.Destination', related_name='starting_point')
+    start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point')
     destination = models.ForeignKey('rides.Destination', related_name='ending_point')
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)

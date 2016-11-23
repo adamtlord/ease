@@ -31,6 +31,7 @@
         <div class="col-sm-8">
             <table class="table">
                 <tbody>
+                    {% if customer.know_as or customer.dob %}
                     <tr>
                         <td>{% if customer.known_as %}"{{ customer.known_as }}"{% endif %}</td>
                         <td>
@@ -39,6 +40,7 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
                     <tr>
                         <td>
                             {{ customer.home.street1 }}<br>

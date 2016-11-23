@@ -23,37 +23,31 @@
 <div class="row">
     <div class="col-sm-6">
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
-            {% if errors %}
-                {% if errors|length == 1 %}
-                    Please correct the error below.
-                {% else %}
-                    Please correct the errors below.
-                {% endif %}
-                {% if self %}
-                    {{ preferences_form.non_field_errors }}
-                    {% for dict in lovedone_formset.errors %}
-                        {% for error in dict.values %}
-                            {{ error }}
-                        {% endfor %}
+            {% if self %}
+                {{ preferences_form.non_field_errors }}
+                {% for dict in lovedone_formset.errors %}
+                    {% for error in dict.values %}
+                        {{ error }}
                     {% endfor %}
-                {% endif %}
-                {% if lovedone %}
-                    {{ lovedone_form.non_field_errors }}
-                {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if lovedone %}
+                {{ lovedone_form.non_field_errors }}
             {% endif %}
 
             {% if self %}
                 {% render_form_field preferences_form.send_updates %}
                 <fieldset id="lovedone_fields" style="display:none;">
-                    {% for field in lovedone_form %}
-                        {% render_form_field field %}
-                    {% endfor %}
+                    {% render_form_field lovedone_form.first_name %}
+                    {% render_form_field lovedone_form.last_name %}
+                    {% render_form_field lovedone_form.mobile_phone '' 'phone-mask' %}
+                    {% render_form_field lovedone_form.relationship %}
                 </fieldset>
             {% endif %}
 
             {% if lovedone %}
                 {% render_form_field lovedone_form.relationship %}
-                {% render_form_field lovedone_form.mobile_phone %}
+                {% render_form_field lovedone_form.mobile_phone '' 'phone-mask' %}
 
                 <p>Arrive, through Uber, has the ability to let you know when your loved one is about to be picked up.
                 Uber can text you to let you know that a ride is on the way, and will include a hyperlink that will allow you

@@ -10,17 +10,19 @@
     <div class="col-sm-6">
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
-                {% if errors|length == 1 %}
+            <p class="alert alert-danger">
+                {% if error_count == 1 %}
                     Please correct the error below.
                 {% else %}
                     Please correct the errors below.
                 {% endif %}
-                {{ form.non_field_errors }}
-                {{ register_form.non_field_errors }}
-                {{ customer_form.non_field_errors }}
-                {{ home_form.non_field_errors }}
-                {{ rider_form.non_field_errors }}
+            </p>
             {% endif %}
+            {{ form.non_field_errors }}
+            {{ register_form.non_field_errors }}
+            {{ customer_form.non_field_errors }}
+            {{ home_form.non_field_errors }}
+            {{ rider_form.non_field_errors }}
             <fieldset>
                 <legend>Primary Rider's Information</legend>
                 {% if lovedone %}
@@ -32,13 +34,20 @@
                     {% render_form_field register_form.first_name %}
                     {% render_form_field register_form.last_name %}
                 {% endif %}
-                {% render_form_field customer_form.home_phone %}
-                {% render_form_field customer_form.mobile_phone %}
+                {% render_form_field customer_form.home_phone '' 'phone-mask' %}
+                {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
             </fieldset>
             <fieldset>
                 <legend>Create an Account</legend>
+                {% if lovedone %}
+                    <p>If you plan to manage this account on behalf of your loved one, please
+                        enter <strong>your own</strong> information here. If you're just setting this account up
+                        for someone else, please enter <strong>their</strong> information here.</p>
+                {% endif %}
                 {% render_form_field register_form.email %}
+                {% render_form_field register_form.first_name %}
+                {% render_form_field register_form.last_name %}
                 {% render_form_field register_form.password1 %}
                 {% render_form_field register_form.password2 %}
             </fieldset>
@@ -49,7 +58,7 @@
                 <div class="address-inline">
                     {% render_form_field home_form.city %}
                     {% render_form_field home_form.state '' 'state' %}
-                    {% render_form_field home_form.zip_code '' 'zip' %}
+                    {% render_form_field home_form.zip_code '' 'zip zip-mask' %}
                 </div>
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
@@ -58,7 +67,7 @@
                 <span class="help-block">Must share the same residence.</span>
                 {% render_form_field rider_form.first_name %}
                 {% render_form_field rider_form.last_name %}
-                {% render_form_field rider_form.mobile_phone %}
+                {% render_form_field rider_form.mobile_phone '' 'phone-mask' %}
             </fieldset>
             {% render_form_field register_form.source %}
             <div id="source_other" style="display:none;">

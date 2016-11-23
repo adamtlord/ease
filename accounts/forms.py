@@ -97,6 +97,7 @@ class CustomUserRegistrationForm(RegistrationForm):
         fields = ('email', 'first_name', 'last_name')
 
     def __init__(self, *args, **kwargs):
+        lovedone = kwargs.pop('lovedone')
         super(CustomUserRegistrationForm, self).__init__(*args, **kwargs)
         for field in CUSTOM_USER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
@@ -104,6 +105,8 @@ class CustomUserRegistrationForm(RegistrationForm):
 
 
 class CustomerForm(forms.ModelForm):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
     residence_instructions = forms.CharField(
         label="Anything we should know about this home pickup location?",
         help_text="For instance, is there a steep driveway and we should send the driver to the end of it? Is there a gate code?",
@@ -116,9 +119,13 @@ class CustomerForm(forms.ModelForm):
         fields = CUSTOMER_FIELDS
 
     def __init__(self, *args, **kwargs):
+        is_self = kwargs.pop('is_self')
         super(CustomerForm, self).__init__(*args, **kwargs)
         for field in CUSTOMER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
+        if is_self:
+            self.fields['first_name'].required = False
+            self.fields['last_name'].required = False
 
 
 class RiderForm(forms.ModelForm):
@@ -168,7 +175,8 @@ class LovedOneForm(forms.ModelForm):
 
 
 class LovedOnePreferencesForm(forms.ModelForm):
-
+    relationship = forms.CharField(label="Your relationship to the primary customer", required=False)
+    mobile_phone = forms.CharField(label="Your mobile phone number", required=False)
     receive_updates = forms.TypedChoiceField(
         coerce=lambda x: x == 'True',
         choices=((True, 'Yes'), (False, 'No')),
