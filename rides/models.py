@@ -65,6 +65,9 @@ class Ride(models.Model):
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
     service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=UBER)
     external_id = models.CharField(max_length=64, blank=True, null=True)
+    invoiced = models.BooleanField(default=False)
+    notes = notes = models.TextField(blank=True, null=True)
+    fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
