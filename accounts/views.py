@@ -63,7 +63,9 @@ def register_self(request, template='accounts/register.html'):
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
-            return redirect('register_self_preferences')
+            # Skip preferences for now because Lyft doesn't offer that
+            # 2016-11-23
+            return redirect('register_self_destinations')
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
             print errors

@@ -46,8 +46,10 @@
                         for someone else, please enter <strong>their</strong> information here.</p>
                 {% endif %}
                 {% render_form_field register_form.email %}
-                {% render_form_field register_form.first_name %}
-                {% render_form_field register_form.last_name %}
+                {% if lovedone %}
+                    {% render_form_field register_form.first_name %}
+                    {% render_form_field register_form.last_name %}
+                {% endif %}
                 {% render_form_field register_form.password1 %}
                 {% render_form_field register_form.password2 %}
             </fieldset>
