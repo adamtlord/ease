@@ -1,11 +1,9 @@
-{% extends 'base_app.html' %}
+{% extends 'concierge/customer_base.html' %}
 {% load custom_tags %}
 
 {% block title %}Update Customer {{ customer }}{% endblock title %}
-{% block content %}
-<div class="page-header">
-    <h1>Editing {{ customer }}</h1>
-</div>
+{% block customer_content %}
+
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">
@@ -17,11 +15,6 @@
                 {% endif %}
                 {{ form.non_field_errors }}
                 {{ home_form.non_field_errors }}
-                {% for dict in destinatino_formset.errors %}
-                    {% for error in dict.values %}
-                        {{ error }}
-                    {% endfor %}
-                {% endfor %}
             {% endif %}
 
             <h3>Customer Info</h3>
@@ -43,30 +36,15 @@
             <fieldset>
                 {% render_form_field home_form.street1 %}
                 {% render_form_field home_form.street2 '' 'no-label' %}
-                {% render_form_field home_form.city %}
-                {% render_form_field home_form.state %}
-                {% render_form_field home_form.zip_code %}
+                <div class="address-inline">
+                    {% render_form_field home_form.city %}
+                    {% render_form_field home_form.state '' 'state' %}
+                    {% render_form_field home_form.zip_code '' 'zip' 'zip-mask' %}
+                </div>
                 {% render_form_field customer_form.residence_type %}
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
 
-            <h3>Destinations</h3>
-            {{ destination_formset.management_form }}
-            {% for form in destination_formset.forms %}
-                <fieldset class="destination">
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    {% render_form_field form.name %}
-                    {% render_form_field form.nickname %}
-                    {% render_form_field form.street1 %}
-                    {% render_form_field form.street2 '' 'no-label' %}
-                    {% render_form_field form.city %}
-                    {% render_form_field form.state %}
-                    {% render_form_field form.zip_code %}
-                </fieldset>
-            {% endfor %}
-            <button id="add_destination_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Destination</button>
         </div>
         <div class="col-sm-6">
             <h3>Loved Ones</h3>
@@ -84,9 +62,11 @@
                     {% render_form_field form.receive_updates %}
                     {% render_form_field form.street1 %}
                     {% render_form_field form.street2 '' 'no-label' %}
-                    {% render_form_field form.city %}
-                    {% render_form_field form.state %}
-                    {% render_form_field form.zip_code %}
+                    <div class="address-inline">
+                        {% render_form_field form.city %}
+                        {% render_form_field form.state '' 'state' %}
+                        {% render_form_field form.zip_code '' 'zip zip-mask' %}
+                    </div>
                 </fieldset>
             {% endfor %}
             <button id="add_lovedone_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Loved One</button>

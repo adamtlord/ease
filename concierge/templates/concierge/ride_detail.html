@@ -1,0 +1,35 @@
+{% extends 'concierge/customer_base.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+{% block title %}{{ customer }}{% endblock title %}
+{% block customer_content %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Distance</th>
+            <th>Cost</th>
+            <th>Service</th>
+            <th>External ID</th>
+            <td></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ ride.start.display_name }}</td>
+            <td>{{ ride.destination.display_name }}</td>
+            <td>{{ ride.start_date }}</td>
+            <td>{{ ride.end_date }}</td>
+            <td>{{ ride.distance }}</td>
+            <td>{{ ride.cost }}</td>
+            <td>{{ ride.service }}</td>
+            <td>{{ ride.external_id }}</td>
+            <td><a href="{% url 'ride_edit' customer.id ride.id %}" class="btn btn-default">Edit</a></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

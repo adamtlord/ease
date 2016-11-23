@@ -171,6 +171,10 @@ class Customer(Contact):
     def rider(self):
         return self.rider_set.first()
 
+    @property
+    def rides(self):
+        return self.ride_set.all()
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

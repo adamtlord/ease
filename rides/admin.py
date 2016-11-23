@@ -1,9 +1,7 @@
 from django.contrib import admin
 
-from rides.models import Destination
+from rides.models import Destination, Ride
 
 
-class DestinationAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(Destination, DestinationAdmin)
+admin.site.register(Destination)
+admin.site.register(Ride)

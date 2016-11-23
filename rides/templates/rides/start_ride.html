@@ -1,0 +1,59 @@
+{% extends 'concierge/customer_base.html' %}
+{% load custom_tags %}
+
+{% block customer_content %}
+<form id="start_ride_form" action="" class="form" method="POST" novalidate>{% csrf_token %}
+    <div class="row">
+        <div class="col-sm-6">
+            {% render_form_field start_ride_form.start %}
+            or
+            <span data-toggle="buttons">
+                <label class="btn btn-default">
+                    <input rel="start" class="fieldset-toggle" name="add-starting-point" type="checkbox" autocomplete="off" value="true"> Add a New Starting Point
+                </label>
+            </span>
+            <fieldset class="add-starting-point" style="display:none;">
+                {% render_form_field add_starting_point_form.customer %}
+                {% render_form_field add_starting_point_form.name %}
+                {% render_form_field add_starting_point_form.nickname %}
+                {% render_form_field add_starting_point_form.street1 %}
+                {% render_form_field add_starting_point_form.street2 '' 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field add_starting_point_form.city %}
+                    {% render_form_field add_starting_point_form.state '' 'state' %}
+                    {% render_form_field add_starting_point_form.zip_code '' 'zip' %}
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-sm-6">
+            {% render_form_field start_ride_form.destination %}
+            or
+            <span data-toggle="buttons">
+                <label class="btn btn-default">
+                    <input rel="destination" class="fieldset-toggle" name="add-destination" type="checkbox" autocomplete="off" value="true"> Add a New Destination
+                </label>
+            </span>
+            <fieldset class="add-destination" style="display:none;">
+                {% render_form_field add_destination_form.customer %}
+                {% render_form_field add_destination_form.name %}
+                {% render_form_field add_destination_form.nickname %}
+                {% render_form_field add_destination_form.street1 %}
+                {% render_form_field add_destination_form.street2 '', 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field add_destination_form.city %}
+                    {% render_form_field add_destination_form.state '' 'state' %}
+                    {% render_form_field add_destination_form.zip_code '' 'zip' %}
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-success btn-block">Start Ride</button>
+    </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/ride.min.js"></script>
+
+{% endblock %}

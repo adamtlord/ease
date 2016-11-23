@@ -1,23 +1,32 @@
 .page-header {
     margin-top:@line-height-computed;
+    &.customer {
+        border-bottom:none;
+    }
 }
+
 .navbar-static-top {
     border-bottom-width:0;
 }
+
 .form-control {
     &:extend(.form-control all);
-    padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .5;
+    padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .75;
 }
+
 .radio label {
     width:100%;
     margin-bottom:5px;
 }
+
 input[type="radio"], input[type="checkbox"] {
     margin-top:3px;
 }
+
 .label {
     padding-bottom: 0.1em;
 }
+
 .twitter-typeahead {
     width:100%;
     .tt-menu {

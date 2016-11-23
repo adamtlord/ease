@@ -1,7 +1,7 @@
 from django import forms
 
 from accounts.models import Customer
-from rides.models import Destination
+from rides.models import Destination, Ride
 
 HOME_FIELDS = [
     'name',
@@ -13,13 +13,35 @@ HOME_FIELDS = [
 ]
 
 DESTINATION_FIELDS = HOME_FIELDS + [
-    'name',
     'nickname',
     'customer'
 ]
 
+START_RIDE_FIELDS = [
+    'start',
+    'destination',
+]
+
+EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
+    'customer',
+    'start_date',
+    'end_date',
+    'cost',
+    'distance',
+    'service',
+    'external_id',
+    # 'display_start_date',
+    # 'display_end_date'
+]
+
+
+class DestinationChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{} - {}".format(obj.fullname, obj.fulladdress)
+
 
 class DestinationForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Destination
@@ -59,3 +81,51 @@ class HomeForm(forms.ModelForm):
         if customer:
             self.fields['residence_type'].initial = customer.residence_type
             self.fields['residence_instructions'].initial = customer.residence_instructions
+
+
+class StartRideForm(forms.ModelForm):
+    start = DestinationChoiceField(
+        queryset=Destination.objects.none(),
+        empty_label=None,
+        label="Pick up at",
+        required=False
+        )
+    destination = DestinationChoiceField(
+        queryset=Destination.objects.none(),
+        empty_label=None,
+        label="Destination",
+        required=False
+        )
+
+    class Meta:
+        model = Ride
+        fields = START_RIDE_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        customer = kwargs.pop('customer')
+        super(StartRideForm, self).__init__(*args, **kwargs)
+        self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
+        self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
+        for field in START_RIDE_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+            self.fields[field].widget.attrs['style'] = 'width:100%;'
+
+
+class RideForm(forms.ModelForm):
+    start_date = forms.DateTimeField(required=False)
+    end_date = forms.DateTimeField(required=False)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    # display_start_date = forms.CharField(label="Start time", widget=forms.DateTimeInput(attrs={'rel': 'id_start_date'}), required=False)
+    # display_end_date = forms.CharField(label="End time",  widget=forms.DateTimeInput(attrs={'rel': 'id_end_date'}), required=False)
+
+    class Meta:
+        model = Ride
+        fields = EDIT_RIDE_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(RideForm, self).__init__(*args, **kwargs)
+        for field in EDIT_RIDE_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+        for field in START_RIDE_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+            self.fields[field].widget.attrs['style'] = 'width:100%;'

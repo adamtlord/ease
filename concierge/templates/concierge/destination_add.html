@@ -1,0 +1,30 @@
+{% extends 'concierge/customer_base.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+{% block title %}Update Customer {{ customer }}{% endblock title %}
+{% block customer_content %}
+
+<h3>Add a Destination for {{ customer.full_name }}</h3>
+<div class="row">
+    <div class="col-sm-6">
+        <form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
+            {{ destination_form.non_field_errors }}
+            <fieldset class="destination">
+                {% render_form_field destination_form.name %}
+                {% render_form_field destination_form.nickname %}
+                {% render_form_field destination_form.street1 %}
+                {% render_form_field destination_form.street2 '', 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field destination_form.city %}
+                    {% render_form_field destination_form.state '' 'state' %}
+                    {% render_form_field destination_form.zip_code '' 'zip zip-mask' %}
+                </div>
+            </fieldset>
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Save Destination" />
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

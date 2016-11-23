@@ -8,7 +8,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 WSGI_APPLICATION = 'ease.wsgi.application'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Los_Angeles'
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
@@ -108,3 +108,5 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'accounts.CustomUser'
 ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
+
+GEOIP_DATABASE = PROJECT_ROOT + '/path/to/your/geoip/database/GeoLiteCity.dat'

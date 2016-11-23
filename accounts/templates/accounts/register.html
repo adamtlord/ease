@@ -46,9 +46,11 @@
                 <legend>{% if lovedone %}Primary Customer's {% endif %}Home Address</legend>
                 {% render_form_field home_form.street1 %}
                 {% render_form_field home_form.street2 '' 'no-label' %}
-                {% render_form_field home_form.city %}
-                {% render_form_field home_form.state %}
-                {% render_form_field home_form.zip_code %}
+                <div class="address-inline">
+                    {% render_form_field home_form.city %}
+                    {% render_form_field home_form.state '' 'state' %}
+                    {% render_form_field home_form.zip_code '' 'zip' %}
+                </div>
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
             <fieldset>

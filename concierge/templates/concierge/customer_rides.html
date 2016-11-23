@@ -1,0 +1,55 @@
+{% extends 'concierge/customer_base.html' %}
+{% load map_tags %}
+
+{% block customer_content %}
+{% if rides_in_progress %}
+    <div class="rides-in-progress">
+    <h3>Rides in Progress</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Started</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides_in_progress %}
+            <tr>
+                <td>{{ ride.start.display_name }}</td>
+                <td>{{ ride.destination.display_name }}</td>
+                <td>{{ ride.start_date }}</td>
+                <td><a href="{% url 'ride_end' customer.id ride.id %}" class="btn btn-danger">End Ride</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endif %}
+
+{% if completed_rides %}
+    <h2>Rides</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Started</th>
+                <th>Ended</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in completed_rides %}
+            <tr>
+                <td>{{ ride.start.display_name }}</td>
+                <td>{{ ride.destination.display_name }}</td>
+                <td>{{ ride.start_date }}</td>
+                <td>{{ ride.end_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+{% endblock %}

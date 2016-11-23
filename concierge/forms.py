@@ -88,9 +88,11 @@ class CustomerForm(forms.ModelForm):
 
 
 class DestinationForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+
     class Meta:
         model = Destination
-        fields = DESTINATION_FIELDS
+        fields = DESTINATION_FIELDS + ['customer']
 
     def __init__(self, *args, **kwargs):
         super(DestinationForm, self).__init__(*args, **kwargs)

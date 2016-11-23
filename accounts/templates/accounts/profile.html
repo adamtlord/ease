@@ -11,6 +11,12 @@
     {% endif %}
     </h2>
 </div>
+{% if customer.rides_in_progress %}
+<div class="row">
+    <div class="col-sm-8">
+        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %} <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary">Edit</a></h3>
+
+{% endif %}
 <div class="row">
     <div class="col-sm-8">
         <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %} <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary">Edit</a></h3>

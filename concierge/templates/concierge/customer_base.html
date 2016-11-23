@@ -1,0 +1,26 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% url 'customer_detail' as customer_detail_url %}
+{% if customer %}
+    {% block title %}Customer {{ customer }}{% endblock %}
+{% endif %}
+{% block content %}
+<div class="page-header customer">
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>{{ customer }}</h1>
+        </div>
+        <div class="col-sm-6">
+            <ul class="nav nav-pills">
+                <li role="presentation" class="{% if profile_page %}active{% endif %}"><a href="{% url 'customer_detail' customer.pk %}">Profile</a></li>
+                <li role="presentation" class="{% if ride_page %}active{% endif %}"><a href="{% url 'customer_rides' customer.id %}">Rides</a></li>
+                <li role="presentation" class="{% if destinations_page %}active{% endif %}"><a href="{% url 'customer_destinations' customer.pk %}">Destinations</a></li>
+                <li role="presentation" class="{% if update_page %}active{% endif %}"><a href="{% url 'customer_update' customer.pk %}">Edit</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% block customer_content %}
+{% endblock customer_content %}
+{% endblock content %}

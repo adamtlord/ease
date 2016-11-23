@@ -58,3 +58,20 @@ form.form-login {
         padding-top:0;
     }
 }
+
+.address-inline {
+     @media screen and (min-width: @screen-md-min) {
+        .form-group {
+            margin-right:5%;
+            float:left;
+            width: 40%;
+            &.state {
+                width:25%;
+            }
+            &.zip {
+                width:25%;
+                margin-right:0;
+            }
+        }
+    }
+}

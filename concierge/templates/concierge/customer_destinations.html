@@ -1,0 +1,43 @@
+{% extends 'concierge/customer_base.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+{% block title %}Update Customer {{ customer }}{% endblock title %}
+{% block customer_content %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Map</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for destination in customer.destinations %}
+        <tr>
+            <td>{{ destination.fullname }}</td>
+            <td>
+                {{ destination.street1 }}<br>
+                {% if destination.street2 %}
+                    {{ destination.street2 }}<br>
+                {% endif %}
+                {{ destination.city }},
+                {{ destination.state }}
+                {{ destination.zip_code }}
+            </td>
+            <td>
+                {% static_map destination %}
+            </td>
+            <td>
+                <a href="{% url 'destination_edit' customer.id destination.id %}" class="btn btn-default">Edit</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<p><a href="{% url 'destination_add' customer.id %}" class="btn btn-primary">Add a Destination</a></p>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
+{% endblock %}
