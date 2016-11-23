@@ -3,7 +3,9 @@
 {% load map_tags %}
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
-
+<div class="page-header">
+    <h3>Ride from {{ ride.start.fullname }} to {{ ride.destination.fullname }}, {{ ride.start_date|date:"SHORT_DATE_FORMAT" }} {% if not ride.end_date %}<span class="label label-warning">IN PROGRESS</span>{% endif %}</h3>
+</div>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -15,7 +17,7 @@
             <th>Cost</th>
             <th>Service</th>
             <th>External ID</th>
-            <td></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>

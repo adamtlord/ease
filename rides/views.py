@@ -84,7 +84,8 @@ def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.h
 
     d = {
         'customer': customer,
-        'ride': ride
+        'ride': ride,
+        'ride_page': True
     }
 
     return render(request, template, d)
