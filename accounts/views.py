@@ -292,6 +292,10 @@ def register_lovedone_complete(request, template='accounts/register_complete.htm
 def profile(request, template='accounts/profile.html'):
 
     user = request.user
+
+    if user.is_staff:
+        return redirect('dashboard')
+
     customer = user.get_customer()
 
     d = {
@@ -306,6 +310,10 @@ def profile(request, template='accounts/profile.html'):
 def profile_edit(request, template='accounts/profile_edit.html'):
 
     user = request.user
+
+    if user.is_staff:
+        return redirect('dashboard')
+
     customer = user.get_customer()
     home = customer.home
     rider = customer.rider
@@ -355,6 +363,10 @@ def profile_edit(request, template='accounts/profile_edit.html'):
 def destinations_edit(request, template='accounts/destinations_edit.html'):
 
     user = request.user
+
+    if user.is_staff:
+        return redirect('dashboard')
+
     customer = user.get_customer()
     home = customer.destination_set.filter(home=True).first()
 
