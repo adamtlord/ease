@@ -12,13 +12,12 @@ $(function(){
         }
     });
     $('.datetime input').datetimepicker({
+        format: 'MM/DD/YYYY hh:MM:SS A',
         icons: {
             time: "fa fa-clock-o",
             date: "fa fa-calendar",
             up: "fa fa-arrow-up",
             down: "fa fa-arrow-down"
         }
-    }).on("dp.change", function (e) {
-        $('#' + this.getAttribute('rel')).val(moment(e.date).format('YYYY-MM-DD HH:MM:SS'));
     });
 });

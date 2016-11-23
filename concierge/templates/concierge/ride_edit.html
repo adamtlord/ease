@@ -10,16 +10,14 @@
     <div class="row">
         <div class="col-sm-6">
             {% render_form_field form.start %}
-            {% render_form_field form.display_start_date '' 'datetime' %}
-            {% render_form_field form.start_date %}
+            {% render_form_field form.start_date '' 'datetime' %}
             {% render_form_field form.cost %}
             {% render_form_field form.service %}
             {% render_form_field form.customer %}
         </div>
         <div class="col-sm-6">
             {% render_form_field form.destination %}
-            {% render_form_field form.display_end_date '' 'datetime' %}
-            {% render_form_field form.end_date %}
+            {% render_form_field form.end_date '' 'datetime' %}
             {% render_form_field form.distance %}
             {% render_form_field form.external_id %}
         </div>

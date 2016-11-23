@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django import forms
+from django.core.exceptions import ValidationError
 
 from accounts.models import Customer
 from rides.models import Destination, Ride
@@ -30,8 +33,6 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'distance',
     'service',
     'external_id',
-    # 'display_start_date',
-    # 'display_end_date'
 ]
 
 
@@ -112,11 +113,13 @@ class StartRideForm(forms.ModelForm):
 
 
 class RideForm(forms.ModelForm):
-    start_date = forms.DateTimeField(required=False)
+    start_date = forms.DateTimeField()
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
-    # display_start_date = forms.CharField(label="Start time", widget=forms.DateTimeInput(attrs={'rel': 'id_start_date'}), required=False)
-    # display_end_date = forms.CharField(label="End time",  widget=forms.DateTimeInput(attrs={'rel': 'id_end_date'}), required=False)
+
+    # def clean_start_date(self):
+    #     start_date = self.cleaned_data['password']
+    #     return datetime.strptime(start_date, '%m/%d/%Y %I:%M:%S %p')
 
     class Meta:
         model = Ride
