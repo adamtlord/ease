@@ -9,3 +9,8 @@ dist
 /config.codekit
 /ease/_settings.py
 /ease/settings/secret_settings.py
+
+app.arriverides.com.chain.crt
+app.arriverides.com.chained.crt
+app.arriverides.com.crt
+app.arriverides.com.key
