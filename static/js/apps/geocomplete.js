@@ -14,31 +14,36 @@ var componentForm = {
   postal_code: 'short_name'
 };
 var componentMap = {
-  street_number: 'id_street1',
-  route: 'id_street1',
-  locality: 'id_city',
-  administrative_area_level_1: 'id_state',
-  postal_code: 'id_zip_code'
+  street_number: 'street1',
+  route: 'street1',
+  locality: 'city',
+  administrative_area_level_1: 'state',
+  postal_code: 'zip_code'
 };
 
 function initAutocomplete() {
+
+  var acs = [];
   $('.autocomplete').each(function(){
     autocomplete = new google.maps.places.Autocomplete(
       this, {
         country: 'us'
       });
     autocomplete.prefix = $(this).data('prefix');
-    autocomplete.addListener('place_changed', fillInAddress);
-  })
+    acs.push(autocomplete);
+  });
+  for(var i = 0; i < acs.length; i++){
+    console.log(acs);
+    acs[i].addListener('place_changed', fillInAddress);
+  };
 }
 
 function fillInAddress() {
 
   $('.destination .form-control').val('').removeAttr('disabled');
 
-  var place = autocomplete.getPlace();
-  var prefix = autocomplete.prefix;
-
+  var place = this.getPlace();
+  var prefix = this.prefix;
   for (var i = 0; i < place.address_components.length; i++) {
     var addressType = place.address_components[i].types[0];
     if (componentForm[addressType]) {
@@ -46,10 +51,13 @@ function fillInAddress() {
       if(addressType == 'street_number'){
         val = val + ' ';
       }
-      var input = $('#' + prefix + componentMap[addressType]);
+      var input = $('#id_' + prefix + componentMap[addressType]);
 
       input.val(input.val() + val);
     }
+  }
+  if(place.name){
+    $('#id_' + prefix + 'name').val(place.name);
   }
 }
 

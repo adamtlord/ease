@@ -265,14 +265,14 @@ def customer_search_data(request):
     for customer in customers:
         customer_list.append({
             'name': customer.full_name,
-            'home_phone': customer.home_phone,
-            'mobile_phone': customer.mobile_phone,
+            'home_phone': customer.home_phone.replace('-', ''),
+            'mobile_phone': customer.mobile_phone.replace('-', ''),
             'id': customer.id,
             'tokens': [
                 customer.first_name,
                 customer.last_name,
-                customer.home_phone,
-                customer.mobile_phone
+                customer.home_phone.replace('-', ''),
+                customer.mobile_phone.replace('-', '')
                 ]
             })
     d = {

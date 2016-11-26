@@ -70,28 +70,35 @@
         </div>
     {% endif %}
 </div>
+<h4>{% if not lovedone %}Your {% endif %}Destinations</h4>
+{% if customer.destinations %}
+    <table class="table table-striped">
+        <tbody>
 
-<h4>{% if not lovedone %}Your {% endif %}Destinations <a href="{% url 'destinations_edit' %}" class="btn btn-sm btn-primary">Edit</a></h4>
-<table class="table table-striped">
-    <tbody>
-
-        {% for destination in customer.destinations %}
-            <tr>
-                <th width="33%">{{ destination.fullname }}<th>
-                <td width="33%">
-                    {{ destination.street1 }}<br>
-                    {% if destination.street2 %}
-                        {{ destination.street2 }}<br>
-                    {% endif %}
-                    {{ destination.city }},
-                    {{ destination.state }}
-                    {{ destination.zip_code }}
-                </td>
-                <td width="33%">{% static_map destination %}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            {% for destination in customer.destinations %}
+                <tr>
+                    <th>{{ destination.fullname }}<th>
+                    <td>
+                        {{ destination.street1 }}<br>
+                        {% if destination.street2 %}
+                            {{ destination.street2 }}<br>
+                        {% endif %}
+                        {{ destination.city }},
+                        {{ destination.state }}
+                        {{ destination.zip_code }}
+                    </td>
+                    <td>{% static_map destination %}</td>
+                    <td><a href="{% url 'destination_edit' destination.id %}" class="btn btn-default">Edit</a>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'destination_add' %}" class="btn btn-primary">Add a Destination</a>
+{% else %}
+<p class="alert alert-warning">You haven't entered any destinations yet!
+<a href="{% url 'destination_add' %}">Add one now</a>
+</p>
+{% endif %}
 {% if customer.rides %}
     <h4>{% if not lovedone %}Your {% endif %}Rides</h4>
     <table class="table table-striped">

@@ -1,10 +1,10 @@
-{% extends 'concierge/customer_base.html' %}
+{% extends 'base_app.html' %}
 {% load custom_tags %}
 {% load map_tags %}
-{% block title %}Update Customer {{ customer }}{% endblock title %}
-{% block customer_content %}
+{% block title %}Add a Destination{% endblock title %}
+{% block content %}
 
-<h3>Add a Destination for {{ customer.full_name }}</h3>
+<h3>Add a Destination</h3>
 <div class="row">
     <div class="col-sm-6">
         <div class="form-group well well-sm">

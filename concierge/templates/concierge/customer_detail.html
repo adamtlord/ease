@@ -76,7 +76,7 @@
                     </tr>
                     {% if riders %}
                         <tr>
-                            <td>Riders:</td>
+                            <td>Riders</td>
                             <td>
                                 {% for rider in riders %}
                                     {{ rider.first_name }} {{ rider.last_name }}{% if not forloop.last %}, {% endif %}
@@ -94,7 +94,7 @@
         </div>
     </div>
 {% if not customer.destinations %}
-    <p class="alert alert-warning">No destinations entered for this customer!</p>
+    <p class="alert alert-warning">No destinations entered for this customer! <a href="{% url 'destination_add' customer.id %}">Add one now</a></p>
 {% endif %}
 
 {% endblock %}

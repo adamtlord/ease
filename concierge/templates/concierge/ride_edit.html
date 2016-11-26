@@ -3,14 +3,19 @@
 {% load map_tags %}
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
-
+{% if to_from_home %}
+    <div class="well well-sm">
+        Residence Type: {{ customer.get_residence_type_display }}<br>
+        Residence Instructions: {{ customer.residence_instructions|default:'None' }}
+    </div>
+{% endif %}
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
                 <label>Starting point</label>
                 <div class="input-group">
-                    <input id="starting_point" class="form-control" readonly value="{{ ride.start.fulladdress }}">
+                    <input id="starting_point" class="form-control" value="{{ ride.start.fulladdress }}">
                     <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                         <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point">
                             <i class="fa fa-clipboard"></i>
@@ -18,7 +23,12 @@
                     </span>
                 </div>
             </div>
-            {% render_form_field form.start_date '' 'datetime' %}
+            {{ form.start.as_hidden }}
+            <div class="form-group datetime-start">
+                <label>Start date<span class="req">*</span></label>
+                <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+            </div>
+            {{ form.start_date.as_hidden }}
             {% render_form_field form.cost %}
             {% render_form_field form.service %}
             {% render_form_field form.customer %}
@@ -27,7 +37,7 @@
             <div class="form-group">
                 <label>Destination</label>
                 <div class="input-group">
-                    <input id="destination" class="form-control" readonly value="{{ ride.destination.fulladdress }}">
+                    <input id="destination" class="form-control" value="{{ ride.destination.fulladdress }}">
                     <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                         <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination">
                             <i class="fa fa-clipboard"></i>
@@ -35,7 +45,12 @@
                     </span>
                 </div>
             </div>
-            {% render_form_field form.end_date '' 'datetime' %}
+            {{ form.destination.as_hidden }}
+            <div class="form-group datetime-end">
+                <label>Start date<span class="req">*</span></label>
+                <input class="form-control" type="text" value="{{ ride.end_date|date:'m/d/Y g:i A' }}">
+            </div>
+            {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
             {% render_form_field form.external_id %}
         </div>
@@ -48,13 +63,7 @@
 
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
-<!-- <script src="{{ STATIC_URL }}js/lib/moment.min.js"></script>
-<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script> -->
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
-<script src="{{ STATIC_URL }}js/apps/ride.js"></script>
-<script>
-$(function(){
-
-});
-</script>
+<script src="{{ STATIC_URL }}js/apps/ride_edit.js"></script>
 {% endblock %}

@@ -12,31 +12,4 @@ $(function(){
         }
     });
 
-    // $('.datetime input').datetimepicker({
-    //     format: 'MM/DD/YYYY hh:MM:SS A',
-    //     icons: {
-    //         time: "fa fa-clock-o",
-    //         date: "fa fa-calendar",
-    //         up: "fa fa-arrow-up",
-    //         down: "fa fa-arrow-down"
-    //     }
-    // });
-
-    $('.input-group-btn').tooltip({
-        placement: 'bottom',
-        trigger: 'manual'
-    });
-
-    var clipboard = new Clipboard('.copybtn');
-
-    clipboard.on('success', function(e) {
-        var el = $(e.trigger).parent();
-        el.tooltip('show');
-        setTimeout(function(){
-            el.tooltip('hide');
-        }, 1250);
-
-        e.clearSelection();
-    });
-
 });

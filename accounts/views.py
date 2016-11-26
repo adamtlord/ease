@@ -2,7 +2,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.forms import inlineformset_factory
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from common.decorators import anonymous_required
 from accounts.models import Customer
@@ -325,16 +325,17 @@ def profile_edit(request, template='accounts/profile_edit.html'):
     if user.is_staff:
         return redirect('dashboard')
 
+    is_self = not user.profile.on_behalf
     customer = user.get_customer()
     home = customer.home
     rider = customer.rider
 
     if request.method == 'GET':
-        customer_form = CustomerForm(prefix='cust', instance=customer)
+        customer_form = CustomerForm(prefix='cust', instance=customer, is_self=is_self)
         home_form = HomeForm(prefix='home', instance=home)
         rider_form = RiderForm(prefix='rider', instance=rider)
     else:
-        customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
+        customer_form = CustomerForm(request.POST, prefix='cust', instance=customer, is_self=is_self)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
         rider_form = RiderForm(request.POST, prefix='rider', instance=rider)
         if all([
@@ -371,7 +372,7 @@ def profile_edit(request, template='accounts/profile_edit.html'):
 
 
 @login_required
-def destinations_edit(request, template='accounts/destinations_edit.html'):
+def destination_edit(request, destination_id, template='accounts/destinations_edit.html'):
 
     user = request.user
 
@@ -379,30 +380,53 @@ def destinations_edit(request, template='accounts/destinations_edit.html'):
         return redirect('dashboard')
 
     customer = user.get_customer()
-    home = customer.destination_set.filter(home=True).first()
+    destination = get_object_or_404(Destination, pk=destination_id)
 
-    DestinationFormset = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=True)
+    if request.method == "POST":
+        destination_form = DestinationForm(request.POST, instance=destination)
 
-    if request.method == 'GET':
-        destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
+        if destination_form.is_valid():
 
-    else:
-        destination_formset = DestinationFormset(request.POST, instance=customer)
+            destination_form.save()
 
-        if destination_formset.is_valid():
-
-            destination_formset.save()
-
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully updated!'.format(customer, destination.name))
             return redirect('profile')
 
+    else:
+        destination_form = DestinationForm(instance=destination)
+
     d = {
-        'self': not user.profile.on_behalf,
-        'lovedone': user.profile.on_behalf,
         'customer': customer,
-        'destination_formset': destination_formset,
-        'home': home
+        'destination': destination,
+        'destination_form': destination_form
     }
+
+    return render(request, template, d)
+
+
+def destination_add(request, template='accounts/destination_add.html'):
+
+    user = request.user
+    customer = user.get_customer()
+
+    if request.method == "POST":
+        destination_form = DestinationForm(request.POST)
+
+        if destination_form.is_valid():
+
+            new_destination = destination_form.save(commit=False)
+            new_destination.customer = customer
+            new_destination.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+            return redirect('profile')
+
+    else:
+        destination_form = DestinationForm()
+
+    d = {
+        'customer': customer,
+        'destination_form': destination_form
+    }
+
     return render(request, template, d)

@@ -106,7 +106,7 @@ def ride_edit(request, customer_id, ride_id, template="concierge/ride_edit.html"
         form = RideForm(request.POST, instance=ride)
         if form.is_valid():
             form.save()
-            return redirect('ride_detail', customer.id, ride.id)
+            return redirect('customer_rides', customer.id)
         else:
             print
             print form.errors

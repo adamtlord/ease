@@ -13,6 +13,13 @@
                 </label>
             </span>
             <fieldset class="add-starting-point" style="display:none;">
+                <div class="form-group well well-sm">
+                    <label>Search for an Address</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        <input class="autocomplete form-control" placeholder="Enter an address" onFocus="geolocate()" type="text" data-prefix='add_start-'></input>
+                    </div>
+                </div>
                 {% render_form_field add_starting_point_form.customer %}
                 {% render_form_field add_starting_point_form.name %}
                 {% render_form_field add_starting_point_form.nickname %}
@@ -34,6 +41,13 @@
                 </label>
             </span>
             <fieldset class="add-destination" style="display:none;">
+                <div class="form-group well well-sm">
+                    <label>Search for an Address</label>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                        <input class="autocomplete form-control" placeholder="Enter an address" onFocus="geolocate()" type="text" data-prefix='add_dest-'></input>
+                    </div>
+                </div>
                 {% render_form_field add_destination_form.customer %}
                 {% render_form_field add_destination_form.name %}
                 {% render_form_field add_destination_form.nickname %}
@@ -54,6 +68,8 @@
 {% endblock %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/geocomplete.js"></script>
 <script src="{{ STATIC_URL }}js/apps/ride.min.js"></script>
-
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}
