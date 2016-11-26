@@ -47,7 +47,7 @@
             </div>
             {{ form.destination.as_hidden }}
             <div class="form-group datetime-end">
-                <label>Start date<span class="req">*</span></label>
+                <label>End date<span class="req">*</span></label>
                 <input class="form-control" type="text" value="{{ ride.end_date|date:'m/d/Y g:i A' }}">
             </div>
             {{ form.end_date.as_hidden }}
