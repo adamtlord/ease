@@ -3,20 +3,38 @@
 {% load map_tags %}
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
-<div class="page-header">
-    <h3>Ride from {{ ride.start.fullname }} to {{ ride.destination.fullname }}, {{ ride.start_date|date:"SHORT_DATE_FORMAT" }} {% if not ride.end_date %}<span class="label label-warning">IN PROGRESS</span>{% endif %}</h3>
-</div>
+
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">
-            {% render_form_field form.start %}
+            <div class="form-group">
+                <label>Starting point</label>
+                <div class="input-group">
+                    <input id="starting_point" class="form-control" readonly value="{{ ride.start.fulladdress }}">
+                    <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                        <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point">
+                            <i class="fa fa-clipboard"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
             {% render_form_field form.start_date '' 'datetime' %}
             {% render_form_field form.cost %}
             {% render_form_field form.service %}
             {% render_form_field form.customer %}
         </div>
         <div class="col-sm-6">
-            {% render_form_field form.destination %}
+            <div class="form-group">
+                <label>Destination</label>
+                <div class="input-group">
+                    <input id="destination" class="form-control" readonly value="{{ ride.destination.fulladdress }}">
+                    <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                        <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination">
+                            <i class="fa fa-clipboard"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
             {% render_form_field form.end_date '' 'datetime' %}
             {% render_form_field form.distance %}
             {% render_form_field form.external_id %}
@@ -29,8 +47,14 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
 <!-- <script src="{{ STATIC_URL }}js/lib/moment.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script> -->
 <script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/ride.js"></script>
+<script>
+$(function(){
+
+});
+</script>
 {% endblock %}

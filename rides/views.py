@@ -10,13 +10,15 @@ from rides.forms import StartRideForm, DestinationForm, RideForm
 def customer_rides(request, customer_id, template="concierge/customer_rides.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
-    rides_in_progress = Ride.in_progress.filter(customer=customer)
-    completed_rides = Ride.objects.filter(customer=customer).exclude(id__in=rides_in_progress.values_list('id', flat=True))
+    rides = Ride.objects.filter(customer=customer)
+    # rides_in_progress = Ride.in_progress.filter(customer=customer)
+    # completed_rides = Ride.objects.filter(customer=customer).exclude(id__in=rides_in_progress.values_list('id', flat=True))
 
     d = {
         'customer': customer,
-        'rides_in_progress': rides_in_progress,
-        'completed_rides': completed_rides,
+        'rides': rides,
+        # 'rides_in_progress': rides_in_progress,
+        # 'completed_rides': completed_rides,
         'ride_page': True
     }
     return render(request, template, d)

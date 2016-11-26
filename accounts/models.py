@@ -15,6 +15,7 @@ from localflavor.us.models import PhoneNumberField
 from common.models import Location
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
+from rides.models import Ride
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -174,6 +175,12 @@ class Customer(Contact):
     @property
     def rides(self):
         return self.ride_set.all()
+
+    @property
+    def rides_this_month(self):
+        today = datetime.datetime.now()
+        ride_count = Ride.objects.filter(customer=self).filter(end_date__month=today.month).count()
+        return ride_count
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)

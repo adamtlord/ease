@@ -6,7 +6,7 @@ from common.models import Location
 from common.utils import geocode_address
 
 from rides.managers import RidesInProgressManager
-from rides.const import SERVICES, UBER
+from rides.const import SERVICES, UBER, LYFT
 
 
 class Destination(Location):
@@ -46,7 +46,7 @@ class Destination(Location):
     @property
     def fulladdress(self):
         street2 = ' {}'.format(self.street2) if self.street2 else ''
-        return '{} {} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code)
+        return '{}{} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code)
 
     def __unicode__(self):
         if self.name and self.nickname:
@@ -63,7 +63,7 @@ class Ride(models.Model):
     destination = models.ForeignKey('rides.Destination', related_name='ending_point')
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
-    service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=UBER)
+    service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=LYFT)
     external_id = models.CharField(max_length=64, blank=True, null=True)
     invoiced = models.BooleanField(default=False)
     notes = notes = models.TextField(blank=True, null=True)

@@ -81,6 +81,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'django_common.context_processors.common_settings',
+
+                'common.context_processors.global_settings'
             ],
         },
     },

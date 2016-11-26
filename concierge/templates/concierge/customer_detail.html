@@ -2,46 +2,27 @@
 {% load map_tags %}
 
 {% block customer_content %}
-{% if rides_in_progress %}
-<div class="rides-in-progress">
-<h3>Rides in Progress</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>From</th>
-            <th>To</th>
-            <th>Started</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ride in rides_in_progress %}
-        <tr>
-            <td>{{ ride.start.display_name }}</td>
-            <td>{{ ride.destination.display_name }}</td>
-            <td>{{ ride.start_date }}</td>
-            <td><a href="{% url 'ride_end' customer.id ride.id %}" class="btn btn-danger">End Ride</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div>
-{% endif %}
+
     <div class="row">
         <div class="col-sm-8">
             <table class="table">
                 <tbody>
-                    {% if customer.know_as or customer.dob %}
-                    <tr>
-                        <td>{% if customer.known_as %}"{{ customer.known_as }}"{% endif %}</td>
-                        <td>
-                            {% if customer.dob %}
-                                Age {{ customer.age }}
-                            {% endif %}
-                        </td>
-                    </tr>
+                    {% if customer.know_as %}
+                        <tr>
+                            <td>Known as</td>
+                            <td>"{{ customer.known_as }}"</td>
+                        </tr>
+                    {% endif %}
+                    {% if customer.dob %}
+                        <tr>
+                            <td>Age</td>
+                            <td>
+                                {{ customer.age }}
+                            </td>
+                        </tr>
                     {% endif %}
                     <tr>
+                        <td>Home address</td>
                         <td>
                             {{ customer.home.street1 }}<br>
                             {% if customer.home.street2 %}
@@ -51,25 +32,43 @@
                             {{ customer.home.state }}
                             {{ customer.home.zip_code }}
                         </td>
+                    {% if customer.residence_type %}
+                    <tr>
+                        <td>Residence Type
                         <td>
-                            {% if customer.residence_type %}
-                                <span class="label label-default">
-                                    {{ customer.get_residence_type_display }}
-                                </span>
-                            {% endif %}
-                            {% if customer.residence_instructions %}
-                                <p>Residence Instructions: {{ customer.residence_instructions }}</p>
+                            {{ customer.get_residence_type_display }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% if customer.residence_instructions %}
+                    <tr>
+                        <td>Residence instructions</td>
+                        <td>
+                            <p>{{ customer.residence_instructions }}</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% if customer.home_phone %}
+                    <tr>
+                        <td>Home phone</td>
+                        <td>{{ customer.home_phone }}
+                            (H){% if customer.preferred_phone == 'h' %}
+                            <i class="fa fa-check text-success"></i>
                             {% endif %}
                         </td>
                     </tr>
+                    {% endif %}
+                    {% if customer.mobile_phone %}
+                    <tr>
+                        <td>Mobile phone</td>
+                        <td>
+                            {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <td>
-                            {% if customer.home_phone %}
-                                {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
-                            {% endif %}
-                            {% if customer.mobile_phone %}
-                                {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
-                            {% endif %}
+                            Email
                         </td>
                         <td>
                             <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
@@ -79,11 +78,9 @@
                         <tr>
                             <td>Riders:</td>
                             <td>
-                                <ul>
-                                    {% for rider in riders %}
-                                        <li>{{ rider.first_name }} {{ rider.last_name }}</li>
-                                    {% endfor %}
-                                </ul>
+                                {% for rider in riders %}
+                                    {{ rider.first_name }} {{ rider.last_name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
                             </td>
                         </tr>
                     {% endif %}

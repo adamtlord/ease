@@ -2,9 +2,30 @@
 
 {% block content %}
     <h2>Customers</h2>
-    <ul>
-        {% for customer in customers %}
-            <li><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></li>
-        {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <thead>
+            <th>Name</th>
+            <th>Home</th>
+            <th>Phone</th>
+            <th>Rides Taken</th>
+            <th>Last ride</th>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
+                <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
+                <td>{% if customer.home_phone %}
+                        {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+                    {% endif %}
+                    {% if customer.mobile_phone %}
+                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+                    {% endif %}
+                </td>
+                <td>{{ customer.rides|length }}</td>
+                <td>{% if customer.rides %}{{ customer.rides.0.end_date|timesince }} ago{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

@@ -7,6 +7,10 @@
 <h3>Add a Destination for {{ customer.full_name }}</h3>
 <div class="row">
     <div class="col-sm-6">
+        <div class="form-group well well-sm">
+            <label>Address Search</label>
+            <input class="autocomplete form-control" placeholder="Enter an address" onFocus="geolocate()" type="text" data-prefix=''></input>
+        </div>
         <form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
             {{ destination_form.non_field_errors }}
             <fieldset class="destination">
@@ -27,4 +31,8 @@
     </div>
 
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/geocomplete.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}

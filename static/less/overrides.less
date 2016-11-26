@@ -1,7 +1,8 @@
 .page-header {
     margin-top:@line-height-computed;
     &.customer {
-        border-bottom:none;
+        margin-top:0;
+        padding-bottom: @line-height-computed - 1;
     }
 }
 
@@ -11,7 +12,7 @@
 
 .form-control {
     &:extend(.form-control all);
-    padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .75;
+    // padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .75;
 }
 
 .radio label {
@@ -24,7 +25,8 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .label {
-    padding-bottom: 0.1em;
+    // padding-bottom: 0.1em;
+    font-weight:500;
 }
 
 .twitter-typeahead {
@@ -54,3 +56,14 @@ input[type="radio"], input[type="checkbox"] {
 
     }
 }
+
+h1, h2, h3,
+.h1, .h2, .h3 {
+    letter-spacing: -0.025em;
+}
+
+.btn.btn-block {
+    padding-top: @padding-large-vertical;
+    padding-bottom: @padding-large-vertical;
+}
+

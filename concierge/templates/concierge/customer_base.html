@@ -10,6 +10,10 @@
     <div class="row">
         <div class="col-sm-6">
             <h1>{{ customer }}</h1>
+            <span class="label label-success">Plan Type</span>
+            {% if customer.rides_this_month %}
+            {{ customer.rides_this_month }} ride{% if customer.rides_this_month > 1 %}s{% endif %} this month
+            {% endif %}
         </div>
         <div class="col-sm-6">
             <ul class="nav nav-pills">
