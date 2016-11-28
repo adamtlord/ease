@@ -13,6 +13,7 @@
                 <th>To</th>
                 <th>Started</th>
                 <th>Ended</th>
+                <th>Distance</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,6 +28,10 @@
                     {{ ride.end_date }}
                     {% else %}
                     <span class="label label-warning">In progress</span>
+                    {% endif %}
+                </td>
+                <td>{% if ride.distance %}
+                        {{ ride.distance }} mi
                     {% endif %}
                 </td>
                 <td><a href="{% url 'ride_edit' customer.id ride.id %}" class="btn btn-default">Edit</a></td>

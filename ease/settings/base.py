@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_common',
 
     'accounts',
+    'billing',
     'common',
     'concierge',
     'marketing',

@@ -28,6 +28,12 @@
                 {% if lovedone %}
                     {% render_form_field customer_form.first_name %}
                     {% render_form_field customer_form.last_name %}
+                    {% render_form_field customer_form.known_as %}
+                    <div class="form-group date">
+                        <label>Date of birth</label>
+                        <input class="form-control" type="text" value="">
+                    </div>
+                    {{ customer_form.dob.as_hidden }}
                     {% render_form_field customer_form.email %}
                 {% endif %}
                 {% if self %}
@@ -84,5 +90,6 @@
 </div>
 {% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.js"></script>
 {% endblock %}

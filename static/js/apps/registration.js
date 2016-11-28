@@ -64,4 +64,16 @@ $(function() {
     // Input masking
     $('.phone-mask input').mask('000-000-0000');
     $('.zip-mask input').mask('00000-0000');
+
+    // Datepicker
+    $(".date input").datetimepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        fontAwesome: true,
+        weekStart: 1,
+        todayHighlight: false,
+        linkField: "id_cust-dob",
+        linkFormat: "yyyy-mm-dd"
+    });
+
 });

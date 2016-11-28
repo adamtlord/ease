@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 from common.models import Location
-from common.utils import geocode_address
+from common.utils import geocode_address, get_distance
 
 from rides.managers import RidesInProgressManager
 from rides.const import SERVICES, UBER, LYFT
@@ -18,7 +18,7 @@ class Destination(Location):
 
     @property
     def ltlng(self):
-        return '{},{}'.format(self.lattitude, self.longitute)
+        return '{},{}'.format(self.latitude, self.longitude)
 
     def save(self, *args, **kwargs):
         super(Destination, self).save(*args, **kwargs)
@@ -71,6 +71,16 @@ class Ride(models.Model):
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
+
+    def save(self, *args, **kwargs):
+        super(Ride, self).save(*args, **kwargs)
+        if self.start and self.destination and not self.distance:
+            try:
+                distance = get_distance(self)
+                self.distance = round(distance, 4)
+            except Exception:
+                pass
+            super(Ride, self).save(*args, **kwargs)
 
     def __unicode__(self):
         if self.customer:

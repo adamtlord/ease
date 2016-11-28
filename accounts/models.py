@@ -15,6 +15,7 @@ from localflavor.us.models import PhoneNumberField
 from common.models import Location
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
+from billing.models import StripeCustomer, Plan
 from rides.models import Ride
 
 
@@ -151,6 +152,9 @@ class Customer(Contact):
     home_phone = PhoneNumberField(blank=True, null=True)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
+    subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
+    ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
+    plan = models.ForeignKey(Plan, blank=True, null=True)
 
     @property
     def full_name(self):

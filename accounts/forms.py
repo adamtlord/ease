@@ -17,6 +17,8 @@ CUSTOM_USER_FIELDS = [
 CUSTOMER_FIELDS = [
     'first_name',
     'last_name',
+    'known_as',
+    'dob',
     'email',
     'home_phone',
     'mobile_phone',
@@ -105,18 +107,32 @@ class CustomUserRegistrationForm(RegistrationForm):
 
 
 class CustomerForm(forms.ModelForm):
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
     residence_instructions = forms.CharField(
         label="Anything we should know about this home pickup location?",
         help_text="For instance, is there a steep driveway and we should send the driver to the end of it? Is there a gate code?",
         widget=forms.Textarea(attrs={'rows': 5}),
         required=False
     )
+    known_as = forms.CharField(required=False, help_text="Does your loved one go by something other than his or her first name?")
+    dob = forms.DateField(required=False, label="Date of birth")
 
     class Meta:
         model = Customer
         fields = CUSTOMER_FIELDS
+
+    def clean(self):
+        cleaned_data = super(CustomerForm, self).clean()
+        home_phone = cleaned_data.get('home_phone')
+        mobile_phone = cleaned_data.get('mobile_phone')
+
+        if not home_phone and not mobile_phone:
+            msg = "Please include at least one phone number."
+            self.add_error('home_phone', msg)
+            self.add_error('mobile_phone', msg)
+        if home_phone and not mobile_phone:
+            cleaned_data['preferred_phone'] = 'h'
+        if mobile_phone and not home_phone:
+            cleaned_data['preferred_phone'] = 'm'
 
     def __init__(self, *args, **kwargs):
         is_self = kwargs.pop('is_self')

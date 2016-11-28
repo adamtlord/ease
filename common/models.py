@@ -4,6 +4,22 @@ from django.db import models
 from localflavor.us.models import USStateField, USZipCodeField
 
 
+class AbstractEnumModel(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=64)
+    display_name = models.CharField(max_length=128, blank=True, null=True)
+    CHOICES = ()
+
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return self.name
+
+    def get_dict(self):
+        return dict(self.CHOICES)
+
+
 class Location(models.Model):
     """ An abstract model for storing destinations and addresses """
     name = models.CharField(max_length=50, blank=True, null=True)
