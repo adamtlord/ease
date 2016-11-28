@@ -18,8 +18,11 @@
         .list-unstyled;
         .alert;
         .alert-danger;
+        padding: @alert-padding / 2;
         font-size:@font-size-small;
         border-top-width:0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
     }
     &.no-label label {
         display: none;
@@ -29,6 +32,10 @@
     }
 }
 
+.has-error .form-control {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
 .stacked-fieldset {
     padding:@line-height-computed 0 0;
     margin:@line-height-computed 0;
@@ -45,7 +52,6 @@ fieldset.rider + fieldset.rider {
 fieldset + fieldset {
     legend {
         padding-top:@line-height-computed;
-
     }
 }
 

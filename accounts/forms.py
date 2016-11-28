@@ -114,7 +114,7 @@ class CustomerForm(forms.ModelForm):
         required=False
     )
     known_as = forms.CharField(required=False, help_text="Does your loved one go by something other than his or her first name?")
-    dob = forms.DateField(required=False, label="Date of birth")
+    dob = forms.DateField(required=False, label="Date of birth", help_text="Please use the format YYYY-MM-DD")
 
     class Meta:
         model = Customer
@@ -198,7 +198,9 @@ class LovedOnePreferencesForm(forms.ModelForm):
         choices=((True, 'Yes'), (False, 'No')),
         widget=forms.RadioSelect,
         label="Would you like to receive ride updates?",
-        required=True,
+        required=False,
+        # Not available through Lyft
+        # required=True,
         help_text="We will only request this message be sent to you if the rider agrees to it.")
 
     class Meta:

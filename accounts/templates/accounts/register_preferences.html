@@ -49,11 +49,12 @@
                 {% render_form_field lovedone_form.relationship %}
                 {% render_form_field lovedone_form.mobile_phone '' 'phone-mask' %}
 
+            {% comment Not available through Lyft %}
                 <p>Arrive, through Uber, has the ability to let you know when your loved one is about to be picked up.
                 Uber can text you to let you know that a ride is on the way, and will include a hyperlink that will allow you
                 to track the car from the point of the order until drop-off.</p>
                 {% render_form_field lovedone_form.receive_updates %}
-                <p></p>
+            {% endcomment %}
             {% endif %}
 
             <div class="form-actions">

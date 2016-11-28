@@ -46,7 +46,7 @@ function fillInAddress() {
   var prefix = this.prefix;
   for (var i = 0; i < place.address_components.length; i++) {
     var addressType = place.address_components[i].types[0];
-    if (componentForm[addressType]) {
+  if (componentForm[addressType]) {
       var val = place.address_components[i][componentForm[addressType]];
       if(addressType == 'street_number'){
         val = val + ' ';
@@ -56,7 +56,8 @@ function fillInAddress() {
       input.val(input.val() + val);
     }
   }
-  if(place.name){
+
+  if(place.types[0] !== 'street_address' && place.name){
     $('#id_' + prefix + 'name').val(place.name);
   }
 }

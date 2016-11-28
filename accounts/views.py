@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from common.decorators import anonymous_required
 from accounts.models import Customer
@@ -116,27 +117,30 @@ def register_self_destinations(request, template='accounts/register_destinations
     customer = request.user.get_customer()
     home = customer.destination_set.filter(home=True).first()
 
-    DestinationFormset = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=False)
+    if request.method == "POST":
+        destination_form = DestinationForm(request.POST)
 
-    if request.method == 'GET':
-        destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
+        if destination_form.is_valid():
+
+            new_destination = destination_form.save(commit=False)
+            new_destination.customer = customer
+            new_destination.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+
+            if 'save_done' in destination_form.data:
+                return redirect('profile')
+
     else:
-        destination_formset = DestinationFormset(request.POST, instance=customer)
-
-        if destination_formset.is_valid():
-
-            destination_formset.save()
-
-            return redirect('register_self_complete')
+        destination_form = DestinationForm()
 
     d = {
-        'self': True,
+        'customer': customer,
+        'destination_form': destination_form,
+        'done_url': reverse('register_self_complete'),
+        'home': home,
         'lovedone': False,
-        'destination_formset': destination_formset,
-        'home': home
+        'self': True,
     }
     return render(request, template, d)
 
@@ -260,28 +264,32 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
     customer = request.user.get_customer()
     home = customer.destination_set.filter(home=True).first()
 
-    DestinationFormset = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=False)
+    if request.method == "POST":
+        destination_form = DestinationForm(request.POST)
 
-    if request.method == 'GET':
-        destination_formset = DestinationFormset(instance=customer, queryset=Destination.objects.exclude(home=True))
+        if destination_form.is_valid():
+
+            new_destination = destination_form.save(commit=False)
+            new_destination.customer = customer
+            new_destination.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+
+            if 'save_done' in destination_form.data:
+                return redirect('profile')
+
+            return redirect('register_lovedone_destinations')
+
     else:
-        destination_formset = DestinationFormset(request.POST, instance=customer)
-
-        if destination_formset.is_valid():
-
-            destination_formset.save()
-
-            return redirect('profile')
+        destination_form = DestinationForm()
 
     d = {
-        'self': False,
-        'lovedone': True,
         'customer': customer,
-        'destination_formset': destination_formset,
-        'home': home
+        'destination_form': destination_form,
+        'done_url': reverse('register_lovedone_complete'),
+        'home': home,
+        'lovedone': True,
+        'self': False,
     }
     return render(request, template, d)
 

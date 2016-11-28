@@ -50,6 +50,8 @@ class DestinationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DestinationForm, self).__init__(*args, **kwargs)
+        for field in ['name', 'street1', 'city', 'state', 'zip_code']:
+            self.fields[field].required = True
         for field in DESTINATION_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
 

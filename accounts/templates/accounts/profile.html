@@ -28,7 +28,10 @@
                 </tr>
                 <tr>
                     <th>{% if not lovedone %}Your {% endif %}Contact Info:</th>
-                    <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a><br>
+                    <td>
+                        {% if customer.email %}
+                            <a href="mailto:{{ customer.email }}">{{ customer.email }}</a><br>
+                        {% endif %}
                         {% if customer.home_phone %}
                             {{ customer.home_phone }} (H)<br>
                         {% endif %}

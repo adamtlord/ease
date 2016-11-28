@@ -10,11 +10,6 @@
     border-bottom-width:0;
 }
 
-.form-control {
-    &:extend(.form-control all);
-    // padding: @padding-base-vertical @padding-base-vertical * 1.5 @padding-base-vertical * .75;
-}
-
 .radio label {
     width:100%;
     margin-bottom:5px;
@@ -67,4 +62,19 @@ h1, h2, h3,
     padding-bottom: @padding-large-vertical;
 }
 
+.btn {
+    .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
+}
+.btn-lg {
+  .button-size(@padding-large-vertical * 1.25; @padding-large-horizontal * 1.25; @font-size-large; @line-height-large; @btn-border-radius-large);
+}
+.btn-sm {
+    .button-size(@padding-small-vertical; @padding-small-horizontal; @font-size-small; @line-height-small; @btn-border-radius-small);
+}
+.btn-xs {
+    .button-size(@padding-xs-vertical; @padding-xs-horizontal; @font-size-small; @line-height-small; @btn-border-radius-small);
+}
+.btn.btn-block {
+    white-space: normal;
+}
 

@@ -29,53 +29,74 @@
 
     <p>Where does your loved one go most frequently?</p>
 {% endif %}
-
-<form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
-    {% if errors %}
-        {% if errors|length == 1 %}
-            Please correct the error below.
-        {% else %}
-            Please correct the errors below.
+<div class="row">
+    <div class="col-sm-4 col-sm-push-8">
+        <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Home</h3>
+        {{ home.street1 }}<br>
+        {% if home.street2 %}
+            {{ home.street2 }}<br>
         {% endif %}
-        {{ home_form.non_field_errors }}
-        {% for dict in destination_formset.errors %}
-            {% for error in dict.values %}
-                {{ error }}
-            {% endfor %}
-        {% endfor %}
-    {% endif %}
-    <div class="row">
-        <div class="col-sm-4 col-sm-push-8">
-            <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Home</h3>
-            {{ home.street1 }}<br>
-            {% if home.street2 %}
-                {{ home.street2 }}<br>
-            {% endif %}
-            {{ home.city }},
-            {{ home.state }}
-            {{ home.zip_code }}
-            {% static_map home %}
-        </div>
-        <div class="col-sm-8 col-sm-pull-4">
+        {{ home.city }},
+        {{ home.state }}
+        {{ home.zip_code }}
+        {% static_map home %}
+        {% if customer.destinations %}
             <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Destinations</h3>
-            {{ destination_formset.management_form }}
-            {% for form in destination_formset.forms %}
-                <fieldset class="destination">
-                    {% render_form_field form.name %}
-                    {% render_form_field form.nickname %}
-                    {% render_form_field form.street1 %}
-                    {% render_form_field form.street2 '', 'no-label' %}
-                    <div class="address-inline">
-                        {% render_form_field form.city %}
-                        {% render_form_field form.state '' 'state' %}
-                        {% render_form_field form.zip_code '' 'zip' %}
-                    </div>
-                </fieldset>
-            {% endfor %}
-            <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Save Destinations" />
+            <ul class="list-group">
+                {% for destination in customer.destinations %}
+                    <li class="list-group-item">
+                        <a href="{% url 'destination_edit' destination.id %}" class="btn btn-default btn-sm pull-right">Edit</a>
+                        {{ destination.fullname }}<br>
+                        {{ destination.street1 }}<br>
+                        {% if destination.street2 %}
+                        {{ destination.street2 }}<br>
+                        {% endif %}
+                        {{ destination.city }},
+                        {{ destination.state }}
+                        {{ destination.zip_code }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="col-sm-8 col-sm-pull-4">
+        <h3>Add a Destination</h3>
+        <div class="form-group well well-sm">
+            <label>Search for a Destination</label>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input class="autocomplete form-control" placeholder="Enter an address" onFocus="geolocate()" type="text" data-prefix=''></input>
             </div>
         </div>
+        <form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
+            {{ destination_form.non_field_errors }}
+            <fieldset class="destination">
+                {% render_form_field destination_form.name %}
+                {% render_form_field destination_form.nickname %}
+                {% render_form_field destination_form.street1 %}
+                {% render_form_field destination_form.street2 '', 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field destination_form.city %}
+                    {% render_form_field destination_form.state '' 'state' %}
+                    {% render_form_field destination_form.zip_code '' 'zip zip-mask' %}
+                </div>
+            </fieldset>
+            <div class="form-actions">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <input type="submit" name="save_add" class="btn btn-success btn-block" value="Save Destination and Add Another" />
+                    </div>
+                    <div class="col-xs-6">
+                        <input type="submit" name="save_done" class="btn btn-primary btn-block" value="Save Destination and Move On" />
+                    </div>
+                </div>
+            </div>
+            <p class="text-center"><a class="btn btn-default" href="{{ done_url }}">Done with Destinations</a><br><em>(You can always add more or change them later)</em></p>
+        </form>
     </div>
-</form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/geocomplete.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>
 {% endblock %}
