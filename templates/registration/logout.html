@@ -2,7 +2,7 @@
 {% block title %}Logged out{% endblock %}
 {% block content %}
 
-<p>You're logged out.</p>
-<p><a href="{% url 'auth_login' %}">Log back in?</a> or <a href="{% url 'homepage' %}">go to the site?</a></p>
+<p class="alert alert-success">You're logged out.</p>
+<p><a href="{% url 'auth_login' %}">Click here to log back in</a></p>
 
 {% endblock %}

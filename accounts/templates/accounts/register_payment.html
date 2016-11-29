@@ -1,0 +1,108 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block title %}Choose a Plan{% endblock title %}
+{% block header_includes %}
+    {{ block.super }}
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+        Stripe.setPublishableKey('{{ STRIPE_PUBLISHABLE_KEY}}');
+    </script>
+{% endblock header_includes %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>Choose a Plan</h2>
+</div>
+{% if self %}
+{% endif %}
+
+{% if lovedone %}
+{% endif %}
+
+<div class="row">
+    <div class="col-sm-6">
+        <form action="" id="user_form" method="post">{% csrf_token %}
+            {% render_form_field payment_form.last_4_digits %}
+            {% render_form_field payment_form.stripe_id %}
+
+            <div id="credit-card-errors" style="display:none">
+                <div class="alert alert-danger" id="stripe-error-message"></div>
+            </div>
+
+            <fieldset>
+                <legend>Billing Information</legend>
+                {% render_form_field payment_form.first_name %}
+                {% render_form_field payment_form.last_name %}
+                {% render_form_field payment_form.email %}
+
+                <div class="cc-inline">
+                    <div class="form-group cc-mask">
+                        <label for="credit_card_number">Credit card number<span class="req">*</span></label>
+                        <input class="form-control" id="credit_card_number" type="text">
+                    </div>
+                    <div class="form-group cvv">
+                        <label for="cvv">CVV<span class="req">*</span></label>
+                        <input class="form-control" id="cvv" type="text">
+                    </div>
+                </div>
+
+                <div class="expiry-inline">
+                    <div class="form-group">
+                        <label for="expiry_date">Expiry date<span class="req">*</span></label>
+                        <select class="form-control" id="expiry_month">
+                        {% for month in months %}
+                            <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+                        {% endfor %}
+                        </select>
+                        <select class="form-control year" id="expiry_year">
+                        {% for year in years %}
+                            <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-actions">
+                <input class="btn btn-primary" id="user_submit" name="commit" type="submit" value="Submit">
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+$(function() {
+  $("#user_form").submit(function() {
+    var form = this;
+    var card = {
+        number:   $("#credit_card_number").val(),
+        expMonth: $("#expiry_month").val(),
+        expYear:  $("#expiry_year").val(),
+        cvc:      $("#cvv").val()
+    };
+
+    Stripe.createToken(card, function(status, response) {
+        if (status === 200) {
+            console.log(status, response);
+            $("#credit-card-errors").hide();
+            $("#id_last_4_digits").val(response.card.last4);
+            $("#id_stripe_id").val(response.id);
+            form.submit();
+        } else {
+            $("#stripe-error-message").text(response.error.message);
+            $("#credit-card-errors").show();
+            $("#user_submit").attr("disabled", false);
+        }
+    });
+
+    return false;
+
+    });
+    $('.cc-mask input').mask('0000-0000-0000-0000');
+});
+</script>
+{% endblock %}

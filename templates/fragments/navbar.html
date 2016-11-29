@@ -12,7 +12,7 @@
             {% endif %}
             {% if request.user.is_authenticated %}
                 {% if not request.user.is_staff %}
-                    <li><a href="{% url 'profile' %}">{{ request.user }}</a></li>
+                    <li><a href="{% url 'profile' %}">{{ request.user }}'s Profile</a></li>
                 {% endif %}
                 <li><a href="{% url 'auth_logout' %}">Log out</a></li>
             {% endif %}

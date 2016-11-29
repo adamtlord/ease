@@ -3,7 +3,10 @@
 {% load map_tags %}
 {% block title %}Add a Destination{% endblock title %}
 {% block content %}
-
+<ol class="breadcrumb">
+  <li><a href="{% url 'profile' %}">Profile</a></li>
+  <li class="active">Add Destination</li>
+</ol>
 <h3>Add a Destination</h3>
 <div class="row">
     <div class="col-sm-6">

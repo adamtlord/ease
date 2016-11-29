@@ -70,7 +70,7 @@ form.form-login {
 }
 
 .address-inline {
-     @media screen and (min-width: @screen-md-min) {
+    @media screen and (min-width: @screen-md-min) {
         .form-group {
             margin-right:5%;
             float:left;
@@ -83,5 +83,33 @@ form.form-login {
                 margin-right:0;
             }
         }
+    }
+}
+
+.cc-inline {
+    .clearfix;
+    @media screen and (min-width: @screen-md-min) {
+        .form-group {
+            margin-right:5%;
+            float:left;
+            width: 70%;
+            &.cvv {
+                width:25%;
+                margin-right:0;
+            }
+        }
+    }
+}
+
+.expiry-inline {
+    .clearfix;
+    label {
+        display:block;
+    }
+    select {
+        margin-right:5%;
+        float:left;
+        width: 30%;
+
     }
 }

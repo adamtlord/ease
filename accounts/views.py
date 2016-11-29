@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -9,6 +11,7 @@ from common.decorators import anonymous_required
 from accounts.models import Customer
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
+from billing.forms import PaymentForm
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
 
@@ -83,14 +86,57 @@ def register_self(request, template='accounts/register.html'):
 
 
 @login_required
+def register_self_payment(request, template='accounts/register_payment.html'):
+
+    customer = request.user.get_customer()
+
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        if payment_form.is_valid():
+            new_stripe_customer = payment_form.save()
+            customer.subscription_account = new_stripe_customer
+            customer.ride_account = new_stripe_customer
+            # TODO: add plan to this form
+            # customer.plan = payment_form.cleaned_data['plan']
+            customer.save()
+            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+
+            return redirect('register_self_destinations')
+        else:
+            print
+            print payment_form.errors
+            print
+    else:
+        payment_form = PaymentForm(initial={
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'email': request.user.email,
+        })
+
+    soon = datetime.date.today() + datetime.timedelta(days=30)
+
+    d = {
+        'self': True,
+        'lovedone': False,
+        'customer': customer,
+        'payment_form': payment_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'soon': {
+            'month': soon.month,
+            'year': soon.year
+        }
+    }
+
+    return render(request, template, d)
+
+
+@login_required
 def register_self_preferences(request, template='accounts/register_preferences.html'):
 
     customer = request.user.get_customer()
 
-    if request.method == 'GET':
-        preferences_form = CustomerPreferencesForm(instance=customer)
-        lovedone_form = LovedOneForm()
-    else:
+    if request.method == 'POST':
         preferences_form = CustomerPreferencesForm(request.POST, instance=customer)
         lovedone_form = LovedOneForm(request.POST)
 
@@ -101,6 +147,9 @@ def register_self_preferences(request, template='accounts/register_preferences.h
             lovedone.save()
 
             return redirect('register_self_destinations')
+    else:
+        preferences_form = CustomerPreferencesForm(instance=customer)
+        lovedone_form = LovedOneForm()
 
     d = {
         'self': True,
@@ -438,3 +487,13 @@ def destination_add(request, template='accounts/destination_add.html'):
     }
 
     return render(request, template, d)
+
+
+def destination_delete(request, destination_id):
+
+    destination = get_object_or_404(Destination, pk=destination_id)
+    deleted = destination.delete()
+    if deleted:
+        messages.add_message(request, messages.SUCCESS, 'Destination successfully deleted')
+
+    return redirect('profile')

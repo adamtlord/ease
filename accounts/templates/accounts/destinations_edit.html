@@ -3,7 +3,10 @@
 {% load map_tags %}
 {% block title %}Edit Destination{% endblock title %}
 {% block content %}
-
+<ol class="breadcrumb">
+  <li><a href="{% url 'profile' %}">Profile</a></li>
+  <li class="active">Edit Destination</li>
+</ol>
 <h3>Editing {{ destination.name }}</h3>
 <div class="row">
     <div class="col-sm-6">
@@ -24,7 +27,8 @@
                 {% endfor %}
             </fieldset>
             <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Save Destination" />
+                <input type="submit" class="btn btn-primary pull-left" value="Save Destination" />
+                <a href="{% url 'destination_delete' destination.id %}" class="btn btn-danger pull-right">Delete Destination</a>
             </div>
         </form>
     </div>

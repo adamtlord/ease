@@ -7,14 +7,14 @@ from common.models import AbstractEnumModel
 
 class Plan(AbstractEnumModel):
 
-    STANDARD = 1
-    MONTHLY = 2
-    GIFT = 3
+    BASIC = 1
+    NEIGHBORHOOD = 2
+    UL_GIFT = 3
 
     CHOICES = (
-        (STANDARD, 'Standard'),
-        (MONTHLY, 'Rides per month'),
-        (GIFT, 'Unlimited per month'),
+        (BASIC, 'Basic Membership'),
+        (NEIGHBORHOOD, 'Neighborhod Subscription'),
+        (UL_GIFT, 'Unlimited Gift Certificate'),
     )
 
     unlimited_rides = models.BooleanField(default=False)
