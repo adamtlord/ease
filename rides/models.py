@@ -66,6 +66,7 @@ class Ride(models.Model):
     service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=LYFT)
     external_id = models.CharField(max_length=64, blank=True, null=True)
     invoiced = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
     notes = notes = models.TextField(blank=True, null=True)
     fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
 

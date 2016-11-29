@@ -25,44 +25,55 @@
     <div class="col-sm-6">
         <form action="" id="user_form" method="post">{% csrf_token %}
             {% render_form_field payment_form.last_4_digits %}
-            {% render_form_field payment_form.stripe_id %}
+            {% render_form_field payment_form.stripe_token %}
 
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
 
             <fieldset>
+                {% render_form_field payment_form.plan %}
                 <legend>Billing Information</legend>
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
-
-                <div class="cc-inline">
-                    <div class="form-group cc-mask">
-                        <label for="credit_card_number">Credit card number<span class="req">*</span></label>
-                        <input class="form-control" id="credit_card_number" type="text">
-                    </div>
-                    <div class="form-group cvv">
-                        <label for="cvv">CVV<span class="req">*</span></label>
-                        <input class="form-control" id="cvv" type="text">
-                    </div>
+                <div class="form-group zip-mask">
+                    <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
+                    <input class="form-control" id="billing_zip" type="text">
                 </div>
-
-                <div class="expiry-inline">
+                {% if stripe_customer %}
                     <div class="form-group">
-                        <label for="expiry_date">Expiry date<span class="req">*</span></label>
-                        <select class="form-control" id="expiry_month">
-                        {% for month in months %}
-                            <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
-                        {% endfor %}
-                        </select>
-                        <select class="form-control year" id="expiry_year">
-                        {% for year in years %}
-                            <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
-                        {% endfor %}
-                        </select>
+                        <label>Credit card on file</label>
+                        <input type="text" class="form-control" readonly value="****-****-****-{{ stripe_customer.last_4_digits }}" />
                     </div>
-                </div>
+                {% else %}
+                    <div class="cc-inline">
+                        <div class="form-group cc-mask">
+                            <label for="credit_card_number">Credit card number<span class="req">*</span></label>
+                            <input class="form-control" id="credit_card_number" type="text">
+                        </div>
+                        <div class="form-group cvv">
+                            <label for="cvv">CVV<span class="req">*</span></label>
+                            <input class="form-control" id="cvv" type="text">
+                        </div>
+                    </div>
+
+                    <div class="expiry-inline">
+                        <div class="form-group">
+                            <label for="expiry_date">Expiry date<span class="req">*</span></label>
+                            <select class="form-control" id="expiry_month">
+                            {% for month in months %}
+                                <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                            </select>
+                            <select class="form-control year" id="expiry_year">
+                            {% for year in years %}
+                                <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
             </fieldset>
 
             <div class="form-actions">
@@ -82,7 +93,8 @@ $(function() {
         number:   $("#credit_card_number").val(),
         expMonth: $("#expiry_month").val(),
         expYear:  $("#expiry_year").val(),
-        cvc:      $("#cvv").val()
+        cvc:      $("#cvv").val(),
+        address_zip: $('#billing_zip').val()
     };
 
     Stripe.createToken(card, function(status, response) {
@@ -90,7 +102,7 @@ $(function() {
             console.log(status, response);
             $("#credit-card-errors").hide();
             $("#id_last_4_digits").val(response.card.last4);
-            $("#id_stripe_id").val(response.id);
+            $("#id_stripe_token").val(response.id);
             form.submit();
         } else {
             $("#stripe-error-message").text(response.error.message);
@@ -103,6 +115,7 @@ $(function() {
 
     });
     $('.cc-mask input').mask('0000-0000-0000-0000');
+    $('.zip-mask input').mask('00000-0000');
 });
 </script>
 {% endblock %}

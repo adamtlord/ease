@@ -32,7 +32,7 @@ class StripeCustomer(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(blank=True, null=True)
-    stripe_id = models.CharField(max_length=255)
+    stripe_token = models.CharField(max_length=255)
     last_4_digits = models.CharField(max_length=4)
 
     def __unicode__(self):

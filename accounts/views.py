@@ -1,4 +1,5 @@
 import datetime
+import stripe
 
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
@@ -11,9 +12,12 @@ from common.decorators import anonymous_required
 from accounts.models import Customer
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
+from billing.models import Plan
 from billing.forms import PaymentForm
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 @anonymous_required
@@ -93,12 +97,19 @@ def register_self_payment(request, template='accounts/register_payment.html'):
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
+
             new_stripe_customer = payment_form.save()
-            customer.subscription_account = new_stripe_customer
-            customer.ride_account = new_stripe_customer
-            # TODO: add plan to this form
-            # customer.plan = payment_form.cleaned_data['plan']
+
+            customer.subscription_account = customer.ride_account = new_stripe_customer
+            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
             customer.save()
+
+            create_stripe_customer = stripe.Customer.create(
+                description=new_stripe_customer.email,
+                card=new_stripe_customer.stripe_token,
+                plan=customer.plan.stripe_id
+            )
+
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             return redirect('register_self_destinations')
@@ -122,6 +133,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'payment_form': payment_form,
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'stripe_customer': customer.subscription_account,
         'soon': {
             'month': soon.month,
             'year': soon.year

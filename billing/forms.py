@@ -1,6 +1,15 @@
 from django import forms
 
-from billing.models import StripeCustomer
+
+from billing.models import StripeCustomer, Plan
+
+
+STRIPE_CUSTOMER_FIELDS = [
+    'first_name',
+    'last_name',
+    'email',
+    'plan'
+]
 
 
 class PaymentForm(forms.ModelForm):
@@ -21,9 +30,13 @@ class PaymentForm(forms.ModelForm):
         max_length=4,
         widget=forms.HiddenInput()
     )
-    stripe_id = forms.CharField(
+    stripe_token = forms.CharField(
         required=True,
         widget=forms.HiddenInput()
+    )
+    plan = forms.ChoiceField(
+        required=True,
+        choices=Plan.CHOICES
     )
 
     class Meta:
@@ -32,5 +45,5 @@ class PaymentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PaymentForm, self).__init__(*args, **kwargs)
-        for field in ['first_name', 'last_name', 'email']:
+        for field in STRIPE_CUSTOMER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
