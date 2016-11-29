@@ -1,4 +1,6 @@
 import googlemaps
+import datetime
+
 from django.conf import settings
 
 METERS_TO_MILES = 0.000621371
@@ -33,3 +35,11 @@ def get_distance(ride):
     distance_in_miles = distance_in_meters * METERS_TO_MILES
 
     return distance_in_miles
+
+
+def soon():
+    soon = datetime.date.today() + datetime.timedelta(days=30)
+    return {
+        'month': soon.month,
+        'year': soon.year
+    }

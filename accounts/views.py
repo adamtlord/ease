@@ -14,6 +14,7 @@ from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from billing.models import Plan
 from billing.forms import PaymentForm
+from common.utils import soon
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
 
@@ -73,7 +74,7 @@ def register_self(request, template='accounts/register.html'):
 
             # Skip preferences for now because Lyft doesn't offer that
             # 2016-11-23
-            return redirect('register_self_destinations')
+            return redirect('register_self_payment')
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
             print errors
@@ -124,8 +125,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             'email': request.user.email,
         })
 
-    soon = datetime.date.today() + datetime.timedelta(days=30)
-
     d = {
         'self': True,
         'lovedone': False,
@@ -134,10 +133,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
-        'soon': {
-            'month': soon.month,
-            'year': soon.year
-        }
+        'soon': soon()
     }
 
     return render(request, template, d)
@@ -270,7 +266,7 @@ def register_lovedone(request, template='accounts/register.html'):
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
-            return redirect('register_lovedone_preferences')
+            return redirect('register_lovedone_payment')
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
             error_count = sum([len(d) for d in errors])
@@ -284,6 +280,55 @@ def register_lovedone(request, template='accounts/register.html'):
         'errors': errors,
         'error_count': error_count
         }
+    return render(request, template, d)
+
+
+@login_required
+def register_lovedone_payment(request, template='accounts/register_payment.html'):
+
+    customer = request.user.get_customer()
+
+    if request.method == 'POST':
+        payment_form = PaymentForm(request.POST)
+        if payment_form.is_valid():
+
+            new_stripe_customer = payment_form.save()
+
+            customer.subscription_account = customer.ride_account = new_stripe_customer
+            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+            customer.save()
+
+            create_stripe_customer = stripe.Customer.create(
+                description=new_stripe_customer.email,
+                card=new_stripe_customer.stripe_token,
+                plan=customer.plan.stripe_id
+            )
+
+            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+
+            return redirect('register_lovedone_destinations')
+        else:
+            print
+            print payment_form.errors
+            print
+    else:
+        payment_form = PaymentForm(initial={
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'email': request.user.email,
+        })
+
+    d = {
+        'self': False,
+        'lovedone': True,
+        'customer': customer,
+        'payment_form': payment_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'stripe_customer': customer.subscription_account,
+        'soon': soon()
+    }
+
     return render(request, template, d)
 
 

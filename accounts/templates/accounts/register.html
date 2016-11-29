@@ -2,12 +2,17 @@
 {% load custom_tags %}
 
 {% block title %}Create an Account{% endblock title %}
+
+{% block navbar %}
+    {% include 'fragments/navbar-centered-logo.html' %}
+{% endblock navbar %}
+
 {% block content %}
 <div class="page-header">
-    <h2>Create an Account For {% if self %}Yourself{% else %}a Loved One{% endif %}</h2>
+    <h2 class="text-center">Create an Account For {% if self %}Yourself{% else %}a Loved One{% endif %}</h2>
 </div>
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-6 col-sm-offset-3">
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
             <p class="alert alert-danger">
@@ -73,10 +78,13 @@
                 {% render_form_field rider_form.last_name %}
                 {% render_form_field rider_form.mobile_phone '' 'phone-mask' %}
             </fieldset>
-            {% render_form_field register_form.source %}
-            <div id="source_other" style="display:none;">
-            {% render_form_field register_form.source_other %}
-            </div>
+            <fieldset>
+                <legend>One More Question</legend>
+                {% render_form_field register_form.source %}
+                <div id="source_other" style="display:none;">
+                    {% render_form_field register_form.source_other %}
+                </div>
+            </fieldset>
 
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary" value="Create" />
