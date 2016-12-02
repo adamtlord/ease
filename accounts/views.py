@@ -13,7 +13,7 @@ from accounts.models import Customer
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from billing.models import Plan
-from billing.forms import PaymentForm
+from billing.forms import PaymentForm, StripeCustomerForm
 from common.utils import soon
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
@@ -94,6 +94,7 @@ def register_self(request, template='accounts/register.html'):
 def register_self_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
+    errors = {}
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
@@ -103,21 +104,34 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
             customer.subscription_account = customer.ride_account = new_stripe_customer
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
-            customer.save()
 
             create_stripe_customer = stripe.Customer.create(
-                description=new_stripe_customer.email,
-                card=new_stripe_customer.stripe_token,
-                plan=customer.plan.stripe_id
+                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
+                email=new_stripe_customer.email,
+                source=payment_form.cleaned_data['stripe_token'],
+                plan=customer.plan.stripe_id,
+                metadata={
+                    'customer': '{} {}'.format(customer.full_name, customer.pk)
+                }
             )
+
+            if customer.plan.signup_cost:
+                stripe.Charge.create(
+                    amount=customer.plan.signup_cost * 100,
+                    currency="usd",
+                    customer=create_stripe_customer.id
+                )
+
+            new_stripe_customer.stripe_id = create_stripe_customer.id
+
+            customer.save()
+            new_stripe_customer.save()
 
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             return redirect('register_self_destinations')
         else:
-            print
-            print payment_form.errors
-            print
+            errors = payment_form.errors
     else:
         payment_form = PaymentForm(initial={
             'first_name': request.user.first_name,
@@ -130,10 +144,12 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'lovedone': False,
         'customer': customer,
         'payment_form': payment_form,
+        'plan_options': Plan.objects.filter(active=True).exclude(pk=Plan.UL_GIFT),
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
-        'soon': soon()
+        'soon': soon(),
+        'errors': errors
     }
 
     return render(request, template, d)
@@ -275,6 +291,7 @@ def register_lovedone(request, template='accounts/register.html'):
         'lovedone': True,
         'register_form': register_form,
         'customer_form': customer_form,
+        'plan_options': Plan.objects.filter(active=True),
         'home_form': home_form,
         'rider_form': rider_form,
         'errors': errors,
@@ -287,6 +304,7 @@ def register_lovedone(request, template='accounts/register.html'):
 def register_lovedone_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
+    errors = {}
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
@@ -294,28 +312,49 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
 
             new_stripe_customer = payment_form.save()
 
-            customer.subscription_account = customer.ride_account = new_stripe_customer
+            if payment_form.cleaned_data['same_card_for_both'] == '1':
+                customer.subscription_account = customer.ride_account = new_stripe_customer
+            else:
+                customer.subscription_account = new_stripe_customer
+
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
-            customer.save()
 
             create_stripe_customer = stripe.Customer.create(
-                description=new_stripe_customer.email,
-                card=new_stripe_customer.stripe_token,
-                plan=customer.plan.stripe_id
+                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
+                email=new_stripe_customer.email,
+                source=payment_form.cleaned_data['stripe_token'],
+                plan=customer.plan.stripe_id,
+                metadata={
+                    'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                }
             )
+
+            if customer.plan.signup_cost:
+                stripe.Charge.create(
+                    amount=customer.plan.signup_cost * 100,
+                    currency="usd",
+                    customer=create_stripe_customer.id
+                )
+
+            new_stripe_customer.stripe_id = create_stripe_customer.id
+
+            customer.save()
+            new_stripe_customer.save()
 
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
-            return redirect('register_lovedone_destinations')
+            if payment_form.cleaned_data['same_card_for_both'] == '0':
+                return redirect('register_payment_ride_account')
+            return redirect('register_self_destinations')
         else:
-            print
-            print payment_form.errors
-            print
+            errors = payment_form.errors
+
     else:
         payment_form = PaymentForm(initial={
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
+            'same_card_for_both': 1
         })
 
     d = {
@@ -323,10 +362,12 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
         'lovedone': True,
         'customer': customer,
         'payment_form': payment_form,
+        'plan_options': Plan.objects.filter(active=True),
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
-        'soon': soon()
+        'soon': soon(),
+        'errors': errors
     }
 
     return render(request, template, d)
@@ -410,6 +451,60 @@ def register_lovedone_complete(request, template='accounts/register_complete.htm
         'lovedone': True,
         'customer': customer
     }
+    return render(request, template, d)
+
+
+@login_required
+def register_payment_ride_account(request, template='accounts/register_payment_ride_account.html'):
+
+    customer = request.user.get_customer()
+    errors = {}
+
+    if request.method == 'POST':
+        payment_form = StripeCustomerForm(request.POST)
+        if payment_form.is_valid():
+
+            new_stripe_customer = payment_form.save()
+
+            customer.ride_account = new_stripe_customer
+
+            create_stripe_customer = stripe.Customer.create(
+                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
+                email=new_stripe_customer.email,
+                source=payment_form.cleaned_data['stripe_token'],
+                metadata={
+                    'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                }
+            )
+
+            new_stripe_customer.stripe_id = create_stripe_customer.id
+
+            customer.save()
+            new_stripe_customer.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Credit card saved')
+
+            return redirect('register_self_destinations')
+
+        else:
+            errors = payment_form.errors
+
+    else:
+        payment_form = StripeCustomerForm(initial={
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'email': request.user.email
+        })
+
+    d = {
+        'customer': customer,
+        'payment_form': payment_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'soon': soon(),
+        'errors': errors
+    }
+
     return render(request, template, d)
 
 

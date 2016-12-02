@@ -84,6 +84,9 @@ form.form-login {
             }
         }
     }
+    + .form-group {
+        margin-top:@line-height-computed;
+    }
 }
 
 .cc-inline {
@@ -99,6 +102,9 @@ form.form-login {
             }
         }
     }
+    + .form-group {
+        margin-top:@line-height-computed;
+    }
 }
 
 .expiry-inline {
@@ -112,6 +118,9 @@ form.form-login {
         width: 30%;
 
     }
+    + .form-group {
+        margin-top:@line-height-computed;
+    }
 }
 
 .plan-buttons {
@@ -119,19 +128,30 @@ form.form-login {
         .btn;
         .btn-default;
         .btn-block;
-        h5 {
+        text-align:left;
+        h4, h5 {
             margin-top: (@line-height-computed / 4);
-            margin-bottom:0;
-        }
-        p {
             margin-bottom: (@line-height-computed / 4);
         }
-        text-align:left;
+        p, ul {
+            margin-bottom: (@line-height-computed / 4);
+        }
+        ul {
+            .list-unstyled;
+        }
         input[type="radio"],
         input[type="checkbox"] {
             position: absolute;
             clip: rect(0,0,0,0);
             pointer-events: none;
+        }
+        &.active,
+        &.active:hover,
+        &.active:focus {
+            .btn-success;
+            &, small{
+                color:@btn-success-color;
+            }
         }
     }
     margin-bottom: @line-height-computed;

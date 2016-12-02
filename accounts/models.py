@@ -186,6 +186,24 @@ class Customer(Contact):
         ride_count = Ride.objects.filter(customer=self).filter(end_date__month=today.month).count()
         return ride_count
 
+    @property
+    def ready_to_ride(self):
+        if self.ride_account and self.subscription_account and self.plan:
+            return True
+        else:
+            return False
+
+    @property
+    def missing(self):
+        missing_items = []
+        if not self.ride_account:
+            missing_items.append('No rides account')
+        if not self.subscription_account:
+            missing_items.append('No subscription account')
+        if not self.plan:
+            missing_items.append('No plan selected')
+        return missing_items
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

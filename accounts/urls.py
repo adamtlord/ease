@@ -9,6 +9,7 @@ from accounts.views import (register_self,
                             register_lovedone_preferences,
                             register_lovedone_destinations,
                             register_lovedone_complete,
+                            register_payment_ride_account,
                             profile,
                             profile_edit,
                             destination_edit,
@@ -27,6 +28,8 @@ urlpatterns = [
     url(r'^register-lovedone/preferences/$', register_lovedone_preferences, name='register_lovedone_preferences'),
     url(r'^register-lovedone/destinations/$', register_lovedone_destinations, name='register_lovedone_destinations'),
     url(r'^register-lovedone/complete/$', register_lovedone_complete, name='register_lovedone_complete'),
+
+    url(r'^register/payment/rides/$', register_payment_ride_account, name='register_payment_ride_account'),
 
     url(r'^profile/$', profile, name='profile'),
     url(r'^profile/edit/$', profile_edit, name='profile_edit'),

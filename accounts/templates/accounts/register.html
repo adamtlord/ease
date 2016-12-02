@@ -8,11 +8,11 @@
 {% endblock navbar %}
 
 {% block content %}
-<div class="page-header">
-    <h2 class="text-center">Create an Account For {% if self %}Yourself{% else %}a Loved One{% endif %}</h2>
-</div>
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
+        <div class="page-header">
+            <h2 class="text-center">Create an Account For {% if self %}Yourself{% else %}a Loved One{% endif %}</h2>
+        </div>
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
             <p class="alert alert-danger">

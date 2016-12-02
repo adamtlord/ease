@@ -24,32 +24,42 @@
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
         <form action="" id="user_form" method="post">{% csrf_token %}
+            {% if errors %}
+                <p class="alert alert-danger">
+                    {% if error_count == 1 %}
+                        Please correct the error below.
+                    {% else %}
+                        Please correct the errors below.
+                    {% endif %}
+                </p>
+            {% endif %}
             {% render_form_field payment_form.last_4_digits %}
-            {% render_form_field payment_form.stripe_token %}
+            <input type="hidden" name="stripe_token" id="stripe_token" value="">
 
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
             <div class="plan-buttons" data-toggle="buttons">
-                <label class="btn btn-default btn-block active">
-                    <input type="radio" name="plan" value="1" id="basic" autocomplete="off" checked>
-                    <h5>Basic Membership</h5>
-                    <p>$30 per month, only pay for the rides you take</p>
-                </label>
-                <label class="btn btn-default btn-block">
-                    <input type="radio" name="plan" value="2" id="neighborhood" autocomplete="off">
-                    <h5>Neighborhood Subscription</h5>
-                    <p>$100 per month, includes 5 rides within 5 miles</p>
-                </label>
-                {% if lovedone %}
-                <label class="btn btn-default btn-block">
-                    <input type="radio" name="plan" value="3" id="giftcert" autocomplete="off">
-                    <h5>Unlimited Gift Certificate</h5>
-                    <p>$200 for unlimited rides during the month of January</p>
-                </label>
-                {% endif %}
+                {% for plan in plan_options %}
+                    <label class="btn btn-default btn-block{% if forloop.first %} active{% endif %}">
+                        <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if forloop.first %} checked{% endif %}>
+                        {% if plan.monthly_cost %}
+                            <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
+                        {% endif %}
+                        <h5>{{ plan.display_name }}</h5>
+                        <ul>
+                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                            {% if plan.unlimited_rides %}
+                                <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                            {% else %}
+                                {% if plan.included_rides_per_month > 0 %}
+                                    <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </label>
+                {% endfor %}
             </div>
-
             <fieldset>
                 <legend>Billing Information</legend>
                 {% render_form_field payment_form.first_name %}
@@ -57,7 +67,7 @@
                 {% render_form_field payment_form.email %}
                 <div class="form-group zip-mask">
                     <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                    <input class="form-control" id="billing_zip" type="text">
+                    <input class="form-control" id="billing_zip" type="text" value="{% if stripe_customer %}{{ stripe_customer.billing_zip }}{% else %}{{ customer.home.zip_code }}{% endif %}">
                 </div>
                 {% if stripe_customer %}
                     <div class="form-group">
@@ -92,48 +102,19 @@
                         </div>
                     </div>
                 {% endif %}
+                {% render_form_field payment_form.same_card_for_both %}
             </fieldset>
-
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
             </div>
+            <p class="small text-muted">
+                <sup>*</sup> A ride refers to a one-way trip. A round-trip is considered 2 rides. A neighborhood ride is any ride that is 5 or fewer miles (as calculated by the driver).
+            </p>
 
         </form>
     </div>
 </div>
 {% endblock %}
 {% block scripts %}
-<script>
-$(function() {
-  $("#user_form").submit(function() {
-    var form = this;
-    var card = {
-        number:   $("#credit_card_number").val(),
-        expMonth: $("#expiry_month").val(),
-        expYear:  $("#expiry_year").val(),
-        cvc:      $("#cvv").val(),
-        address_zip: $('#billing_zip').val()
-    };
-
-    Stripe.createToken(card, function(status, response) {
-        if (status === 200) {
-            console.log(status, response);
-            $("#credit-card-errors").hide();
-            $("#id_last_4_digits").val(response.card.last4);
-            $("#id_stripe_token").val(response.id);
-            form.submit();
-        } else {
-            $("#stripe-error-message").text(response.error.message);
-            $("#credit-card-errors").show();
-            $("#user_submit").attr("disabled", false);
-        }
-    });
-
-    return false;
-
-    });
-    $('.cc-mask input').mask('0000-0000-0000-0000');
-    $('.zip-mask input').mask('00000-0000');
-});
-</script>
+<script src="{{ STATIC_URL }}js/apps/registration_payment.min.js"></script>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'concierge/customer_base.html' %}
 {% load map_tags %}
-
+{% load billing_tags %}
 {% block customer_content %}
 
     <div class="row">
@@ -84,13 +84,30 @@
                             </td>
                         </tr>
                     {% endif %}
+                    <tr>
+                        <td>Subscription billed to</td>
+                        <td><i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
+                    </tr>
+                    <tr>
+                        <td>Rides billed to</td>
+                        <td><i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
         <div class="col-sm-4">
-            <a href="{% url 'ride_start' customer.id %}" class="btn btn-success btn-block btn-lg">
-                Start a New Ride
-            </a>
+            <p>
+                <a href="{% url 'ride_start' customer.id %}" class="btn btn-success btn-block btn-lg{% if not customer.ready_to_ride %} disabled{% endif %}">
+                    Start a New Ride
+                </a>
+            </p>
+            {% if not customer.ready_to_ride %}
+                <p class="alert alert-danger">
+                {% for missing in customer.missing %}
+                    {{ missing }}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+                </p>
+            {% endif %}
         </div>
     </div>
 {% if not customer.destinations %}

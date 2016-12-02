@@ -2,17 +2,18 @@
 
 {% block content %}
     <h2>Customers</h2>
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <th>Name</th>
             <th>Home</th>
             <th>Phone</th>
             <th>Rides Taken</th>
             <th>Last ride</th>
+            <th>Notes</th>
         </thead>
         <tbody>
             {% for customer in customers %}
-            <tr>
+            <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
                 <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
                 <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
                 <td>{% if customer.home_phone %}
@@ -24,6 +25,14 @@
                 </td>
                 <td>{{ customer.rides|length }}</td>
                 <td>{% if customer.rides %}{{ customer.rides.0.end_date|timesince }} ago{% endif %}</td>
+                <td>{% if not customer.ready_to_ride %}
+                    <ul class="list-unstyled small">
+                        {% for missing in customer.missing %}
+                            <li>{{ missing }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
