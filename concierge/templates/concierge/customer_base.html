@@ -11,7 +11,7 @@
         <div class="col-sm-6">
             <h1>{{ customer }}{% if customer.known_as %} <small>"{{ customer.known_as }}"</small>{% endif %}</h1>
             {% if customer.plan %}
-                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }}</span>
+                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
             {% endif %}
             {{ customer.rides_this_month }} ride{% if customer.rides_this_month != 1 %}s{% endif %} this month
         </div>

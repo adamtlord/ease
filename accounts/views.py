@@ -354,7 +354,8 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
-            'same_card_for_both': 1
+            'same_card_for_both': 1,
+
         })
 
     d = {

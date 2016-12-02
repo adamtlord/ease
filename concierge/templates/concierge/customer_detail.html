@@ -86,11 +86,21 @@
                     {% endif %}
                     <tr>
                         <td>Subscription billed to</td>
-                        <td><i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
+                        <td>
+                            {% if customer.subscription_account %}
+                                <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
+                            {% else %}
+                                <strong class="text-danger">None</strong>
+                            {% endif %}
                     </tr>
                     <tr>
                         <td>Rides billed to</td>
-                        <td><i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}</td>
+                        <td>
+                            {% if customer.ride_account %}
+                                <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}</td>
+                            {% else %}
+                                <strong class="text-danger">None</strong>
+                            {% endif %}
                     </tr>
                 </tbody>
             </table>
