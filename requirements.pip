@@ -11,3 +11,4 @@ django-registration
 
 googlemaps==2.4.4
 uber-rides==0.3.1
+stripe==1.42.0
