@@ -115,3 +115,4 @@ REGISTRATION_OPEN = True
 GEOIP_DATABASE = PROJECT_ROOT + '/path/to/your/geoip/database/GeoLiteCity.dat'
 
 LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_URL = '/login/'
