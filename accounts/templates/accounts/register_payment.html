@@ -20,7 +20,11 @@
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
         <div class="page-header">
-            <h2 class="text-center">Choose a Plan</h2>
+            {% if gift %}
+                <h2 class="text-center">Payment Information</h2>
+            {% else %}
+                <h2 class="text-center">Choose a Plan</h2>
+            {% endif %}
         </div>
         <form action="" id="user_form" method="post">{% csrf_token %}
             {% if errors %}
@@ -34,33 +38,55 @@
             {% endif %}
             {% render_form_field payment_form.last_4_digits %}
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
-
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
-            <div class="plan-buttons" data-toggle="buttons">
-                {% for plan in plan_options %}
-                    <label class="btn btn-default btn-block{% if plan.id == default_plan %} active{% endif %}">
-                        <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan.id == default_plan %} checked{% endif %}>
-                        {% if plan.monthly_cost %}
-                            <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
-                        {% endif %}
-                        <h5>{{ plan.display_name }}</h5>
-                        <ul>
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            {% if plan.unlimited_rides %}
-                                <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                            {% else %}
-                                {% if plan.included_rides_per_month > 0 %}
-                                    <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
-                                {% endif %}
+            {% if gift %}
+                {% with gift_plan as plan %}
+                    <input type="hidden" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off">
+                    <p>The {{ plan.display_name }} includes:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                        {% if plan.unlimited_rides %}
+                            <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                        {% else %}
+                            {% if plan.included_rides_per_month > 0 %}
+                                <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
                             {% endif %}
-                        </ul>
-                    </label>
-                {% endfor %}
-            </div>
+                        {% endif %}
+                    </ul>
+                {% endwith %}
+                <hr>
+            {% else %}
+                {% if selected_plan %}
+                    preselected {{ selected_plan }}
+                {% endif %}
+                <div class="plan-buttons" data-toggle="buttons">
+                    {% for plan in plan_options %}
+                        <label class="btn btn-default btn-block{% if plan.id == default_plan %} active{% endif %}">
+                            <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan.id == default_plan %} checked{% endif %}>
+                            {% if plan.monthly_cost %}
+                                <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
+                            {% endif %}
+                            <h5>{{ plan.display_name }}</h5>
+                            <ul>
+                                <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                                {% if plan.unlimited_rides %}
+                                    <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                                {% else %}
+                                    {% if plan.included_rides_per_month > 0 %}
+                                        <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                        </label>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <fieldset>
-                <legend>Billing Information</legend>
+                {% if not gift %}
+                    <legend>Billing Information</legend>
+                {% endif %}
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}

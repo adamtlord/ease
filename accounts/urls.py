@@ -30,6 +30,9 @@ urlpatterns = [
     url(r'^register-lovedone/destinations/$', register_lovedone_destinations, name='register_lovedone_destinations'),
     url(r'^register-lovedone/complete/$', register_lovedone_complete, name='register_lovedone_complete'),
 
+    url(r'^register-lovedone/gift/$', register_lovedone, {'gift': True}, name='register_lovedone_gift'),
+    url(r'^register-lovedone/gift/payment/$', register_lovedone_payment, {'gift': True}, name='register_lovedone_gift_payment'),
+
     url(r'^register/payment/rides/$', register_payment_ride_account, name='register_payment_ride_account'),
 
     url(r'^register/payment/redirect/$', register_payment_redirect, name='register_payment_redirect'),

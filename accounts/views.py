@@ -26,6 +26,11 @@ def register_self(request, template='accounts/register.html'):
         return redirect('homepage')
 
     if request.method == 'GET':
+
+        plan_selection = request.GET.get('plan', None)
+        if plan_selection:
+            request.session['plan'] = plan_selection
+
         register_form = CustomUserRegistrationForm(prefix='reg')
         customer_form = CustomerForm(prefix='cust', is_self=True)
         home_form = HomeForm(prefix='home')
@@ -131,6 +136,9 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         else:
             errors = payment_form.errors
     else:
+        plan_selection = request.session.get('plan', None)
+        selected_plan = Plan.objects.get(name=plan_selection.upper())
+
         payment_form = PaymentForm(initial={
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
@@ -149,7 +157,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': Plan.objects.get(name="SILVER").id
+        'default_plan': Plan.objects.get(name="SILVER").id,
+        'selected_plan': selected_plan
     }
 
     return render(request, template, d)
@@ -232,7 +241,7 @@ def register_self_complete(request, template='accounts/register_complete.html'):
 
 
 @anonymous_required
-def register_lovedone(request, template='accounts/register.html'):
+def register_lovedone(request, gift=False, template='accounts/register.html'):
     if not settings.REGISTRATION_OPEN:
         messages.info(request, "Registration is temporarily closed. We are sorry for the inconvenience.")
         return redirect('homepage')
@@ -240,6 +249,11 @@ def register_lovedone(request, template='accounts/register.html'):
     errors = []
     error_count = []
     if request.method == 'GET':
+
+        plan_selection = request.GET.get('plan', None)
+        if plan_selection:
+            request.session['plan'] = plan_selection
+
         register_form = CustomUserRegistrationForm(prefix='reg')
         customer_form = CustomerForm(prefix='cust', is_self=False)
         home_form = HomeForm(prefix='home')
@@ -283,7 +297,10 @@ def register_lovedone(request, template='accounts/register.html'):
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
-            return redirect('register_lovedone_payment')
+            if gift:
+                return redirect('register_lovedone_gift_payment')
+            else:
+                return redirect('register_lovedone_payment')
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
             error_count = sum([len(d) for d in errors])
@@ -296,13 +313,14 @@ def register_lovedone(request, template='accounts/register.html'):
         'home_form': home_form,
         'rider_form': rider_form,
         'errors': errors,
-        'error_count': error_count
+        'error_count': error_count,
+        'gift': gift
         }
     return render(request, template, d)
 
 
 @login_required
-def register_lovedone_payment(request, template='accounts/register_payment.html'):
+def register_lovedone_payment(request, gift=False, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
     errors = {}
@@ -373,7 +391,9 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': Plan.objects.get(name="SILVER").id
+        'default_plan': Plan.objects.get(name="SILVER").id,
+        'gift': gift,
+        'gift_plan': Plan.objects.get(name="UL_GIFT")
     }
 
     return render(request, template, d)
