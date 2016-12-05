@@ -94,6 +94,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(CustomUser, related_name='profile')
     registration_complete = models.BooleanField(default=False)
     on_behalf = models.BooleanField(default=False)
+    relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
     source = models.CharField(max_length=255, choices=SOURCE_CHOICES, null=True, blank=True)
 

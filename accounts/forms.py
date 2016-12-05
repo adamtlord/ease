@@ -8,6 +8,7 @@ CUSTOM_USER_FIELDS = [
     'email',
     'first_name',
     'last_name',
+    'relationship',
     'password1',
     'password2',
     'source',
@@ -60,6 +61,10 @@ class CustomUserRegistrationForm(RegistrationForm):
         help_text='Will be used to log into the member account',
         required=True
     )
+    relationship = forms.CharField(
+        label="Your relationship to the primary customer",
+        required=False
+    )
     password1 = forms.CharField(
         label="Create a password",
         strip=False,
@@ -99,7 +104,6 @@ class CustomUserRegistrationForm(RegistrationForm):
         fields = ('email', 'first_name', 'last_name')
 
     def __init__(self, *args, **kwargs):
-        lovedone = kwargs.pop('lovedone')
         super(CustomUserRegistrationForm, self).__init__(*args, **kwargs)
         for field in CUSTOM_USER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'

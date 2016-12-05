@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', auth_views.login, {'template_name': 'registration/login.html'}, name='homepage'),
     url(r'', include('accounts.urls')),
+    url(r'^billing/', include('billing.urls')),
     url(r'^concierge/', include('concierge.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

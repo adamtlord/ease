@@ -5,7 +5,7 @@
     {% include 'fragments/navbar-centered-logo.html' %}
 {% endblock navbar %}
 
-{% block title %}Choose a Plan{% endblock title %}
+{% block title %}Edit Payment Information{% endblock title %}
 
 {% block header_includes %}
     {{ block.super }}
@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-sm-6 col-sm-offset-3">
         <div class="page-header">
-            <h2 class="text-center">Choose a Plan</h2>
+            <h2 class="text-center">Edit Payment Information</h2>
         </div>
         <form action="" id="user_form" method="post">{% csrf_token %}
             {% if errors %}
@@ -33,48 +33,37 @@
                 </p>
             {% endif %}
             {% render_form_field payment_form.last_4_digits %}
-            <input type="hidden" name="stripe_token" id="stripe_token" value="">
+            {% render_form_field payment_form.stripe_id %}
 
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
-            <div class="plan-buttons" data-toggle="buttons">
-                {% for plan in plan_options %}
-                    <label class="btn btn-default btn-block{% if plan.id == default_plan %} active{% endif %}">
-                        <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan.id == default_plan %} checked{% endif %}>
-                        {% if plan.monthly_cost %}
-                            <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
-                        {% endif %}
-                        <h5>{{ plan.display_name }}</h5>
-                        <ul>
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            {% if plan.unlimited_rides %}
-                                <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                            {% else %}
-                                {% if plan.included_rides_per_month > 0 %}
-                                    <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
-                                {% endif %}
-                            {% endif %}
-                        </ul>
-                    </label>
-                {% endfor %}
-            </div>
             <fieldset>
-                <legend>Billing Information</legend>
+                <legend>Subscription Billing Information</legend>
+                <input type="hidden" name="stripe_token" id="stripe_token" value="">
+                {{ payment_form.plan.as_hidden }}
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
-                <div class="form-group zip-mask">
-                    <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                    <input class="form-control" id="billing_zip" type="text" value="{% if stripe_customer %}{{ stripe_customer.billing_zip }}{% else %}{{ customer.home.zip_code }}{% endif %}">
-                </div>
-                {% if stripe_customer %}
-                    <div class="form-group">
-                        <label>Credit card on file</label>
-                        <input type="text" class="form-control" readonly value="****-****-****-{{ stripe_customer.last_4_digits }}" />
+                {% if not customer.subscription_account %}
+                    <div class="form-group zip-mask">
+                        <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
+                        <input class="form-control" id="billing_zip" type="text" value="">
                     </div>
-                {% else %}
-                <div id="add_card">
+                {% endif %}
+                {% if customer.subscription_account %}
+                    <div id="card_on_file" class="form-group">
+                        <label>Credit card on file</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" readonly value="****-****-****-{{ customer.subscription_account.last_4_digits }}" />
+                            <span class="input-group-btn">
+                                <button id="change_card" class="btn btn-danger" type="button">Change</button>
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+                <div id="add_card" class="well well-sm"{% if customer.subscription_account %} style="display:none;"{% endif %}>
+                    <h4>Add a new credit card</h4>
                     <div class="cc-inline">
                         <div class="form-group cc-mask">
                             <label for="credit_card_number">Credit card number<span class="req">*</span></label>
@@ -85,7 +74,6 @@
                             <input class="form-control" id="cvv" type="text">
                         </div>
                     </div>
-
                     <div class="expiry-inline">
                         <div class="form-group">
                             <label for="expiry_date">Expiry date<span class="req">*</span></label>
@@ -100,18 +88,15 @@
                             {% endfor %}
                             </select>
                         </div>
+                        <a href="" id="cancel_change_card" class="pull-right">Cancel</a>
                     </div>
                 </div>
-                {% endif %}
+
                 {% render_form_field payment_form.same_card_for_both %}
             </fieldset>
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
             </div>
-            <p class="small text-muted">
-                <sup>*</sup> A ride refers to a one-way trip. A round-trip is considered 2 rides. A neighborhood ride is any ride that is 5 or fewer miles (as calculated by the driver).
-            </p>
-
         </form>
     </div>
 </div>

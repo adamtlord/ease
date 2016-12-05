@@ -4,12 +4,10 @@ import stripe
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.forms import inlineformset_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from common.decorators import anonymous_required
-from accounts.models import Customer
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from billing.models import Plan
@@ -28,12 +26,12 @@ def register_self(request, template='accounts/register.html'):
         return redirect('homepage')
 
     if request.method == 'GET':
-        register_form = CustomUserRegistrationForm(prefix='reg', lovedone=False)
+        register_form = CustomUserRegistrationForm(prefix='reg')
         customer_form = CustomerForm(prefix='cust', is_self=True)
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
     else:
-        register_form = CustomUserRegistrationForm(request.POST, prefix='reg', lovedone=False)
+        register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
         customer_form = CustomerForm(request.POST, prefix='cust', is_self=True)
         home_form = HomeForm(request.POST, prefix='home')
         rider_form = RiderForm(request.POST, prefix='rider')
@@ -127,7 +125,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             customer.save()
             new_stripe_customer.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+            messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 
             return redirect('register_self_destinations')
         else:
@@ -137,6 +135,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
+            'same_card_for_both': 1,
         })
 
     d = {
@@ -149,7 +148,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
-        'errors': errors
+        'errors': errors,
+        'default_plan': Plan.objects.get(name="SILVER").id
     }
 
     return render(request, template, d)
@@ -240,12 +240,12 @@ def register_lovedone(request, template='accounts/register.html'):
     errors = []
     error_count = []
     if request.method == 'GET':
-        register_form = CustomUserRegistrationForm(prefix='reg', lovedone=True)
+        register_form = CustomUserRegistrationForm(prefix='reg')
         customer_form = CustomerForm(prefix='cust', is_self=False)
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
     else:
-        register_form = CustomUserRegistrationForm(request.POST, prefix='reg', lovedone=True)
+        register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
         customer_form = CustomerForm(request.POST, prefix='cust', is_self=False)
         home_form = HomeForm(request.POST, prefix='home')
         rider_form = RiderForm(request.POST, prefix='rider')
@@ -276,6 +276,7 @@ def register_lovedone(request, template='accounts/register.html'):
 
             new_user.profile.registration_complete = True
             new_user.profile.on_behalf = True
+            new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 
             authenticated_user = auth.authenticate(username=new_user.get_username(), password=register_form.cleaned_data['password1'])
@@ -348,6 +349,9 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
+            print
+            print errors
+            print
 
     else:
         payment_form = PaymentForm(initial={
@@ -363,12 +367,13 @@ def register_lovedone_payment(request, template='accounts/register_payment.html'
         'lovedone': True,
         'customer': customer,
         'payment_form': payment_form,
-        'plan_options': Plan.objects.filter(active=True),
+        'plan_options': Plan.objects.filter(active=True).exclude(pk=Plan.UL_GIFT),
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
-        'errors': errors
+        'errors': errors,
+        'default_plan': Plan.objects.get(name="SILVER").id
     }
 
     return render(request, template, d)
@@ -510,14 +515,24 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
 
 
 @login_required
+def register_payment_redirect(request):
+    user = request.user
+    if user.profile.on_behalf:
+        return redirect('register_lovedone_payment')
+    return redirect('register_self_payment')
+
+
+@login_required
 def profile(request, template='accounts/profile.html'):
 
     user = request.user
+    customer = user.get_customer()
 
     if user.is_staff:
         return redirect('dashboard')
 
-    customer = user.get_customer()
+    if not (customer.subscription_account and customer.ride_account):
+        return redirect('register_payment_redirect')
 
     d = {
         'customer': customer,

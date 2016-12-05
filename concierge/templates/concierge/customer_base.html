@@ -10,19 +10,32 @@
     <div class="row">
         <div class="col-sm-6">
             <h1>{{ customer }}{% if customer.known_as %} <small>"{{ customer.known_as }}"</small>{% endif %}</h1>
-            {% if customer.plan %}
+
+        </div>
+        <div class="col-sm-6">
+            <div class="clearfix">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="start-ride-btn{% if not customer.ready_to_ride %} disabled{% endif %}"><a href="{% url 'ride_start' customer.id %}">Start Ride</a></li>
+                    <li role="presentation" class="{% if profile_page %}active{% endif %}"><a href="{% url 'customer_detail' customer.id %}">Profile</a></li>
+                    <li role="presentation" class="{% if ride_page %}active{% endif %}"><a href="{% url 'customer_rides' customer.id %}">Rides</a></li>
+                    <li role="presentation" class="{% if destinations_page %}active{% endif %}"><a href="{% url 'customer_destinations' customer.id %}">Destinations</a></li>
+                    <li role="presentation" class="{% if update_page %}active{% endif %}"><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">{% if customer.plan %}
                 <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+            {% else %}
+                <span class="label label-danger">No Plan Selected</span>
             {% endif %}
             {{ customer.rides_this_month }} ride{% if customer.rides_this_month != 1 %}s{% endif %} this month
         </div>
-        <div class="col-sm-6">
-            <ul class="nav nav-pills">
-                <li role="presentation" class="start-ride-btn{% if not customer.ready_to_ride %} disabled{% endif %}"><a href="{% url 'ride_start' customer.id %}">Start Ride</a></li>
-                <li role="presentation" class="{% if profile_page %}active{% endif %}"><a href="{% url 'customer_detail' customer.id %}">Profile</a></li>
-                <li role="presentation" class="{% if ride_page %}active{% endif %}"><a href="{% url 'customer_rides' customer.id %}">Rides</a></li>
-                <li role="presentation" class="{% if destinations_page %}active{% endif %}"><a href="{% url 'customer_destinations' customer.id %}">Destinations</a></li>
-                <li role="presentation" class="{% if update_page %}active{% endif %}"><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
-            </ul>
+        <div class="col-sm-6 text-right">
+            {% if customer.user.profile.on_behalf %}
+                Account managed by <strong>{{ customer.user}}</strong> ({{ customer.user.profile.relationship }})
+            {% endif %}
         </div>
     </div>
 </div>

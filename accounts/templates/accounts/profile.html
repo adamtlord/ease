@@ -1,25 +1,20 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
 {% load map_tags %}
+{% load billing_tags %}
 
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
 <div class="page-header">
     <h2>{{ request.user }}'s Profile
     {% if lovedone %}
-        <small>Customer: {{ customer }}</small>
+        <small>On behalf of {{ customer }}</small>
     {% endif %}
     </h2>
 </div>
-{% if customer.rides_in_progress %}
 <div class="row">
-    <div class="col-sm-8">
-        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %} <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary">Edit</a></h3>
-
-{% endif %}
-<div class="row">
-    <div class="col-sm-8">
-        <h4>{% if lovedone %}Customer Information{% else %}About You{% endif %} <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary">Edit</a></h3>
+    <div class="col-sm-6">
+        <h4 class="pull-left">{% if lovedone %}Customer Information{% else %}About You{% endif %}</h3> <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
         <table class="table table-striped">
             <tbody>
                 <tr>
@@ -62,16 +57,66 @@
             </tbody>
         </table>
     </div>
-    {% if riders %}
-        <div class="col-sm-4">
+    <div class="col-sm-6">
+        <h4>Payment Information</h4>
+        <table class="table table-striped">
+            <tbody>
+                {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
+                    <tr>
+                        <th>Credit card on file</th>
+                        <td><i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="small">
+                            This credit card is used to pay for your monthly subscription and the rides you take through Arrive. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr{% if not customer.subscription_account %} class="warning"{% endif %}>
+                        <th>Subscription card</th>
+                        <td>{% if customer.subscription_account %}
+                                <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}
+                            {% else %}
+                                <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if customer.subscription_account %}
+                        <tr>
+                            <td colspan="2" class="small">
+                                This credit card is used to pay for your monthly subscription. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr{% if not customer.ride_account %} class="warning"{% endif %}>
+                        <th>Ride card</th>
+                        <td>
+                            {% if customer.ride_account %}
+                                <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}
+                            {% else %}
+                                <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if customer.ride_account %}
+                        <tr>
+                            <td colspan="2" class="small">
+                                This credit card is used to pay for the rides you take through Arrive. <a href="{% url 'customer_ride_account_edit' %}">Change your payment information.</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+            </tbody>
+        </table>
+        {% if riders %}
             <h4>These people are also on {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} account:</h4>
             <ul>
                 {% for rider in riders %}
                 <li>{{ rider.first_name }} {{ rider.last_name }}</li>
                 {% endfor %}
             </ul>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>
 <h4>{% if not lovedone %}Your {% endif %}Destinations</h4>
 {% if customer.destinations %}

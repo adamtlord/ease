@@ -8530,6 +8530,13 @@ h3,
 .btn.btn-block {
   white-space: normal;
 }
+.input-group .btn,
+.input-group-btn .btn {
+  padding: 6px 12px;
+  font-size: 16px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+}
 sup {
   top: -0.25em;
 }
@@ -9059,6 +9066,9 @@ form.form-login .form-actions {
 .expiry-inline + .form-group {
   margin-top: 22px;
 }
+#add_card + .form-group {
+  margin-top: 22px;
+}
 .plan-buttons {
   margin-bottom: 22px;
 }
@@ -9369,6 +9379,9 @@ th .static-map {
 .nav > .start-ride-btn > a:hover {
   background: #5cb85c;
   color: #fff;
+}
+.label.plan-label {
+  vertical-align: .125em;
 }
 .label.plan-label.bronze {
   background: #CD7F32;

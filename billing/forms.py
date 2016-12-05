@@ -30,7 +30,7 @@ class StripeCustomerForm(forms.ModelForm):
         widget=forms.HiddenInput()
     )
     stripe_token = forms.CharField(
-        required=True,
+        required=False,
         widget=forms.HiddenInput()
     )
 
