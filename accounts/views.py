@@ -564,10 +564,11 @@ def register_payment_redirect(request):
 def profile(request, template='accounts/profile.html'):
 
     user = request.user
-    customer = user.get_customer()
 
     if user.is_staff:
         return redirect('dashboard')
+
+    customer = user.get_customer()
 
     if not (customer.subscription_account and customer.ride_account):
         return redirect('register_payment_redirect')
