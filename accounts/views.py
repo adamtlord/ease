@@ -98,6 +98,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
     errors = {}
+    selected_plan = None
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
@@ -253,6 +254,7 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
 
     errors = []
     error_count = []
+
     if request.method == 'GET':
 
         plan_selection = request.GET.get('plan', None)
@@ -329,6 +331,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
     customer = request.user.get_customer()
     errors = {}
+    selected_plan = None
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)

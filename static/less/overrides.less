@@ -64,6 +64,7 @@ h1, h2, h3,
 
 .btn {
     .button-size(@padding-large-vertical; @padding-large-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
+    font-weight:600;
 }
 .btn-lg {
   .button-size(@padding-large-vertical * 1.25; @padding-large-horizontal * 1.25; @font-size-large; @line-height-large; @btn-border-radius-large);
@@ -82,10 +83,10 @@ h1, h2, h3,
     .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
 }
 .btn-primary {
-  .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+    .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
 }
 .btn-secondary {
-.button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+    .button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
 }
 sup {
     top: -0.25em;
