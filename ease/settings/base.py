@@ -113,3 +113,5 @@ ACCOUNT_ACTIVATION_DAYS = 7
 REGISTRATION_OPEN = True
 
 GEOIP_DATABASE = PROJECT_ROOT + '/path/to/your/geoip/database/GeoLiteCity.dat'
+
+LOGIN_REDIRECT_URL = '/profile/'
