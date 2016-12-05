@@ -4,6 +4,7 @@ html {
 }
 body {
     margin-bottom: @footer-height;
+    padding-bottom: @line-height-computed * 2;
 }
 .footer {
     position: absolute;
@@ -11,9 +12,4 @@ body {
     width: 100%;
     height: @footer-height;
     background-color: @footer-bg;
-    p {
-        .text-muted;
-        font-size: @font-size-small;
-        margin: (@footer-height - @line-height-computed) / 2 0;
-    }
 }

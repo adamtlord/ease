@@ -137,13 +137,18 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             errors = payment_form.errors
     else:
         plan_selection = request.session.get('plan', None)
-        selected_plan = Plan.objects.get(name=plan_selection.upper())
+        if plan_selection:
+            selected_plan = Plan.objects.get(name=plan_selection.upper())
+            default_plan = selected_plan
+        else:
+            default_plan = Plan.objects.get(name="SILVER")
 
         payment_form = PaymentForm(initial={
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
             'same_card_for_both': 1,
+            'plan': selected_plan
         })
 
     d = {
@@ -157,7 +162,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': Plan.objects.get(name="SILVER").id,
+        'default_plan': default_plan,
         'selected_plan': selected_plan
     }
 
@@ -372,11 +377,20 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             print
 
     else:
+        plan_selection = request.session.get('plan', None)
+
+        if plan_selection:
+            selected_plan = Plan.objects.get(name=plan_selection.upper())
+            default_plan = selected_plan
+        else:
+            default_plan = Plan.objects.get(name="SILVER")
+
         payment_form = PaymentForm(initial={
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
             'email': request.user.email,
             'same_card_for_both': 1,
+            'plan': selected_plan
 
         })
 
@@ -391,9 +405,10 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': Plan.objects.get(name="SILVER").id,
+        'default_plan': default_plan,
         'gift': gift,
-        'gift_plan': Plan.objects.get(name="UL_GIFT")
+        'gift_plan': Plan.objects.get(name="UL_GIFT"),
+        'selected_plan': selected_plan
     }
 
     return render(request, template, d)

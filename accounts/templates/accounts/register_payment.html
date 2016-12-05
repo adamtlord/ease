@@ -43,28 +43,50 @@
             </div>
             {% if gift %}
                 {% with gift_plan as plan %}
-                    <input type="hidden" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off">
-                    <p>The {{ plan.display_name }} includes:</p>
-                    <ul class="list-unstyled">
-                        <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                        {% if plan.unlimited_rides %}
-                            <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                        {% else %}
-                            {% if plan.included_rides_per_month > 0 %}
-                                <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
+                    <div class="selected-plan">
+                        <input type="hidden" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off">
+                        <p>The {{ plan.display_name }} includes:</p>
+                        <ul class="selected-plan list-unstyled">
+                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                            {% if plan.unlimited_rides %}
+                                <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                            {% else %}
+                                {% if plan.included_rides_per_month > 0 %}
+                                    <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                    </ul>
+                        </ul>
+                    </div>
                 {% endwith %}
-                <hr>
             {% else %}
                 {% if selected_plan %}
-                    preselected {{ selected_plan }}
+                    {% with selected_plan as plan %}
+                        <div class="selected-plan" id="selected_plan">
+                            <p>
+                                You have selected the <strong>{{ plan.display_name }}</strong> plan. The {{ plan.display_name }} includes:
+                            </p>
+                            <ul class="list-unstyled">
+                                <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                                {% if plan.unlimited_rides %}
+                                    <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                                {% else %}
+                                    {% if plan.included_rides_per_month > 0 %}
+                                        <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
+                                    {% else %}
+                                        <li><i class="fa fa-check"></i> Pay-as-you-go for the rides you book through Arrive</li>
+                                    {% endif %}
+                                {% endif %}
+                            </ul>
+                            <p>
+                                If you'd like to choose a different plan, <a href="" id="change_plan">click here</a>.
+                            </p>
+                        </div>
+                    {% endwith %}
                 {% endif %}
-                <div class="plan-buttons" data-toggle="buttons">
+                <div class="plan-buttons" data-toggle="buttons"{% if selected_plan %} style="display:none"{% endif %}>
                     {% for plan in plan_options %}
-                        <label class="btn btn-default btn-block{% if plan.id == default_plan %} active{% endif %}">
-                            <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan.id == default_plan %} checked{% endif %}>
+                        <label class="btn btn-default btn-block{% if plan == default_plan %} active{% endif %}">
+                            <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan == default_plan %} checked{% endif %}>
                             {% if plan.monthly_cost %}
                                 <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
                             {% endif %}

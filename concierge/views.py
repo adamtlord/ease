@@ -305,11 +305,16 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
         if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account:
             same_card_for_both = 1
 
+        if customer.plan:
+            initial_plan = customer.plan.id
+        else:
+            initial_plan = None
+
         payment_form = PaymentForm(
             instance=customer.subscription_account,
             initial={
                 'same_card_for_both': same_card_for_both,
-                'plan': customer.plan.id
+                'plan': initial_plan
             })
 
     d = {

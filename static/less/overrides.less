@@ -81,6 +81,12 @@ h1, h2, h3,
 .input-group-btn .btn {
     .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @btn-border-radius-base);
 }
+.btn-primary {
+  .button-variant(@btn-info-color; @btn-info-bg; @btn-info-border);
+}
+.btn-secondary {
+.button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border);
+}
 sup {
     top: -0.25em;
 }

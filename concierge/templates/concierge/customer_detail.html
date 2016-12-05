@@ -99,7 +99,7 @@
                             {% if customer.ride_account %}
                                 <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }} <a href="{% url 'payment_ride_account_edit' customer.id %}">Edit</a></td>
                             {% else %}
-                                <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Edit</a>
+                                <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
                             {% endif %}
                     </tr>
                 </tbody>

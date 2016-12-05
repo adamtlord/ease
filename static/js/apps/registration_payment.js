@@ -48,6 +48,11 @@ $(function() {
         $("#add_stripe_customer").val(1);
         $("#id_first_name").focus();
     });
+    $("#change_plan").click(function(e){
+        e.preventDefault();
+        $("#selected_plan").hide();
+        $(".plan-buttons").show();
+    });
 
     $('.cc-mask input').mask('0000-0000-0000-0000');
     $('.zip-mask input').mask('00000-0000');

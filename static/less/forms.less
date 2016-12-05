@@ -36,6 +36,7 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
+
 .stacked-fieldset {
     padding:@line-height-computed 0 0;
     margin:@line-height-computed 0;
@@ -66,6 +67,7 @@ label + .radio {
 form.form-login {
     .form-actions {
         padding-top:0;
+        border-top:none;
     }
 }
 
@@ -159,4 +161,13 @@ form.form-login {
         }
     }
     margin-bottom: @line-height-computed;
+}
+.selected-plan {
+    border:1px solid @input-border;
+    padding:@padding-base-vertical + @line-height-computed/2;
+    border-radius: @border-radius-base;
+    .fa.fa-check {
+        color:@brand-success;
+    }
+    margin-bottom:@line-height-computed;
 }
