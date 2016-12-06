@@ -40,6 +40,12 @@
                         </td>
                     </tr>
                     {% endif %}
+                    {% if customer.special_assistance %}
+                        <tr class="warning">
+                            <td>Special assistance</td>
+                            <td>{{ customer.special_assistance }}</td>
+                        </tr>
+                    {% endif %}
                     {% if customer.residence_instructions %}
                     <tr>
                         <td>Residence instructions</td>
