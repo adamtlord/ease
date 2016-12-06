@@ -35,9 +35,14 @@ function initAutocomplete() {
   for(var i = 0; i < acs.length; i++){
     acs[i].addListener('place_changed', fillInAddress);
   }
+  $('input.autocomplete').keypress(function(e) {
+    if (e.which === 13) {
+      return false;
+    }
+  });
 }
 
-function fillInAddress() {
+function fillInAddress(e) {
 
   $('.destination .form-control').val('').removeAttr('disabled');
 
