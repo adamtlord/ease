@@ -9,6 +9,7 @@
         Residence Instructions: {{ customer.residence_instructions|default:'None' }}
     </div>
 {% endif %}
+<h3>Ride ID: {{ ride.id }}</h3>
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">

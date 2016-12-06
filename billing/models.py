@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from localflavor.us.models import USZipCodeField
 
 from common.models import AbstractEnumModel
 
@@ -41,6 +42,7 @@ class StripeCustomer(models.Model):
     email = models.EmailField(blank=True, null=True)
     stripe_id = models.CharField(max_length=255)
     last_4_digits = models.CharField(max_length=4)
+    billing_zip = USZipCodeField(blank=True, null=True, verbose_name="Billing zip code")
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)

@@ -8,6 +8,7 @@ STRIPE_CUSTOMER_FIELDS = [
     'first_name',
     'last_name',
     'email',
+    'billing_zip'
 ]
 
 
@@ -36,7 +37,7 @@ class StripeCustomerForm(forms.ModelForm):
 
     class Meta:
         model = StripeCustomer
-        fields = ['first_name', 'last_name', 'email', 'last_4_digits']
+        fields = ['first_name', 'last_name', 'email', 'last_4_digits', 'billing_zip']
 
     def __init__(self, *args, **kwargs):
         super(StripeCustomerForm, self).__init__(*args, **kwargs)
@@ -53,14 +54,19 @@ class PaymentForm(StripeCustomerForm):
         choices=(
             (1, 'Yes'),
             (0, 'No, I\'ll enter another card on the next page'),
+            (2, 'No, please collect billing information from the customer later'),
         ),
         widget=forms.RadioSelect(),
         label="Should we bill rides that are not included in your plan to this credit card too?"
     )
+    billing_zip = forms.CharField(
+        required=True,
+        label="Billing zip code for this card"
+    )
 
     class Meta:
         model = StripeCustomer
-        fields = ['first_name', 'last_name', 'email', 'last_4_digits']
+        fields = ['first_name', 'last_name', 'email', 'last_4_digits', 'billing_zip']
 
     def __init__(self, *args, **kwargs):
         super(PaymentForm, self).__init__(*args, **kwargs)

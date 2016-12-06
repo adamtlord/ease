@@ -8,12 +8,12 @@ $(function() {
                 expMonth: $("#expiry_month").val(),
                 expYear: $("#expiry_year").val(),
                 cvc: $("#cvv").val(),
-                address_zip: $('#billing_zip').val()
+                address_zip: $('#id_billing_zip').val()
             };
 
             Stripe.createToken(card, function(status, response) {
                 if (status === 200) {
-                    console.log(status, response);
+                    console.log(response);
                     $("#credit-card-errors").hide();
                     $("#id_last_4_digits").val(response.card.last4);
                     $("#stripe_token").val(response.id);

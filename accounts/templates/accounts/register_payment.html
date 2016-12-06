@@ -112,10 +112,6 @@
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
-                <div class="form-group zip-mask">
-                    <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                    <input class="form-control" id="billing_zip" type="text" value="{% if stripe_customer %}{{ stripe_customer.billing_zip }}{% else %}{{ customer.home.zip_code }}{% endif %}">
-                </div>
                 {% if stripe_customer %}
                     <div class="form-group">
                         <label>Credit card on file</label>
@@ -149,9 +145,15 @@
                             </select>
                         </div>
                     </div>
+                    {% render_form_field payment_form.billing_zip %}
                 </div>
                 {% endif %}
-                {% render_form_field payment_form.same_card_for_both %}
+                {% if self %}
+                    <input type="hidden" name="same_card_for_both" value="1" />
+                {% endif %}
+                {% if lovedone %}
+                    {% render_form_field payment_form.same_card_for_both %}
+                {% endif %}
             </fieldset>
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
@@ -165,5 +167,5 @@
 </div>
 {% endblock %}
 {% block scripts %}
-<script src="{{ STATIC_URL }}js/apps/registration_payment.js"></script>
+<script src="{{ STATIC_URL }}js/apps/registration_payment.min.js"></script>
 {% endblock %}

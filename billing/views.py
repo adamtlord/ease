@@ -3,9 +3,8 @@ import stripe
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 
-from accounts.models import Customer
 from billing.forms import PaymentForm, StripeCustomerForm
 from common.utils import soon
 
@@ -26,6 +25,8 @@ def customer_subscription_account_edit(request, template="billing/customer_subsc
                 customer.subscription_account = customer.ride_account = stripe_customer
             else:
                 customer.subscription_account = stripe_customer
+                if payment_form.cleaned_data['same_card_for_both'] == '2':
+                    customer.ride_account = None
 
             if payment_form.cleaned_data['stripe_token']:
                 create_stripe_customer = stripe.Customer.create(

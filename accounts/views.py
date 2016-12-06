@@ -98,7 +98,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
     errors = {}
-    selected_plan = None
+    selected_plan = default_plan = None
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
@@ -108,6 +108,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
             customer.subscription_account = customer.ride_account = new_stripe_customer
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+
+            selected_plan = customer.plan
 
             create_stripe_customer = stripe.Customer.create(
                 description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
@@ -136,6 +138,9 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
+            print
+            print errors
+            print
     else:
         plan_selection = request.session.get('plan', None)
         if plan_selection:
@@ -164,7 +169,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'soon': soon(),
         'errors': errors,
         'default_plan': default_plan,
-        'selected_plan': selected_plan
+        'selected_plan': selected_plan,
+        'errors': errors
     }
 
     return render(request, template, d)
@@ -331,7 +337,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
     customer = request.user.get_customer()
     errors = {}
-    selected_plan = None
+    selected_plan = default_plan = None
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
@@ -345,6 +351,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                 customer.subscription_account = new_stripe_customer
 
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+
+            selected_plan = customer.plan
 
             create_stripe_customer = stripe.Customer.create(
                 description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
@@ -383,19 +391,23 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         plan_selection = request.session.get('plan', None)
 
         if plan_selection:
+            print 'plan selection'
             selected_plan = Plan.objects.get(name=plan_selection.upper())
             default_plan = selected_plan
         else:
+            print 'plan selection'
             default_plan = Plan.objects.get(name="SILVER")
 
-        payment_form = PaymentForm(initial={
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'email': request.user.email,
-            'same_card_for_both': 1,
-            'plan': selected_plan
-
-        })
+        if customer.subscription_account:
+            payment_form = PaymentForm(instance=customer.subscription_account)
+        else:
+            payment_form = PaymentForm(initial={
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+                'same_card_for_both': 1,
+                'plan': selected_plan
+            })
 
     d = {
         'self': False,
@@ -411,7 +423,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'default_plan': default_plan,
         'gift': gift,
         'gift_plan': Plan.objects.get(name="UL_GIFT"),
-        'selected_plan': selected_plan
+        'selected_plan': selected_plan,
+        'errors': errors
     }
 
     return render(request, template, d)
@@ -570,12 +583,12 @@ def profile(request, template='accounts/profile.html'):
 
     customer = user.get_customer()
 
-    if not (customer.subscription_account and customer.ride_account):
+    if not customer.subscription_account:
         return redirect('register_payment_redirect')
 
     d = {
         'customer': customer,
-        'riders': customer.rider_set.all(),
+        'riders': customer.riders.all(),
         'lovedone': user.profile.on_behalf
     }
     return render(request, template, d)
