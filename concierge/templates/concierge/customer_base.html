@@ -34,7 +34,7 @@
         </div>
         <div class="col-sm-6 text-right">
             {% if customer.user.profile.on_behalf %}
-                Account managed by <strong>{{ customer.user}}</strong> ({{ customer.user.profile.relationship }})
+                Account managed by <strong>{{ customer.user}}</strong> {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
             {% endif %}
         </div>
     </div>
