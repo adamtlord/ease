@@ -50,7 +50,7 @@
             <h3>Loved Ones</h3>
             {{ lovedone_formset.management_form }}
             {% for form in lovedone_formset.forms %}
-                <fieldset class="lovedone">
+                <fieldset class="lovedone"{% if customer.lovedones.all|length == 0 %} style="display:none;"{% endif %}>
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}
@@ -74,7 +74,7 @@
             <h3>Riders <small>(Must share the same residence)</small></h3>
             {{ rider_formset.management_form }}
             {% for form in rider_formset.forms %}
-                <fieldset class="rider">
+                <fieldset class="rider"{% if customer.riders.all|length == 0 %} style="display:none;"{% endif %}>
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}

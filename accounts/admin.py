@@ -55,6 +55,10 @@ class UserProfileInlineForm(forms.ModelForm):
         model = UserProfile
         fields = '__all__'
 
+    def clean_source(self):
+        data = self.cleaned_data['source']
+        return data
+
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile

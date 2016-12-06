@@ -89,7 +89,8 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
     d = {
         'customer': customer,
         'profile_page': True,
-        'riders': customer.rider_set.all(),
+        'riders': customer.riders.all(),
+        'lovedones': customer.lovedones.all(),
         'rides_in_progress': rides_in_progress
     }
 
@@ -101,38 +102,30 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
     customer = get_object_or_404(Customer, pk=customer_id)
     home = customer.home
-    DestinationFormSet = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=True,
-                                               extra=0)
     LovedOneFormSet = inlineformset_factory(Customer,
                                             LovedOne,
                                             form=LovedOneForm,
                                             can_delete=True,
-                                            extra=0)
+                                            extra=1)
     RiderFormSet = inlineformset_factory(Customer,
                                          Rider,
                                          form=RiderForm,
                                          can_delete=True,
-                                         extra=0)
+                                         extra=1)
 
     if request.method == "POST":
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
-        destination_formset = DestinationFormSet(request.POST, instance=customer)
         lovedone_formset = LovedOneFormSet(request.POST, instance=customer)
         rider_formset = RiderFormSet(request.POST, instance=customer)
 
         if all([customer_form.is_valid(),
                 home_form.is_valid(),
-                destination_formset.is_valid(),
                 lovedone_formset.is_valid(),
                 rider_formset.is_valid()
                 ]):
             customer_form.save()
             home_form.save()
-            destination_formset.save()
             lovedone_formset.save(),
             rider_formset.save()
 
@@ -142,7 +135,6 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
         home_form = HomeForm(instance=customer.home, prefix='home')
-        destination_formset = DestinationFormSet(instance=customer, queryset=Destination.objects.exclude(home=True))
         lovedone_formset = LovedOneFormSet(instance=customer)
         rider_formset = RiderFormSet(instance=customer)
 
@@ -152,7 +144,6 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
         'home_form': home_form,
         'lovedone_formset': lovedone_formset,
         'rider_formset': rider_formset,
-        'destination_formset': destination_formset,
         'update_page': True
     }
 

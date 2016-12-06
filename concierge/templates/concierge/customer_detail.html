@@ -74,12 +74,29 @@
                             <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
                         </td>
                     </tr>
+                    {% if customer.user.profile.on_behalf %}
+                    <tr>
+                        <td>Account managed by</td>
+                        <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
+                            <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                        </td>
+                    </tr>
+                    {% endif %}
                     {% if riders %}
                         <tr>
                             <td>Riders</td>
                             <td>
                                 {% for rider in riders %}
-                                    {{ rider.first_name }} {{ rider.last_name }}{% if not forloop.last %}, {% endif %}
+                                    <a href="#rider_modal_{{ rider.id }}" data-toggle="modal">{{ rider.first_name }} {{ rider.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% if lovedones %}
+                        <tr>
+                            <td>Loved ones</td>
+                            <td>{% for lovedone in lovedones %}
+                                <a href="#lovedone_modal_{{ rider.id }}" data-toggle="modal">{{ lovedone }}</a>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </td>
                         </tr>
@@ -102,6 +119,12 @@
                                 <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
                             {% endif %}
                     </tr>
+                    {% if customer.user.profile.source %}
+                    <tr>
+                        <td>Marketing source</td>
+                        <td>{{ customer.user.profile.source }}</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -122,6 +145,46 @@
     </div>
 {% if not customer.destinations %}
     <p class="alert alert-warning">No destinations entered for this customer! <a href="{% url 'destination_add' customer.id %}">Add one now</a></p>
+{% endif %}
+{% if lovedones %}
+    {% for lovedone in lovedones %}
+        <div id="lovedone_modal_{{ rider.id }}" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {{ lovedone }}
+                        {% if lovedone.email %}<br><a href="mailto:{{ lovedone.email }}">{{ lovedone.email }}</a>{% endif %}
+                        {% if lovedone.home_phone %}<br>H: {{ lovedone.home_phone }}{% endif %}
+                        {% if lovedone.mobile_phone %}<br>H: {{ lovedone.mobile_phone }}{% endif %}
+                        {% if lovedone.street1 %}<br>H: {{ lovedone.street1 }}{% endif %}
+                        {% if lovedone.street2 %}<br>H: {{ lovedone.street2 }}{% endif %}
+                        <br>{% if lovedone.city %}{{ lovedone.city }}, {% endif %}{% if lovedone.state %}{{ lovedone.state }}{% endif %}{% if lovedone.zip_code %}{{ lovedone.zip_code }}{% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+{% if riders %}
+    {% for rider in riders %}
+        <div id="rider_modal_{{ rider.id }}" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {{ rider.first_name }} {{ rider.last_name }}
+                        {% if rider.email %}<br>{{ rider.email }}{% endif %}
+                        {% if rider.mobile_phone %}<br>{{ rider.mobile_phone }}{% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endif %}
 
 {% endblock %}

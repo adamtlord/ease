@@ -49,12 +49,21 @@ $(function() {
     });
     $('#add_lovedone_fields').click(function(e) {
         e.preventDefault();
-        cloneMore('fieldset.lovedone:last', 'lovedone');
+        if($('fieldset.lovedone').is(':visible')){
+            cloneMore('fieldset.lovedone:last', 'lovedone');
+        }else {
+            $('fieldset.lovedone').slideDown();
+        }
     });
     $('#add_rider_fields').click(function(e) {
         e.preventDefault();
-        cloneMore('fieldset.rider:last', 'rider');
+        if($('fieldset.rider').is(':visible')){
+            cloneMore('fieldset.rider:last', 'rider');
+        }else {
+            $('fieldset.rider').slideDown();
+        }
     });
+
 
 
     // On Load

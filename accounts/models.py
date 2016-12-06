@@ -96,7 +96,7 @@ class UserProfile(models.Model):
     on_behalf = models.BooleanField(default=False)
     relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
-    source = models.CharField(max_length=255, choices=SOURCE_CHOICES, null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return "%s's profile" % self.user
@@ -211,7 +211,7 @@ class Customer(Contact):
 
 class Rider(Contact):
     """ An additional rider on an account. Must share a residence with primary customer. """
-    customer = models.ForeignKey(Customer)
+    customer = models.ForeignKey(Customer, related_name="riders")
     relationship = models.CharField(max_length=100, blank=True, null=True)
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
 
@@ -221,7 +221,7 @@ class LovedOne(Location, Contact):
         Possibly use these as destinations, or destination choices?
     """
 
-    customer = models.ForeignKey(Customer)
+    customer = models.ForeignKey(Customer, related_name="lovedones")
     relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
 
