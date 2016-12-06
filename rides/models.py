@@ -68,7 +68,7 @@ class Ride(models.Model):
     external_id = models.CharField(max_length=64, blank=True, null=True)
     invoiced = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
-    notes = notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
     fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
 
     objects = models.Manager()

@@ -35,14 +35,18 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         add_destination_form = DestinationForm(prefix='add_dest', initial={'customer': customer})
 
     else:
+
         start_ride_form = StartRideForm(request.POST, customer=customer)
         add_starting_point_form = DestinationForm(request.POST, prefix='add_start')
         add_destination_form = DestinationForm(request.POST, prefix='add_dest')
 
-        adding_destination = request.POST.get('add-destination', False)
         adding_start = request.POST.get('add-starting-point', False)
+        adding_destination = request.POST.get('add-destination', False)
 
-        if add_destination_form.is_valid() and add_starting_point_form.is_valid():
+        valid_add_start = add_starting_point_form.is_valid() if adding_start else True
+        valid_add_destination = add_destination_form.is_valid() if adding_destination else True
+
+        if valid_add_start and valid_add_destination:
 
             new_ride = start_ride_form.save(commit=False)
             new_ride.customer = customer

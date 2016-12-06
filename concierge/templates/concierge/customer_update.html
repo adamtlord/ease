@@ -23,9 +23,9 @@
                 {% render_form_field customer_form.last_name %}
                 {% render_form_field customer_form.email %}
                 {% render_form_field customer_form.known_as %}
-                {% render_form_field customer_form.dob %}
-                {% render_form_field customer_form.home_phone %}
-                {% render_form_field customer_form.mobile_phone %}
+                {% render_form_field customer_form.dob '' 'date-mask' %}
+                {% render_form_field customer_form.home_phone '' 'phone-mask' %}
+                {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
                 {% render_form_field customer_form.send_updates %}
                 {% render_form_field customer_form.special_assistance %}
@@ -58,7 +58,7 @@
                     {% render_form_field form.last_name %}
                     {% render_form_field form.relationship %}
                     {% render_form_field form.email %}
-                    {% render_form_field form.mobile_phone %}
+                    {% render_form_field form.mobile_phone '' 'phone-mask' %}
                     {% render_form_field form.receive_updates %}
                     {% render_form_field form.street1 %}
                     {% render_form_field form.street2 '' 'no-label' %}
@@ -67,6 +67,7 @@
                         {% render_form_field form.state '' 'state' %}
                         {% render_form_field form.zip_code '' 'zip zip-mask' %}
                     </div>
+                    {% render_form_field form.DELETE %}
                 </fieldset>
             {% endfor %}
             <button id="add_lovedone_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Loved One</button>
@@ -78,9 +79,11 @@
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}
-                    {% for field in form %}
-                        {% render_form_field field %}
-                    {% endfor %}
+                    {% render_form_field form.first_name %}
+                    {% render_form_field form.last_name %}
+                    {% render_form_field form.mobile_phone '' 'phone-mask' %}
+                    {% render_form_field form.DELETE %}
+
                 </fieldset>
             {% endfor %}
             <button type="button" id="add_rider_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Riders</button>

@@ -33,6 +33,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'distance',
     'service',
     'external_id',
+    'notes'
 ]
 
 
@@ -119,16 +120,13 @@ class RideForm(forms.ModelForm):
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
 
-    # def clean_start_date(self):
-    #     start_date = self.cleaned_data['password']
-    #     return datetime.strptime(start_date, '%m/%d/%Y %I:%M:%S %p')
-
     class Meta:
         model = Ride
         fields = EDIT_RIDE_FIELDS
 
     def __init__(self, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].widget.attrs['rows'] = 4
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         for field in START_RIDE_FIELDS:

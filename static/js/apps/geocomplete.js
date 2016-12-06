@@ -33,9 +33,8 @@ function initAutocomplete() {
     acs.push(autocomplete);
   });
   for(var i = 0; i < acs.length; i++){
-    console.log(acs);
     acs[i].addListener('place_changed', fillInAddress);
-  };
+  }
 }
 
 function fillInAddress() {
@@ -48,8 +47,11 @@ function fillInAddress() {
     var addressType = place.address_components[i].types[0];
   if (componentForm[addressType]) {
       var val = place.address_components[i][componentForm[addressType]];
-      if(addressType == 'street_number'){
+      if(addressType === 'street_number'){
         val = val + ' ';
+      }
+      if(addressType === 'postal_code' && val.length > 5){
+        val = val.slice(0, 5) + "-" + val.slice(5);
       }
       var input = $('#id_' + prefix + componentMap[addressType]);
 
