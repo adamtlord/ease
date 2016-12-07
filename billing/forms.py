@@ -54,7 +54,7 @@ class PaymentForm(StripeCustomerForm):
         choices=(
             (1, 'Yes'),
             (0, 'No, I\'ll enter another card on the next page'),
-            (2, 'No, please collect billing information from the customer later'),
+            (2, 'No, please collect billing information from the member later'),
         ),
         widget=forms.RadioSelect(),
         label="Should we bill rides that are not included in your plan to this credit card too?"

@@ -151,7 +151,7 @@
                 {% if self %}
                     <input type="hidden" name="same_card_for_both" value="1" />
                 {% endif %}
-                {% if lovedone %}
+                {% if lovedone or gift %}
                     {% render_form_field payment_form.same_card_for_both %}
                 {% endif %}
             </fieldset>
