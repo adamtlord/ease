@@ -175,7 +175,7 @@ class Customer(Contact):
 
     @property
     def rider(self):
-        return self.rider_set.first()
+        return self.riders.first()
 
     @property
     def rides(self):
