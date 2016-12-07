@@ -96,6 +96,9 @@ def register_self(request, template='accounts/register.html'):
 @login_required
 def register_self_payment(request, template='accounts/register_payment.html'):
 
+    if request.user.is_staff:
+        redirect('dashboard')
+
     customer = request.user.get_customer()
     errors = {}
     selected_plan = default_plan = None
@@ -138,9 +141,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
-            print
-            print errors
-            print
+
     else:
         plan_selection = request.session.get('plan', None)
         if plan_selection:
@@ -179,6 +180,9 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 @login_required
 def register_self_preferences(request, template='accounts/register_preferences.html'):
 
+    if request.user.is_staff:
+        redirect('dashboard')
+
     customer = request.user.get_customer()
 
     if request.method == 'POST':
@@ -207,6 +211,9 @@ def register_self_preferences(request, template='accounts/register_preferences.h
 
 @login_required
 def register_self_destinations(request, template='accounts/register_destinations.html'):
+
+    if request.user.is_staff:
+        redirect('dashboard')
 
     customer = request.user.get_customer()
     home = customer.destination_set.filter(home=True).first()
@@ -335,6 +342,9 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
 @login_required
 def register_lovedone_payment(request, gift=False, template='accounts/register_payment.html'):
 
+    if request.user.is_staff:
+        redirect('dashboard')
+
     customer = request.user.get_customer()
     errors = {}
     selected_plan = default_plan = None
@@ -433,6 +443,9 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 @login_required
 def register_lovedone_preferences(request, template='accounts/register_preferences.html'):
 
+    if request.user.is_staff:
+        redirect('dashboard')
+
     user = request.user
     customer = request.user.get_customer()
 
@@ -464,6 +477,9 @@ def register_lovedone_preferences(request, template='accounts/register_preferenc
 
 @login_required
 def register_lovedone_destinations(request, template='accounts/register_destinations.html'):
+
+    if request.user.is_staff:
+        redirect('dashboard')
 
     customer = request.user.get_customer()
     home = customer.destination_set.filter(home=True).first()
@@ -513,6 +529,9 @@ def register_lovedone_complete(request, template='accounts/register_complete.htm
 
 @login_required
 def register_payment_ride_account(request, template='accounts/register_payment_ride_account.html'):
+
+    if request.user.is_staff:
+        redirect('dashboard')
 
     customer = request.user.get_customer()
     errors = {}
@@ -683,6 +702,9 @@ def destination_edit(request, destination_id, template='accounts/destinations_ed
 
 def destination_add(request, template='accounts/destination_add.html'):
 
+    if request.user.is_staff:
+        redirect('dashboard')
+
     user = request.user
     customer = user.get_customer()
 
@@ -710,6 +732,9 @@ def destination_add(request, template='accounts/destination_add.html'):
 
 
 def destination_delete(request, destination_id):
+
+    if request.user.is_staff:
+        redirect('dashboard')
 
     destination = get_object_or_404(Destination, pk=destination_id)
     deleted = destination.delete()
