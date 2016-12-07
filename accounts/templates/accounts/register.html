@@ -92,7 +92,8 @@
             </fieldset>
 
             <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Create" />
+                {% render_form_field register_form.accept_tos %}
+                <input type="submit" class="btn btn-primary btn-block" value="Create" />
             </div>
         </form>
     </div>

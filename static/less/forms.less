@@ -43,6 +43,26 @@
     border-top:1px solid @gray-lighter;
 }
 
+.radio,
+.checkbox {
+  label {
+    padding-top:@padding-base-vertical;
+    padding-bottom:@padding-base-vertical;
+  }
+}
+.has-error {
+    .radio,
+    .checkbox {
+        label {
+            display:block;
+            border-style:solid;
+            border-color: @state-danger-text;
+            border-width:1px 1px 0 1px;
+            border-top-left-radius:@border-radius-base;
+            border-top-right-radius:@border-radius-base;
+        }
+    }
+}
 
 fieldset.destination + fieldset.destination,
 fieldset.lovedone + fieldset.lovedone,

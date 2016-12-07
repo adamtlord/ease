@@ -9095,6 +9095,20 @@ textarea.add-control input[type="color"] {
   margin: 22px 0;
   border-top: 1px solid #eeeeee;
 }
+.radio label,
+.checkbox label {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.has-error .radio label,
+.has-error .checkbox label {
+  display: block;
+  border-style: solid;
+  border-color: #a94442;
+  border-width: 1px 1px 0 1px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
 fieldset.destination + fieldset.destination,
 fieldset.lovedone + fieldset.lovedone,
 fieldset.rider + fieldset.rider {

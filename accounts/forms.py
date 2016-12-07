@@ -1,4 +1,6 @@
 from django import forms
+from django.conf import settings
+from django.utils.safestring import mark_safe
 from registration.forms import RegistrationForm
 from accounts.const import TEXT_UPDATE_CHOICES
 from accounts.models import CustomUser, UserProfile, Customer, Rider, LovedOne
@@ -85,6 +87,11 @@ class CustomUserRegistrationForm(RegistrationForm):
         label="Please specify:",
         max_length=255,
         required=False
+    )
+    accept_tos = forms.BooleanField(
+        label=mark_safe('I have read and agree to the <a href="{}" target="_blank">Arrive Terms of Service</a>'.format(settings.TERMS_OF_SERVICE_URL)),
+        required=True,
+        error_messages={'required': 'You must accept the Terms of Service to use Arrive'},
     )
 
     def clean(self):

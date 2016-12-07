@@ -116,3 +116,5 @@ GEOIP_DATABASE = PROJECT_ROOT + '/path/to/your/geoip/database/GeoLiteCity.dat'
 
 LOGIN_REDIRECT_URL = '/profile/'
 LOGIN_URL = '/login/'
+
+TERMS_OF_SERVICE_URL = 'http://arriverides.com/terms-of-service/'
