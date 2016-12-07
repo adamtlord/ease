@@ -71,6 +71,7 @@ class CustomUserRegistrationForm(RegistrationForm):
         label="Create a password",
         strip=False,
         widget=forms.PasswordInput,
+        help_text='Passwords must be at least 8 characters long'
     )
     password2 = forms.CharField(
         label="Please enter the password again",
