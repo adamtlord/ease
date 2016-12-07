@@ -2,6 +2,7 @@ Django==1.10.2
 Fabric
 psycopg2
 python-dateutil
+python-memcached
 
 django_compressor
 django-extensions

@@ -12,6 +12,7 @@ from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from billing.models import Plan
 from billing.forms import PaymentForm, StripeCustomerForm
+from billing.utils import get_stripe_subscription
 from common.utils import soon
 from rides.models import Destination
 from rides.forms import DestinationForm, HomeForm
@@ -393,9 +394,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
-            print
-            print errors
-            print
 
     else:
         plan_selection = request.session.get('plan', None)
@@ -601,12 +599,14 @@ def profile(request, template='accounts/profile.html'):
         return redirect('dashboard')
 
     customer = user.get_customer()
+    subscription = get_stripe_subscription(customer)
 
     if not customer.subscription_account:
         return redirect('register_payment_redirect')
 
     d = {
         'customer': customer,
+        'subscription': subscription,
         'riders': customer.riders.all(),
         'lovedone': user.profile.on_behalf
     }

@@ -12,6 +12,17 @@
     {% endif %}
     </h2>
 </div>
+{% if customer.rides_this_month %}
+    <p class="alert alert-info">
+        {% if customer.rides_this_month == 1 %}
+            You have taken one ride this billing cycle. It was{% if not customer.included_rides_this_month %} not{% endif %} included in your plan.
+        {% else %}
+            You have taken {{ customer.rides_this_month }} ride{% if customer.rides_this_month != 1%}s{% endif %} this billing cycle, of which
+            {{ customer.included_rides_this_month|length }} {% if customer.included_rides_this_month|length == 1 %}was{% else %}were{% endif %}
+            included in your plan.
+        {% endif %}
+    </p>
+{% endif %}
 <div class="row">
     <div class="col-sm-6">
         <h4 class="pull-left">{% if lovedone %}Customer Information{% else %}About You{% endif %}</h3> <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
@@ -61,6 +72,14 @@
         <h4>Payment Information</h4>
         <table class="table table-striped">
             <tbody>
+                <tr>
+                    <th>Subscription plan</th>
+                    <td>{{ customer.plan.display_name }}
+                </tr>
+                <tr>
+                    <th>Subscription renews on</th>
+                    <td>{{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                </tr>
                 {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
                     <tr>
                         <th>Credit card on file</th>
@@ -109,7 +128,7 @@
             </tbody>
         </table>
         {% if riders %}
-            <h4>These people are also on {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} account:</h4>
+            <h4>These people may also use {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} account:</h4>
             <ul>
                 {% for rider in riders %}
                 <li>{{ rider.first_name }} {{ rider.last_name }}</li>
@@ -118,7 +137,7 @@
         {% endif %}
     </div>
 </div>
-<h4>{% if not lovedone %}Your {% endif %}Destinations</h4>
+<h3>{% if not lovedone %}Your {% endif %}Destinations</h3>
 {% if customer.destinations %}
     <table class="table table-striped">
         <tbody>
@@ -139,23 +158,55 @@
                     <td><a href="{% url 'destination_edit' destination.id %}" class="btn btn-default">Edit</a>
                 </tr>
             {% endfor %}
+            <tr>
+                <th>
+                    <a href="{% url 'destination_add' %}" class="btn btn-primary">Add a Destination</a>
+                </th>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         </tbody>
     </table>
-    <a href="{% url 'destination_add' %}" class="btn btn-primary">Add a Destination</a>
 {% else %}
 <p class="alert alert-warning">You haven't entered any destinations yet!
 <a href="{% url 'destination_add' %}">Add one now</a>
 </p>
 {% endif %}
 {% if customer.rides %}
-    <h4>{% if not lovedone %}Your {% endif %}Rides</h4>
+    <h3>{% if not lovedone %}Your {% endif %}Rides</h3>
     <table class="table table-striped">
-        <tbody>
+        <thead>
             <tr>
-                <th></th>
+                <th>From</th>
+                <th>To</th>
+                <th>Started</th>
+                <th>Ended</th>
+                <th>Distance</th>
+                <th>Cost</th>
+            </tr>
+        <tbody>
+            {% for ride in customer.rides %}
+            <tr>
+                <td>{{ ride.start.display_name }}</td>
+                <td>{{ ride.destination.display_name }}</td>
+                <td>{{ ride.start_date }}</td>
+                <td>{% if ride.end_date %}
+                    {{ ride.end_date }}
+                    {% else %}
+                    <span class="label label-warning">In progress</span>
+                    {% endif %}
+                </td>
+                <td>{% if ride.distance %}
+                        {{ ride.distance }} mi
+                    {% endif %}
+                </td>
                 <td>
+                    {{ ride.cost }}
                 </td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 {% endif %}

@@ -49,3 +49,10 @@ DATABASES = {
         'PORT': '5432'
     }
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'unix:/home/easerideapp',
+    }
+}

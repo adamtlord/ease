@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-
+import pytz
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -13,6 +13,7 @@ from django.utils import timezone
 from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
+from billing.utils import get_stripe_subscription
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
 from billing.models import StripeCustomer, Plan
@@ -179,13 +180,32 @@ class Customer(Contact):
 
     @property
     def rides(self):
-        return self.ride_set.all()
+        return self.ride_set.all().order_by('-end_date')
+
+    def get_rides_this_month(self):
+        subscription = get_stripe_subscription(self)
+        start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
+        rides = Ride.objects.filter(customer=self).filter(end_date__gt=start_of_billing_period)
+        return rides
 
     @property
     def rides_this_month(self):
-        today = datetime.datetime.now()
-        ride_count = Ride.objects.filter(customer=self).filter(end_date__month=today.month).count()
-        return ride_count
+        count = self.get_rides_this_month().count()
+        if not count:
+            count = 0
+        return count
+
+    @property
+    def included_rides_this_month(self):
+        plan = self.plan
+        if plan.included_rides_per_month:
+            max_distance = plan.ride_distance_limit
+            neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
+            if not neighborhood_rides:
+                neighborhood_rides = 0
+        else:
+            neighborhood_rides = self.rides_this_month()
+        return neighborhood_rides
 
     @property
     def ready_to_ride(self):
