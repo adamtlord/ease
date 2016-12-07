@@ -8,6 +8,7 @@ from concierge.views import (dashboard, customer_list, customer_create,
                              destination_add, destination_delete,
                              payment_subscription_account_edit,
                              payment_ride_account_edit,
+                             customer_history
                              )
 from rides.views import (ride_start, ride_end, ride_edit, ride_detail, customer_rides)
 
@@ -31,6 +32,8 @@ urlpatterns = [
     url(r'^customers/(?P<customer_id>\d+)/ride/(?P<ride_id>\d+)/$', ride_detail, name='ride_detail'),
     url(r'^customers/(?P<customer_id>\d+)/ride/(?P<ride_id>\d+)/edit/$', ride_edit, name='ride_edit'),
     url(r'^customers/(?P<customer_id>\d+)/ride/(?P<ride_id>\d+)/end/$', ride_end, name='ride_end'),
+
+    url(r'^customers/(?P<customer_id>\d+)/history/$', customer_history, name='customer_history'),
 
     url(r'^customers/(?P<customer_id>\d+)/payment/subscription/$', payment_subscription_account_edit, name='payment_subscription_account_edit'),
     url(r'^customers/(?P<customer_id>\d+)/payment/ride/$', payment_ride_account_edit, name='payment_ride_account_edit'),

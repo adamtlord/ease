@@ -1,6 +1,8 @@
 import datetime
 import stripe
 
+from itertools import chain
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
@@ -12,6 +14,7 @@ from accounts.models import Customer, LovedOne, Rider
 from billing.forms import PaymentForm, StripeCustomerForm
 from common.utils import soon
 from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm
+from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
 
@@ -383,6 +386,22 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 def customer_delete(request, customer_id):
     messages.add_message(request, messages.SUCCESS, 'Deleted')
     return redirect(reverse('customer_list'))
+
+
+@staff_member_required
+def customer_history(request, customer_id, template="concierge/customer_history.html"):
+    customer = get_object_or_404(Customer, pk=customer_id)
+    rides = Ride.objects.filter(customer=customer).order_by('-start_date')
+    touches = Touch.objects.filter(customer=customer).order_by('-date')
+
+    events = sorted(chain(rides, touches), key=lambda x: x.start_date)
+
+    d = {
+        'customer': customer,
+        'events': events,
+        'history_page': True
+    }
+    return render(request, template, d)
 
 
 # AJAX VIEWS

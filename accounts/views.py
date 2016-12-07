@@ -223,7 +223,7 @@ def register_self_destinations(request, template='accounts/register_destinations
             messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
 
             if 'save_done' in destination_form.data:
-                return redirect('profile')
+                return redirect('register_self_complete')
 
     else:
         destination_form = DestinationForm()
@@ -480,7 +480,7 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
             messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
 
             if 'save_done' in destination_form.data:
-                return redirect('profile')
+                return redirect('register_lovedone_complete')
 
             return redirect('register_lovedone_destinations')
 

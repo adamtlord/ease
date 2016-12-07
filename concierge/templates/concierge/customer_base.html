@@ -17,7 +17,7 @@
                 <ul class="nav nav-pills">
                     <li role="presentation" class="start-ride-btn{% if not customer.ready_to_ride %} disabled{% endif %}"><a href="{% url 'ride_start' customer.id %}">Start Ride</a></li>
                     <li role="presentation" class="{% if profile_page %}active{% endif %}"><a href="{% url 'customer_detail' customer.id %}">Profile</a></li>
-                    <li role="presentation" class="{% if ride_page %}active{% endif %}"><a href="{% url 'customer_rides' customer.id %}">Rides</a></li>
+                    <li role="presentation" class="{% if history_page %}active{% endif %}"><a href="{% url 'customer_history' customer.id %}">History</a></li>
                     <li role="presentation" class="{% if destinations_page %}active{% endif %}"><a href="{% url 'customer_destinations' customer.id %}">Destinations</a></li>
                     <li role="presentation" class="{% if update_page %}active{% endif %}"><a href="{% url 'customer_update' customer.id %}">Edit</a></li>
                 </ul>
