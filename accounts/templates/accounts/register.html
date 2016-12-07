@@ -38,7 +38,6 @@
                     {% render_form_field customer_form.first_name %}
                     {% render_form_field customer_form.last_name %}
                     {% render_form_field customer_form.known_as %}
-                    {% render_form_field customer_form.dob %}
                     {% render_form_field customer_form.email %}
                 {% endif %}
                 {% if self %}
@@ -48,6 +47,7 @@
                 {% render_form_field customer_form.home_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
+                {% render_form_field customer_form.dob  '' 'date-mask' %}
             </fieldset>
             <fieldset>
                 <legend>Create an Account</legend>

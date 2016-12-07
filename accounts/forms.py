@@ -125,7 +125,7 @@ class CustomerForm(forms.ModelForm):
         required=False
     )
     known_as = forms.CharField(required=False, help_text="Does your loved one go by something other than his or her first name?")
-    dob = forms.DateField(required=False, label="Date of birth", help_text="Please use the format YYYY-MM-DD")
+    dob = forms.DateField(label="Date of birth", help_text="Please use the format YYYY-MM-DD")
 
     class Meta:
         model = Customer
