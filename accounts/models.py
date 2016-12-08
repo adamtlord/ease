@@ -236,6 +236,10 @@ class Rider(Contact):
     relationship = models.CharField(max_length=100, blank=True, null=True)
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
 
+    def get_full_name(self):
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+
 
 class LovedOne(Location, Contact):
     """ A friend or family member who may be the account holder or may wish to receive updates.

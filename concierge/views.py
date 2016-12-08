@@ -409,18 +409,40 @@ def customer_search_data(request):
     customers = Customer.objects.all()
     customer_list = list()
     for customer in customers:
-        customer_list.append({
+
+        customer_obj = {
             'name': customer.full_name,
-            'home_phone': customer.home_phone.replace('-', ''),
-            'mobile_phone': customer.mobile_phone.replace('-', ''),
+            'home_phone': customer.home_phone,
+            'mobile_phone': customer.mobile_phone,
             'id': customer.id,
-            'tokens': [
-                customer.first_name,
-                customer.last_name,
-                customer.home_phone.replace('-', ''),
-                customer.mobile_phone.replace('-', '')
-                ]
-            })
+        }
+
+        tokens = [
+            customer.first_name,
+            customer.last_name
+        ]
+
+        if customer.home_phone:
+            tokens.append(customer.home_phone)
+
+        if customer.mobile_phone:
+            tokens.append(customer.mobile_phone)
+
+        if customer.user.profile.on_behalf:
+            tokens.append(customer.user.get_full_name())
+            customer_obj['user'] = customer.user.get_full_name()
+
+        if customer.riders:
+            riders = []
+            for rider in customer.riders.all():
+                tokens.append(rider.get_full_name())
+                riders.append(rider.get_full_name())
+            customer_obj['riders'] = riders
+
+        customer_obj['tokens'] = tokens
+
+        customer_list.append(customer_obj)
+
     d = {
         'customers': customer_list
     }

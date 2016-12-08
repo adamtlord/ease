@@ -1,9 +1,27 @@
 $(function() {
     var customers = new Bloodhound({
         datumTokenizer: function(obj) {
-            return obj.tokens;
+            var tokenlist = obj.tokens;
+            var tokens = [];
+            for(var t=0;t<tokenlist.length;t++){
+                if(/[-\s]/.test(tokenlist[t])){
+                    tokens.push(tokenlist[t]);
+                    if(/-/.test(tokenlist[t])){
+                        tokens.push(tokenlist[t].replace(/[-]/g, ''));
+                    }
+                    var subtokens = tokenlist[t].split(/[-\s]/);
+                    for(var s=0; s<subtokens.length; s++){
+                        tokens.push(subtokens[s]);
+                    }
+                }else {
+                    tokens.push(tokenlist[t]);
+                }
+            }
+            return tokens;
         },
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: function(query){
+            return query.split(/[-\s]/);
+        },
         identify: function(obj) {
             return obj.id;
         },
@@ -16,14 +34,15 @@ $(function() {
         }
     });
     var tt_options = {
-        highlight: true,
         hint: true,
         minLength: 2
     };
     $('#customer_search .typeahead').typeahead(tt_options, {
         display: function(obj) {
             var mobile = obj.mobile_phone ? ' ' + obj.mobile_phone : '';
-            return obj.name + ' ' + obj.home_phone + mobile;
+            var user = obj.user ? ' | Account: ' + obj.user : '';
+            var riders = obj.riders.length ? ' | Riders: ' + obj.riders.join(', ') : '';
+            return obj.name + ' ' + obj.home_phone + mobile + user + riders;
         },
         name: 'customers',
         source: customers
