@@ -157,6 +157,7 @@ class Customer(Contact):
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
     plan = models.ForeignKey(Plan, blank=True, null=True)
+    intro_call = models.BooleanField(default=False)
 
     @property
     def full_name(self):

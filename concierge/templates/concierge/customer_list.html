@@ -1,8 +1,12 @@
 {% extends 'base_app.html' %}
-
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
 {% block content %}
     <h2>Customers</h2>
-    <table class="table">
+    <table id="customer_list" class="table">
         <thead>
             <th>Name</th>
             <th>Home</th>
@@ -10,6 +14,7 @@
             <th>Rides Taken</th>
             <th>Last ride</th>
             <th>Notes</th>
+            <th>Intro Call</th>
         </thead>
         <tbody>
             {% for customer in customers %}
@@ -17,10 +22,12 @@
                 <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
                 <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
                 <td>{% if customer.home_phone %}
-                        {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+                        {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
+                            {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
                     {% endif %}
                     {% if customer.mobile_phone %}
-                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %} <i class="fa fa-check text-success"></i> {% endif %}<br>
+                        {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
+                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
                     {% endif %}
                 </td>
                 <td>{{ customer.rides|length }}</td>
@@ -33,8 +40,23 @@
                     </ul>
                     {% endif %}
                 </td>
+                <td>
+                    {% if customer.intro_call %}
+                        <i class="fa fa-check text-success"></i>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            'info':false,
+            'paging':false
+        });
+    })
+</script>
 {% endblock %}

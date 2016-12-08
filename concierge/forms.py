@@ -33,7 +33,7 @@ CUSTOMER_FIELDS = [
     'home_phone',
     'mobile_phone',
     'preferred_phone',
-    'send_updates'
+    'send_updates',
 ]
 
 UPDATE_HOME_FIELDS = [
@@ -76,10 +76,14 @@ class CustomerForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False
     )
+    intro_call = forms.BooleanField(
+        label="Intro call completed",
+        required=False
+    )
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS
+        fields = CUSTOMER_FIELDS + ['intro_call']
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)

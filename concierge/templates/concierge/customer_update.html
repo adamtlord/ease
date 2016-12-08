@@ -19,6 +19,7 @@
 
             <h3>Customer Info</h3>
             <fieldset>
+                {% render_form_field customer_form.intro_call %}
                 {% render_form_field customer_form.first_name %}
                 {% render_form_field customer_form.last_name %}
                 {% render_form_field customer_form.email %}
