@@ -1,4 +1,6 @@
 from django.conf.urls import url, include
+from django.contrib.auth import views as auth_views
+from django.core.urlresolvers import reverse_lazy
 from accounts.views import (register_self,
                             register_self_payment,
                             register_self_preferences,
@@ -43,6 +45,14 @@ urlpatterns = [
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
     url(r'^destinations/add/$', destination_add, name='destination_add'),
-
+    url(r'^password/reset/$',
+        auth_views.password_reset,
+        {
+            'post_reset_redirect': reverse_lazy('auth_password_reset_done'),
+            'html_email_template_name': 'registration/password_reset_html_email.html'
+        },
+        name='auth_password_reset'
+        ),
     url(r'^', include('registration.backends.simple.urls')),
+    url('^', include('django.contrib.auth.urls')),
 ]
