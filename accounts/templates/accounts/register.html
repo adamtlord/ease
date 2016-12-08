@@ -44,8 +44,9 @@
                     {% render_form_field register_form.first_name %}
                     {% render_form_field register_form.last_name %}
                 {% endif %}
-                {% render_form_field customer_form.home_phone '' 'phone-mask' %}
-                {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
+                <label>Phone number(s)<span class="req">*</span> <span class="note">(must enter at least one)</span></label>
+                {% render_form_field customer_form.home_phone '' 'sub-field phone-mask' %}
+                {% render_form_field customer_form.mobile_phone '' 'sub-field phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
                 {% render_form_field customer_form.dob  '' 'date-mask' %}
             </fieldset>

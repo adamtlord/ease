@@ -8815,6 +8815,9 @@ nav.navbar.registration .navbar-header .navbar-brand {
 span.req {
   padding-left: 2px;
 }
+label .note {
+  font-weight: normal;
+}
 .add-control select,
 .add-control textarea,
 .add-control input[type="text"],
@@ -9090,6 +9093,9 @@ textarea.add-control input[type="color"] {
 }
 .form-group.no-help .help-block {
   display: none;
+}
+.form-group.sub-field label {
+  font-weight: normal;
 }
 .has-error .form-control {
   border-bottom-left-radius: 0;
