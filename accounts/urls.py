@@ -48,7 +48,6 @@ urlpatterns = [
     url(r'^password/reset/$',
         auth_views.password_reset,
         {
-            'post_reset_redirect': reverse_lazy('auth_password_reset_done'),
             'html_email_template_name': 'registration/password_reset_html_email.html'
         },
         name='auth_password_reset'
