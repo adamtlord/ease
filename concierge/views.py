@@ -27,9 +27,12 @@ def dashboard(request, template='concierge/dashboard.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    d = {}
+    if request.method == "POST":
+        customer_id = request.POST.get('customer_id', None)
+        if customer_id:
+            return redirect('customer_detail', customer_id)
 
-    return render(request, template, d)
+    return render(request, template)
 
 
 @staff_member_required
@@ -415,6 +418,7 @@ def customer_search_data(request):
             'home_phone': customer.home_phone,
             'mobile_phone': customer.mobile_phone,
             'id': customer.id,
+            'display': '{}'.format(customer.full_name)
         }
 
         tokens = [
@@ -424,20 +428,33 @@ def customer_search_data(request):
 
         if customer.home_phone:
             tokens.append(customer.home_phone)
+            tokens.extend(customer.home_phone.split('-'))
+            tokens.append(customer.home_phone.replace('-', ''))
+            customer_obj['display'] += ' {} (H)'.format(customer.home_phone)
 
         if customer.mobile_phone:
             tokens.append(customer.mobile_phone)
+            tokens.extend(customer.home_phone.split('-'))
+            tokens.append(customer.home_phone.replace('-', ''))
+            customer_obj['display'] += ' {} (M)'.format(customer.mobile_phone)
 
         if customer.user.profile.on_behalf:
-            tokens.append(customer.user.get_full_name())
-            customer_obj['user'] = customer.user.get_full_name()
+            tokens.append(customer.user.first_name)
+            tokens.append(customer.user.last_name)
+            customer_obj['display'] += ' | Account: {}'.format(customer.user.get_full_name())
 
         if customer.riders:
             riders = []
             for rider in customer.riders.all():
-                tokens.append(rider.get_full_name())
+                tokens.append(rider.first_name)
+                tokens.append(rider.last_name)
+                if rider.mobile_phone:
+                    tokens.append(customer.mobile_phone)
+                    tokens.extend(customer.home_phone.split('-'))
+                    tokens.append(customer.home_phone.replace('-', ''))
                 riders.append(rider.get_full_name())
-            customer_obj['riders'] = riders
+            if len(riders):
+                customer_obj['display'] += ' | Riders: {}'.format(', '.join(riders))
 
         customer_obj['tokens'] = tokens
 

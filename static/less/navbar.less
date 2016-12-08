@@ -3,13 +3,18 @@ nav.navbar {
     .navbar-static-top;
     .navbar-brand {
         padding-top:@logo-padding-vertical;
-        padding-bottom:@logo-padding-vertical;
+        padding-bottom:0;
         .logo {
             width:@navbar-logo-width;
             height: @logo-ratio * @navbar-logo-width;
             .letter {
                 fill: @brand-primary;
             }
+        }
+        .tel {
+            color:@arrive-blue-light;
+            margin:0;
+            font-size:@tel-font-size;
         }
     }
     &.registration {
