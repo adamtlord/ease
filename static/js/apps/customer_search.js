@@ -39,10 +39,10 @@ $(function() {
     };
     $('#customer_search .typeahead').typeahead(tt_options, {
         display: function(obj) {
-            var mobile = obj.mobile_phone ? ' ' + obj.mobile_phone : '';
+            var mobile = obj.mobile_phone ? ' ' + obj.mobile_phone + ' (M) ' : '';
             var user = obj.user ? ' | Account: ' + obj.user : '';
             var riders = obj.riders.length ? ' | Riders: ' + obj.riders.join(', ') : '';
-            return obj.name + ' ' + obj.home_phone + mobile + user + riders;
+            return obj.name + ' ' + obj.home_phone + ' (H) ' + mobile + user + riders;
         },
         name: 'customers',
         source: customers
