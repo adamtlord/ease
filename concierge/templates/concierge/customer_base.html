@@ -25,7 +25,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">{% if customer.plan %}
+        <div class="col-sm-6">
+            {% if customer.plan %}
                 <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
             {% else %}
                 <span class="label label-danger">No Plan Selected</span>
