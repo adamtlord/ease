@@ -64,8 +64,6 @@ $(function() {
         }
     });
 
-
-
     // On Load
     toggleOtherSource($('#id_reg-source option:selected').val());
     toggleSendUpdates($('#id_send_updates option:selected').val());

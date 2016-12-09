@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from concierge.models import Touch
+
+admin.site.register(Touch)

@@ -1,7 +1,9 @@
 from django import forms
 
 from accounts.models import Customer, LovedOne, Rider
+from concierge.models import Touch
 from rides.models import Destination
+
 
 CONTACT_FIELDS = [
     'first_name',
@@ -34,6 +36,13 @@ CUSTOMER_FIELDS = [
     'mobile_phone',
     'preferred_phone',
     'send_updates',
+]
+
+TOUCH_FIELDS = [
+    'customer',
+    'date',
+    'type',
+    'notes',
 ]
 
 UPDATE_HOME_FIELDS = [
@@ -142,6 +151,7 @@ class LovedOneForm(forms.ModelForm):
         for field in LOVED_ONE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
+
 class RiderForm(forms.ModelForm):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
@@ -154,4 +164,15 @@ class RiderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RiderForm, self).__init__(*args, **kwargs)
         for field in RIDER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class ActivityForm(forms.ModelForm):
+    class Meta:
+        model = Touch
+        fields = TOUCH_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(ActivityForm, self).__init__(*args, **kwargs)
+        for field in TOUCH_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'

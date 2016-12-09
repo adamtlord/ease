@@ -140,6 +140,11 @@
                     Start a New Ride
                 </a>
             </p>
+            <p>
+                <a href="{% url 'customer_activity_add' customer.id %}" class="btn btn-secondary btn-block">
+                    Enter Activity
+                </a>
+            </p>
             {% if not customer.ready_to_ride %}
                 <p class="alert alert-danger">
                 {% for missing in customer.missing %}

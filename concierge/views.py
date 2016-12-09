@@ -1,8 +1,6 @@
 import datetime
 import stripe
 
-from itertools import chain
-
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
@@ -13,7 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import Customer, LovedOne, Rider
 from billing.forms import PaymentForm, StripeCustomerForm
 from common.utils import soon
-from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm
+from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm, ActivityForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -397,12 +395,35 @@ def customer_history(request, customer_id, template="concierge/customer_history.
     rides = Ride.objects.filter(customer=customer).order_by('-start_date')
     touches = Touch.objects.filter(customer=customer).order_by('-date')
 
-    events = sorted(chain(rides, touches), key=lambda x: x.start_date)
+    d = {
+        'customer': customer,
+        'rides': rides,
+        'touches': touches,
+        'history_page': True
+    }
+    return render(request, template, d)
+
+
+@staff_member_required
+def customer_activity_add(request, customer_id, template="concierge/customer_activity_add.html"):
+    customer = get_object_or_404(Customer, pk=customer_id)
+
+    if request.method == 'POST':
+        activity_form = ActivityForm(request.POST)
+        if activity_form.is_valid():
+            activity_form.save()
+            return redirect('customer_detail', customer_id)
+        else:
+            print
+            print activity_form.errors
+            print
+
+    else:
+        activity_form = ActivityForm()
 
     d = {
         'customer': customer,
-        'events': events,
-        'history_page': True
+        'form': activity_form
     }
     return render(request, template, d)
 

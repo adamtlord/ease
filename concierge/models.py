@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import formats
 
 
 class Touch(models.Model):
@@ -12,3 +13,10 @@ class Touch(models.Model):
     @property
     def start_date(self):
         return self.date
+
+    def __unicode__(self):
+        return '{} with {} {}'.format(self.type, self.customer.full_name, formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))
+
+    class Meta:
+        verbose_name = "Touch"
+        verbose_name_plural = "Touches"

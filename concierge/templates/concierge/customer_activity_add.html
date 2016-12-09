@@ -1,0 +1,47 @@
+{% extends 'concierge/customer_base.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+{% block title %}Add Activity for {{ customer }}{% endblock title %}
+{% block customer_content %}
+
+<h3>Add Activity</h3>
+<div class="row">
+    <div class="col-sm-6">
+        <form action="" class="form " method="POST" novalidate>{% csrf_token %}
+            <fieldset class="activity">
+                <input type="hidden" name="customer" value="{{ customer.id }}" />
+                <div class="form-group activity-date">
+                    <label>Date<span class="req">*</span></label>
+                    <input class="form-control" type="text" value="">
+                </div>
+                {{ form.date.as_hidden }}
+                {% render_form_field form.type %}
+                {% render_form_field form.notes %}
+            </fieldset>
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+<script>
+$(function(){
+    $(".activity-date input").datetimepicker({
+        autoclose: true,
+        fontAwesome: true,
+        format: "mm/dd/yyyy H:ii P",
+        linkField: "id_date",
+        linkFormat: "yyyy-mm-dd hh:ii:ss",
+        showMeridian: true,
+        startView: 1,
+        todayHighlight: true,
+        weekStart: 1,
+    });
+});
+</script>
+
+{% endblock %}
