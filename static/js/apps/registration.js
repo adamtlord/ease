@@ -16,6 +16,26 @@ $(function() {
         }
     }
 
+    function toggleCopyCustomerInfo(checked) {
+        var common_fields = {
+            '#id_reg-email': '#id_cust-email',
+            '#id_reg-first_name': '#id_cust-first_name',
+            '#id_reg-last_name': '#id_cust-last_name',
+        };
+
+        if (checked) {
+            for (var key in common_fields) {
+                $(key).val($(common_fields[key]).val());
+            }
+            $('#id_reg-relationship').val('self');
+        } else {
+            for (var key in common_fields) {
+                $(key).val('');
+            }
+            $('#id_reg-relationship').val('');
+        }
+    }
+
     function cloneMore(selector, type) {
         var newElement = $(selector).clone(true);
         var total = $('#id_' + type + '-TOTAL_FORMS').val();
@@ -49,19 +69,22 @@ $(function() {
     });
     $('#add_lovedone_fields').click(function(e) {
         e.preventDefault();
-        if($('fieldset.lovedone').is(':visible')){
+        if ($('fieldset.lovedone').is(':visible')) {
             cloneMore('fieldset.lovedone:last', 'lovedone');
-        }else {
+        } else {
             $('fieldset.lovedone').slideDown();
         }
     });
     $('#add_rider_fields').click(function(e) {
         e.preventDefault();
-        if($('fieldset.rider').is(':visible')){
+        if ($('fieldset.rider').is(':visible')) {
             cloneMore('fieldset.rider:last', 'rider');
-        }else {
+        } else {
             $('fieldset.rider').slideDown();
         }
+    });
+    $('#use_customer_info').change(function() {
+        toggleCopyCustomerInfo($(this).is(':checked'));
     });
 
     // On Load

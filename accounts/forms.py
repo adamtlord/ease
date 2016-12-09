@@ -64,7 +64,7 @@ class CustomUserRegistrationForm(RegistrationForm):
         required=True
     )
     relationship = forms.CharField(
-        label="Your relationship to the primary customer",
+        label="Your relationship to the primary rider",
         required=False
     )
     password1 = forms.CharField(

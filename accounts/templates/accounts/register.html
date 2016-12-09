@@ -56,6 +56,9 @@
                     <p>If you plan to manage this account on behalf of your loved one, please
                         enter <strong>your own</strong> information here. If you're just setting this account up
                         for someone else, please enter <strong>their</strong> information here.</p>
+                    <div class="checkbox">
+                        <label><input id="use_customer_info" type="checkbox"> Use the primary rider's information</label>
+                    </div>
                 {% endif %}
                 {% render_form_field register_form.email %}
                 {% if lovedone %}
