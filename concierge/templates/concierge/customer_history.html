@@ -52,10 +52,10 @@
     <tbody>
         {% for touch in touches %}
             <tr>
-                <td>{{ touch.type }}</td>
+                <td>{{ touch.type|title }}</td>
                 <td>{{ touch.customer }}</td>
-                <td>{{ touch.date }}</td>
-                <td>{{ touch.notes }}</td>
+                <td>{{ touch.date|default:"" }}</td>
+                <td class="small">{{ touch.notes }}</td>
             </tr>
         {% endfor %}
     </tbody>

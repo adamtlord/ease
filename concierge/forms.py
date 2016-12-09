@@ -43,6 +43,7 @@ TOUCH_FIELDS = [
     'date',
     'type',
     'notes',
+    'type_other'
 ]
 
 UPDATE_HOME_FIELDS = [
@@ -168,6 +169,27 @@ class RiderForm(forms.ModelForm):
 
 
 class ActivityForm(forms.ModelForm):
+    type = forms.ChoiceField(
+        label="Type",
+        choices=Touch.TYPE_CHOICES,
+        required=False
+    )
+    type_other = forms.CharField(
+        label="Please specify:",
+        max_length=255,
+        required=False
+    )
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False
+    )
+    date = forms.DateTimeField()
+
+    def clean(self):
+        super(ActivityForm, self).clean()
+        if self.cleaned_data.get('type') == Touch.OTHER:
+            self.cleaned_data['type'] = self.cleaned_data['type_other']
+
     class Meta:
         model = Touch
         fields = TOUCH_FIELDS

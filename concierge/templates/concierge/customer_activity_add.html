@@ -8,18 +8,34 @@
 <div class="row">
     <div class="col-sm-6">
         <form action="" class="form " method="POST" novalidate>{% csrf_token %}
+            {% if errors %}
+            <p class="alert alert-danger">
+                {% if errors|length == 1 %}
+                    Please correct the error below.
+                {% else %}
+                    Please correct the errors below.
+                {% endif %}
+            </p>
+            {% endif %}
+            {{ form.non_field_errors }}
             <fieldset class="activity">
                 <input type="hidden" name="customer" value="{{ customer.id }}" />
-                <div class="form-group activity-date">
+                <div class="form-group activity-date{% if form.date.errors %} has-error{% endif %}">
                     <label>Date<span class="req">*</span></label>
                     <input class="form-control" type="text" value="">
+                    {% if form.date.errors %}
+                        {{ form.date.errors }}
+                    {% endif %}
                 </div>
                 {{ form.date.as_hidden }}
                 {% render_form_field form.type %}
+                <div id="type_other" style="display:none;">
+                    {% render_form_field form.type_other %}
+                </div>
                 {% render_form_field form.notes %}
             </fieldset>
             <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Save" />
+                <input type="submit" class="btn btn-primary btn-block" value="Save" />
             </div>
         </form>
     </div>
@@ -30,6 +46,21 @@
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
 <script>
 $(function(){
+
+    function toggleOtherSource(val) {
+        if (val === 'OTHER') {
+            $('#type_other').slideDown();
+        } else {
+            $('#type_other').slideUp();
+        }
+    }
+
+    $('#id_type').on('change', function() {
+        toggleOtherSource(this.value);
+    });
+
+    toggleOtherSource($('#id_type option:selected').val());
+
     $(".activity-date input").datetimepicker({
         autoclose: true,
         fontAwesome: true,

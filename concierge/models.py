@@ -10,6 +10,18 @@ class Touch(models.Model):
     type = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
 
+    EMAIL = 'EMAIL'
+    MAIL = 'MAIL'
+    PHONE = 'PHONE'
+    OTHER = 'OTHER'
+
+    TYPE_CHOICES = (
+        (EMAIL, 'Email'),
+        (MAIL, 'Mail'),
+        (PHONE, 'Phone Call'),
+        (OTHER, 'Other'),
+    )
+
     @property
     def start_date(self):
         return self.date

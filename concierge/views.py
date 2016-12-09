@@ -406,7 +406,9 @@ def customer_history(request, customer_id, template="concierge/customer_history.
 
 @staff_member_required
 def customer_activity_add(request, customer_id, template="concierge/customer_activity_add.html"):
+
     customer = get_object_or_404(Customer, pk=customer_id)
+    errors = {}
 
     if request.method == 'POST':
         activity_form = ActivityForm(request.POST)
@@ -414,16 +416,16 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
             activity_form.save()
             return redirect('customer_detail', customer_id)
         else:
-            print
-            print activity_form.errors
-            print
+            errors = activity_form.errors
+            print errors
 
     else:
         activity_form = ActivityForm()
 
     d = {
         'customer': customer,
-        'form': activity_form
+        'form': activity_form,
+        'errors': errors
     }
     return render(request, template, d)
 
