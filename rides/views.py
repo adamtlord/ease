@@ -11,14 +11,10 @@ def customer_rides(request, customer_id, template="concierge/customer_rides.html
 
     customer = get_object_or_404(Customer, pk=customer_id)
     rides = Ride.objects.filter(customer=customer)
-    # rides_in_progress = Ride.in_progress.filter(customer=customer)
-    # completed_rides = Ride.objects.filter(customer=customer).exclude(id__in=rides_in_progress.values_list('id', flat=True))
 
     d = {
         'customer': customer,
         'rides': rides,
-        # 'rides_in_progress': rides_in_progress,
-        # 'completed_rides': completed_rides,
         'ride_page': True
     }
     return render(request, template, d)
@@ -60,7 +56,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             new_ride.save()
 
             messages.success(request, "Ride started")
-            return redirect('ride_edit', customer.id, new_ride.id)
+            return redirect('ride_edit', new_ride.id)
 
     d = {
         'customer': customer,
@@ -97,10 +93,10 @@ def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.h
     return render(request, template, d)
 
 
-def ride_edit(request, customer_id, ride_id, template="concierge/ride_edit.html"):
-    customer = get_object_or_404(Customer, pk=customer_id)
+def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     ride = get_object_or_404(Ride, pk=ride_id)
-
+    customer = get_object_or_404(Customer, pk=ride.customer.id)
+    errors = {}
     if request.method == 'GET':
 
         form = RideForm(instance=ride)
@@ -112,15 +108,45 @@ def ride_edit(request, customer_id, ride_id, template="concierge/ride_edit.html"
             form.save()
             return redirect('customer_rides', customer.id)
         else:
-            print
-            print form.errors
-            print
+            errors = form.errors
 
     d = {
         'customer': customer,
         'ride': ride,
         'form': form,
-        'ride_page': True
+        'ride_page': True,
+        'errors': errors
     }
 
+    return render(request, template, d)
+
+
+def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
+    d = {
+        'ready_page': True,
+        'rides': Ride.ready_to_bill.all()
+    }
+    return render(request, template, d)
+
+
+def rides_incomplete(request, template="rides/incomplete.html"):
+    d = {
+        'incomplete_page': True,
+        'rides': Ride.incomplete.all()
+    }
+    return render(request, template, d)
+
+
+def rides_invoiced(request, template="rides/invoiced.html"):
+    d = {
+        'invoiced_page': True,
+        'rides': Ride.objects.filter(invoiced=True)
+    }
+    return render(request, template, d)
+
+
+def rides_upload(request, template="rides/upload.html"):
+    d = {
+        'upload_page': True
+    }
     return render(request, template, d)

@@ -34,7 +34,7 @@
                         {{ ride.distance }} mi
                     {% endif %}
                 </td>
-                <td><a href="{% url 'ride_edit' customer.id ride.id %}" class="btn btn-default">Edit</a></td>
+                <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default">Edit</a></td>
             </tr>
             {% endfor %}
         </tbody>

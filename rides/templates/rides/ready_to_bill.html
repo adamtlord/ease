@@ -1,0 +1,43 @@
+{% extends 'rides/ride_base.html' %}
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
+{% block page_title %}Ready to Bill{% endblock %}
+
+{% block rides_content %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Started</th>
+            <th>Ended</th>
+            <th>Distance</th>
+            <th>Cost</th>
+            <th>Notes</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ride in rides %}
+            <tr>
+                <td>{{ ride.id }}</td>
+                <td>{{ ride.start.display_name }}</td>
+                <td>{{ ride.destination.display_name }}</td>
+                <td>{{ ride.start_date }}</td>
+                <td>{{ ride.end_date }}</td>
+                <td>{{ ride.distance }} mi</td>
+                <td>${{ ride.cost }}</td>
+                <td class="small">{{ ride.notes }}</td>
+                <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

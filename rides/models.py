@@ -5,7 +5,7 @@ from django.db import models
 from common.models import Location
 from common.utils import geocode_address, get_distance
 
-from rides.managers import RidesInProgressManager
+from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
 from rides.const import SERVICES, UBER, LYFT
 
 
@@ -75,6 +75,8 @@ class Ride(models.Model):
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
+    ready_to_bill = RidesReadyToBillManager()
+    incomplete = RidesIncompleteManager()
 
     def save(self, *args, **kwargs):
         super(Ride, self).save(*args, **kwargs)

@@ -30,7 +30,7 @@
             <td>{{ ride.cost }}</td>
             <td>{{ ride.service }}</td>
             <td>{{ ride.external_id }}</td>
-            <td><a href="{% url 'ride_edit' customer.id ride.id %}" class="btn btn-default">Edit</a></td>
+            <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default">Edit</a></td>
         </tr>
     </tbody>
 </table>

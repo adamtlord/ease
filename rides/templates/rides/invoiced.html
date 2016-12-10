@@ -1,0 +1,49 @@
+{% extends 'rides/ride_base.html' %}
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
+{% block page_title %}Invoiced{% endblock %}
+
+{% block rides_content %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Started</th>
+            <th>Ended</th>
+            <th>Distance</th>
+            <th>Cost</th>
+            <th>Invoiced On</th>
+            <th>Paid</th>
+            <th>Paid On</th>
+            <th>Notes</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ride in rides %}
+            <tr>
+                <td>{{ ride.id }}</td>
+                <td>{{ ride.start.name }}</td>
+                <td>{{ ride.destination.name }}</td>
+                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                <td>{{ ride.end_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                <td>{{ ride.distance }} mi</td>
+                <td>${{ ride.cost }}</td>
+                <td>{{ ride.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                <td>{% if ride.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                <td>{{ ride.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                <td class="small">{{ ride.notes }}</td>
+                <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

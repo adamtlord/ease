@@ -11,6 +11,15 @@
 {% endif %}
 <h3>Ride ID: {{ ride.id }}</h3>
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {% if errors %}
+        <p class="alert alert-danger">
+            {% if error_count == 1 %}
+                Please correct the error below.
+            {% else %}
+                Please correct the errors below.
+            {% endif %}
+        </p>
+    {% endif %}
     <div class="row">
         <div class="col-sm-6">
             <div class="form-group">
@@ -23,11 +32,17 @@
                         </button>
                     </span>
                 </div>
+                {% if form.start.errors %}
+                    {{ form.start.errors }}
+                {% endif %}
             </div>
             {{ form.start.as_hidden }}
             <div class="form-group datetime-start">
                 <label>Start date<span class="req">*</span></label>
                 <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+                {% if form.start_date.errors %}
+                    {{ form.start_date.errors }}
+                {% endif %}
             </div>
             {{ form.start_date.as_hidden }}
             {% render_form_field form.cost %}
@@ -46,15 +61,38 @@
                         </button>
                     </span>
                 </div>
+                {% if form.destination.errors %}
+                    {{ form.destination.errors }}
+                {% endif %}
             </div>
             {{ form.destination.as_hidden }}
             <div class="form-group datetime-end">
                 <label>End date<span class="req">*</span></label>
                 <input class="form-control" type="text" value="{{ ride.end_date|date:'m/d/Y g:i A' }}">
+                {% if form.end_date.errors %}
+                    {{ form.end_date.errors }}
+                {% endif %}
             </div>
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
             {% render_form_field form.external_id %}
+            {% if customer.notes %}
+                <div class="well well-sm">
+                    <i class="fa fa-comment fa-lg"></i> {{ customer.notes }}
+                </div>
+            {% endif %}
+            {% if customer.special_assistance %}
+                <p class="alert alert-warning"><i class="fa fa-wheelchair fa-lg"></i> {{ customer.special_assistance }}</p>
+            {% endif %}
+            {% if customer.residence_instructions %}
+                <p class="alert alert-info">
+                    <i class="fa fa-home fa-lg"></i>
+                    {% if customer.residence_type %}
+                        <small>({{ customer.get_residence_type_display }})</small><br>
+                    {% endif %}
+                    {{ customer.residence_instructions }}
+                </p>
+            {% endif %}
         </div>
     </div>
 

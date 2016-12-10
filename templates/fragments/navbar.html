@@ -10,6 +10,7 @@
             {% if request.user.is_staff %}
                 <li><a href="{% url 'dashboard' %}">Search</a></li>
                 <li><a href="{% url 'customer_list' %}">Customers</a></li>
+                <li><a href="{% url 'rides_ready_to_bill' %}">Billing</a></li>
             {% endif %}
             {% if request.user.is_authenticated %}
                 {% if not request.user.is_staff %}

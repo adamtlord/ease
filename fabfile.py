@@ -116,7 +116,7 @@ def r():
     """
     Shortcut to do quick runserver
     """
-    local('python manage.py runserver')
+    local('python manage.py runserver 0.0.0.0:7000')
 
 runserver = r  # alias
 

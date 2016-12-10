@@ -1,0 +1,24 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="page-header billing">
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>{% block page_title %}Billing{% endblock %}</h1>
+        </div>
+        <div class="col-sm-6">
+            <div class="clearfix">
+                <ul class="nav nav-pills">
+                    <li role="presentation" class="{% if ready_page %}active{% endif %}"><a href="{% url 'rides_ready_to_bill' %}">Ready to Bill</a></li>
+                    <li role="presentation" class="{% if incomplete_page %}active{% endif %}"><a href="{% url 'rides_incomplete' %}">Incomplete</a></li>
+                    <li role="presentation" class="{% if invoiced_page %}active{% endif %}"><a href="{% url 'rides_invoiced' %}">Invoiced</a></li>
+                    <li role="presentation" class="{% if upload_page %}active{% endif %}"><a href="{% url 'rides_upload' %}">Upload Data</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% block rides_content %}
+{% endblock rides_content %}
+{% endblock content %}
