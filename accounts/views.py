@@ -105,6 +105,16 @@ def register_self_payment(request, template='accounts/register_payment.html'):
     selected_plan = default_plan = None
 
     if request.method == 'POST':
+
+        if customer.subscription_account:
+
+            if customer.destinations.count():
+                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+                return redirect('profile')
+
+            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+            return redirect('register_self_destinations')
+
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
 
@@ -142,35 +152,42 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
+            print errors
 
     else:
         plan_selection = request.session.get('plan', None)
+
         if plan_selection:
             selected_plan = Plan.objects.get(name=plan_selection.upper())
             default_plan = selected_plan
         else:
-            default_plan = Plan.objects.get(name="SILVER")
+            default_plan = Plan.objects.get(name='SILVER')
 
-        payment_form = PaymentForm(initial={
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'email': request.user.email,
-            'same_card_for_both': 1,
-            'plan': selected_plan
-        })
+        if customer.subscription_account:
+            payment_form = PaymentForm(instance=customer.subscription_account, initial={
+                'plan': customer.plan.id
+            })
+            selected_plan = customer.plan
+
+        else:
+            payment_form = PaymentForm(initial={
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+                'same_card_for_both': 1,
+                'plan': default_plan.id
+            })
 
     d = {
         'self': True,
         'lovedone': False,
         'customer': customer,
         'payment_form': payment_form,
-        'plan_options': Plan.objects.filter(active=True).exclude(pk=Plan.UL_GIFT),
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': default_plan,
         'selected_plan': selected_plan,
         'errors': errors
     }
@@ -351,6 +368,16 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
     selected_plan = default_plan = None
 
     if request.method == 'POST':
+
+        if customer.subscription_account:
+
+            if customer.destinations.count():
+                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+                return redirect('profile')
+
+            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+            return redirect('register_self_destinations')
+
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
 
@@ -390,8 +417,11 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             if payment_form.cleaned_data['same_card_for_both'] == '0':
+
                 return redirect('register_payment_ride_account')
+
             return redirect('register_self_destinations')
+
         else:
             errors = payment_form.errors
 
@@ -399,22 +429,24 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         plan_selection = request.session.get('plan', None)
 
         if plan_selection:
-            print 'plan selection'
             selected_plan = Plan.objects.get(name=plan_selection.upper())
             default_plan = selected_plan
         else:
-            print 'plan selection'
-            default_plan = Plan.objects.get(name="SILVER")
+            default_plan = Plan.objects.get(name='SILVER')
 
         if customer.subscription_account:
-            payment_form = PaymentForm(instance=customer.subscription_account)
+            payment_form = PaymentForm(instance=customer.subscription_account, initial={
+                'plan': customer.plan.id
+            })
+            selected_plan = customer.plan
+
         else:
             payment_form = PaymentForm(initial={
                 'first_name': request.user.first_name,
                 'last_name': request.user.last_name,
                 'email': request.user.email,
                 'same_card_for_both': 1,
-                'plan': selected_plan
+                'plan': default_plan.id
             })
 
     d = {
@@ -428,7 +460,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'default_plan': default_plan,
         'gift': gift,
         'gift_plan': Plan.objects.get(name="UL_GIFT"),
         'selected_plan': selected_plan,
@@ -599,9 +630,10 @@ def profile(request, template='accounts/profile.html'):
         return redirect('dashboard')
 
     customer = user.get_customer()
-    subscription = get_stripe_subscription(customer)
 
-    if not customer.subscription_account:
+    if customer.subscription_account.stripe_id:
+        subscription = get_stripe_subscription(customer)
+    else:
         return redirect('register_payment_redirect')
 
     d = {

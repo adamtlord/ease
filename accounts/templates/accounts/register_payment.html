@@ -26,7 +26,7 @@
                 <h2 class="text-center">Choose a Plan</h2>
             {% endif %}
         </div>
-        <form action="" id="user_form" method="post">{% csrf_token %}
+        <form action="" id="user_form" method="post" novalidate>{% csrf_token %}
             {% if errors %}
                 <p class="alert alert-danger">
                     {% if error_count == 1 %}
@@ -36,28 +36,20 @@
                     {% endif %}
                 </p>
             {% endif %}
-            {% render_form_field payment_form.last_4_digits %}
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
+            {% render_form_field payment_form.last_4_digits %}
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
             {% if gift %}
-                {% with gift_plan as plan %}
-                    <div class="selected-plan">
-                        <input type="hidden" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off">
-                        <p>The {{ plan.display_name }} includes:</p>
-                        <ul class="selected-plan list-unstyled">
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            {% if plan.unlimited_rides %}
-                                <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                            {% else %}
-                                {% if plan.included_rides_per_month > 0 %}
-                                    <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
-                                {% endif %}
-                            {% endif %}
-                        </ul>
-                    </div>
-                {% endwith %}
+                <div class="selected-plan">
+                    <input type="hidden" name="plan" type="radio" value="4">
+                    <p>The Unlimited Gift Certificate includes:</p>
+                    <ul class="selected-plan list-unstyled">
+                        <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                        <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                    </ul>
+                </div>
             {% else %}
                 {% if selected_plan %}
                     {% with selected_plan as plan %}
@@ -77,32 +69,46 @@
                                     {% endif %}
                                 {% endif %}
                             </ul>
-                            <p>
-                                If you'd like to choose a different plan, <a href="" id="change_plan">click here</a>.
-                            </p>
+                            {% if stripe_customer %}
+                                <p>If you'd like to choose a different plan, please contact customer service at <a href="mailto:hello@arriverides.com">hello@arriverides.com</a> or call <strong>1-866-ARRIVE-8</strong></p>
+                                {{ payment_form.plan.as_hidden }}
+                            {% else %}
+                                <p>
+                                    If you'd like to choose a different plan, <a href="" id="change_plan">click here</a>.
+                                </p>
+                            {% endif %}
                         </div>
                     {% endwith %}
                 {% endif %}
-                <div class="plan-buttons" data-toggle="buttons"{% if selected_plan %} style="display:none"{% endif %}>
-                    {% for plan in plan_options %}
-                        <label class="btn btn-default btn-block{% if plan == default_plan %} active{% endif %}">
-                            <input type="radio" name="plan" value="{{ plan.id }}" id="{{ plan.name }}" autocomplete="off"{% if plan == default_plan %} checked{% endif %}>
-                            {% if plan.monthly_cost %}
-                                <h4>${{ plan.monthly_cost|floatformat }}<small>/month</small></h4>
-                            {% endif %}
-                            <h5>{{ plan.display_name }}</h5>
-                            <ul>
-                                <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                                {% if plan.unlimited_rides %}
-                                    <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                                {% else %}
-                                    {% if plan.included_rides_per_month > 0 %}
-                                        <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
-                                    {% endif %}
-                                {% endif %}
-                            </ul>
-                        </label>
-                    {% endfor %}
+                <div class="plan-buttons" data-toggle="buttons" {% if selected_plan %} style="display:none"{% endif %}>
+                    <label class="btn btn-default btn-block{% if payment_form.plan.0.is_checked %} active{% endif %}" for="id_plan_0">
+                        {{ payment_form.plan.0.tag }}
+                        <h4>$30<small>/month</small></h4>
+                        <h5>Bronze Membership</h5>
+                        <ul>
+                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                        </ul>
+                    </label>
+
+                    <label class="btn btn-default btn-block{% if payment_form.plan.1.is_checked %} active{% endif %}" for="id_plan_1">
+                        {{ payment_form.plan.1.tag }}
+                        <h4>$60<small>/month</small></h4>
+                        <h5>Silver Membership</h5>
+                        <ul>
+                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                            <li><i class="fa fa-check"></i> 3 neighborhood rides per month<sup>*</sup></li>
+                        </ul>
+                    </label>
+
+                    <label class="btn btn-default btn-block{% if payment_form.plan.2.is_checked %} active{% endif %}" for="id_plan_2">
+                        {{ payment_form.plan.2.tag }}
+                        <h4>$100<small>/month</small></h4>
+                        <h5>Gold Membership</h5>
+                        <ul>
+                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
+                            <li><i class="fa fa-check"></i> 6 neighborhood rides per month<sup>*</sup></li>
+                        </ul>
+                    </label>
                 </div>
             {% endif %}
             <fieldset>
@@ -116,37 +122,38 @@
                     <div class="form-group">
                         <label>Credit card on file</label>
                         <input type="text" class="form-control" readonly value="****-****-****-{{ stripe_customer.last_4_digits }}" />
+                        {{ payment_form.billing_zip.as_hidden }}
                     </div>
                 {% else %}
-                <div id="add_card">
-                    <div class="cc-inline">
-                        <div class="form-group cc-mask">
-                            <label for="credit_card_number">Credit card number<span class="req">*</span></label>
-                            <input class="form-control" id="credit_card_number" type="text">
+                    <div id="add_card">
+                        <div class="cc-inline">
+                            <div class="form-group cc-mask">
+                                <label for="credit_card_number">Credit card number<span class="req">*</span></label>
+                                <input class="form-control" id="credit_card_number" type="text">
+                            </div>
+                            <div class="form-group cvv">
+                                <label for="cvv">CVV<span class="req">*</span></label>
+                                <input class="form-control" id="cvv" type="text">
+                            </div>
                         </div>
-                        <div class="form-group cvv">
-                            <label for="cvv">CVV<span class="req">*</span></label>
-                            <input class="form-control" id="cvv" type="text">
-                        </div>
-                    </div>
 
-                    <div class="expiry-inline">
-                        <div class="form-group">
-                            <label for="expiry_date">Expiry date<span class="req">*</span></label>
-                            <select class="form-control" id="expiry_month">
-                            {% for month in months %}
-                                <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
-                            {% endfor %}
-                            </select>
-                            <select class="form-control year" id="expiry_year">
-                            {% for year in years %}
-                                <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
-                            {% endfor %}
-                            </select>
+                        <div class="expiry-inline">
+                            <div class="form-group">
+                                <label for="expiry_date">Expiry date<span class="req">*</span></label>
+                                <select class="form-control" id="expiry_month">
+                                {% for month in months %}
+                                    <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+                                {% endfor %}
+                                </select>
+                                <select class="form-control year" id="expiry_year">
+                                {% for year in years %}
+                                    <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
                     {% render_form_field payment_form.billing_zip %}
-                </div>
                 {% endif %}
                 {% if self %}
                     <input type="hidden" name="same_card_for_both" value="1" />

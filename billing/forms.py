@@ -48,7 +48,8 @@ class StripeCustomerForm(forms.ModelForm):
 class PaymentForm(StripeCustomerForm):
     plan = forms.ChoiceField(
         required=True,
-        choices=Plan.CHOICES
+        choices=Plan.CHOICES,
+        widget=forms.RadioSelect()
     )
     same_card_for_both = forms.ChoiceField(
         choices=(

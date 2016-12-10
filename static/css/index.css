@@ -522,11 +522,11 @@ a.text-primary:focus {
   color: #023280;
 }
 .text-success {
-  color: #82c135;
+  color: #75AF2F;
 }
 a.text-success:hover,
 a.text-success:focus {
-  color: #67992a;
+  color: #5a8724;
 }
 .text-info {
   color: #0095DA;
@@ -1944,25 +1944,25 @@ select[multiple].input-lg {
 .has-success.checkbox label,
 .has-success.radio-inline label,
 .has-success.checkbox-inline label {
-  color: #82c135;
+  color: #75AF2F;
 }
 .has-success .form-control {
-  border-color: #82c135;
+  border-color: #75AF2F;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 .has-success .form-control:focus {
-  border-color: #67992a;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #b3dc80;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #b3dc80;
+  border-color: #5a8724;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a7d86c;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a7d86c;
 }
 .has-success .input-group-addon {
-  color: #82c135;
-  border-color: #82c135;
+  color: #75AF2F;
+  border-color: #75AF2F;
   background-color: #EEFCDE;
 }
 .has-success .form-control-feedback {
-  color: #82c135;
+  color: #75AF2F;
 }
 .has-warning .help-block,
 .has-warning .control-label,
@@ -4016,13 +4016,13 @@ a.badge:focus {
 .alert-success {
   background-color: #EEFCDE;
   border-color: #ebfac7;
-  color: #82c135;
+  color: #75AF2F;
 }
 .alert-success hr {
   border-top-color: #e2f8af;
 }
 .alert-success .alert-link {
-  color: #67992a;
+  color: #5a8724;
 }
 .alert-info {
   background-color: #CEEEFF;
@@ -4140,12 +4140,12 @@ button.list-group-item {
   color: #84b2fd;
 }
 .list-group-item-success {
-  color: #82c135;
+  color: #75AF2F;
   background-color: #EEFCDE;
 }
 a.list-group-item-success,
 button.list-group-item-success {
-  color: #82c135;
+  color: #75AF2F;
 }
 a.list-group-item-success .list-group-item-heading,
 button.list-group-item-success .list-group-item-heading {
@@ -4155,7 +4155,7 @@ a.list-group-item-success:hover,
 button.list-group-item-success:hover,
 a.list-group-item-success:focus,
 button.list-group-item-success:focus {
-  color: #82c135;
+  color: #75AF2F;
   background-color: #e2fac7;
 }
 a.list-group-item-success.active,
@@ -4165,8 +4165,8 @@ button.list-group-item-success.active:hover,
 a.list-group-item-success.active:focus,
 button.list-group-item-success.active:focus {
   color: #fff;
-  background-color: #82c135;
-  border-color: #82c135;
+  background-color: #75AF2F;
+  border-color: #75AF2F;
 }
 .list-group-item-info {
   color: #0095DA;
@@ -8041,19 +8041,19 @@ textarea.form-controller input[type="color"] {
 }
 .has-success .select2-dropdown,
 .has-success .select2-selection {
-  border-color: #82c135;
+  border-color: #75AF2F;
 }
 .has-success .select2-container--focus .select2-selection,
 .has-success .select2-container--open .select2-selection {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #b3dc80;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #b3dc80;
-  border-color: #67992a;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a7d86c;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #a7d86c;
+  border-color: #5a8724;
 }
 .has-success.select2-drop-active {
-  border-color: #67992a;
+  border-color: #5a8724;
 }
 .has-success.select2-drop-active.select2-drop.select2-drop-above {
-  border-top-color: #67992a;
+  border-top-color: #5a8724;
 }
 /**
  * Select2 widgets in Bootstrap Input Groups
@@ -9127,11 +9127,6 @@ textarea.add-control input[type="color"] {
   padding: 22px 0 0;
   margin: 22px 0;
   border-top: 1px solid #eeeeee;
-}
-.radio label,
-.checkbox label {
-  padding-top: 6px;
-  padding-bottom: 6px;
 }
 .has-error .radio label,
 .has-error .checkbox label {
