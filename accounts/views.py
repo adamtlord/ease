@@ -631,7 +631,7 @@ def profile(request, template='accounts/profile.html'):
 
     customer = user.get_customer()
 
-    if customer.subscription_account.stripe_id:
+    if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
     else:
         return redirect('register_payment_redirect')
