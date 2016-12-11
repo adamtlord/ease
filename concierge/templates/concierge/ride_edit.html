@@ -49,6 +49,7 @@
             {% render_form_field form.service %}
             {% render_form_field form.customer %}
             {% render_form_field form.notes %}
+            {% render_form_field form.complete %}
         </div>
         <div class="col-sm-6">
             <div class="form-group">
@@ -66,16 +67,9 @@
                 {% endif %}
             </div>
             {{ form.destination.as_hidden }}
-            <div class="form-group datetime-end">
-                <label>End date<span class="req">*</span></label>
-                <input class="form-control" type="text" value="{{ ride.end_date|date:'m/d/Y g:i A' }}">
-                {% if form.end_date.errors %}
-                    {{ form.end_date.errors }}
-                {% endif %}
-            </div>
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
-            {% render_form_field form.external_id %}
+            {% render_form_field form.fare_estimate %}
             {% if customer.notes %}
                 <div class="well well-sm">
                     <i class="fa fa-comment fa-lg"></i> {{ customer.notes }}

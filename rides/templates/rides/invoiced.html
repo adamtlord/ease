@@ -15,8 +15,7 @@
             <th>ID</th>
             <th>From</th>
             <th>To</th>
-            <th>Started</th>
-            <th>Ended</th>
+            <th>Start Time</th>
             <th>Distance</th>
             <th>Cost</th>
             <th>Invoiced On</th>
@@ -33,7 +32,6 @@
                 <td>{{ ride.start.name }}</td>
                 <td>{{ ride.destination.name }}</td>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                <td>{{ ride.end_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
                 <td>{{ ride.distance }} mi</td>
                 <td>${{ ride.cost }}</td>
                 <td>{{ ride.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>

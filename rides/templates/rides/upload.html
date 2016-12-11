@@ -1,8 +1,41 @@
 {% extends 'rides/ride_base.html' %}
+{% load custom_tags %}
 
+{% block title %}Upload Data{% endblock %}
 {% block page_title %}Upload Data{% endblock %}
 
 {% block rides_content %}
-
-
+<div class="row">
+    <div class="col-sm-6">
+        {% if results %}
+            {% if results.errors %}
+                <div class="alert alert-danger">
+                    {% for error in results.errors %}
+                        {{ error }}{% if not forloop.last %}<br />{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if results.warning %}
+                <div class="alert alert-warning">
+                    {% for warning in results.warning %}
+                        {{ warning }}{% if not forloop.last %}<br />{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if results.success %}
+                <div class="alert alert-success">
+                    {% for success in results.success %}
+                        {{ success }}{% if not forloop.last %}<br />{% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% render_form_field form.file_upload %}
+            <div class="form-actions">
+                <input type="submit" class="btn btn-primary" value="Upload">
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

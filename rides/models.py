@@ -63,9 +63,11 @@ class Ride(models.Model):
     start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point')
     destination = models.ForeignKey('rides.Destination', related_name='ending_point')
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    fare_estimate = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
     service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=LYFT)
     external_id = models.CharField(max_length=64, blank=True, null=True)
+    complete = models.BooleanField(default=False)
     invoiced = models.BooleanField(default=False)
     invoiced_date = models.DateTimeField(blank=True, null=True)
     paid = models.BooleanField(default=False)
@@ -77,6 +79,10 @@ class Ride(models.Model):
     in_progress = RidesInProgressManager()
     ready_to_bill = RidesReadyToBillManager()
     incomplete = RidesIncompleteManager()
+
+    @property
+    def is_complete(self):
+        return self.cost and self.end_date
 
     def save(self, *args, **kwargs):
         super(Ride, self).save(*args, **kwargs)

@@ -28,8 +28,8 @@ START_RIDE_FIELDS = [
 EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'customer',
     'start_date',
-    'end_date',
     'cost',
+    'fare_estimate',
     'distance',
     'service',
     'external_id',
@@ -119,10 +119,11 @@ class RideForm(forms.ModelForm):
     start_date = forms.DateTimeField()
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    complete = forms.BooleanField(required=False)
 
     class Meta:
         model = Ride
-        fields = EDIT_RIDE_FIELDS
+        fields = EDIT_RIDE_FIELDS + ['complete']
 
     def __init__(self, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)
@@ -132,3 +133,14 @@ class RideForm(forms.ModelForm):
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
+
+
+class CSVUploadForm(forms.Form):
+    file_upload = forms.FileField()
+
+    def clean_file_upload(self):
+        file_object = self.cleaned_data['file_upload']
+        if file_object.content_type != 'text/csv':
+            raise ValidationError(
+                'Not a csv file?!',
+                code='invalid')

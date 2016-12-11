@@ -4046,7 +4046,8 @@ a.badge:focus {
 .alert-warning .alert-link {
   color: #9e4b19;
 }
-.alert-danger {
+.alert-danger,
+.alert-error {
   background-color: #FFE0DB;
   border-color: #ffc2c3;
   color: #CD3C17;
@@ -9128,6 +9129,14 @@ textarea.add-control input[type="color"] {
   margin: 22px 0;
   border-top: 1px solid #eeeeee;
 }
+.form-error-container {
+  display: block;
+  border-style: solid;
+  border-color: #CD3C17;
+  border-width: 1px 1px 0 1px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
 .has-error .radio label,
 .has-error .checkbox label {
   display: block;
@@ -9136,6 +9145,16 @@ textarea.add-control input[type="color"] {
   border-width: 1px 1px 0 1px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+}
+.has-error input[type="file"] {
+  display: block;
+  border-style: solid;
+  border-color: #CD3C17;
+  border-width: 1px 1px 0 1px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  width: 100%;
+  padding: 6px;
 }
 fieldset.destination + fieldset.destination,
 fieldset.lovedone + fieldset.lovedone,

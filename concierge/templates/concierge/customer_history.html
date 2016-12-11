@@ -10,8 +10,8 @@
             <th>ID</th>
             <th>From</th>
             <th>To</th>
-            <th>Started</th>
-            <th>Ended</th>
+            <th>Start Time</th>
+            <th>Complete</th>
             <th>Distance</th>
             <th></th>
         </tr>
@@ -23,12 +23,7 @@
                 <td>{{ ride.start.display_name }}</td>
                 <td>{{ ride.destination.display_name }}</td>
                 <td>{{ ride.start_date }}</td>
-                <td>{% if ride.end_date %}
-                    {{ ride.end_date }}
-                    {% else %}
-                    <span class="label label-warning">In progress</span>
-                    {% endif %}
-                </td>
+                <td>{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                 <td>{% if ride.distance %}
                         {{ ride.distance }} mi
                     {% endif %}

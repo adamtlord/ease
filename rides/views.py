@@ -4,7 +4,8 @@ from django.contrib import messages
 
 from accounts.models import Customer
 from rides.models import Ride
-from rides.forms import StartRideForm, DestinationForm, RideForm
+from rides.forms import StartRideForm, DestinationForm, RideForm, CSVUploadForm
+from rides.helpers import handle_lyft_upload
 
 
 def customer_rides(request, customer_id, template="concierge/customer_rides.html"):
@@ -74,6 +75,7 @@ def ride_end(request, customer_id, ride_id):
     ride = get_object_or_404(Ride, pk=ride_id)
 
     ride.end_date = timezone.now()
+    ride.complete = True
     ride.save()
     messages.success(request, "Ride ended")
 
@@ -98,11 +100,11 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     customer = get_object_or_404(Customer, pk=ride.customer.id)
     errors = {}
     if request.method == 'GET':
-
+        print
+        print ride.complete
+        print
         form = RideForm(instance=ride)
-
     else:
-
         form = RideForm(request.POST, instance=ride)
         if form.is_valid():
             form.save()
@@ -132,7 +134,7 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 def rides_incomplete(request, template="rides/incomplete.html"):
     d = {
         'incomplete_page': True,
-        'rides': Ride.incomplete.all()
+        'rides': Ride.objects.filter(complete=False)
     }
     return render(request, template, d)
 
@@ -146,7 +148,25 @@ def rides_invoiced(request, template="rides/invoiced.html"):
 
 
 def rides_upload(request, template="rides/upload.html"):
+
+    results = {}
+
+    if request.method == 'POST':
+        form = CSVUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            upload = request.FILES['file_upload']
+            if upload:
+                results = handle_lyft_upload(request.FILES['file_upload'])
+            else:
+                messages.error(request, "No file!")
+
+    else:
+        form = CSVUploadForm()
+
     d = {
-        'upload_page': True
+        'upload_page': True,
+        'form': form,
+        'results': results,
     }
     return render(request, template, d)
