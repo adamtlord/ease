@@ -22,48 +22,44 @@
         <div class="page-header">
             <h2 class="text-center">Edit Payment Information</h2>
         </div>
-        <form action="" id="user_form" method="post">{% csrf_token %}
+        <form action="" id="user_form" method="post" novalidate>{% csrf_token %}
             {% if errors %}
                 <p class="alert alert-danger">
-                    {% if error_count == 1 %}
+                    {% if errors|length == 1 %}
                         Please correct the error below.
                     {% else %}
                         Please correct the errors below.
                     {% endif %}
+                    {{ errors }}
                 </p>
             {% endif %}
+            {% render_form_field payment_form.stripe_token %}
             {% render_form_field payment_form.last_4_digits %}
-            {% render_form_field payment_form.stripe_id %}
 
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>
+
             <fieldset>
                 <legend>Subscription Billing Information</legend>
-                <input type="hidden" name="stripe_token" id="stripe_token" value="">
-                {{ payment_form.plan.as_hidden }}
+
+                {% render_form_field payment_form.plan %}
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
-                {% if not customer.subscription_account %}
-                    <div class="form-group zip-mask">
-                        <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                        <input class="form-control" id="billing_zip" type="text" value="">
-                    </div>
-                {% endif %}
-                {% if customer.subscription_account %}
-                    <div id="card_on_file" class="form-group">
+                {% if stripe_customer %}
+                    <div class="form-group">
                         <label>Credit card on file</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" readonly value="****-****-****-{{ customer.subscription_account.last_4_digits }}" />
+                            <input type="text" class="form-control" readonly value="****-****-****-{{ stripe_customer.last_4_digits }}" />
                             <span class="input-group-btn">
                                 <button id="change_card" class="btn btn-danger" type="button">Change</button>
                             </span>
                         </div>
+                        {{ payment_form.billing_zip.as_hidden }}
                     </div>
                 {% endif %}
-                <div id="add_card" class="well well-sm"{% if customer.subscription_account %} style="display:none;"{% endif %}>
-                    <h4>Add a new credit card</h4>
+                <div id="add_card" class="well well-sm"{% if stripe_customer %} style="display:none;"{% endif %}>
                     <div class="cc-inline">
                         <div class="form-group cc-mask">
                             <label for="credit_card_number">Credit card number<span class="req">*</span></label>
@@ -74,6 +70,7 @@
                             <input class="form-control" id="cvv" type="text">
                         </div>
                     </div>
+
                     <div class="expiry-inline">
                         <div class="form-group">
                             <label for="expiry_date">Expiry date<span class="req">*</span></label>
@@ -88,8 +85,11 @@
                             {% endfor %}
                             </select>
                         </div>
-                        <a href="" id="cancel_change_card" class="pull-right">Cancel</a>
                     </div>
+                    {% render_form_field payment_form.billing_zip '' 'zip-mask' %}
+                    <p class="text-right">
+                        <a href="" id="cancel_change_card">Cancel</a>
+                    </p>
                 </div>
 
                 {% render_form_field payment_form.same_card_for_both %}

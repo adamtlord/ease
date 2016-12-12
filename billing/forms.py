@@ -73,3 +73,30 @@ class PaymentForm(StripeCustomerForm):
         super(PaymentForm, self).__init__(*args, **kwargs)
         for field in STRIPE_CUSTOMER_FIELDS + ['plan']:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class AdminPaymentForm(StripeCustomerForm):
+    plan = forms.ChoiceField(
+        required=True,
+        choices=Plan.CHOICES
+    )
+    same_card_for_both = forms.ChoiceField(
+        choices=(
+            (1, 'Yes'),
+            (0, 'No, enter another card on the next page'),
+            (2, 'No, collect billing information later'),
+        ),
+        label="Bill rides not included in the plan to this credit card too?")
+    billing_zip = forms.CharField(
+        required=True,
+        label="Billing zip code for this card"
+    )
+
+    class Meta:
+        model = StripeCustomer
+        fields = ['first_name', 'last_name', 'email', 'last_4_digits', 'billing_zip']
+
+    def __init__(self, *args, **kwargs):
+        super(AdminPaymentForm, self).__init__(*args, **kwargs)
+        for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'same_card_for_both']:
+            self.fields[field].widget.attrs['class'] = 'form-control'

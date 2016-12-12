@@ -100,9 +100,6 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     customer = get_object_or_404(Customer, pk=ride.customer.id)
     errors = {}
     if request.method == 'GET':
-        print
-        print ride.complete
-        print
         form = RideForm(instance=ride)
     else:
         form = RideForm(request.POST, instance=ride)

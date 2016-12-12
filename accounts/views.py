@@ -616,9 +616,13 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
 @login_required
 def register_payment_redirect(request):
     user = request.user
-    if user.profile.on_behalf:
-        return redirect('register_lovedone_payment')
-    return redirect('register_self_payment')
+    customer = user.get_customer()
+    if customer.subscription_account:
+        return redirect('customer_subscription_account_edit')
+    else:
+        if user.profile.on_behalf:
+            return redirect('register_lovedone_payment')
+        return redirect('register_self_payment')
 
 
 @login_required

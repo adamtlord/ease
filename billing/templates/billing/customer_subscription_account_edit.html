@@ -32,8 +32,8 @@
                     {% endif %}
                 </p>
             {% endif %}
+            <input type="hidden" name="stripe_token" id="stripe_token" value="">
             {% render_form_field payment_form.last_4_digits %}
-            {% render_form_field payment_form.stripe_id %}
 
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>

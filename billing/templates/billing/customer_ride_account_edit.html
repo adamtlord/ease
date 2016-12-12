@@ -32,8 +32,7 @@
         <div id="add_ride_card"{% if same_card_for_both %} style="display:none;"{% endif %}>
             <form action="" id="user_form" method="post">{% csrf_token %}
                 <input type="hidden" name="add_stripe_customer" id="add_stripe_customer" value="0">
-                <p>Please enter the credit card you would like us to bill for rides
-                    {% if not customer.plan.ride_distance_limit %}.{% else %}
+                <p>Please enter the credit card you would like us to bill for rides{% if not customer.plan.ride_distance_limit %}.{% else %}
                     not included in your monthly subscription ({% if customer.plan.included_rides_per_month > 0 %}rides in addition to the {{ customer.plan.included_rides_per_month }} included, or {% endif %}rides over {{ customer.plan.ride_distance_limit|floatformat }} miles).{% endif %}
                 </p>
                 {% if errors %}
@@ -46,7 +45,7 @@
                     </p>
                 {% endif %}
                 {% render_form_field payment_form.last_4_digits %}
-                <input type="hidden" name="stripe_token" id="stripe_token" value="">
+                {% render_form_field payment_form.stripe_token %}
 
                 <div id="credit-card-errors" style="display:none">
                     <div class="alert alert-danger" id="stripe-error-message"></div>

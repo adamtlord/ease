@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import timezone
 from django.utils import formats
 
 
@@ -25,6 +26,11 @@ class Touch(models.Model):
     @property
     def start_date(self):
         return self.date
+
+    def save(self, *args, **kwargs):
+        if not self.date:
+            self.date = timezone.now()
+        return super(Touch, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return '{} with {} {}'.format(self.type, self.customer.full_name, formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))

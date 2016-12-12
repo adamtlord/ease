@@ -24,7 +24,7 @@
             <h2 class="text-center">Edit Payment Information</h2>
         </div>
         {% if same_card_for_both %}
-            <p>You're currently using the same credit card for subscription payments and ride payments.</p>
+            <p>Currently using the same credit card for subscription payments and ride payments.</p>
             <p class="text-center">
                 <button id="change_ride_card" class="btn btn-primary" type="button">Add a new card for rides</button>
             </p>
@@ -32,37 +32,32 @@
         <div id="add_ride_card"{% if same_card_for_both %} style="display:none;"{% endif %}>
             <form action="" id="user_form" method="post">{% csrf_token %}
                 <input type="hidden" name="add_stripe_customer" id="add_stripe_customer" value="0">
-                <p>Please enter the credit card you would like us to bill for rides
-                    {% if not customer.plan.ride_distance_limit %}.{% else %}
-                    not included in your monthly subscription ({% if customer.plan.included_rides_per_month > 0 %}rides in addition to the {{ customer.plan.included_rides_per_month }} included, or {% endif %}rides over {{ customer.plan.ride_distance_limit|floatformat }} miles).{% endif %}
+                <p>Please enter the credit card to bill for rides{% if not customer.plan.ride_distance_limit %}.{% else %}
+                    not included in the monthly subscription ({% if customer.plan.included_rides_per_month > 0 %}rides in addition to the {{ customer.plan.included_rides_per_month }} included, or {% endif %}rides over {{ customer.plan.ride_distance_limit|floatformat }} miles).{% endif %}
                 </p>
                 {% if errors %}
                     <p class="alert alert-danger">
-                        {% if error_count == 1 %}
+                        {% if error|length == 1 %}
                             Please correct the error below.
                         {% else %}
                             Please correct the errors below.
                         {% endif %}
                     </p>
                 {% endif %}
+                {% render_form_field payment_form.stripe_token %}
                 {% render_form_field payment_form.last_4_digits %}
-                <input type="hidden" name="stripe_token" id="stripe_token" value="">
 
                 <div id="credit-card-errors" style="display:none">
                     <div class="alert alert-danger" id="stripe-error-message"></div>
                 </div>
+
                 <fieldset>
                     <legend>Billing Information</legend>
 
                     {% render_form_field payment_form.first_name %}
                     {% render_form_field payment_form.last_name %}
                     {% render_form_field payment_form.email %}
-                    {% if not customer.ride_account %}
-                        <div class="form-group zip-mask">
-                            <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                            <input class="form-control" id="billing_zip" type="text" value="{% if stripe_customer %}{{ stripe_customer.billing_zip }}{% else %}{{ customer.home.zip_code }}{% endif %}">
-                        </div>
-                    {% endif %}
+
                     {% if customer.ride_account and not same_card_for_both %}
                         <div id="card_on_file" class="form-group">
                             <label>Credit card on file</label>
@@ -102,10 +97,13 @@
                                 {% endfor %}
                                 </select>
                             </div>
-                            {% if not same_card_for_both %}
-                                <a href="" id="cancel_change_card" class="pull-right">Cancel</a>
-                            {% endif %}
                         </div>
+                        {% render_form_field payment_form.billing_zip '' 'zip-mask' %}
+                        {% if not same_card_for_both %}
+                            <p class="text-right">
+                                <a href="" id="cancel_change_card">Cancel</a>
+                            </p>
+                        {% endif %}
                     </div>
 
                 </fieldset>

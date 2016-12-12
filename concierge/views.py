@@ -9,7 +9,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from accounts.models import Customer, LovedOne, Rider
-from billing.forms import PaymentForm, StripeCustomerForm
+from billing.models import Plan
+from billing.forms import StripeCustomerForm, AdminPaymentForm
 from common.utils import soon
 from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm, ActivityForm
 from concierge.models import Touch
@@ -256,18 +257,23 @@ def destination_delete(request, customer_id, destination_id):
 def payment_subscription_account_edit(request, customer_id, template="concierge/payment_subscription_account_edit.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
+    user = customer.user
     errors = {}
 
     if request.method == 'POST':
-        payment_form = PaymentForm(request.POST, instance=customer.subscription_account)
-        if payment_form.is_valid():
 
+        payment_form = AdminPaymentForm(request.POST, instance=customer.subscription_account)
+
+        if payment_form.is_valid():
             stripe_customer = payment_form.save()
+            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
 
             if payment_form.cleaned_data['same_card_for_both'] == '1':
                 customer.subscription_account = customer.ride_account = stripe_customer
             else:
                 customer.subscription_account = stripe_customer
+                if payment_form.cleaned_data['same_card_for_both'] == '2':
+                    customer.ride_account = None
 
             if payment_form.cleaned_data['stripe_token']:
                 create_stripe_customer = stripe.Customer.create(
@@ -288,7 +294,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             if payment_form.cleaned_data['same_card_for_both'] == '0':
-                return redirect('payment_ride_account_edit', customer.id)
+                return redirect('payment_ride_account_edit')
             return redirect('customer_detail', customer.id)
 
         else:
@@ -296,24 +302,29 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
     else:
         same_card_for_both = 0
+        default_plan = Plan.objects.get(name='SILVER')
 
         if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account:
             same_card_for_both = 1
 
-        if customer.plan:
-            initial_plan = customer.plan.id
-        else:
-            initial_plan = None
+        if customer.subscription_account:
+            payment_form = AdminPaymentForm(instance=customer.subscription_account, initial={
+                'plan': default_plan.id,
+                'same_card_for_both': same_card_for_both
+            })
 
-        payment_form = PaymentForm(
-            instance=customer.subscription_account,
-            initial={
-                'same_card_for_both': same_card_for_both,
-                'plan': initial_plan
+        else:
+            payment_form = AdminPaymentForm(initial={
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'same_card_for_both': 1,
+                'plan': default_plan.id
             })
 
     d = {
         'customer': customer,
+        'stripe_customer': customer.subscription_account,
         'payment_form': payment_form,
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
@@ -417,7 +428,6 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
             return redirect('customer_detail', customer_id)
         else:
             errors = activity_form.errors
-            print errors
 
     else:
         activity_form = ActivityForm()
