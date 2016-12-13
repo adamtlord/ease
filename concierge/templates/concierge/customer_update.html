@@ -17,7 +17,7 @@
                 {{ home_form.non_field_errors }}
             {% endif %}
 
-            <h3>Customer Info</h3>
+            <h3 class="m-t-0">Customer Info</h3>
             <fieldset>
                 {% render_form_field customer_form.intro_call %}
                 {% render_form_field customer_form.first_name %}
@@ -48,7 +48,7 @@
 
         </div>
         <div class="col-sm-6">
-            <h3>Loved Ones</h3>
+            <h3 class="m-t-0">Loved Ones</h3>
             {{ lovedone_formset.management_form }}
             {% for form in lovedone_formset.forms %}
                 <fieldset class="lovedone"{% if customer.lovedones.all|length == 0 %} style="display:none;"{% endif %}>

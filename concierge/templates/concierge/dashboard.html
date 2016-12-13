@@ -15,7 +15,7 @@
     </div>
 </form>
 {% if to_contact %}
-<h4>Customers to Contact</h4>
+<h3>Customers to Contact</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -30,7 +30,7 @@
     <tbody>
         {% for customer in to_contact %}
             <tr>
-                <td><a href="{% url 'customer_detail' customer.id %}">{{ customer.full_name }}</a></td>
+                <td><a href="{% url 'customer_update' customer.id %}">{{ customer.full_name }}</a></td>
                 <td>{{ customer.user.full_name }}{% if customer.user.profile.relationship %} ({{ customer.user.profile.relationship }}){% endif %}</td>
                 <td>{% if customer.home_phone %}
                         {% if customer.preferred_phone == 'h' %}<strong>{% endif %}

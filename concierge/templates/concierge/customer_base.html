@@ -31,11 +31,13 @@
             {% else %}
                 <span class="label label-danger">No Plan Selected</span>
             {% endif %}
+            {% if customer.subscription_account %}
             {{ customer.rides_this_month|default:'No' }} ride{% if customer.rides_this_month != 1 %}s{% endif %}
              this month{% if customer.included_rides_this_month %},
              {{ customer.included_rides_this_month|length }} included{% endif %}{% if customer.plan.included_rides_per_month %},
              {{ customer.plan.included_rides_per_month }} remaining
              {% endif %}
+            {% endif %}
         </div>
         <div class="col-sm-6 text-right">
             {% if customer.user.profile.on_behalf %}
