@@ -1,0 +1,67 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>Hi {{ account.first_name }},<br /><br />
+
+Thanks for becoming an Arrive Rides member! You now have unlimited access
+to our concierge service that will order or schedule a ride for you at your
+convenience.<br /><br />
+
+You have signed up for the {{ plan.display_name }} and will be automatically
+billed on a monthly basis. Your next membership charge will be for
+${{ plan.monthly_cost }} on {{ next_bill_date }}.<br /><br />
+</p>
+<table class="body-wrap">
+    <tr>
+        <td class="container" bgcolor="#ECF8FF"  style="padding:15px;">
+            <table>
+                <tr>
+                    <td><strong>
+                        {{ plan.display_name }}
+                        </strong>
+                    </td>
+                    <td align="right">
+                        <strong>{% if plan.signup_cost %}
+                            ${{ plan.signup_cost }} signup cost<br />
+                        {% endif %}
+                        ${{ plan.monthly_cost }} per month</strong>
+                    </td>
+                </tr>
+                {% if plan.included_rides_per_month %}
+                <tr>
+                    <td colspan="2">
+                        Includes {{ plan.included_rides_per_month }} neighborhood rides
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>
+                        Payment Method:
+                    </td>
+                    <td align="right">
+                        Card ending in {{ account.last_4_digits }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<p><br /><br />
+<a href="https://app.arriverides.com/">Sign in here</a> to update your profile,
+add commonly visited destinations, and manage your account.<br /><br />
+
+An Arrive representative will be in touch within a few business days to
+finalize your account set-up and profile preferences. You can now order or
+schedule a ride any time between 9am and 6pm PST by calling
+<strong>1-866-ARRIVE-8</strong> (<em>1-866-277-4838</em>)!<br /><br />
+
+By utilizing Arrive you agree to our
+<a href="http://arriverides.com/terms-of-service/">Terms of Service</a>,
+so please make sure you’ve reviewed them carefully.<br /><br />
+
+We look forward to taking you great places!<br /><br />
+
+The Arrive Rides Team</p>
+{% endblock %}

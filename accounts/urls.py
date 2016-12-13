@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
     url(r'^destinations/add/$', destination_add, name='destination_add'),
-    url(r'^password/reset/$',
+    url(r'^password_reset/$',
         auth_views.password_reset,
         {
             'html_email_template_name': 'registration/password_reset_html_email.html'

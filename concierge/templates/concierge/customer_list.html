@@ -31,7 +31,7 @@
                     {% endif %}
                 </td>
                 <td>{{ customer.rides|length }}</td>
-                <td>{% if customer.rides %}{{ customer.rides.0.end_date|timesince }} ago{% endif %}</td>
+                <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
                 <td>{% if not customer.ready_to_ride %}
                     <ul class="list-unstyled small">
                         {% for missing in customer.missing %}

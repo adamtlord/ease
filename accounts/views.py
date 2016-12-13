@@ -10,6 +10,7 @@ from django.urls import reverse
 from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
+from accounts.helpers import send_welcome_email, send_receipt_email
 from billing.models import Plan
 from billing.forms import PaymentForm, StripeCustomerForm
 from billing.utils import get_stripe_subscription
@@ -76,12 +77,14 @@ def register_self(request, template='accounts/register.html'):
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
+            # Send welcome email
+            send_welcome_email(new_user)
+
             # Skip preferences for now because Lyft doesn't offer that
             # 2016-11-23
             return redirect('register_self_payment')
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
-            print errors
 
     d = {
         'self': True,
@@ -89,7 +92,8 @@ def register_self(request, template='accounts/register.html'):
         'register_form': register_form,
         'customer_form': customer_form,
         'home_form': home_form,
-        'rider_form': rider_form
+        'rider_form': rider_form,
+        'errors': errors
         }
     return render(request, template, d)
 
@@ -146,6 +150,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
             customer.save()
             new_stripe_customer.save()
+
+            send_receipt_email(request.user)
 
             messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 

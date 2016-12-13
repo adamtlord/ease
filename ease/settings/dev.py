@@ -41,3 +41,6 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
+
+DEFAULT_FROM_EMAIL = 'no-reply@arriverides.com'
+SERVER_EMAIL = 'no-reply@arriverides.com'
