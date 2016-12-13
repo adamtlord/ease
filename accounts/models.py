@@ -58,6 +58,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_customer(self):
         return self.customer
 
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
     def __unicode__(self):
         return self.get_full_name()
 
@@ -158,6 +162,7 @@ class Customer(Contact):
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
     plan = models.ForeignKey(Plan, blank=True, null=True)
     intro_call = models.BooleanField(default=False)
+    gift_date = models.DateField(blank=True, null=True)
 
     @property
     def full_name(self):

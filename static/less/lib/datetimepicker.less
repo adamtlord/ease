@@ -211,6 +211,7 @@
     width: 20px;
     height: 20px;
     border: none;
+    border-radius: @border-radius-small;
 }
 .table-striped .datetimepicker table tr td,
 .table-striped .datetimepicker table tr th {
@@ -230,7 +231,7 @@
 .datetimepicker table tr td.today:hover,
 .datetimepicker table tr td.today.disabled,
 .datetimepicker table tr td.today.disabled:hover {
-    background-color: @brand-primary;
+    background-color: fade(@brand-primary, 10%);
     background-image:none;
 }
 .datetimepicker table tr td.today:hover,

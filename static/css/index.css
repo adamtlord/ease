@@ -8296,6 +8296,7 @@ textarea.form-controller input[type="color"] {
   width: 20px;
   height: 20px;
   border: none;
+  border-radius: 3px;
 }
 .table-striped .datetimepicker table tr td,
 .table-striped .datetimepicker table tr th {
@@ -8315,7 +8316,7 @@ textarea.form-controller input[type="color"] {
 .datetimepicker table tr td.today:hover,
 .datetimepicker table tr td.today.disabled,
 .datetimepicker table tr td.today.disabled:hover {
-  background-color: #0346b2;
+  background-color: rgba(3, 70, 178, 0.1);
   background-image: none;
 }
 .datetimepicker table tr td.today:hover,
@@ -8840,6 +8841,10 @@ span.req {
 }
 label .note {
   font-weight: normal;
+}
+label + .help-block {
+  margin-top: -5px;
+  margin-bottom: 5px;
 }
 .add-control select,
 .add-control textarea,
@@ -9631,6 +9636,9 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
 }
 .selected-plan .fa.fa-check {
   color: #82c135;
+}
+#customer_search {
+  margin-bottom: 66px;
 }
 #customer_search .form-control {
   border-top-left-radius: 6px;

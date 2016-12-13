@@ -96,4 +96,14 @@ $(function() {
     $('.zip-mask input').mask('00000-0000');
     $('.date-mask input').mask('0000-00-00');
 
+    $(".datepicker input").datetimepicker({
+        autoclose: true,
+        fontAwesome: true,
+        format: "yyyy-mm-dd",
+        startView: 2,
+        minView: 2,
+        todayHighlight: true,
+        weekStart: 1,
+    });
+
 });

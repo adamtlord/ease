@@ -2,6 +2,9 @@
     <label>
         {{ form_field.label }}{% if form_field.field.required %}<span class="req">*</span>{% endif %}
     </label>
+    {% if help_text %}
+        <span class="help-block">{{ help_text }}</span>
+    {% endif %}
     <div class="radio">
         {% for choice in form_field %}
             <label>
@@ -12,8 +15,5 @@
     </div>
     {% if form_field.errors %}
         {{ form_field.errors }}
-    {% endif %}
-    {% if help_text %}
-        <span class="help-block">{{ help_text }}</span>
     {% endif %}
 </div>

@@ -31,7 +31,14 @@ def dashboard(request, template='concierge/dashboard.html'):
         if customer_id:
             return redirect('customer_detail', customer_id)
 
-    return render(request, template)
+    to_contact = Customer.objects.filter(intro_call=False).order_by('user__date_joined')
+
+    d = {
+        'to_contact': to_contact,
+        'today': datetime.date.today()
+    }
+
+    return render(request, template, d)
 
 
 @staff_member_required

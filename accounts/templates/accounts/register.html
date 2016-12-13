@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-sm-6 col-sm-offset-3">
+    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <div class="page-header">
             {% if gift %}
                 <h2 class="text-center">Give the Gift of Independence</h2>
@@ -49,6 +49,9 @@
                 {% render_form_field customer_form.mobile_phone '' 'sub-field phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
                 {% render_form_field customer_form.dob  '' 'date-mask' %}
+                {% if lovedone %}
+                    {% render_form_field customer_form.gift_date '' 'datepicker' %}
+                {% endif %}
             </fieldset>
             <fieldset>
                 <legend>Create an Account</legend>
@@ -105,5 +108,5 @@
 {% endblock %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.js"></script>
 {% endblock %}
