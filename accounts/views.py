@@ -23,6 +23,9 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @anonymous_required
 def register_self(request, template='accounts/register.html'):
+
+    errors = []
+
     if not settings.REGISTRATION_OPEN:
         messages.info(request, "Registration is temporarily closed. We are sorry for the inconvenience.")
         return redirect('homepage')
