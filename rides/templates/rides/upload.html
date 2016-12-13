@@ -22,11 +22,9 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            {% if results.success %}
+            {% if results.success > 0 %}
                 <div class="alert alert-success">
-                    {% for success in results.success %}
-                        {{ success }}{% if not forloop.last %}<br />{% endif %}
-                    {% endfor %}
+                    {{ results.total }} rows uploaded; {{ results.success }} rows processed successfully
                 </div>
             {% endif %}
         {% endif %}

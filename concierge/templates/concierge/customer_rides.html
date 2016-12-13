@@ -21,9 +21,9 @@
             {% for ride in rides %}
             <tr>
                 <td>{{ ride.id }}</td>
-                <td>{{ ride.start.display_name }}</td>
-                <td>{{ ride.destination.display_name }}</td>
-                <td>{{ ride.start_date }}</td>
+                <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
+                <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
+                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                 <td>{% if ride.end_date %}
                     {{ ride.end_date }}
                     {% else %}
@@ -34,7 +34,10 @@
                         {{ ride.distance }} mi
                     {% endif %}
                 </td>
-                <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default">Edit</a></td>
+                <td>
+                    <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
+                    <a href="{% url 'ride_end' ride.id %}" class="btn btn-success btn-sm">COMPLETE</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -42,3 +45,7 @@
 {% endif %}
 
 {% endblock %}
+qs = Question.objects.annotate(answer_count = Count('answers')) \
+            .filter(answer_count__gte=1).prefetch_related('answers')
+# get answer list related to first question
+print qs[0].answers.all()

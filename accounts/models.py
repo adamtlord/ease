@@ -228,6 +228,10 @@ class Customer(Contact):
             missing_items.append('No plan selected')
         return missing_items
 
+    @property
+    def rides_ready_to_bill(self):
+        return Ride.ready_to_bill.filter(customer=self)
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

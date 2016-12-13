@@ -44,24 +44,20 @@
                         {% endif %}
                     </p>
                 {% endif %}
-                {% render_form_field payment_form.last_4_digits %}
                 {% render_form_field payment_form.stripe_token %}
+                {% render_form_field payment_form.last_4_digits %}
 
                 <div id="credit-card-errors" style="display:none">
                     <div class="alert alert-danger" id="stripe-error-message"></div>
                 </div>
+
                 <fieldset>
                     <legend>Billing Information</legend>
 
                     {% render_form_field payment_form.first_name %}
                     {% render_form_field payment_form.last_name %}
                     {% render_form_field payment_form.email %}
-                    {% if not customer.ride_account %}
-                        <div class="form-group zip-mask">
-                            <label for="billing_zip">Billing ZIP code<span class="req">*</span></label>
-                            <input class="form-control" id="billing_zip" type="text" value="{% if stripe_customer %}{{ stripe_customer.billing_zip }}{% else %}{{ customer.home.zip_code }}{% endif %}">
-                        </div>
-                    {% endif %}
+
                     {% if customer.ride_account and not same_card_for_both %}
                         <div id="card_on_file" class="form-group">
                             <label>Credit card on file</label>
@@ -73,6 +69,7 @@
                             </div>
                         </div>
                     {% endif %}
+
 
                     <div id="add_card" {% if not same_card_for_both %}class="well well-sm"{% endif %}{% if customer.ride_account and not same_card_for_both %} style="display:none;"{% endif %}>
                         {% if not same_card_for_both %}<h4>Add a new credit card</h4>{% endif %}
@@ -101,10 +98,13 @@
                                 {% endfor %}
                                 </select>
                             </div>
-                            {% if not same_card_for_both %}
-                                <a href="" id="cancel_change_card" class="pull-right">Cancel</a>
-                            {% endif %}
                         </div>
+                        {% render_form_field payment_form.billing_zip '' 'zip-mask' %}
+                        {% if not same_card_for_both %}
+                            <p class="text-right">
+                                <a href="" id="cancel_change_card">Cancel</a>
+                            </p>
+                        {% endif %}
                     </div>
 
                 </fieldset>

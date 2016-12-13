@@ -20,9 +20,9 @@
         {% for ride in rides %}
             <tr>
                 <td>{{ ride.id }}</td>
-                <td>{{ ride.start.display_name }}</td>
-                <td>{{ ride.destination.display_name }}</td>
-                <td>{{ ride.start_date }}</td>
+                <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
+                <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
+                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                 <td>{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                 <td>{% if ride.distance %}
                         {{ ride.distance }} mi

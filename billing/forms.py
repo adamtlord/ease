@@ -34,6 +34,10 @@ class StripeCustomerForm(forms.ModelForm):
         required=False,
         widget=forms.HiddenInput()
     )
+    billing_zip = forms.CharField(
+        required=True,
+        label="Billing zip code for this card"
+    )
 
     class Meta:
         model = StripeCustomer

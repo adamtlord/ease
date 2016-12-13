@@ -70,7 +70,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
     return render(request, template, d)
 
 
-def ride_end(request, customer_id, ride_id):
+def ride_end(request, ride_id):
 
     ride = get_object_or_404(Ride, pk=ride_id)
 
@@ -79,7 +79,7 @@ def ride_end(request, customer_id, ride_id):
     ride.save()
     messages.success(request, "Ride ended")
 
-    return redirect('customer_detail', customer_id)
+    return redirect('customer_detail', ride.customer.id)
 
 
 def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.html"):
@@ -121,10 +121,19 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
 
 
 def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
+    customers = dict()
+    rides = Ride.ready_to_bill.all()
+
+    for r in rides:
+        if r.customer in customers:
+            customers[r.customer].append(r)
+        else:
+            customers[r.customer] = [r]
     d = {
         'ready_page': True,
-        'rides': Ride.ready_to_bill.all()
+        'customers': customers
     }
+    print d['customers']
     return render(request, template, d)
 
 

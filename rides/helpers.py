@@ -25,22 +25,18 @@ LYFT_DATETIME_FORMAT = '%m/%d/%y %H:%M'
 def handle_lyft_upload(uploaded_file):
 
     results = {
-        'warning': [],
-        'error': [],
-        'success': []
+        'warnings': [],
+        'errors': [],
+        'success': 0,
+        'total': 0
     }
 
     reader = csv.DictReader(uploaded_file)
     for idx, row in enumerate(reader):
+        results['total'] += 1
         try:
             ride_id = int(row[ID_COL])
-        except ValueError:
-            results['error'].append('Row {}: Can\'t find an ID number in the "{}" column'.format(idx + 1, ID_COL))
-        try:
             ride = Ride.objects.get(pk=ride_id)
-        except ObjectDoesNotExist:
-            results['error'].append('Row {}: Can\'t find a Ride with the ID provided ({})'.format(idx + 1, ride_id))
-        else:
             ride.complete = True
             ride.cost = Decimal(row[COST_COL].replace('$', '').strip(' '))
             try:
@@ -48,6 +44,10 @@ def handle_lyft_upload(uploaded_file):
             except:
                 pass
             ride.save()
-            results['success'].append('Row {}: Saved Ride {}'.format(idx + 1, ride_id))
+            results['success'] += 1
+        except ValueError:
+            results['errors'].append('Row {}: Can\'t find an ID number in the "{}" column ("{}")'.format(idx + 1, ID_COL, row[ID_COL]))
+        except ObjectDoesNotExist:
+            results['errors'].append('Row {}: Can\'t find a Ride with the ID provided ({})'.format(idx + 1, ride_id))
 
     return results
