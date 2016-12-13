@@ -149,6 +149,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
             messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 
+            request.session['payment_complete'] = True
+
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
@@ -230,6 +232,10 @@ def register_self_preferences(request, template='accounts/register_preferences.h
 @login_required
 def register_self_destinations(request, template='accounts/register_destinations.html'):
 
+    payment_complete = request.session.get('payment_complete')
+    if payment_complete:
+        del request.session['payment_complete']
+
     if request.user.is_staff:
         redirect('dashboard')
 
@@ -260,6 +266,7 @@ def register_self_destinations(request, template='accounts/register_destinations
         'home': home,
         'lovedone': False,
         'self': True,
+        'payment_complete': payment_complete
     }
     return render(request, template, d)
 
@@ -419,6 +426,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             if payment_form.cleaned_data['same_card_for_both'] == '0':
 
                 return redirect('register_payment_ride_account')
+
+            request.session['payment_complete'] = True
 
             return redirect('register_self_destinations')
 

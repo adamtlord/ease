@@ -2,6 +2,10 @@
 {% load custom_tags %}
 {% load map_tags %}
 
+{% if payment_complete and not DEBUG %}
+    {% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='AddPaymentInfo' only %}{% endblock %}
+{% endif %}
+
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
 

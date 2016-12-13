@@ -2,6 +2,7 @@
 {% load custom_tags %}
 {% load map_tags %}
 
+{% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='CompleteRegistration' only %}{% endblock %}
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
 

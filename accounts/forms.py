@@ -128,7 +128,11 @@ class CustomerForm(forms.ModelForm):
     )
     known_as = forms.CharField(required=False, help_text="Does your loved one go by something other than his or her first name?")
     dob = forms.DateField(label="Date of birth", help_text="Please use the format YYYY-MM-DD")
-    contact_on = forms.DateField(label="If this is a gift, on what date will you present it?", help_text="We call every one of our new members, and don't want to ruin the surprise for you!")
+    gift_date = forms.DateField(
+        label="If this is a gift, on what date will you present it?",
+        help_text="We call every one of our new members, and don't want to ruin the surprise for you!",
+        required=False
+    )
 
     class Meta:
         model = Customer

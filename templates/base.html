@@ -25,6 +25,10 @@
             <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/index.css">
         {% endcompress %}
 
+        {% if not DEBUG %}
+            {% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='PageView' only %}{% endblock %}
+        {% endif %}
+
         {% block header_includes %}{% endblock header_includes %}
     </head>
 
