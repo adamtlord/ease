@@ -45,10 +45,11 @@
                 <div class="selected-plan">
                     <input type="hidden" name="plan" type="radio" value="4">
                     <p>The Unlimited Gift Certificate includes:</p>
-                    <ul class="selected-plan list-unstyled">
+                    <ul class="list-unstyled">
                         <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                        <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
+                        <li><i class="fa fa-check"></i> Unlimited neighborhood rides<sup>*</sup> for the month of January 2017</li>
                     </ul>
+                    <p>You will be charged ${{ gift_plan.signup_cost|floatformat }}.</p>
                 </div>
             {% else %}
                 {% if selected_plan %}
@@ -57,6 +58,7 @@
                             <p>
                                 You have selected the <strong>{{ plan.display_name }}</strong> plan. The {{ plan.display_name }} includes:
                             </p>
+
                             <ul class="list-unstyled">
                                 <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
                                 {% if plan.unlimited_rides %}
@@ -69,6 +71,7 @@
                                     {% endif %}
                                 {% endif %}
                             </ul>
+                            <p>You will be charged {% if plan.signup_cost %}${{ plan.signup_cost|floatformat }} on signup, and {% endif %}{% if plan.monthly_cost %}${{ plan.monthly_cost|floatformat }} per month{% endif %}.</p>
                             {% if stripe_customer %}
                                 <p>If you'd like to choose a different plan, please contact customer service at <a href="mailto:hello@arriverides.com">hello@arriverides.com</a> or call <strong>1-866-ARRIVE-8</strong></p>
                                 {{ payment_form.plan.as_hidden }}

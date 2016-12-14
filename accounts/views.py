@@ -149,7 +149,9 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             # if chosen plan has an upfront cost, create an invoice line-item
             if customer.plan.signup_cost:
                 # create signup invoice item
-                signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                # this is only charging $25 for bronze plan. Needs to be $30.
+                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                signup_cost = int(customer.plan.signup_cost * 100)
                 stripe.InvoiceItem.create(
                     customer=create_stripe_customer.id,
                     amount=signup_cost,
@@ -449,8 +451,9 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
             # if chosen plan has an upfront cost, create an invoice line-item
             if customer.plan.signup_cost:
-                # create signup invoice item
-                signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                # this is only charging $25 for bronze plan. Needs to be $30.
+                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                signup_cost = int(customer.plan.signup_cost * 100)
                 stripe.InvoiceItem.create(
                     customer=create_stripe_customer.id,
                     amount=signup_cost,
