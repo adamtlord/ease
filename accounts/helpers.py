@@ -6,6 +6,7 @@ from django.utils import formats
 from django.template.loader import render_to_string
 
 from billing.utils import get_stripe_subscription
+from concierge.models import Touch
 
 
 def send_welcome_email(user):
@@ -20,6 +21,15 @@ def send_welcome_email(user):
         [user.email],
         html_message=msg_html,
     )
+
+    new_touch = Touch(
+        customer=user.get_customer(),
+        date=datetime.datetime.now(),
+        type=Touch.EMAIL,
+        notes='Sent welcome email after registration'
+        )
+    new_touch.full_clean()
+    new_touch.save()
 
 
 def send_receipt_email(user):
@@ -49,3 +59,12 @@ def send_receipt_email(user):
         [to_email],
         html_message=msg_html,
     )
+
+    new_touch = Touch(
+        customer=user.get_customer(),
+        date=datetime.datetime.now(),
+        type=Touch.EMAIL,
+        notes='Sent receipt email after payment'
+        )
+    new_touch.full_clean()
+    new_touch.save()

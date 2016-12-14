@@ -83,7 +83,7 @@
                 <div class="plan-buttons" data-toggle="buttons" {% if selected_plan %} style="display:none"{% endif %}>
                     <label class="btn btn-default btn-block{% if payment_form.plan.0.is_checked %} active{% endif %}" for="id_plan_0">
                         {{ payment_form.plan.0.tag }}
-                        <h4>$30<small>/month</small></h4>
+                        <h4>$30 <small>signup</small>, $5<small>/month</small></h4>
                         <h5>Bronze Membership</h5>
                         <ul>
                             <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
@@ -92,17 +92,17 @@
 
                     <label class="btn btn-default btn-block{% if payment_form.plan.1.is_checked %} active{% endif %}" for="id_plan_1">
                         {{ payment_form.plan.1.tag }}
-                        <h4>$60<small>/month</small></h4>
+                        <h4>$50<small>/month</small></h4>
                         <h5>Silver Membership</h5>
                         <ul>
                             <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            <li><i class="fa fa-check"></i> 3 neighborhood rides per month<sup>*</sup></li>
+                            <li><i class="fa fa-check"></i> 4 neighborhood rides per month<sup>*</sup></li>
                         </ul>
                     </label>
 
                     <label class="btn btn-default btn-block{% if payment_form.plan.2.is_checked %} active{% endif %}" for="id_plan_2">
                         {{ payment_form.plan.2.tag }}
-                        <h4>$100<small>/month</small></h4>
+                        <h4>$75<small>/month</small></h4>
                         <h5>Gold Membership</h5>
                         <ul>
                             <li><i class="fa fa-check"></i> Unlimited access to concierge</li>

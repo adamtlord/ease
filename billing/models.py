@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-
+import datetime
 from django.db import models
 from localflavor.us.models import USZipCodeField
 
@@ -11,13 +11,13 @@ class Plan(AbstractEnumModel):
     BRONZE = 1
     SILVER = 2
     GOLD = 3
-    UL_GIFT = 4
+    INTRO_GIFT = 4
 
     CHOICES = (
         (BRONZE, 'Bronze Membership'),
         (SILVER, 'Silver Membership'),
         (GOLD, 'Gold Membership'),
-        (UL_GIFT, 'Unlimited Gift Certificate'),
+        (INTRO_GIFT, 'Unlimited Gift Certificate'),
     )
 
     active = models.BooleanField(default=True)
@@ -31,6 +31,14 @@ class Plan(AbstractEnumModel):
 
     def is_active(self):
         return self.active
+
+    @property
+    def is_gift(self):
+        return self.id == self.INTRO_GIFT
+
+    @property
+    def gift_expiration(self):
+        return datetime.datetime(2017,2,1)
 
     def __unicode__(self):
         return self.name

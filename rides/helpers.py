@@ -40,7 +40,7 @@ def handle_lyft_upload(uploaded_file):
             ride.complete = True
             ride.cost = Decimal(row[COST_COL].replace('$', '').strip(' '))
             try:
-                ride.request_time = pytz.localize.utc(datetime.strptime(row[REQUEST_TIME_COL], LYFT_DATETIME_FORMAT))
+                ride.request_time = pytz.utc.localize(datetime.strptime(row[REQUEST_TIME_COL], LYFT_DATETIME_FORMAT))
             except:
                 pass
             ride.save()

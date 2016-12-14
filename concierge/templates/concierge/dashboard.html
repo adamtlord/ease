@@ -41,7 +41,7 @@
                         {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
                     {% endif %}
                 </td>
-                <td><span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span></td>
+                <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
                 <td>{{ customer.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
                 <td>{{ customer.gift_date|date:"SHORT_DATE_FORMAT"|default:'' }}{% if customer.gift_date == today %} <span class="label label-success">Today!</span>{% endif %}</td>
             </tr>

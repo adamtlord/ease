@@ -78,7 +78,13 @@
                 </tr>
                 <tr>
                     <th>Subscription renews on</th>
-                    <td>{{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                    <td>
+                        {% if customer.plan.is_gift %}
+                            {{ customer.plan.gift_expiration|date:"DATE_FORMAT" }}
+                        {% else %}
+                            {{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
                     <tr>

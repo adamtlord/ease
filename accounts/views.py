@@ -1,4 +1,6 @@
 import datetime
+import time
+import pytz
 import stripe
 
 from django.contrib import messages, auth
@@ -125,34 +127,55 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
 
+            # create our stripe customer
             new_stripe_customer = payment_form.save()
 
+            # set our customer's plan
             customer.subscription_account = customer.ride_account = new_stripe_customer
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
 
             selected_plan = customer.plan
 
+            # create new stripe customer
             create_stripe_customer = stripe.Customer.create(
                 description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
                 email=new_stripe_customer.email,
                 source=payment_form.cleaned_data['stripe_token'],
-                plan=customer.plan.stripe_id,
                 metadata={
                     'customer': '{} {}'.format(customer.full_name, customer.pk)
                 }
             )
 
+            # if chosen plan has an upfront cost, create an invoice line-item
             if customer.plan.signup_cost:
-                stripe.Charge.create(
-                    amount=customer.plan.signup_cost * 100,
+                # create signup invoice item
+                signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                stripe.InvoiceItem.create(
+                    customer=create_stripe_customer.id,
+                    amount=signup_cost,
                     currency="usd",
-                    customer=create_stripe_customer.id
+                    description="Initial signup fee",
                 )
 
+            # now attach the customer to a plan
+            stripe.Subscription.create(
+                customer=create_stripe_customer.id,
+                plan=customer.plan.stripe_id,
+            )
+
+            # store the customer's stripe id in their record
             new_stripe_customer.stripe_id = create_stripe_customer.id
 
+            # save everything
             customer.save()
             new_stripe_customer.save()
+
+            # get their subscription and set a trial end date
+            # (anyone who signs up before january)
+            if datetime.datetime.now() < datetime.datetime(2017, 1, 1):
+                subscription = get_stripe_subscription(customer)
+                subscription.trial_end = int(time.mktime(pytz.utc.localize(datetime.datetime(2017, 2, 1, 0, 0)).timetuple()))
+                subscription.save()
 
             send_receipt_email(request.user)
 
@@ -163,7 +186,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
-            print errors
 
     else:
         plan_selection = request.session.get('plan', None)
@@ -347,6 +369,8 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
             new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 
+            send_welcome_email(new_user)
+
             authenticated_user = auth.authenticate(username=new_user.get_username(), password=register_form.cleaned_data['password1'])
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
@@ -397,8 +421,10 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         payment_form = PaymentForm(request.POST)
         if payment_form.is_valid():
 
+            # create our stripe customer
             new_stripe_customer = payment_form.save()
 
+            # set our customer's plan
             if payment_form.cleaned_data['same_card_for_both'] == '1':
                 customer.subscription_account = customer.ride_account = new_stripe_customer
             else:
@@ -408,27 +434,49 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
             selected_plan = customer.plan
 
+            # create new stripe customer
             create_stripe_customer = stripe.Customer.create(
                 description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
                 email=new_stripe_customer.email,
                 source=payment_form.cleaned_data['stripe_token'],
-                plan=customer.plan.stripe_id,
                 metadata={
-                    'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                    'customer': '{} {}'.format(customer.full_name, customer.pk)
                 }
             )
 
+            # if chosen plan has an upfront cost, create an invoice line-item
             if customer.plan.signup_cost:
-                stripe.Charge.create(
-                    amount=customer.plan.signup_cost * 100,
+                # create signup invoice item
+                signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                stripe.InvoiceItem.create(
+                    customer=create_stripe_customer.id,
+                    amount=signup_cost,
                     currency="usd",
-                    customer=create_stripe_customer.id
+                    description="Initial signup fee",
                 )
 
+            # now attach the customer to a plan
+            stripe.Subscription.create(
+                customer=create_stripe_customer.id,
+                plan=customer.plan.stripe_id,
+            )
+
+            # store the customer's stripe id in their record
             new_stripe_customer.stripe_id = create_stripe_customer.id
 
+            # save everything
             customer.save()
             new_stripe_customer.save()
+
+            # get their subscription and set a trial end date
+            # (anyone who signs up before january)
+            if customer.plan.monthly_cost > 0:
+                if datetime.datetime.now() < datetime.datetime(2017, 1, 1):
+                    subscription = get_stripe_subscription(customer)
+                    subscription.trial_end = int(time.mktime(pytz.utc.localize(datetime.datetime(2017, 2, 1, 0, 0)).timetuple()))
+                    subscription.save()
+
+            send_receipt_email(request.user)
 
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
@@ -472,14 +520,13 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'lovedone': True,
         'customer': customer,
         'payment_form': payment_form,
-        'plan_options': Plan.objects.filter(active=True).exclude(pk=Plan.UL_GIFT),
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
         'gift': gift,
-        'gift_plan': Plan.objects.get(name="UL_GIFT"),
+        'gift_plan': Plan.objects.get(name="INTRO_GIFT"),
         'selected_plan': selected_plan,
         'errors': errors
     }
