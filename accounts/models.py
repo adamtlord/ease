@@ -195,7 +195,7 @@ class Customer(Contact):
                 start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
                 rides = Ride.objects.filter(customer=self).filter(end_date__gt=start_of_billing_period)
                 return rides
-        return []
+        return Ride.objects.none()
 
     @property
     def rides_this_month(self):
@@ -212,10 +212,6 @@ class Customer(Contact):
             rides_this_month = len(self.get_rides_this_month())
             if rides_this_month:
                 neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
-                if not neighborhood_rides:
-                    neighborhood_rides = 0
-            else:
-                neighborhood_rides = 0
         else:
             neighborhood_rides = self.rides_this_month()
         return neighborhood_rides
