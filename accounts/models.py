@@ -207,11 +207,10 @@ class Customer(Contact):
     @property
     def included_rides_this_month(self):
         plan = self.plan
-        if plan.included_rides_per_month:
+        rides_this_month = len(self.get_rides_this_month())
+        if plan.included_rides_per_month and rides_this_month:
             max_distance = plan.ride_distance_limit
-            rides_this_month = len(self.get_rides_this_month())
-            if rides_this_month:
-                neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
+            neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
         else:
             neighborhood_rides = self.rides_this_month()
         return neighborhood_rides
