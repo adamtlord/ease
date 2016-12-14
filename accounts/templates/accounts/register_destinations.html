@@ -12,7 +12,15 @@
 <div class="page-header">
     <h2>{% if self %}Where do you{% endif %}{% if lovedone %}Where does your loved one{% endif %} go most frequently?</h2>
 </div>
-
+{% if errors %}
+    <p class="alert alert-danger">
+        {% if errors|length == 1 %}
+            Please correct the error below.
+        {% else %}
+            Please correct the errors below.
+        {% endif %}
+    </p>
+{% endif %}
 {% if self %}
     <p>A benefit of using Arrive is that we store your favorite destinations for you,
         so it’s easy to order rides. You can call us and say, “I’m going to the hair salon,”

@@ -262,7 +262,7 @@ def register_self_preferences(request, template='accounts/register_preferences.h
 
 @login_required
 def register_self_destinations(request, template='accounts/register_destinations.html'):
-
+    errors = {}
     payment_complete = request.session.get('payment_complete')
     if payment_complete:
         del request.session['payment_complete']
@@ -286,6 +286,8 @@ def register_self_destinations(request, template='accounts/register_destinations
 
             if 'save_done' in destination_form.data:
                 return redirect('register_self_complete')
+        else:
+            errors = destination_form.errors
 
     else:
         destination_form = DestinationForm()
@@ -297,7 +299,8 @@ def register_self_destinations(request, template='accounts/register_destinations
         'home': home,
         'lovedone': False,
         'self': True,
-        'payment_complete': payment_complete
+        'payment_complete': payment_complete,
+        'errors': errors
     }
     return render(request, template, d)
 
@@ -486,7 +489,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
             request.session['payment_complete'] = True
 
-            return redirect('register_self_destinations')
+            return redirect('register_lovedone_destinations')
 
         else:
             errors = payment_form.errors
@@ -571,10 +574,10 @@ def register_lovedone_preferences(request, template='accounts/register_preferenc
 
 @login_required
 def register_lovedone_destinations(request, template='accounts/register_destinations.html'):
-
     if request.user.is_staff:
         redirect('dashboard')
 
+    errors = {}
     customer = request.user.get_customer()
     home = customer.destination_set.filter(home=True).first()
 
@@ -593,6 +596,8 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
                 return redirect('register_lovedone_complete')
 
             return redirect('register_lovedone_destinations')
+        else:
+            errors = destination_form.errors
 
     else:
         destination_form = DestinationForm()
@@ -604,6 +609,7 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
         'home': home,
         'lovedone': True,
         'self': False,
+        'errors': errors
     }
     return render(request, template, d)
 
@@ -654,7 +660,7 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
 
             messages.add_message(request, messages.SUCCESS, 'Credit card saved')
 
-            return redirect('register_self_destinations')
+            return redirect('register_lovedone_destinations')
 
         else:
             errors = payment_form.errors

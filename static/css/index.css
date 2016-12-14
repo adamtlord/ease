@@ -9083,6 +9083,9 @@ textarea.add-control input[type="color"] {
 .help-block {
   font-size: 14px;
 }
+legend + .help-block {
+  margin-top: -10px;
+}
 .form-group .errorlist {
   padding-left: 0;
   list-style: none;
