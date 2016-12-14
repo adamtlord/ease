@@ -209,8 +209,12 @@ class Customer(Contact):
         plan = self.plan
         if plan.included_rides_per_month:
             max_distance = plan.ride_distance_limit
-            neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
-            if not neighborhood_rides:
+            rides_this_month = len(self.get_rides_this_month())
+            if rides_this_month:
+                neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
+                if not neighborhood_rides:
+                    neighborhood_rides = 0
+            else:
                 neighborhood_rides = 0
         else:
             neighborhood_rides = self.rides_this_month()
