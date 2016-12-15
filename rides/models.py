@@ -23,7 +23,7 @@ class Destination(Location):
     def save(self, *args, **kwargs):
         super(Destination, self).save(*args, **kwargs)
         if not (self.latitude and self.longitude):
-            address_string = '{} {} {} {} {}'.format(self.street1, self.street2, self.city, self.state, self.zip_code)
+            address_string = '{} {} {} {}'.format(self.street1, self.city, self.state, self.zip_code)
             try:
                 ltlng = geocode_address(address_string)
                 self.latitude = ltlng[0]
