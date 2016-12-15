@@ -9,40 +9,41 @@
 {% block page_title %}Invoiced{% endblock %}
 
 {% block rides_content %}
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Start Time</th>
-            <th>Distance</th>
-            <th>Cost</th>
-            <th>Invoiced On</th>
-            <th>Paid</th>
-            <th>Paid On</th>
-            <th>Notes</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ride in rides %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>{{ ride.id }}</td>
-                <td>{{ ride.start.name }}</td>
-                <td>{{ ride.destination.name }}</td>
-                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                <td>{{ ride.distance }} mi</td>
-                <td>${{ ride.cost }}</td>
-                <td>{{ ride.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
-                <td>{% if ride.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-                <td>{{ ride.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
-                <td class="small">{{ ride.notes }}</td>
-                <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
+                <th>ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Start Time</th>
+                <th>Distance</th>
+                <th>Cost</th>
+                <th>Invoiced On</th>
+                <th>Paid</th>
+                <th>Paid On</th>
+                <th>Notes</th>
+                <th></th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for ride in rides %}
+                <tr>
+                    <td>{{ ride.id }}</td>
+                    <td>{{ ride.start.name }}</td>
+                    <td>{{ ride.destination.name }}</td>
+                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    <td>{{ ride.distance }} mi</td>
+                    <td>${{ ride.cost }}</td>
+                    <td>{{ ride.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                    <td>{% if ride.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    <td>{{ ride.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                    <td class="small">{{ ride.notes }}</td>
+                    <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

@@ -6,17 +6,17 @@
                 <h4 class="tel">1-866-ARRIVE-8</h4>
             </a>
         </div>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right{% if request.user.is_staff %} admin{% endif %}">
             {% if request.user.is_staff %}
-                <li><a href="{% url 'dashboard' %}">Search</a></li>
-                <li><a href="{% url 'customer_list' %}">Customers</a></li>
-                <li><a href="{% url 'rides_ready_to_bill' %}">Billing</a></li>
+                <li><a href="{% url 'dashboard' %}">Search<i class="fa fa-search"></i></a></li>
+                <li><a href="{% url 'customer_list' %}">Customers<i class="fa fa-users"></i></a></li>
+                <li><a href="{% url 'rides_ready_to_bill' %}">Billing<i class="fa fa-dollar"></i></a></li>
             {% endif %}
             {% if request.user.is_authenticated %}
                 {% if not request.user.is_staff %}
                     <li><a href="{% url 'profile' %}">{{ request.user }}'s Profile</a></li>
                 {% endif %}
-                <li><a href="{% url 'auth_logout' %}">Log out</a></li>
+                <li><a href="{% url 'auth_logout' %}">Log out<i class="fa fa-sign-out"></i></a></li>
             {% endif %}
         </ul>
     </div>

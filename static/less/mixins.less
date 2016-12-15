@@ -1,3 +1,31 @@
+.mobile-menu {
+    width:100%;
+    margin:0;
+    > li {
+        display: table-cell;
+        width: 1%;
+        > a {
+            margin-bottom:0;
+            text-align:center;
+        }
+    }
+}
+.mobile-admin-menu {
+    position:fixed;
+    bottom:0;
+    margin:0 -(@grid-gutter-width / 2);
+    width:100%;
+    background:@gray-darker;
+    > li {
+        > a {
+            font-size:0;
+            i {
+                font-size:32px;
+            }
+        }
+    }
+}
+
 .form-actions {
     margin-top: @line-height-computed;
     padding:@line-height-computed 0;
@@ -31,6 +59,15 @@
         margin-top: @line-height-computed;
         @media (min-width: @screen-sm-min) {
             float:right;
+        }
+        @media (max-width: @screen-xs-max) {
+            &.nav-pills {
+                text-align: center;
+                > li {
+                    float:none;
+                    display:inline-block;
+                }
+            }
         }
     }
 }

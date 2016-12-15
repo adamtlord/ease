@@ -16,38 +16,40 @@
 </form>
 {% if to_contact %}
 <h3>Customers to Contact</h3>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Customer</th>
-            <th>Account</th>
-            <th>Phone</th>
-            <th>Plan</th>
-            <th>Signup Date</th>
-            <th>Gift Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for customer in to_contact %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td><a href="{% url 'customer_update' customer.id %}">{{ customer.full_name }}</a></td>
-                <td>{{ customer.user.full_name }}{% if customer.user.profile.relationship %} ({{ customer.user.profile.relationship }}){% endif %}</td>
-                <td>{% if customer.home_phone %}
-                        {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
-                            {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
-                    {% endif %}
-                    {% if customer.mobile_phone %}
-                        {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
-                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
-                    {% endif %}
-                </td>
-                <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
-                <td>{{ customer.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
-                <td>{{ customer.gift_date|date:"SHORT_DATE_FORMAT"|default:'' }}{% if customer.gift_date == today %} <span class="label label-success">Today!</span>{% endif %}</td>
+                <th>Customer</th>
+                <th>Account</th>
+                <th>Phone</th>
+                <th>Plan</th>
+                <th>Signup Date</th>
+                <th>Gift Date</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for customer in to_contact %}
+                <tr>
+                    <td><a href="{% url 'customer_update' customer.id %}">{{ customer.full_name }}</a></td>
+                    <td>{{ customer.user.full_name }}{% if customer.user.profile.relationship %} ({{ customer.user.profile.relationship }}){% endif %}</td>
+                    <td>{% if customer.home_phone %}
+                            {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
+                                {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
+                        {% endif %}
+                        {% if customer.mobile_phone %}
+                            {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
+                            {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
+                        {% endif %}
+                    </td>
+                    <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
+                    <td>{{ customer.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
+                    <td>{{ customer.gift_date|date:"SHORT_DATE_FORMAT"|default:'' }}{% if customer.gift_date == today %} <span class="label label-success">Today!</span>{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endif %}
 {% endblock content %}
 {% block scripts %}

@@ -17,6 +17,20 @@ nav.navbar {
             font-size:@tel-font-size;
         }
     }
+    ul.nav {
+        i {
+            .hide;
+        }
+        @media screen and (max-width: @grid-float-breakpoint-max) {
+            .mobile-menu;
+            &.admin {
+                .mobile-admin-menu;
+                i {
+                    .visible-xs-inline-block;
+                }
+            }
+        }
+    }
     &.registration {
         .navbar-header {
             text-align:center;
@@ -24,6 +38,14 @@ nav.navbar {
             .navbar-brand {
                 float:none;
                 display:inline-block;
+            }
+        }
+    }
+    @media screen and (max-width: @grid-float-breakpoint-max) {
+        .navbar-header {
+            text-align:center;
+            > a {
+                width:100%;
             }
         }
     }

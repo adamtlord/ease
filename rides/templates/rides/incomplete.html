@@ -9,37 +9,38 @@
 {% block page_title %}Incomplete Rides{% endblock %}
 
 {% block rides_content %}
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Start Time</th>
-            <th>Complete</th>
-            <th>Distance</th>
-            <th>Cost</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ride in rides %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>{{ ride.id }}</td>
-                <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
-                <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
-                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                <td>{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-                <td>{% if ride.distance %}{{ ride.distance }} mi{% else %}<span class="label label-danger">?</span>{% endif %}</td>
-                <td>{% if ride.cost %}${{ ride.cost }}{% else %}<span class="label label-danger">?</span>{% endif %}</td>
-                <td>
-                    <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                    <a href="{% url 'ride_end' ride.id %}" class="btn btn-success btn-sm">COMPLETE</a>
-                </td>
+                <th>ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Start Time</th>
+                <th>Complete</th>
+                <th>Distance</th>
+                <th>Cost</th>
+                <th></th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for ride in rides %}
+                <tr>
+                    <td>{{ ride.id }}</td>
+                    <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
+                    <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
+                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    <td>{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    <td>{% if ride.distance %}{{ ride.distance }} mi{% else %}<span class="label label-danger">?</span>{% endif %}</td>
+                    <td>{% if ride.cost %}${{ ride.cost }}{% else %}<span class="label label-danger">?</span>{% endif %}</td>
+                    <td>
+                        <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
+                        <a href="{% url 'ride_end' ride.id %}" class="btn btn-success btn-sm">COMPLETE</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

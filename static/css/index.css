@@ -7240,6 +7240,31 @@ button.close {
   font-weight: 600;
   font-style: italic;
 }
+.mobile-menu {
+  width: 100%;
+  margin: 0;
+}
+.mobile-menu > li {
+  display: table-cell;
+  width: 1%;
+}
+.mobile-menu > li > a {
+  margin-bottom: 0;
+  text-align: center;
+}
+.mobile-admin-menu {
+  position: fixed;
+  bottom: 0;
+  margin: 0 -15px;
+  width: 100%;
+  background: #222222;
+}
+.mobile-admin-menu > li > a {
+  font-size: 0;
+}
+.mobile-admin-menu > li > a i {
+  font-size: 32px;
+}
 .form-actions {
   margin-top: 22px;
   padding: 22px 0;
@@ -7485,6 +7510,15 @@ textarea.form-controller input[type="color"] {
 @media (min-width: 768px) {
   .page-header .nav {
     float: right;
+  }
+}
+@media (max-width: 767px) {
+  .page-header .nav.nav-pills {
+    text-align: center;
+  }
+  .page-header .nav.nav-pills > li {
+    float: none;
+    display: inline-block;
   }
 }
 .silver-bg {
@@ -8475,6 +8509,18 @@ textarea.form-controller input[type="color"] {
   margin-top: 0;
   padding-bottom: 21px;
 }
+@media screen and (max-width: 767px) {
+  .page-header {
+    margin-top: 22px;
+  }
+  .page-header h1,
+  .page-header h2,
+  .page-header .h1,
+  .page-header .h2 {
+    margin-top: 0;
+    font-size: 32px;
+  }
+}
 .navbar-static-top {
   border-bottom-width: 0;
 }
@@ -8828,6 +8874,44 @@ nav.navbar .navbar-brand .tel {
   margin: 0;
   font-size: 18px;
 }
+nav.navbar ul.nav i {
+  display: none !important;
+}
+@media screen and (max-width: 767px) {
+  nav.navbar ul.nav {
+    width: 100%;
+    margin: 0;
+  }
+  nav.navbar ul.nav > li {
+    display: table-cell;
+    width: 1%;
+  }
+  nav.navbar ul.nav > li > a {
+    margin-bottom: 0;
+    text-align: center;
+  }
+  nav.navbar ul.nav.admin {
+    position: fixed;
+    bottom: 0;
+    margin: 0 -15px;
+    width: 100%;
+    background: #222222;
+  }
+  nav.navbar ul.nav.admin > li > a {
+    font-size: 0;
+  }
+  nav.navbar ul.nav.admin > li > a i {
+    font-size: 32px;
+  }
+  nav.navbar ul.nav.admin i {
+    display: none !important;
+  }
+}
+@media screen and (max-width: 767px) and (max-width: 767px) {
+  nav.navbar ul.nav.admin i {
+    display: inline-block !important;
+  }
+}
 nav.navbar.registration .navbar-header {
   text-align: center;
   float: none;
@@ -8835,6 +8919,14 @@ nav.navbar.registration .navbar-header {
 nav.navbar.registration .navbar-header .navbar-brand {
   float: none;
   display: inline-block;
+}
+@media screen and (max-width: 767px) {
+  nav.navbar .navbar-header {
+    text-align: center;
+  }
+  nav.navbar .navbar-header > a {
+    width: 100%;
+  }
 }
 .req {
   color: #CD3C17;

@@ -6,49 +6,51 @@
 {% endblock %}
 {% block content %}
     <h2>Customers</h2>
-    <table id="customer_list" class="table">
-        <thead>
-            <th>Name</th>
-            <th>Home</th>
-            <th>Phone</th>
-            <th>Rides Taken</th>
-            <th>Last ride</th>
-            <th>Notes</th>
-            <th>Intro Call</th>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
-                <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
-                <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
-                <td>{% if customer.home_phone %}
-                        {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
-                            {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
-                    {% endif %}
-                    {% if customer.mobile_phone %}
-                        {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
-                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
-                    {% endif %}
-                </td>
-                <td>{{ customer.rides|length }}</td>
-                <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
-                <td>{% if not customer.ready_to_ride %}
-                    <ul class="list-unstyled small">
-                        {% for missing in customer.missing %}
-                            <li>{{ missing }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if customer.intro_call %}
-                        <i class="fa fa-check text-success"></i>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table id="customer_list" class="table">
+            <thead>
+                <th>Name</th>
+                <th>Home</th>
+                <th>Phone</th>
+                <th>Rides Taken</th>
+                <th>Last ride</th>
+                <th>Notes</th>
+                <th>Intro Call</th>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
+                    <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
+                    <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
+                    <td>{% if customer.home_phone %}
+                            {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
+                                {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
+                        {% endif %}
+                        {% if customer.mobile_phone %}
+                            {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
+                            {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
+                        {% endif %}
+                    </td>
+                    <td>{{ customer.rides|length }}</td>
+                    <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
+                    <td>{% if not customer.ready_to_ride %}
+                        <ul class="list-unstyled small">
+                            {% for missing in customer.missing %}
+                                <li>{{ missing }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if customer.intro_call %}
+                            <i class="fa fa-check text-success"></i>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 {% block scripts %}
 <script>
