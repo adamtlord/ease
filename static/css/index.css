@@ -9650,6 +9650,9 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
   border-top-left-radius: 6px;
   border-bottom-left-radius: 6px;
 }
+#customer_search .form-control:focus {
+  z-index: 2;
+}
 #customer_search .input-group-btn {
   vertical-align: top;
 }

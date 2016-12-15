@@ -2,6 +2,9 @@
     .form-control {
         border-top-left-radius: @border-radius-large;
         border-bottom-left-radius: @border-radius-large;
+        &:focus {
+            z-index:2;
+        }
     }
     .input-group-btn {
         vertical-align: top;
