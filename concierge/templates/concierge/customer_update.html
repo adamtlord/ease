@@ -89,6 +89,24 @@
             {% endfor %}
             <button type="button" id="add_rider_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Riders</button>
 
+            {% if customer.destinations %}
+            <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Destinations</h3>
+            <ul class="list-group">
+                {% for destination in customer.destinations %}
+                    <li class="list-group-item">
+                        <a href="{% url 'destination_edit' destination.id %}" class="btn btn-default btn-sm pull-right">Edit</a>
+                        {{ destination.fullname }}<br>
+                        {{ destination.street1 }}<br>
+                        {% if destination.street2 %}
+                        {{ destination.street2 }}<br>
+                        {% endif %}
+                        {{ destination.city }},
+                        {{ destination.state }}
+                        {{ destination.zip_code }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         </div>
     </div>
     <div class="form-actions">
