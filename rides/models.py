@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import formats
 
 from common.models import Location
 from common.utils import geocode_address, get_distance
@@ -74,6 +75,7 @@ class Ride(models.Model):
     paid_date = models.DateTimeField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
@@ -83,6 +85,10 @@ class Ride(models.Model):
     @property
     def is_complete(self):
         return self.cost and self.end_date
+
+    @property
+    def description(self):
+        return '{} - {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), self.start.street1, self.destination.street1)
 
     def save(self, *args, **kwargs):
         super(Ride, self).save(*args, **kwargs)

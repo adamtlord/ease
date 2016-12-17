@@ -9831,4 +9831,17 @@ th .static-map {
 .label.plan-label.none {
   background: #CD3C17;
 }
+#rides_to_bill .customer td,
+#rides_to_bill .customer th,
+#rides_to_bill .ride td {
+  cursor: pointer;
+}
+#rides_to_bill .customer td,
+#rides_to_bill .customer th {
+  background-color: #ededed;
+}
+#rides_to_bill .customer:hover td,
+#rides_to_bill .customer:hover th {
+  background-color: #e8e8e8;
+}
 /*# sourceMappingURL=index.css.map */

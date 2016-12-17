@@ -9,44 +9,60 @@
 {% block page_title %}Ready to Bill{% endblock %}
 
 {% block rides_content %}
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th><input type="checkbox"></tH>
-                <th>ID</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Start Time</th>
-                <th>Distance</th>
-                <th>Cost</th>
-                <th>Notes</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer,rides in customers.items %}
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <th colspan="9">{{ customer }}</th>
-                </tr>
-                {% for ride in rides %}
-                    <tr>
-                        <td></td>
-                        <td><input type="checkbox"></td>
-                        <td>{{ ride.id }}</td>
-                        <td>{{ ride.start.name }}</td>
-                        <td>{{ ride.destination.name }}</td>
-                        <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                        <td>{{ ride.distance }} mi</td>
-                        <td>${{ ride.cost }}</td>
-                        <td class="small">{{ ride.notes|default:'' }}</td>
-                        <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
-                    </tr>
-                {% endfor %}
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% if results %}
 
+    {% for result in results %}
+        <p>{{ result }}</p>
+    {% endfor %}
+
+{% endif %}
+<form id="bill_rides" action="" method="POST">{% csrf_token %}
+    <div class="table-responsive">
+        <table id="rides_to_bill" class="table table-hover">
+            <thead>
+                <tr>
+                    <th><input class="master" type="checkbox"></tH>
+                    <th>Cust.</th>
+                    <th>ID</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Start Time</th>
+                    <th>Distance</th>
+                    <th>Cost</th>
+                    <th>Notes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer,rides in customers.items %}
+                    <tr class="customer">
+                        <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
+                        <th colspan="9">{{ customer }}</th>
+                    </tr>
+                    {% for ride in rides %}
+                        <tr class="ride">
+                            <td></td>
+                            <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
+                            <td>{{ ride.id }}</td>
+                            <td>{{ ride.start.name }}</td>
+                            <td>{{ ride.destination.name }}</td>
+                            <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                            <td>{{ ride.distance }} mi</td>
+                            <td>${{ ride.cost }}</td>
+                            <td class="small">{{ ride.notes|default:'' }}</td>
+                            <td><a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary btn-block" value="Bill Checked Rides" disabled="disabled" />
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/ready_to_bill.js"></script>
 {% endblock %}

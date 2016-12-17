@@ -59,3 +59,22 @@ td, th {
         background:@brand-danger;
     }
 }
+
+#rides_to_bill {
+    .customer td,
+    .customer th,
+    .ride td {
+        cursor: pointer;
+    }
+    .customer {
+        td, th {
+            background-color:darken(@table-bg-hover, 3%);
+        }
+        &:hover {
+            td, th {
+                background-color:darken(@table-bg-hover, 5%);
+            }
+        }
+    }
+
+}

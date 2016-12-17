@@ -48,8 +48,7 @@ $(function() {
         $("#add_stripe_customer").val(1);
         $("#id_first_name").focus();
     });
-    $("#change_plan").click(function(e){
-        e.preventDefault();
+    $("#change_plan").click(function(){
         $("#selected_plan").hide();
         $(".plan-buttons").show();
     });

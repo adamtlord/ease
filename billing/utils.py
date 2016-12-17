@@ -28,3 +28,16 @@ def get_stripe_subscription(customer):
         subscription = cached_subscription
 
     return subscription
+
+
+def invoice_customer_rides(customer, rides):
+    # customer = stripe retrieve customer with customer.subscription_account.stripe_id
+    # for ride in rides:
+        # stripe.InvoiceItem.create(
+        #     customer=customer,
+        #     amount=ride.total_cost * 100,
+        #     currence="usd",
+        #     description=ride.description
+        # )
+
+    return '{}: {} rides'.format(customer.subscription_account.stripe_id, len(rides))

@@ -51,3 +51,16 @@ def handle_lyft_upload(uploaded_file):
             results['errors'].append('Row {}: Can\'t find a Ride with the ID provided ({})'.format(idx + 1, ride_id))
 
     return results
+
+
+def sort_rides_by_customer(rides):
+    customers = dict()
+
+    if rides:
+        for r in rides:
+            if r.customer in customers:
+                customers[r.customer].append(r)
+            else:
+                customers[r.customer] = [r]
+
+    return customers

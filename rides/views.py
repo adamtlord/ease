@@ -3,9 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
 from accounts.models import Customer
+from billing.utils import invoice_customer_rides
 from rides.models import Ride
 from rides.forms import StartRideForm, DestinationForm, RideForm, CSVUploadForm
-from rides.helpers import handle_lyft_upload
+from rides.helpers import handle_lyft_upload, sort_rides_by_customer
 
 
 def customer_rides(request, customer_id, template="concierge/customer_rides.html"):
@@ -121,19 +122,26 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
 
 
 def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
-    customers = dict()
-    rides = Ride.ready_to_bill.all()
 
-    for r in rides:
-        if r.customer in customers:
-            customers[r.customer].append(r)
-        else:
-            customers[r.customer] = [r]
+    rides = Ride.ready_to_bill.all()
+    customers = sort_rides_by_customer(rides)
+    results = []
+
+    if request.method == 'POST':
+
+        idlist = request.POST.getlist('ride')
+        rides_to_bill = Ride.objects.filter(id__in=idlist)
+        sorted_rides = sort_rides_by_customer(rides_to_bill)
+
+        for customer, rides in sorted_rides.items():
+            results.append(invoice_customer_rides(customer, rides))
+
     d = {
         'ready_page': True,
-        'customers': customers
+        'customers': customers,
+        'results': results
     }
-    print d['customers']
+
     return render(request, template, d)
 
 
