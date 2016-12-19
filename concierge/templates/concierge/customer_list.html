@@ -12,6 +12,7 @@
                 <th>Name</th>
                 <th>Home</th>
                 <th>Phone</th>
+                <th>Plan</th>
                 <th>Rides Taken</th>
                 <th>Last ride</th>
                 <th>Notes</th>
@@ -31,6 +32,7 @@
                             {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
                         {% endif %}
                     </td>
+                    <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
                     <td>{{ customer.rides|length }}</td>
                     <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
                     <td>{% if not customer.ready_to_ride %}

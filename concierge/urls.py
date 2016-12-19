@@ -4,8 +4,8 @@ from django.conf.urls import url
 from concierge.views import (dashboard, customer_list, customer_create,
                              customer_detail, customer_update,
                              customer_delete, customer_search_data,
-                             customer_destinations, destination_edit,
-                             destination_add, destination_delete,
+                             customer_destinations, customer_destination_edit,
+                             customer_destination_add, customer_destination_delete,
                              payment_subscription_account_edit,
                              payment_ride_account_edit,
                              customer_history,
@@ -25,9 +25,9 @@ urlpatterns = [
     url(r'^customers/(?P<customer_id>\d+)/delete/$', customer_delete, name='customer_delete'),
 
     url(r'^customers/(?P<customer_id>\d+)/destinations/$', customer_destinations, name='customer_destinations'),
-    url(r'^customers/(?P<customer_id>\d+)/destination/add/$', destination_add, name='destination_add'),
-    url(r'^customers/(?P<customer_id>\d+)/destination/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
-    url(r'^customers/(?P<customer_id>\d+)/destination/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
+    url(r'^customers/(?P<customer_id>\d+)/destination/add/$', customer_destination_add, name='customer_destination_add'),
+    url(r'^customers/(?P<customer_id>\d+)/destination/(?P<destination_id>\d+)/edit/$', customer_destination_edit, name='customer_destination_edit'),
+    url(r'^customers/(?P<customer_id>\d+)/destination/(?P<destination_id>\d+)/delete/$', customer_destination_delete, name='customer_destination_delete'),
 
     url(r'^customers/(?P<customer_id>\d+)/rides/$', customer_rides, name='customer_rides'),
     url(r'^customers/(?P<customer_id>\d+)/ride/start/$', ride_start, name='ride_start'),

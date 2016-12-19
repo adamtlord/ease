@@ -4,9 +4,9 @@
 {% block title %}Add Activity for {{ customer }}{% endblock title %}
 {% block customer_content %}
 
-<h3>Add Activity</h3>
 <div class="row">
     <div class="col-sm-6">
+        <h3 class="m-t-0">Add Activity</h3>
         <form action="" class="form " method="POST" novalidate>{% csrf_token %}
             {% if errors %}
             <p class="alert alert-danger">
@@ -21,7 +21,8 @@
             <fieldset class="activity">
                 <input type="hidden" name="customer" value="{{ customer.id }}" />
                 <div class="form-group activity-date{% if form.date.errors %} has-error{% endif %}">
-                    <label>Date<span class="req">*</span></label>
+                    <label>Date</label>
+                    <span class="help-block">Defaults to now if blank</span>
                     <input class="form-control" type="text" value="">
                     {% if form.date.errors %}
                         {{ form.date.errors }}
@@ -39,40 +40,38 @@
             </div>
         </form>
     </div>
+    <div class="col-sm-6">
+        <h3 class="m-t-0">Previous Activity</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for touch in touches %}
+                    <tr>
+                        <td>{{ touch.date|default:"" }}</td>
+                        <td>{{ touch.type|title }}</td>
+                        <td class="small">{{ touch.notes }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3">
+                            <em>None yet</em>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 </div>
 {% endblock %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
-<script>
-$(function(){
-
-    function toggleOtherSource(val) {
-        if (val === 'OTHER') {
-            $('#type_other').slideDown();
-        } else {
-            $('#type_other').slideUp();
-        }
-    }
-
-    $('#id_type').on('change', function() {
-        toggleOtherSource(this.value);
-    });
-
-    toggleOtherSource($('#id_type option:selected').val());
-
-    $(".activity-date input").datetimepicker({
-        autoclose: true,
-        fontAwesome: true,
-        format: "mm/dd/yyyy H:ii P",
-        linkField: "id_date",
-        linkFormat: "yyyy-mm-dd hh:ii:ss",
-        showMeridian: true,
-        startView: 1,
-        todayHighlight: true,
-        weekStart: 1,
-    });
-});
-</script>
+<script src="{{ STATIC_URL }}js/apps/customer_activity.min.js"></script>
 
 {% endblock %}

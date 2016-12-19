@@ -28,11 +28,12 @@
                 {% render_form_field customer_form.home_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
-                {% render_form_field customer_form.send_updates %}
                 {% render_form_field customer_form.special_assistance %}
                 {% render_form_field customer_form.notes %}
             </fieldset>
 
+        </div>
+        <div class="col-sm-6">
             <h3>Home Address</h3>
             <fieldset>
                 {% render_form_field home_form.street1 %}
@@ -46,34 +47,34 @@
                 {% render_form_field customer_form.residence_instructions %}
             </fieldset>
 
-        </div>
-        <div class="col-sm-6">
-            <h3 class="m-t-0">Loved Ones</h3>
-            {{ lovedone_formset.management_form }}
-            {% for form in lovedone_formset.forms %}
-                <fieldset class="lovedone"{% if customer.lovedones.all|length == 0 %} style="display:none;"{% endif %}>
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    {% render_form_field form.first_name %}
-                    {% render_form_field form.last_name %}
-                    {% render_form_field form.relationship %}
-                    {% render_form_field form.email %}
-                    {% render_form_field form.mobile_phone '' 'phone-mask' %}
-                    {% render_form_field form.receive_updates %}
-                    {% render_form_field form.street1 %}
-                    {% render_form_field form.street2 '' 'no-label' %}
-                    <div class="address-inline">
-                        {% render_form_field form.city %}
-                        {% render_form_field form.state '' 'state' %}
-                        {% render_form_field form.zip_code '' 'zip zip-mask' %}
-                    </div>
-                    {% render_form_field form.DELETE %}
-                </fieldset>
-            {% endfor %}
-            <button id="add_lovedone_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Loved One</button>
+            {% comment I don't think we're using this %}
+                <h3 class="m-t-0">Loved Ones</h3>
+                {{ lovedone_formset.management_form }}
+                {% for form in lovedone_formset.forms %}
+                    <fieldset class="lovedone"{% if customer.lovedones.all|length == 0 %} style="display:none;"{% endif %}>
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        {% render_form_field form.first_name %}
+                        {% render_form_field form.last_name %}
+                        {% render_form_field form.relationship %}
+                        {% render_form_field form.email %}
+                        {% render_form_field form.mobile_phone '' 'phone-mask' %}
+                        {% render_form_field form.receive_updates %}
+                        {% render_form_field form.street1 %}
+                        {% render_form_field form.street2 '' 'no-label' %}
+                        <div class="address-inline">
+                            {% render_form_field form.city %}
+                            {% render_form_field form.state '' 'state' %}
+                            {% render_form_field form.zip_code '' 'zip zip-mask' %}
+                        </div>
+                        {% render_form_field form.DELETE %}
+                    </fieldset>
+                {% endfor %}
+                <button id="add_lovedone_fields" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Add Loved One</button>
+            {% endcomment %}
 
-            <h3>Riders <small>(Must share the same residence)</small></h3>
+            <h3>Riders <small>(At the same address)</small></h3>
             {{ rider_formset.management_form }}
             {% for form in rider_formset.forms %}
                 <fieldset class="rider"{% if customer.riders.all|length == 0 %} style="display:none;"{% endif %}>
@@ -87,14 +88,14 @@
 
                 </fieldset>
             {% endfor %}
-            <button type="button" id="add_rider_fields" class="btn btn-default"><i class="fa fa-plus"></i> Add Riders</button>
+            <button type="button" id="add_rider_fields" class="btn btn-default btn-sm m-b-15"><i class="fa fa-plus"></i> Add Riders</button>
 
+            <h3>Destinations</h3>
             {% if customer.destinations %}
-            <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Destinations</h3>
-            <ul class="list-group">
+                <ul class="list-group">
                 {% for destination in customer.destinations %}
                     <li class="list-group-item">
-                        <a href="{% url 'destination_edit' destination.id %}" class="btn btn-default btn-sm pull-right">Edit</a>
+                        <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm pull-right">Edit</a>
                         {{ destination.fullname }}<br>
                         {{ destination.street1 }}<br>
                         {% if destination.street2 %}
@@ -105,8 +106,11 @@
                         {{ destination.zip_code }}
                     </li>
                 {% endfor %}
-            </ul>
-        {% endif %}
+                </ul>
+            {% else %}
+                <p><em>None yet.</em></p>
+            {% endif %}
+            <a href="{% url 'customer_destination_add' customer.id %}" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Add Destination</a>
         </div>
     </div>
     <div class="form-actions">

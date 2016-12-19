@@ -30,13 +30,14 @@
                 {% static_map destination %}
             </td>
             <td>
-                <a href="{% url 'destination_edit' customer.id destination.id %}" class="btn btn-default">Edit</a>
+                <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm">Edit</a>
+                <a href="{% url 'customer_destination_delete' customer.id destination.id %}" class="btn btn-danger btn-sm">Delete</a>
             </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-<p><a href="{% url 'destination_add' customer.id %}" class="btn btn-primary">Add a Destination</a></p>
+<p><a href="{% url 'customer_destination_add' customer.id %}" class="btn btn-primary">Add a Destination</a></p>
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/apps/registration.min.js"></script>

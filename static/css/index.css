@@ -7546,6 +7546,9 @@ textarea.form-controller input[type="color"] {
 .m-t-0 {
   margin-top: 0;
 }
+.m-b-15 {
+  margin-bottom: 15px;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\

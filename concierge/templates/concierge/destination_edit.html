@@ -25,6 +25,7 @@
             </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary" value="Save Destination" />
+                <a href="{% url 'customer_destination_delete' customer.id destination.id %}" class="btn btn-danger pull-right">Delete Destination</a>
             </div>
         </form>
     </div>

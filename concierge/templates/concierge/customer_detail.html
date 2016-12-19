@@ -160,7 +160,7 @@
         </div>
     </div>
 {% if not customer.destinations %}
-    <p class="alert alert-warning">No destinations entered for this customer! <a href="{% url 'destination_add' customer.id %}">Add one now</a></p>
+    <p class="alert alert-warning">No destinations entered for this customer! <a href="{% url 'customer_destination_add' customer.id %}">Add one now</a></p>
 {% endif %}
 {% if lovedones %}
     {% for lovedone in lovedones %}

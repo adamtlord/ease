@@ -90,6 +90,7 @@ class CustomerForm(forms.ModelForm):
         label="Intro call completed",
         required=False
     )
+    dob = forms.DateField(label="Date of birth", help_text="Please use the format YYYY-MM-DD")
 
     class Meta:
         model = Customer
@@ -183,7 +184,10 @@ class ActivityForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False
     )
-    date = forms.DateTimeField()
+    date = forms.DateTimeField(
+        label="Date and Time",
+        required=False
+    )
 
     def clean(self):
         super(ActivityForm, self).clean()

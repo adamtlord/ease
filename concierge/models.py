@@ -13,13 +13,15 @@ class Touch(models.Model):
 
     EMAIL = 'EMAIL'
     MAIL = 'MAIL'
+    INTRO = 'INTRO'
     PHONE = 'PHONE'
     OTHER = 'OTHER'
 
     TYPE_CHOICES = (
+        (INTRO, 'Intro Call'),
+        (PHONE, 'Phone Call'),
         (EMAIL, 'Email'),
         (MAIL, 'Mail'),
-        (PHONE, 'Phone Call'),
         (OTHER, 'Other'),
     )
 
@@ -30,6 +32,11 @@ class Touch(models.Model):
     def save(self, *args, **kwargs):
         if not self.date:
             self.date = timezone.now()
+        if self.type == self.INTRO:
+            if self.notes == '':
+                self.notes = 'Intro call'
+            self.customer.intro_call = True
+            self.customer.save()
         return super(Touch, self).save(*args, **kwargs)
 
     def __unicode__(self):

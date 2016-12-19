@@ -195,7 +195,7 @@ def customer_destinations(request, customer_id, template='concierge/customer_des
 
 
 @staff_member_required
-def destination_edit(request, customer_id, destination_id, template='concierge/destination_edit.html'):
+def customer_destination_edit(request, customer_id, destination_id, template='concierge/destination_edit.html'):
 
     customer = get_object_or_404(Customer, pk=customer_id)
     destination = get_object_or_404(Destination, pk=destination_id)
@@ -223,7 +223,7 @@ def destination_edit(request, customer_id, destination_id, template='concierge/d
 
 
 @staff_member_required
-def destination_add(request, customer_id, template='concierge/destination_add.html'):
+def customer_destination_add(request, customer_id, template='concierge/destination_add.html'):
 
     customer = get_object_or_404(Customer, pk=customer_id)
 
@@ -251,13 +251,14 @@ def destination_add(request, customer_id, template='concierge/destination_add.ht
 
 
 @staff_member_required
-def destination_delete(request, customer_id, destination_id):
+def customer_destination_delete(request, customer_id, destination_id):
     destination = get_object_or_404(Destination, pk=destination_id)
+    customer = get_object_or_404(Customer, pk=customer_id)
     deleted = destination.delete()
     if deleted:
         messages.add_message(request, messages.SUCCESS, 'Destination successfully deleted')
 
-    return redirect(reverse('customer_destinations'))
+    return redirect('customer_destinations', customer.id)
 
 
 @staff_member_required
@@ -426,6 +427,8 @@ def customer_history(request, customer_id, template="concierge/customer_history.
 def customer_activity_add(request, customer_id, template="concierge/customer_activity_add.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
+    touches = Touch.objects.filter(customer=customer).order_by('-date')
+
     errors = {}
 
     if request.method == 'POST':
@@ -442,6 +445,7 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
     d = {
         'customer': customer,
         'form': activity_form,
+        'touches': touches,
         'errors': errors
     }
     return render(request, template, d)
