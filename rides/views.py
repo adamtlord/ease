@@ -1,16 +1,18 @@
-from django.utils import timezone
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from accounts.models import Customer
 from billing.utils import invoice_customer_rides
 from common.utils import get_distance
-from rides.models import Ride
 from rides.forms import StartRideForm, DestinationForm, RideForm, CSVUploadForm
 from rides.helpers import handle_lyft_upload, sort_rides_by_customer
+from rides.models import Ride
 
 
+@staff_member_required
 def customer_rides(request, customer_id, template="concierge/customer_rides.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
@@ -24,6 +26,7 @@ def customer_rides(request, customer_id, template="concierge/customer_rides.html
     return render(request, template, d)
 
 
+@staff_member_required
 def ride_start(request, customer_id, template="rides/start_ride.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
@@ -117,6 +120,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
     return render(request, template, d)
 
 
+@staff_member_required
 def ride_end(request, ride_id):
 
     ride = get_object_or_404(Ride, pk=ride_id)
@@ -129,6 +133,7 @@ def ride_end(request, ride_id):
     return redirect('customer_detail', ride.customer.id)
 
 
+@staff_member_required
 def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.html"):
     customer = get_object_or_404(Customer, pk=customer_id)
     ride = get_object_or_404(Ride, pk=ride_id)
@@ -142,6 +147,7 @@ def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.h
     return render(request, template, d)
 
 
+@staff_member_required
 def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     ride = get_object_or_404(Ride, pk=ride_id)
     customer = get_object_or_404(Customer, pk=ride.customer.id)
@@ -167,6 +173,7 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     return render(request, template, d)
 
 
+@staff_member_required
 def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
     rides = Ride.ready_to_bill.all()
@@ -199,22 +206,32 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
     return render(request, template, d)
 
 
+@staff_member_required
 def rides_incomplete(request, template="rides/incomplete.html"):
+
+    rides = Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)).order_by('-start_date')
+    customers = sort_rides_by_customer(rides)
+
     d = {
         'incomplete_page': True,
-        'rides': Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)).order_by('-start_date')
+        'customers': customers
     }
     return render(request, template, d)
 
 
+@staff_member_required
 def rides_invoiced(request, template="rides/invoiced.html"):
+    rides = Ride.objects.filter(invoiced=True)
+    customers = sort_rides_by_customer(rides)
+
     d = {
         'invoiced_page': True,
-        'rides': Ride.objects.filter(invoiced=True)
+        'customers': customers
     }
     return render(request, template, d)
 
 
+@staff_member_required
 def rides_upload(request, template="rides/upload.html"):
 
     results = {}

@@ -13,6 +13,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Cust.</th>
                 <th>ID</th>
                 <th>From</th>
                 <th>To</th>
@@ -27,9 +28,22 @@
             </tr>
         </thead>
         <tbody>
-            {% for ride in rides %}
+            {% for customer,rides in customers.items %}
+                 <tr class="customer">
+                    <th colspan="12">
+                        <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
+                        {% if customer.plan %}
+                            <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                        {% else %}
+                            <span class="label label-danger">No Plan Selected</span>
+                        {% endif %}
+                        <small>ID {{ customer.id }}</small>
+                    </th>
+                </tr>
+                {% for ride in rides %}
                 <tr>
-                    <td>{{ ride.id }}</td>
+                    <td></td>
+                    <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
                     <td>{{ ride.start.name }}</td>
                     <td>{{ ride.destination.name }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
@@ -38,9 +52,10 @@
                     <td>{{ ride.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
                     <td>{% if ride.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     <td>{{ ride.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
-                    <td class="small">{{ ride.notes }}</td>
+                    <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
                     <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
                 </tr>
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>

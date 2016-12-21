@@ -46,7 +46,7 @@
                     <tr class="customer">
                         <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
                         <th colspan="10">
-                            {{ customer }}&nbsp;&nbsp;
+                            <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
                             {% if customer.plan %}
                                 <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
                             {% else %}
@@ -59,7 +59,7 @@
                         <tr class="ride">
                             <td></td>
                             <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
-                            <td>{{ ride.id }}</td>
+                            <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
                             <td>{{ ride.start.name }}</td>
                             <td>{{ ride.destination.name }}</td>
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>

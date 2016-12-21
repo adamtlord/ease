@@ -13,33 +13,45 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>Cust.</th>
                 <th>ID</th>
-                <th>Customer</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Start Time</th>
-                <th>Complete</th>
                 <th>Distance</th>
                 <th>Cost</th>
+                <th>Total</th>
+                <th>Notes</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            {% for ride in rides %}
-                <tr>
-                    <td>{{ ride.id }}</td>
-                    <td>{{ ride.customer }}</td>
-                    <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
-                    <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
-                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                    <td>{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-                    <td>{% if ride.distance %}{{ ride.distance }} mi{% else %}<span class="label label-danger">?</span>{% endif %}</td>
-                    <td>{% if ride.cost %}${{ ride.cost }}{% else %}<span class="label label-danger">?</span>{% endif %}</td>
-                    <td>
-                        <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                        <a href="{% url 'ride_end' ride.id %}" class="btn btn-success btn-sm">COMPLETE</a>
-                    </td>
+            {% for customer,rides in customers.items %}
+                <tr class="customer">
+                    <th colspan="10">
+                        <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
+                        {% if customer.plan %}
+                            <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                        {% else %}
+                            <span class="label label-danger">No Plan Selected</span>
+                        {% endif %}
+                        <small>ID {{ customer.id }}</small>
+                    </th>
                 </tr>
+                {% for ride in rides %}
+                    <tr class="ride">
+                        <td></td>
+                        <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
+                        <td>{{ ride.start.name }}</td>
+                        <td>{{ ride.destination.name }}</td>
+                        <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ ride.distance }} mi</td>
+                        <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+                        <td>{% if ride.total_cost_estimate %}${{ ride.total_cost_estimate }}{% endif %}</td>
+                        <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
+                        <td><a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
+                    </tr>
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>
