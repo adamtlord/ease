@@ -17,7 +17,6 @@ HOME_FIELDS = [
 
 DESTINATION_FIELDS = HOME_FIELDS + [
     'nickname',
-    'customer'
 ]
 
 START_RIDE_FIELDS = [
@@ -33,7 +32,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'distance',
     'service',
     'external_id',
-    'notes'
+    'notes',
 ]
 
 
@@ -47,7 +46,7 @@ class DestinationForm(forms.ModelForm):
 
     class Meta:
         model = Destination
-        fields = DESTINATION_FIELDS
+        fields = DESTINATION_FIELDS + ['customer']
 
     def __init__(self, *args, **kwargs):
         super(DestinationForm, self).__init__(*args, **kwargs)
@@ -123,7 +122,7 @@ class RideForm(forms.ModelForm):
 
     class Meta:
         model = Ride
-        fields = EDIT_RIDE_FIELDS + ['complete']
+        fields = EDIT_RIDE_FIELDS + ['complete', 'included_in_plan']
 
     def __init__(self, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)

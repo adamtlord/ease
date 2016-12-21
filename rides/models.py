@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import formats
 
 from common.models import Location
-from common.utils import geocode_address, get_distance
+from common.utils import geocode_address
 
 from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
 from rides.const import SERVICES, UBER, LYFT
@@ -76,6 +76,7 @@ class Ride(models.Model):
     notes = models.TextField(blank=True, null=True)
     fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    included_in_plan = models.BooleanField(default=False)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
@@ -90,15 +91,14 @@ class Ride(models.Model):
     def description(self):
         return '{} - {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), self.start.street1, self.destination.street1)
 
-    def save(self, *args, **kwargs):
-        super(Ride, self).save(*args, **kwargs)
-        if self.start and self.destination and not self.distance:
-            try:
-                distance = get_distance(self)
-                self.distance = round(distance, 4)
-            except Exception:
-                pass
-            super(Ride, self).save(*args, **kwargs)
+    @property
+    def total_cost_estimate(self):
+        if self.cost:
+            if self.included_in_plan:
+                return 0
+            else:
+                return self.cost + self.customer.plan.arrive_fee
+        return None
 
     def __unicode__(self):
         if self.customer:

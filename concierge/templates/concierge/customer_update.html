@@ -97,7 +97,9 @@
                     <li class="list-group-item">
                         <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm pull-right">Edit</a>
                         {{ destination.fullname }}<br>
-                        {{ destination.street1 }}<br>
+                        {% if destination.street1 %}
+                            {{ destination.street1 }}<br>
+                        {% endif %}
                         {% if destination.street2 %}
                         {{ destination.street2 }}<br>
                         {% endif %}

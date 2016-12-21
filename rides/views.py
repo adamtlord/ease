@@ -1,9 +1,11 @@
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 
 from accounts.models import Customer
 from billing.utils import invoice_customer_rides
+from common.utils import get_distance
 from rides.models import Ride
 from rides.forms import StartRideForm, DestinationForm, RideForm, CSVUploadForm
 from rides.helpers import handle_lyft_upload, sort_rides_by_customer
@@ -25,10 +27,25 @@ def customer_rides(request, customer_id, template="concierge/customer_rides.html
 def ride_start(request, customer_id, template="rides/start_ride.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
-
+    errors = []
     if request.method == 'GET':
+        initial_start = None
+        initial_destination = None
+        if customer.last_ride:
+            if customer.last_ride.destination != customer.home:
+                initial_start = customer.last_ride.destination
+                initial_destination = customer.home
+            else:
+                initial_start = customer.home
+                initial_destination = None
 
-        start_ride_form = StartRideForm(customer=customer)
+        start_ride_form = StartRideForm(
+            customer=customer,
+            initial={
+                'start': initial_start,
+                'destination': initial_destination
+            }
+        )
         add_starting_point_form = DestinationForm(prefix='add_start', initial={'customer': customer})
         add_destination_form = DestinationForm(prefix='add_dest', initial={'customer': customer})
 
@@ -55,17 +72,46 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
                 destination = add_destination_form.save()
                 new_ride.destination = destination
             new_ride.start_date = timezone.now()
+
+            new_ride.distance = get_distance(new_ride)
+            new_ride.save()
+            # Figure out if this ride is included in the customer's plan
+            if customer.plan.included_rides_per_month:
+
+
+                if customer.included_rides_this_month < customer.plan.included_rides_per_month:
+
+                    distance = new_ride.distance
+
+
+                    if customer.plan.ride_distance_limit > 0 and distance < customer.plan.ride_distance_limit:
+
+                        included = True
+                    else:
+                        included = False
+                else:
+                    included = False
+            else:
+
+                included = False
+            new_ride.included_in_plan = included
+
             new_ride.save()
 
             messages.success(request, "Ride started")
             return redirect('ride_edit', new_ride.id)
-
+        else:
+            if not valid_add_start:
+                errors.append('start')
+            if not valid_add_destination:
+                errors.append('destination')
     d = {
         'customer': customer,
         'start_ride_form': start_ride_form,
         'add_starting_point_form': add_starting_point_form,
         'add_destination_form': add_destination_form,
         'ride_page': True,
+        'errors': errors
     }
 
     return render(request, template, d)
@@ -125,7 +171,11 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
     rides = Ride.ready_to_bill.all()
     customers = sort_rides_by_customer(rides)
-    results = []
+    results = {
+        'success': [],
+        'errors': [],
+        'total': 0
+    }
 
     if request.method == 'POST':
 
@@ -134,7 +184,11 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
         sorted_rides = sort_rides_by_customer(rides_to_bill)
 
         for customer, rides in sorted_rides.items():
-            results.append(invoice_customer_rides(customer, rides))
+            response = invoice_customer_rides(customer, rides)
+            results['success'] += response[0]
+            results['errors'] += response[1]
+            results['total'] += response[2]
+
 
     d = {
         'ready_page': True,
@@ -148,7 +202,7 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 def rides_incomplete(request, template="rides/incomplete.html"):
     d = {
         'incomplete_page': True,
-        'rides': Ride.objects.filter(complete=False)
+        'rides': Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)).order_by('-start_date')
     }
     return render(request, template, d)
 

@@ -37,8 +37,10 @@ def handle_lyft_upload(uploaded_file):
         try:
             ride_id = int(row[ID_COL])
             ride = Ride.objects.get(pk=ride_id)
-            ride.complete = True
             ride.cost = Decimal(row[COST_COL].replace('$', '').strip(' '))
+
+            ride.complete = True
+
             try:
                 ride.request_time = pytz.utc.localize(datetime.strptime(row[REQUEST_TIME_COL], LYFT_DATETIME_FORMAT))
             except:

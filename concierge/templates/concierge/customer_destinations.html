@@ -18,7 +18,9 @@
         <tr>
             <td>{{ destination.fullname }}</td>
             <td>
-                {{ destination.street1 }}<br>
+                {% if destination.street1 %}
+                    {{ destination.street1 }}<br>
+                {% endif %}
                 {% if destination.street2 %}
                     {{ destination.street2 }}<br>
                 {% endif %}

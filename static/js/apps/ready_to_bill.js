@@ -12,7 +12,7 @@ $(function() {
         var master = $('.master');
         if ($('input[class^="customer_"]:checked').length === $('input[class^="customer_"]').length) {
             master.prop('checked', true);
-        } else if ($('input[class^="customer_"]:checked').length === 0) {
+        } else {
             master.prop('checked', false);
         }
         toggleSubmit();

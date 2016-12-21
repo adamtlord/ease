@@ -2,7 +2,15 @@
 {% load custom_tags %}
 
 {% block customer_content %}
+{% if errors %}
+    <p class="alert alert-danger">
+        Please correct the errors below.
+    </p>
+{% endif %}
 <form id="start_ride_form" action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {% if customer.last_ride %}
+        <p><em>Last ride was to {{ customer.last_ride.destination.display_name }}</em></p>
+    {% endif %}
     <div class="row">
         <div class="col-sm-6">
             {% render_form_field start_ride_form.start %}
@@ -12,7 +20,7 @@
                     <input rel="start" class="fieldset-toggle" name="add-starting-point" type="checkbox" autocomplete="off" value="true"> Add a New Starting Point
                 </label>
             </span>
-            <fieldset class="add-starting-point" style="display:none;">
+            <fieldset class="add-starting-point" {% if 'start' not in errors %}style="display:none;"{% endif %}>
                 <div class="form-group well well-sm">
                     <label>Search for a Destination</label>
                     <div class="input-group">
@@ -20,15 +28,17 @@
                         <input class="autocomplete form-control" placeholder="Enter a location" type="text" data-prefix='add_start-'></input>
                     </div>
                 </div>
-                {% render_form_field add_starting_point_form.customer %}
-                {% render_form_field add_starting_point_form.name %}
-                {% render_form_field add_starting_point_form.nickname %}
-                {% render_form_field add_starting_point_form.street1 %}
-                {% render_form_field add_starting_point_form.street2 '' 'no-label' %}
-                <div class="address-inline">
-                    {% render_form_field add_starting_point_form.city %}
-                    {% render_form_field add_starting_point_form.state '' 'state' %}
-                    {% render_form_field add_starting_point_form.zip_code '' 'zip' %}
+                <div class="destination">
+                    {% render_form_field add_starting_point_form.customer %}
+                    {% render_form_field add_starting_point_form.name %}
+                    {% render_form_field add_starting_point_form.nickname %}
+                    {% render_form_field add_starting_point_form.street1 %}
+                    {% render_form_field add_starting_point_form.street2 '' 'no-label' %}
+                    <div class="address-inline">
+                        {% render_form_field add_starting_point_form.city %}
+                        {% render_form_field add_starting_point_form.state '' 'state' %}
+                        {% render_form_field add_starting_point_form.zip_code '' 'zip' %}
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -40,7 +50,7 @@
                     <input rel="destination" class="fieldset-toggle" name="add-destination" type="checkbox" autocomplete="off" value="true"> Add a New Destination
                 </label>
             </span>
-            <fieldset class="add-destination" style="display:none;">
+            <fieldset class="add-destination" {% if 'destination' not in errors %}style="display:none;"{% endif %}>
                 <div class="form-group well well-sm">
                     <label>Search for a Destination</label>
                     <div class="input-group">
@@ -48,15 +58,17 @@
                         <input class="autocomplete form-control" placeholder="Enter a location" type="text" data-prefix='add_dest-'></input>
                     </div>
                 </div>
-                {% render_form_field add_destination_form.customer %}
-                {% render_form_field add_destination_form.name %}
-                {% render_form_field add_destination_form.nickname %}
-                {% render_form_field add_destination_form.street1 %}
-                {% render_form_field add_destination_form.street2 '', 'no-label' %}
-                <div class="address-inline">
-                    {% render_form_field add_destination_form.city %}
-                    {% render_form_field add_destination_form.state '' 'state' %}
-                    {% render_form_field add_destination_form.zip_code '' 'zip' %}
+                <div class="destination">
+                    {% render_form_field add_destination_form.customer %}
+                    {% render_form_field add_destination_form.name %}
+                    {% render_form_field add_destination_form.nickname %}
+                    {% render_form_field add_destination_form.street1 %}
+                    {% render_form_field add_destination_form.street2 '', 'no-label' %}
+                    <div class="address-inline">
+                        {% render_form_field add_destination_form.city %}
+                        {% render_form_field add_destination_form.state '' 'state' %}
+                        {% render_form_field add_destination_form.zip_code '' 'zip' %}
+                    </div>
                 </div>
             </fieldset>
         </div>

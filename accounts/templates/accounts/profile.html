@@ -152,7 +152,9 @@
                 <tr>
                     <th>{{ destination.fullname }}<th>
                     <td>
-                        {{ destination.street1 }}<br>
+                        {% if destination.street1 %}
+                            {{ destination.street1 }}<br>
+                        {% endif %}
                         {% if destination.street2 %}
                             {{ destination.street2 }}<br>
                         {% endif %}

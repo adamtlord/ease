@@ -8731,6 +8731,16 @@ fieldset[disabled] .btn-secondary.focus {
 sup {
   top: -0.25em;
 }
+@media screen and (min-width: 1400px) {
+  .admin .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.navbar + .container > .page-header {
+  margin-top: 0;
+}
 html {
   position: relative;
   min-height: 100%;

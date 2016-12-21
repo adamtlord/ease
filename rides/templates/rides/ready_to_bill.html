@@ -9,12 +9,19 @@
 {% block page_title %}Ready to Bill{% endblock %}
 
 {% block rides_content %}
-{% if results %}
-
-    {% for result in results %}
-        <p>{{ result }}</p>
-    {% endfor %}
-
+{% if results.total > 0 %}
+    {% if results.errors|length > 0 %}
+        <div class="alert alert-danger">
+            {% for error in results.errors %}
+                {{ error }}{% if not forloop.last %}<br />{% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if results.success|length > 0 %}
+        <div class="alert alert-success">
+            {{ results.success|length }} rides invoiced successfully
+        </div>
+    {% endif %}
 {% endif %}
 <form id="bill_rides" action="" method="POST">{% csrf_token %}
     <div class="table-responsive">
@@ -29,6 +36,7 @@
                     <th>Start Time</th>
                     <th>Distance</th>
                     <th>Cost</th>
+                    <th>Total</th>
                     <th>Notes</th>
                     <th></th>
                 </tr>
@@ -37,7 +45,15 @@
                 {% for customer,rides in customers.items %}
                     <tr class="customer">
                         <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
-                        <th colspan="9">{{ customer }}</th>
+                        <th colspan="10">
+                            {{ customer }}&nbsp;&nbsp;
+                            {% if customer.plan %}
+                                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                            {% else %}
+                                <span class="label label-danger">No Plan Selected</span>
+                            {% endif %}
+                            <small>ID {{ customer.id }}</small>
+                        </th>
                     </tr>
                     {% for ride in rides %}
                         <tr class="ride">
@@ -49,7 +65,8 @@
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{{ ride.distance }} mi</td>
                             <td>${{ ride.cost }}</td>
-                            <td class="small">{{ ride.notes|default:'' }}</td>
+                            <td>${{ ride.total_cost_estimate }}</td>
+                            <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
                             <td><a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
@@ -64,5 +81,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ STATIC_URL }}js/apps/ready_to_bill.js"></script>
+<script src="{{ STATIC_URL }}js/apps/ready_to_bill.min.js"></script>
 {% endblock %}

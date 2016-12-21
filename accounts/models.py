@@ -188,12 +188,16 @@ class Customer(Contact):
     def rides(self):
         return self.ride_set.all().order_by('-end_date')
 
+    @property
+    def last_ride(self):
+        return self.rides.first()
+
     def get_rides_this_month(self):
         if self.plan:
             subscription = get_stripe_subscription(self)
             if subscription:
                 start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
-                rides = Ride.objects.filter(customer=self).filter(end_date__gt=start_of_billing_period)
+                rides = Ride.objects.filter(customer=self).filter(start_date__gt=start_of_billing_period)
                 return rides
         return Ride.objects.none()
 
@@ -204,16 +208,29 @@ class Customer(Contact):
             count = 0
         return count
 
+    def get_included_rides_this_month(self):
+        return self.get_rides_this_month().filter(included_in_plan=True)
+
     @property
     def included_rides_this_month(self):
-        plan = self.plan
-        rides_this_month = len(self.get_rides_this_month())
-        if plan.included_rides_per_month and rides_this_month:
-            max_distance = plan.ride_distance_limit
-            neighborhood_rides = self.get_rides_this_month().filter(distance__lte=max_distance)
-        else:
-            neighborhood_rides = self.rides_this_month()
-        return neighborhood_rides
+        count = self.get_included_rides_this_month().count()
+        if not count:
+            count = 0
+        return count
+
+    def get_rides_in_progress(self):
+        return self.rides.filter(complete=False)
+
+    @property
+    def rides_in_progress(self):
+        count = self.get_rides_in_progress().count()
+        if not count:
+            count = 0
+        return count
+
+    @property
+    def remaining_rides_this_month(self):
+        return self.plan.included_rides_per_month - self.included_rides_this_month
 
     @property
     def ready_to_ride(self):

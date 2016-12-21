@@ -38,7 +38,7 @@ class Plan(AbstractEnumModel):
 
     @property
     def gift_expiration(self):
-        return datetime.datetime(2017,2,1)
+        return datetime.datetime(2017, 2, 1)
 
     def __unicode__(self):
         return self.name
