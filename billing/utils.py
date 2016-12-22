@@ -2,6 +2,7 @@ import stripe
 import datetime
 
 from django.core.cache import cache
+from django.utils import timezone
 
 
 def get_stripe_subscription(customer):
@@ -35,35 +36,38 @@ def get_stripe_subscription(customer):
 
 def invoice_customer_rides(customer, rides):
 
+    from accounts.helpers import send_included_rides_email
+
     success = []
     errors = []
     total = 0
+    included_rides = []
+    billable_rides = []
 
     if customer.ride_account and customer.ride_account.stripe_id:
         stripe_id = customer.ride_account.stripe_id
-
         for ride in rides:
             if ride.cost:
-                description = ride.description
                 if ride.included_in_plan:
                     ride.total_cost = 0
-                    description += ' (included in your plan)'
+                    included_rides.append(ride)
                 else:
                     if customer.plan.arrive_fee:
                         ride.total_cost = ride.cost + customer.plan.arrive_fee
                         ride.fee = customer.plan.arrive_fee
                     else:
                         ride.total_cost = ride.cost
-                stripe.InvoiceItem.create(
-                    customer=stripe_id,
-                    amount=int(ride.total_cost * 100),
-                    currency="usd",
-                    description=ride.description
-                )
+                    invoiceitem = stripe.InvoiceItem.create(
+                        customer=stripe_id,
+                        amount=int(ride.total_cost * 100),
+                        currency="usd",
+                        description=ride.description
+                    )
+                    ride.invoice_item_id = invoiceitem.id
+                    billable_rides.append(ride)
 
-                ride.invoiced = True
-                ride.invoiced_date = datetime.datetime.now()
                 ride.save()
+
                 success.append('Ride {} invoiced successfully'.format(ride.id))
 
             else:
@@ -71,8 +75,13 @@ def invoice_customer_rides(customer, rides):
 
         total += 1
 
+        stripe.Invoice.create(customer=stripe_id)
+
     else:
         errors.append('Customer {} has no Ride Account specified (no credit card to bill)'.format(customer))
         total = 1
+
+    if included_rides:
+        send_included_rides_email(customer, included_rides)
 
     return (success, errors, total)

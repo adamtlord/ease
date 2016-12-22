@@ -1,0 +1,15 @@
+{% extends 'base_email.html' %}
+{% load humanize %}
+{% block content %}
+<p>Hi{% if user.first_name%} {{ user.first_name }}{% endif %},<br /><br />
+Thanks for riding with Arrive Rides!<br /><br />
+
+You recently used {{ rides|length|apnumber }} of the {{ customer.plan.included_rides_per_month|apnumber }} rides included in your Arrive subscription:<br /><br />
+{% for ride in rides %}
+{{ ride.start_date|date:"DATETIME_FORMAT" }}<br />
+From {{ ride.start.display_name }} to {{ ride.destination.display_name }}<br /><br />
+{% endfor %}
+
+
+The Arrive Rides Team</p>
+{% endblock %}

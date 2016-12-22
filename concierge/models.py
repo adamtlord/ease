@@ -15,6 +15,7 @@ class Touch(models.Model):
     MAIL = 'MAIL'
     INTRO = 'INTRO'
     PHONE = 'PHONE'
+    BILLING = 'BILLING'
     OTHER = 'OTHER'
 
     TYPE_CHOICES = (
