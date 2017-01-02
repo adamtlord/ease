@@ -114,11 +114,11 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
     customer = get_object_or_404(Customer, pk=customer_id)
     home = customer.home
-    LovedOneFormSet = inlineformset_factory(Customer,
-                                            LovedOne,
-                                            form=LovedOneForm,
-                                            can_delete=True,
-                                            extra=1)
+    # LovedOneFormSet = inlineformset_factory(Customer,
+    #                                         LovedOne,
+    #                                         form=LovedOneForm,
+    #                                         can_delete=True,
+    #                                         extra=1)
     RiderFormSet = inlineformset_factory(Customer,
                                          Rider,
                                          form=RiderForm,
@@ -128,17 +128,17 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     if request.method == "POST":
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
-        lovedone_formset = LovedOneFormSet(request.POST, instance=customer)
+        # lovedone_formset = LovedOneFormSet(request.POST, instance=customer)
         rider_formset = RiderFormSet(request.POST, instance=customer)
 
         if all([customer_form.is_valid(),
                 home_form.is_valid(),
-                lovedone_formset.is_valid(),
+                # lovedone_formset.is_valid(),
                 rider_formset.is_valid()
                 ]):
             customer_form.save()
             home_form.save()
-            lovedone_formset.save(),
+            # lovedone_formset.save(),
             rider_formset.save()
 
             messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
@@ -147,14 +147,14 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
         home_form = HomeForm(instance=customer.home, prefix='home')
-        lovedone_formset = LovedOneFormSet(instance=customer)
+        # lovedone_formset = LovedOneFormSet(instance=customer)
         rider_formset = RiderFormSet(instance=customer)
 
     d = {
         'customer': customer,
         'customer_form': customer_form,
         'home_form': home_form,
-        'lovedone_formset': lovedone_formset,
+        # 'lovedone_formset': lovedone_formset,
         'rider_formset': rider_formset,
         'update_page': True
     }
