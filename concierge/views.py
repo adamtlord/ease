@@ -317,7 +317,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
         if customer.subscription_account:
             payment_form = AdminPaymentForm(instance=customer.subscription_account, initial={
-                'plan': default_plan.id,
+                'plan': customer.plan.id,
                 'same_card_for_both': same_card_for_both
             })
 
