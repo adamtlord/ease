@@ -7,43 +7,86 @@
     <h2>Create a New Customer</h2>
 </div>
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-8 col-md-6">
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
-                {% if errors|length == 1 %}
+            <p class="alert alert-danger">
+                {% if error|length == 1 %}
                     Please correct the error below.
                 {% else %}
                     Please correct the errors below.
                 {% endif %}
-                {{ form.non_field_errors }}
-                {{ home_form.non_field_errors }}
-                {% for dict in destinatino_formset.errors %}
-                    {% for error in dict.values %}
-                        {{ error }}
-                    {% endfor %}
-                {% endfor %}
+                <br />You may need to enter your password again, too.
+            </p>
             {% endif %}
+            {{ form.non_field_errors }}
+            {{ register_form.non_field_errors }}
+            {{ customer_form.non_field_errors }}
+            {{ home_form.non_field_errors }}
+            {{ rider_form.non_field_errors }}
+            <fieldset>
+                <legend>Primary Rider's Information</legend>
+                    {% render_form_field customer_form.first_name %}
+                    {% render_form_field customer_form.last_name %}
+                    {% render_form_field customer_form.known_as %}
+                    {% render_form_field customer_form.email %}
+                <label>Phone number(s)<span class="req">*</span> <span class="note">(must enter at least one)</span></label>
+                {% render_form_field customer_form.home_phone '' 'sub-field phone-mask' %}
+                {% render_form_field customer_form.mobile_phone '' 'sub-field phone-mask' %}
+                {% render_form_field customer_form.preferred_phone %}
+                {% render_form_field customer_form.dob  '' 'date-mask' %}
+            </fieldset>
+            <fieldset>
+                <legend>Account Information</legend>
+                    <p>Enter information for the person who will be managing this account.</p>
+                    <div class="checkbox">
+                        <label><input id="use_customer_info" type="checkbox"> Use the primary rider's information</label>
+                    </div>
 
-            {% for field in form %}
-                {% render_form_field field %}
-            {% endfor %}
+                {% render_form_field register_form.email %}
 
-            <h3>Home Address</h3>
-            {% for field in home_form %}
-                {% render_form_field field %}
-            {% endfor %}
-            <h3>Destinations</h3>
-            {{ destination_formset.management_form }}
-            {% for form in destination_formset.forms %}
-                {% for field in form %}
-                    {% render_form_field field %}
-                {% endfor %}
-            {% endfor %}
+                    {% render_form_field register_form.first_name %}
+                    {% render_form_field register_form.last_name %}
+                    {% render_form_field register_form.relationship %}
+
+                {% render_form_field register_form.password1 %}
+                {% render_form_field register_form.password2 %}
+            </fieldset>
+            <fieldset>
+                <legend>Primary Customer's Home Address</legend>
+                {% render_form_field home_form.street1 %}
+                {% render_form_field home_form.street2 '' 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field home_form.city %}
+                    {% render_form_field home_form.state '' 'state' %}
+                    {% render_form_field home_form.zip_code '' 'zip zip-mask' %}
+                </div>
+                {% render_form_field customer_form.residence_type %}
+                {% render_form_field customer_form.residence_instructions %}
+            </fieldset>
+            <fieldset>
+                <legend>Secondary Rider's Information</legend>
+                <span class="help-block">Must share the same residence.</span>
+                {% render_form_field rider_form.first_name %}
+                {% render_form_field rider_form.last_name %}
+                {% render_form_field rider_form.mobile_phone '' 'phone-mask' %}
+            </fieldset>
+            <fieldset>
+                <legend>Marketing Source</legend>
+                {% render_form_field register_form.source %}
+                <div id="source_other" style="display:none;">
+                    {% render_form_field register_form.source_other %}
+                </div>
+            </fieldset>
 
             <div class="form-actions">
-                <input type="submit" class="btn btn-primary" value="Create" />
+                <input type="submit" class="btn btn-primary btn-block" value="Create" />
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
 {% endblock %}

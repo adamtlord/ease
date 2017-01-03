@@ -8,11 +8,13 @@ from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from accounts.models import Customer, LovedOne, Rider
+from accounts.forms import RiderForm
+from accounts.helpers import send_welcome_email
+from accounts.models import Customer, Rider
 from billing.models import Plan
 from billing.forms import StripeCustomerForm, AdminPaymentForm
 from common.utils import soon
-from concierge.forms import CustomerForm, DestinationForm, CreateHomeForm, LovedOneForm, RiderForm, ActivityForm
+from concierge.forms import CustomUserRegistrationForm, CustomerForm, DestinationForm, ActivityForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -52,43 +54,65 @@ def customer_list(request, template='concierge/customer_list.html'):
 @staff_member_required
 def customer_create(request, template='concierge/customer_create.html'):
 
-    DestinationFormSet = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=False)
+    errors = []
+    error_count = []
 
-    if request.method == "POST":
-        form = CustomerForm(request.POST)
-        home_form = CreateHomeForm(request.POST)
-        if form.is_valid() and home_form.is_valid():
-            new_customer = form.save()
+    if request.method == 'GET':
+        register_form = CustomUserRegistrationForm(prefix='reg')
+        customer_form = CustomerForm(prefix='cust')
+        home_form = HomeForm(prefix='home')
+        rider_form = RiderForm(prefix='rider')
+    else:
+        register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
+        customer_form = CustomerForm(request.POST, prefix='cust')
+        home_form = HomeForm(request.POST, prefix='home')
+        rider_form = RiderForm(request.POST, prefix='rider')
+
+        if all([
+                register_form.is_valid(),
+                customer_form.is_valid(),
+                home_form.is_valid(),
+                rider_form.is_valid()]):
+            # save user
+            new_user = register_form.save(request)
+            # populate and save customer
+            new_customer = customer_form.save(commit=False)
+            new_customer.user = new_user
+            new_customer.save()
+            # populate and save home address
             home_address = home_form.save(commit=False)
+            home_address.name = 'Home'
             home_address.customer = new_customer
             home_address.home = True
             home_address.save()
+            # populate and save rider info
+            rider_data = rider_form.cleaned_data
+            if rider_data.get('first_name', None) or rider_data.get('last_name', None) or rider_data.get('mobile_phone', None):
+                rider = rider_form.save(commit=False)
+                rider.customer = new_customer
+                rider.save()
 
-            destination_formset = DestinationFormSet(request.POST,
-                                                     instance=new_customer)
-            if destination_formset.is_valid():
-                destination_formset.save()
+            new_user.profile.registration_complete = True
+            new_user.profile.on_behalf = True
+            new_user.profile.relationship = register_form.cleaned_data['relationship']
+            new_user.profile.save()
 
-            messages.add_message(request, messages.SUCCESS, 'New customer {} created successfully!'.format(new_customer))
+            send_welcome_email(new_user)
+
             return redirect('customer_detail', new_customer.id)
 
         else:
-            destination_formset = DestinationFormSet(request.POST)
-
-    else:
-        form = CustomerForm()
-        home_form = CreateHomeForm()
-        destination_formset = DestinationFormSet()
-
+            errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
+            print errors
+            error_count = sum([len(d) for d in errors])
     d = {
-        'form': form,
+        'register_form': register_form,
+        'customer_form': customer_form,
         'home_form': home_form,
-        'destination_formset': destination_formset
-    }
-
+        'rider_form': rider_form,
+        'errors': errors,
+        'error_count': error_count,
+        }
     return render(request, template, d)
 
 
@@ -114,11 +138,6 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
     customer = get_object_or_404(Customer, pk=customer_id)
     home = customer.home
-    # LovedOneFormSet = inlineformset_factory(Customer,
-    #                                         LovedOne,
-    #                                         form=LovedOneForm,
-    #                                         can_delete=True,
-    #                                         extra=1)
     RiderFormSet = inlineformset_factory(Customer,
                                          Rider,
                                          form=RiderForm,
@@ -128,17 +147,14 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     if request.method == "POST":
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
-        # lovedone_formset = LovedOneFormSet(request.POST, instance=customer)
         rider_formset = RiderFormSet(request.POST, instance=customer)
 
         if all([customer_form.is_valid(),
                 home_form.is_valid(),
-                # lovedone_formset.is_valid(),
                 rider_formset.is_valid()
                 ]):
             customer_form.save()
             home_form.save()
-            # lovedone_formset.save(),
             rider_formset.save()
 
             messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
@@ -147,14 +163,12 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
         home_form = HomeForm(instance=customer.home, prefix='home')
-        # lovedone_formset = LovedOneFormSet(instance=customer)
         rider_formset = RiderFormSet(instance=customer)
 
     d = {
         'customer': customer,
         'customer_form': customer_form,
         'home_form': home_form,
-        # 'lovedone_formset': lovedone_formset,
         'rider_formset': rider_formset,
         'update_page': True
     }

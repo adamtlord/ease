@@ -6,7 +6,16 @@
 {% endblock %}
 {% block title %}Customer List{% endblock %}
 {% block content %}
-    <h2>Customers</h2>
+    <div class="page-header customer-list">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1>Customers</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="{% url 'customer_create' %}" class="btn btn-primary pull-right" style="margin-top:22px">Register a New Customer</a>
+            </div>
+        </div>
+    </div>
     <div class="table-responsive">
         <table id="customer_list" class="table">
             <thead>
@@ -14,7 +23,7 @@
                 <th>Home</th>
                 <th>Phone</th>
                 <th>Plan</th>
-                <th>Rides Taken</th>
+                <th>Rides</th>
                 <th>Last ride</th>
                 <th>Notes</th>
                 <th>Intro Call</th>
@@ -54,6 +63,7 @@
             </tbody>
         </table>
     </div>
+
 {% endblock %}
 {% block scripts %}
 <script>

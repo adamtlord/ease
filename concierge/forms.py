@@ -1,9 +1,22 @@
 from django import forms
+from django.conf import settings
+from django.utils.safestring import mark_safe
 
-from accounts.models import Customer, LovedOne, Rider
+from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
 from concierge.models import Touch
 from rides.models import Destination
+from registration.forms import RegistrationForm
 
+CUSTOM_USER_FIELDS = [
+    'email',
+    'first_name',
+    'last_name',
+    'relationship',
+    'password1',
+    'password2',
+    'source',
+    'source_other'
+]
 
 CONTACT_FIELDS = [
     'first_name',
@@ -35,7 +48,6 @@ CUSTOMER_FIELDS = [
     'home_phone',
     'mobile_phone',
     'preferred_phone',
-    'send_updates',
 ]
 
 TOUCH_FIELDS = [
@@ -74,6 +86,69 @@ RIDER_FIELDS = [
     'mobile_phone',
     'customer'
 ]
+
+
+class CustomUserRegistrationForm(RegistrationForm):
+    first_name = forms.CharField(
+        label="First name",
+        required=True
+    )
+    last_name = forms.CharField(
+        label="Last name",
+        required=True
+    )
+    email = forms.EmailField(
+        help_text='Will be used to log into the member account',
+        required=True
+    )
+    relationship = forms.CharField(
+        label="Relationship to the primary rider",
+        required=False
+    )
+    password1 = forms.CharField(
+        label="Create a password",
+        strip=False,
+        widget=forms.PasswordInput,
+        help_text='Passwords must be at least 8 characters long'
+    )
+    password2 = forms.CharField(
+        label="Please enter the password again",
+        widget=forms.PasswordInput,
+        strip=False,
+        help_text=None,
+    )
+    source = forms.ChoiceField(
+        label="How did you hear about Arrive?",
+        choices=UserProfile.SOURCE_CHOICES,
+        required=False
+    )
+    source_other = forms.CharField(
+        label="Please specify:",
+        max_length=255,
+        required=False
+    )
+
+    def clean(self):
+        super(RegistrationForm, self).clean()
+        if self.cleaned_data.get('source') == UserProfile.OTHER:
+            self.cleaned_data['source'] = self.cleaned_data['source_other']
+
+    def save(self, request):
+        user = super(RegistrationForm, self).save(request)
+        # Store the common profile data.
+        user.profile.source = self.cleaned_data['source']
+        user.profile.save()
+        return user
+
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'first_name', 'last_name')
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserRegistrationForm, self).__init__(*args, **kwargs)
+        for field in CUSTOM_USER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+        self.fields['email'].widget.attrs.pop('autofocus', None)
 
 
 class CustomerForm(forms.ModelForm):

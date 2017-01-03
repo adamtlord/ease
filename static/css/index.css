@@ -8512,6 +8512,12 @@ textarea.form-controller input[type="color"] {
   margin-top: 0;
   padding-bottom: 21px;
 }
+.page-header.customer-list {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 11px;
+  border-bottom: 0;
+}
 @media screen and (max-width: 767px) {
   .page-header {
     margin-top: 22px;
