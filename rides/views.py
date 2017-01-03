@@ -196,7 +196,6 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
             results['errors'] += response[1]
             results['total'] += response[2]
 
-
     d = {
         'ready_page': True,
         'customers': customers,
@@ -221,7 +220,7 @@ def rides_incomplete(request, template="rides/incomplete.html"):
 
 @staff_member_required
 def rides_invoiced(request, template="rides/invoiced.html"):
-    rides = Ride.objects.filter(invoiced=True)
+    rides = Ride.objects.filter(invoice__isnull=False)
     customers = sort_rides_by_customer(rides)
 
     d = {
