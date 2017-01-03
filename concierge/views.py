@@ -167,28 +167,9 @@ def customer_destinations(request, customer_id, template='concierge/customer_des
 
     customer = get_object_or_404(Customer, pk=customer_id)
 
-    DestinationFormSet = inlineformset_factory(Customer,
-                                               Destination,
-                                               form=DestinationForm,
-                                               can_delete=True,
-                                               extra=0)
-
-    if request.method == "POST":
-        destination_formset = DestinationFormSet(request.POST, instance=customer)
-
-        if destination_formset.is_valid():
-            destination_formset.save()
-
-            messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
-            return redirect('customer_destinations_update', customer.id)
-
-    else:
-        destination_formset = DestinationFormSet(instance=customer, queryset=Destination.objects.exclude(home=True))
-
     d = {
         'customer': customer,
         'destinations_page': True,
-        'destination_formset': destination_formset
     }
 
     return render(request, template, d)

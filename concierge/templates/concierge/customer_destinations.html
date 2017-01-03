@@ -14,6 +14,28 @@
         </tr>
     </thead>
     <tbody>
+    {% with customer.home as destination %}
+        <tr>
+            <td>{{ destination.fullname }}</td>
+            <td>
+                {% if destination.street1 %}
+                    {{ destination.street1 }}<br>
+                {% endif %}
+                {% if destination.street2 %}
+                    {{ destination.street2 }}<br>
+                {% endif %}
+                {{ destination.city }},
+                {{ destination.state }}
+                {{ destination.zip_code }}
+            </td>
+            <td>
+                {% static_map destination %}
+            </td>
+            <td>
+                <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm">Edit</a>
+            </td>
+        </tr>
+    {% endwith %}
     {% for destination in customer.destinations %}
         <tr>
             <td>{{ destination.fullname }}</td>
