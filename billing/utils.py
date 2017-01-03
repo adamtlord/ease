@@ -1,8 +1,15 @@
-import stripe
 import datetime
+import pytz
+import stripe
 
 from django.core.cache import cache
 from django.utils import timezone
+
+from billing.models import Invoice
+
+
+def datetime_from_timestamp(timestamp):
+    return pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp))
 
 
 def get_stripe_subscription(customer):
@@ -75,7 +82,24 @@ def invoice_customer_rides(customer, rides):
 
         total += 1
 
-        stripe.Invoice.create(customer=stripe_id)
+        if billable_rides:
+            stripe_invoice = stripe.Invoice.create(customer=stripe_id)
+
+            new_invoice = Invoice(
+                stripe_id=stripe_invoice.id,
+                customer=customer,
+                created_date=timezone.now(),
+                period_start=datetime_from_timestamp(stripe_invoice.period_start),
+                period_end=datetime_from_timestamp(stripe_invoice.period_end)
+            )
+
+            new_invoice.full_clean()
+            new_invoice.save()
+
+            for ride in billable_rides:
+                ride.invoice = new_invoice
+                ride.full_clean()
+                ride.save()
 
     else:
         errors.append('Customer {} has no Ride Account specified (no credit card to bill)'.format(customer))

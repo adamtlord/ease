@@ -54,3 +54,20 @@ class StripeCustomer(models.Model):
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
+
+
+class Invoice(models.Model):
+    stripe_id = models.CharField(max_length=255)
+    customer = models.ForeignKey('accounts.Customer', related_name="invoices")
+    created_date = models.DateTimeField(blank=True, null=True)
+    invoiced = models.BooleanField(default=False)
+    invoiced_date = models.DateTimeField(blank=True, null=True)
+    paid = models.BooleanField(default=False)
+    paid_date = models.DateTimeField(blank=True, null=True)
+    period_start = models.DateTimeField(blank=True, null=True)
+    period_end = models.DateTimeField(blank=True, null=True)
+    attempt_count = models.PositiveSmallIntegerField(blank=True, null=True)
+    total = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=6)
+
+    def __unicode__(self):
+        return '{} {}'.format(self.customer, self.stripe_id)

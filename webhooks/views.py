@@ -1,6 +1,4 @@
 import json
-import pytz
-import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -8,43 +6,9 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from billing.utils import datetime_from_timestamp
+from billing.models import Invoice
 from concierge.models import Touch
-from rides.models import Ride
-
-# INVOICE ITEM
-# {
-#     'object': 'event',
-#     'pending_webhooks': 1,
-#     'created': 1326853478,
-#     'data': {
-#         'object': {
-#             'customer': 'cus_00000000000000',
-#             'discountable': True,
-#             'livemode': False,
-#             'description': '12/17/2016 10:02 p.m. - 40-A Crescent Drive to 834 58th Street',
-#             'subscription': None,
-#             'proration': False,
-#             'object': 'invoiceitem',
-#             'period': {
-#                 'start': 1482352482,
-#                 'end': 1482352482
-#             },
-#             'currency': 'usd',
-#             'amount': 717,
-#             'plan': None,
-#             'invoice': None,
-#             'date': 1482352482,
-#             'quantity': None,
-#             'id': 'ii_00000000000000',
-#             'metadata': {}
-#         }
-#     },
-#     'livemode': False,
-#     'request': None,
-#     'type': 'invoiceitem.created',
-#     'id': 'evt_00000000000000',
-#     'api_version': '2016-07-06'
-# }
 
 # INVOICE
 # {
@@ -53,34 +17,36 @@ from rides.models import Ride
 #     'created': 1326853478,
 #     'data': {
 #         'object': {
+#             'amount_due': 4524
 #             'application_fee': None,
-#             'livemode': False,
-#             'tax': None,
 #             'attempt_count': 1,
-#             'currency': 'usd',
-#             'total': 4524,
-#             'id': 'in_00000000000000',
-#             'next_payment_attempt': None,
-#             'receipt_number': None,
-#             'statement_descriptor': None,
+#             'attempted': False,
 #             'charge': 'ch_00000000000000',
 #             'closed': True,
-#             'period_end': 1482367000,
-#             'forgiven': False,
-#             'metadata': {},
+#             'currency': 'usd',
+#             'customer': 'cus_00000000000000',
+#             'date': 1482367000,
 #             'description': None,
-#             'webhooks_delivered_at': 1482367001,
-#             'attempted': False,
-#             'object': 'invoice',
-#             'paid': True,
 #             'discount': None,
 #             'ending_balance': 0,
-#             'date': 1482367000,
+#             'forgiven': False,
+#             'id': 'in_00000000000000',
+#             'livemode': False,
+#             'metadata': {},
+#             'next_payment_attempt': None,
+#             'object': 'invoice',
+#             'paid': True,
+#             'period_end': 1482367000,
 #             'period_start': 1481329967,
-#             'subtotal': 4524,
-#             'tax_percent': None,
+#             'receipt_number': None,
+#             'starting_balance': 0,
+#             'statement_descriptor': None,
 #             'subscription': None,
-#             'customer': 'cus_00000000000000',
+#             'subtotal': 4524,
+#             'tax': None,
+#             'tax_percent': None,
+#             'total': 4524,
+#             'webhooks_delivered_at': 1482367001,
 #             'lines': {
 #                 'url': '/v1/invoices/in_19TKZYK2sMDdae4KZ2x2M7cL/lines',
 #                 'total_count': 1,
@@ -118,8 +84,6 @@ from rides.models import Ride
 #                     'metadata': {}
 #                 }]
 #             },
-#             'starting_balance': 0,
-#             'amount_due': 4524
 #         }
 #     },
 #     'livemode': False,
@@ -130,74 +94,61 @@ from rides.models import Ride
 # }
 
 
-@require_POST
-@csrf_exempt
-def invoice_item(request):
+# @require_POST
+# @csrf_exempt
+# def invoice_item(request):
 
-    event = json.loads(request.body)
+#     event = json.loads(request.body)
 
-    try:
-        ride = get_object_or_404(Ride, invoice_item_id=event['data']['object']['id'])
-        ride.invoice_id = event['data']['object']['invoice']
-        ride.full_clean()
-        ride.save()
-    except:
-        pass
+#     try:
+#         ride = get_object_or_404(Ride, invoice_item_id=event['data']['object']['id'])
+#         ride.invoice_id = event['data']['object']['invoice']
+#         ride.full_clean()
+#         ride.save()
+#     except:
+#         pass
 
-    return HttpResponse(status=200)
+#     return HttpResponse(status=200)
 
+# invoice.created
+# invoice.payment_succeeded
+# invoice.sent
+# invoice.updated
 
 @require_POST
 @csrf_exempt
 def invoice(request):
 
     event = json.loads(request.body)
-    invoice = event['data']['object']
+    event_type = event['type']
+    stripe_invoice = event['data']['object']
 
     try:
-        ride = get_object_or_404(Ride, invoice_id=invoice['id'])
-        ride.invoiced = invoice['attempted']
-        if ride.invoiced:
-            ride.invoiced_date = pytz.utc.localize(datetime.datetime.fromtimestamp(invoice['date']))
+        invoice = get_object_or_404(Invoice, stripe_id=stripe_invoice['id'])
+        invoice.invoiced = stripe_invoice['attempted']
+        invoice.attempt_count = stripe_invoice['attempt_count']
+        invoice.total = stripe_invoice['total'] / 100
+        invoice.paid = stripe_invoice['paid']
+
+        if event_type == 'invoice.sent':
+            invoice.invoiced_date = datetime_from_timestamp(stripe_invoice['date'])
+
+        if event_type == 'invoice.payment_succeeded':
+            invoice.paid_date = datetime_from_timestamp(stripe_invoice['date'])
+
+        invoice.full_clean()
+        invoice.save()
+
+        if invoice.invoiced:
             new_touch = Touch(
-                customer=ride.customer,
+                customer=invoice.customer,
                 date=timezone.now(),
                 type=Touch.BILLING,
-                notes='Invoice sent: ${} [Stripe ID {}]'.format(invoice['total'] / 100, invoice['id'])
+                notes='{}: ${} [Stripe ID {}]'.format(event_type, stripe_invoice['total'] / 100, stripe_invoice['id'])
             )
             new_touch.full_clean()
             new_touch.save()
 
-        ride.full_clean()
-        ride.save()
-    except:
-        pass
-
-    return HttpResponse(status=200)
-
-
-@require_POST
-@csrf_exempt
-def invoice_paid(request):
-
-    event = json.loads(request.body)
-    invoice = event['data']['object']
-    try:
-        ride = get_object_or_404(Ride, invoice_id=invoice['id'])
-        ride.paid = invoice['paid']
-        if ride.paid:
-            ride.paid_date = pytz.utc.localize(datetime.datetime.fromtimestamp(invoice['date']))
-            new_touch = Touch(
-                customer=ride.customer,
-                date=timezone.now(),
-                type=Touch.BILLING,
-                notes='Invoice paid: ${} [Stripe ID {}]'.format(invoice['total'] / 100, invoice['id'])
-            )
-            new_touch.full_clean()
-            new_touch.save()
-
-        ride.full_clean()
-        ride.save()
     except:
         pass
 

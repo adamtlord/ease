@@ -8,6 +8,7 @@ from common.utils import geocode_address
 
 from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
 from rides.const import SERVICES, UBER, LYFT
+from billing.models import Invoice
 
 
 class Destination(Location):
@@ -69,16 +70,12 @@ class Ride(models.Model):
     service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=LYFT)
     external_id = models.CharField(max_length=64, blank=True, null=True)
     complete = models.BooleanField(default=False)
-    invoiced = models.BooleanField(default=False)
-    invoiced_date = models.DateTimeField(blank=True, null=True)
-    paid = models.BooleanField(default=False)
-    paid_date = models.DateTimeField(blank=True, null=True)
     invoice_item_id = models.CharField(max_length=64, blank=True, null=True)
-    invoice_id = models.CharField(max_length=64, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     included_in_plan = models.BooleanField(default=False)
+    invoice = models.ForeignKey(Invoice, related_name="rides", blank=True, null=True)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
