@@ -34,7 +34,8 @@ CUSTOMER_FIELDS = [
 RIDER_FIELDS = [
     'first_name',
     'last_name',
-    'mobile_phone'
+    'mobile_phone',
+    'customer'
 ]
 
 LOVEDONE_NOTIFY_FIELDS = [
