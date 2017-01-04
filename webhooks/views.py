@@ -131,10 +131,10 @@ def invoice(request):
         invoice.paid = stripe_invoice['paid']
 
         if event_type == 'invoice.sent':
-            invoice.invoiced_date = datetime_from_timestamp(stripe_invoice['date'])
+            invoice.invoiced_date = timezone.now()
 
         if event_type == 'invoice.payment_succeeded':
-            invoice.paid_date = datetime_from_timestamp(stripe_invoice['date'])
+            invoice.paid_date = timezone.now()
             # apparently the invoice is sent and paid at the same time usually
             if not invoice.invoiced_date:
                 invoice.invoiced_date = invoice.paid_date
