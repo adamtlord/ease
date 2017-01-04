@@ -111,6 +111,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
     errors = {}
+    card_errors = ''
     selected_plan = default_plan = None
 
     if request.method == 'POST':
@@ -125,67 +126,67 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             return redirect('register_self_destinations')
 
         payment_form = PaymentForm(request.POST)
+
         if payment_form.is_valid():
 
-            # create our stripe customer
-            new_stripe_customer = payment_form.save()
-
-            # set our customer's plan
-            customer.subscription_account = customer.ride_account = new_stripe_customer
-            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
-
-            selected_plan = customer.plan
-
-            # create new stripe customer
-            create_stripe_customer = stripe.Customer.create(
-                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
-                email=new_stripe_customer.email,
-                source=payment_form.cleaned_data['stripe_token'],
-                metadata={
-                    'customer': '{} {}'.format(customer.full_name, customer.pk)
-                }
-            )
-
-            # if chosen plan has an upfront cost, create an invoice line-item
-            if customer.plan.signup_cost:
-                # create signup invoice item
-                # this is only charging $25 for bronze plan. Needs to be $30.
-                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
-                signup_cost = int(customer.plan.signup_cost * 100)
-                stripe.InvoiceItem.create(
-                    customer=create_stripe_customer.id,
-                    amount=signup_cost,
-                    currency="usd",
-                    description="Initial signup fee",
+            try:
+                # create new stripe customer
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                    email=payment_form.cleaned_data['email'],
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                 )
 
-            # now attach the customer to a plan
-            stripe.Subscription.create(
-                customer=create_stripe_customer.id,
-                plan=customer.plan.stripe_id,
-            )
+                if create_stripe_customer:
+                    # create our stripe customer
+                    new_stripe_customer = payment_form.save()
+                    # set our customer's plan
+                    customer.subscription_account = customer.ride_account = new_stripe_customer
+                    customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+                    selected_plan = customer.plan
+                     # if chosen plan has an upfront cost, create an invoice line-item
+                    if customer.plan.signup_cost:
+                        # create signup invoice item
+                        # this is only charging $25 for bronze plan. Needs to be $30.
+                        # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                        signup_cost = int(customer.plan.signup_cost * 100)
+                        stripe.InvoiceItem.create(
+                            customer=create_stripe_customer.id,
+                            amount=signup_cost,
+                            currency="usd",
+                            description="Initial signup fee",
+                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                        )
+                    # now attach the customer to a plan
+                    stripe.Subscription.create(
+                        customer=create_stripe_customer.id,
+                        plan=customer.plan.stripe_id,
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                    )
+                    # store the customer's stripe id in their record
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
+                    # save everything
+                    customer.save()
+                    new_stripe_customer.save()
 
-            # store the customer's stripe id in their record
-            new_stripe_customer.stripe_id = create_stripe_customer.id
+                    send_receipt_email(request.user)
 
-            # save everything
-            customer.save()
-            new_stripe_customer.save()
+                    messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 
-            # get their subscription and set a trial end date
-            # (anyone who signs up before january)
-            if datetime.datetime.now() < datetime.datetime(2017, 1, 1):
-                subscription = get_stripe_subscription(customer)
-                subscription.trial_end = int(time.mktime(pytz.utc.localize(datetime.datetime(2017, 2, 1, 0, 0)).timetuple()))
-                subscription.save()
+                    request.session['payment_complete'] = True
 
-            send_receipt_email(request.user)
+                    return redirect('register_self_destinations')
 
-            messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
+            except stripe.error.CardError as ex:
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
-            request.session['payment_complete'] = True
+            except Exception as ex:
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-277-4838.'
 
-            return redirect('register_self_destinations')
         else:
             errors = payment_form.errors
 
@@ -224,7 +225,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'soon': soon(),
         'errors': errors,
         'selected_plan': selected_plan,
-        'errors': errors
+        'card_errors': card_errors
     }
 
     return render(request, template, d)

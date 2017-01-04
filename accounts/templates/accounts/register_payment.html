@@ -38,8 +38,8 @@
             {% endif %}
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
             {% render_form_field payment_form.last_4_digits %}
-            <div id="credit-card-errors" style="display:none">
-                <div class="alert alert-danger" id="stripe-error-message"></div>
+            <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
+                <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
             </div>
             {% if gift %}
                 <div class="selected-plan">
