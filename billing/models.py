@@ -21,6 +21,7 @@ class Plan(AbstractEnumModel):
     )
 
     active = models.BooleanField(default=True)
+    public = models.BooleanField(default=True)
     unlimited_rides = models.BooleanField(default=False)
     included_rides_per_month = models.PositiveSmallIntegerField(blank=True, null=True, help_text="Number of rides per month included in plan. Additional rides will be billed to customer.")
     ride_distance_limit = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=6, help_text="Limit, in miles, of rides included in this plan.")
@@ -39,6 +40,10 @@ class Plan(AbstractEnumModel):
     @property
     def gift_expiration(self):
         return datetime.datetime(2017, 2, 1)
+
+    @property
+    def includes_rides(self):
+        return self.included_rides_per_month > 0
 
     def __unicode__(self):
         return self.name

@@ -15,7 +15,9 @@
                 <th>Complete</th>
                 <th>Cost</th>
                 <th>Total</th>
-                <th>Included</th>
+                {% if customer.plan.includes_rides %}
+                    <th>Included</th>
+                {% endif %}
                 <th>Distance</th>
                 <th></th>
             </tr>
@@ -30,7 +32,9 @@
                     <td align="center">{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     <td>${{ ride.cost|default:'0' }}</td>
                     <td>${{ ride.total_cost_estimate|default:'0' }}</td>
-                    <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    {% if customer.plan.includes_rides %}
+                        <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    {% endif %}
                     <td>{% if ride.distance %}
                             {{ ride.distance }} mi
                         {% endif %}
