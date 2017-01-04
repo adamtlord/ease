@@ -135,6 +135,9 @@ def invoice(request):
 
         if event_type == 'invoice.payment_succeeded':
             invoice.paid_date = datetime_from_timestamp(stripe_invoice['date'])
+            # apparently the invoice is sent and paid at the same time usually
+            if not invoice.invoiced_date:
+                invoice.invoiced_date = invoice.paid_date
 
         invoice.full_clean()
         invoice.save()
