@@ -8,13 +8,12 @@ from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from accounts.forms import RiderForm
 from accounts.helpers import send_welcome_email
 from accounts.models import Customer, Rider
 from billing.models import Plan
 from billing.forms import StripeCustomerForm, AdminPaymentForm
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, CustomerForm, DestinationForm, ActivityForm
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride

@@ -233,6 +233,7 @@ class RiderForm(forms.ModelForm):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Rider
