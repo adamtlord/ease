@@ -27,7 +27,7 @@ $(function() {
         },
         name: 'customers',
         source: customers
-    }).on('typeahead:select typeahead:change typeahead:autocomplete', function(event, suggestion) {
+    }).on('typeahead:select typeahead:autocomplete', function(event, suggestion) {
         $('#customer_id').val(suggestion.id);
     });
 });
