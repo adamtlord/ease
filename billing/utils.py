@@ -68,7 +68,8 @@ def invoice_customer_rides(customer, rides):
                         customer=stripe_id,
                         amount=int(ride.total_cost * 100),
                         currency="usd",
-                        description=ride.description
+                        description=ride.description,
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                     )
                     ride.invoice_item_id = invoiceitem.id
                     billable_rides.append(ride)
@@ -90,7 +91,8 @@ def invoice_customer_rides(customer, rides):
                 customer=customer,
                 created_date=timezone.now(),
                 period_start=datetime_from_timestamp(stripe_invoice.period_start),
-                period_end=datetime_from_timestamp(stripe_invoice.period_end)
+                period_end=datetime_from_timestamp(stripe_invoice.period_end),
+                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
             )
 
             new_invoice.full_clean()

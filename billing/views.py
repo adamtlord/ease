@@ -36,7 +36,8 @@ def customer_subscription_account_edit(request, template="billing/customer_subsc
                     plan=customer.plan.stripe_id,
                     metadata={
                         'customer': '{} {}'.format(customer.full_name, customer.pk)
-                    }
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                 )
 
                 stripe_customer.stripe_id = create_stripe_customer.id
@@ -102,7 +103,8 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
                     source=payment_form.cleaned_data['stripe_token'],
                     metadata={
                         'customer': '{} [{}]'.format(customer.full_name, customer.pk),
-                    }
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                 )
 
                 stripe_customer.stripe_id = create_stripe_customer.id
