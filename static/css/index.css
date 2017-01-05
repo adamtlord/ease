@@ -1908,7 +1908,8 @@ select[multiple].input-lg {
 .has-feedback .form-control {
   padding-right: 45px;
 }
-.form-control-feedback {
+.form-control-feedback,
+.feedback-icon {
   position: absolute;
   top: 0;
   right: 0;
@@ -7549,6 +7550,31 @@ textarea.form-controller input[type="color"] {
 .m-b-15 {
   margin-bottom: 15px;
 }
+.iconic {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.validation-messages .invalid {
+  color: #CD3C17;
+  font-weight: bold;
+}
+a.validation-messages .invalid:hover,
+a.validation-messages .invalid:focus {
+  color: #9f2f12;
+}
+.validation-messages .valid {
+  color: #75AF2F;
+  font-weight: bold;
+}
+a.validation-messages .valid:hover,
+a.validation-messages .valid:focus {
+  color: #5a8724;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\
@@ -8746,6 +8772,30 @@ sup {
 }
 .navbar + .container > .page-header {
   margin-top: 0;
+}
+.form-group.has-feedback-icon {
+  position: relative;
+}
+.feedback-icon {
+  top: 100%;
+  margin-top: -27px;
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.valid .feedback-icon {
+  color: #75AF2F;
+}
+a.valid .feedback-icon:hover,
+a.valid .feedback-icon:focus {
+  color: #5a8724;
+}
+.valid .feedback-icon:before {
+  content: "\f00c";
 }
 html {
   position: relative;

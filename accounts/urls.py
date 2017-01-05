@@ -1,6 +1,5 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
-from django.core.urlresolvers import reverse_lazy
 from accounts.views import (register_self,
                             register_self_payment,
                             register_self_preferences,
@@ -13,6 +12,7 @@ from accounts.views import (register_self,
                             register_lovedone_complete,
                             register_payment_ride_account,
                             register_payment_redirect,
+                            password_validate,
                             profile,
                             profile_edit,
                             destination_edit,
@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
     url(r'^destinations/add/$', destination_add, name='destination_add'),
+    url(r'^password_validate/$', password_validate, name='password_validate'),
     url(r'^password_reset/$',
         auth_views.password_reset,
         {

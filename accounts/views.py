@@ -1,11 +1,13 @@
 import datetime
-import time
 import pytz
 import stripe
+import time
 
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
@@ -853,3 +855,18 @@ def destination_delete(request, destination_id):
         messages.add_message(request, messages.SUCCESS, 'Destination successfully deleted')
 
     return redirect('profile')
+
+
+def password_validate(request):
+    from django.contrib.auth.password_validation import validate_password
+
+    password = request.GET.get('pswd', None)
+    if password:
+        try:
+            validate_password(password)
+            response = JsonResponse({'valid': True})
+            return response
+        except ValidationError as errors:
+            response = JsonResponse({'valid': False, 'errors': [str(error) for error in errors]})
+            return response
+    return JsonResponse({'valid': False})

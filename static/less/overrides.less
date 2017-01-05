@@ -116,3 +116,19 @@ sup {
 .navbar + .container > .page-header {
     margin-top:0;
 }
+
+.form-group.has-feedback-icon {
+    position:relative;
+}
+.feedback-icon {
+    &:extend(.form-control-feedback);
+    top:100%;
+    margin-top:-27px;
+    .iconic;
+    .valid & {
+        .text-success;
+        &:before {
+            content:@fa-var-check;
+        }
+    }
+}

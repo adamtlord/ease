@@ -24,13 +24,13 @@ $(function() {
         };
 
         if (checked) {
-            for (var key in common_fields) {
-                $(key).val($(common_fields[key]).val());
+            for (var k1 in common_fields) {
+                $(k1).val($(common_fields[k1]).val());
             }
             $('#id_reg-relationship').val('self');
         } else {
-            for (var key in common_fields) {
-                $(key).val('');
+            for (var k2 in common_fields) {
+                $(k2).val('');
             }
             $('#id_reg-relationship').val('');
         }
@@ -54,6 +54,78 @@ $(function() {
         total++;
         $('#id_' + type + '-TOTAL_FORMS').val(total);
         $(selector).after(newElement);
+    }
+
+    function validate_pswd1(field) {
+
+        var pswd = field.val();
+        var container = field.parent();
+        var length_message = $('#pswd_length');
+        var dynamic_message = $('#pswd_dynamic');
+        var valid_length = false;
+        var validate_url = field.data('remote');
+
+        var reset = function() {
+            length_message.removeClass('invalid valid');
+            container.removeClass('valid');
+            dynamic_message.removeClass('invalid').html('');
+        };
+
+        if (pswd.length > 0) {
+            if (pswd.length < 8) {
+                length_message.removeClass('valid').addClass('invalid');
+                container.removeClass('valid');
+            } else {
+                length_message.removeClass('invalid').addClass('valid');
+                valid_length = true;
+            }
+            if (valid_length) {
+                $.get(validate_url, {
+                    pswd: pswd
+                }, function(data) {
+                    if (data.valid) {
+                        dynamic_message.removeClass('invalid').html('');
+                        container.addClass('valid');
+                    } else {
+                        dynamic_message.addClass('invalid').html(data.errors.join('<br>'));
+                        container.removeClass('valid');
+                    }
+                });
+            } else {
+                dynamic_message.removeClass('invalid').html('');
+            }
+        } else {
+            reset();
+        }
+    }
+
+    function validate_pswd2(field) {
+        var pswd = field.val();
+        var container = field.parent();
+        var error_message = $('#pswd_match_error');
+
+        var valid = function(){
+            container.removeClass('has-error').addClass('valid');
+            error_message.removeClass('errorlist').text('');
+        };
+        var invalid = function(){
+            container.removeClass('valid').addClass('has-error');
+            error_message.addClass('errorlist').text('Passwords don\'t match');
+        };
+        var reset = function(){
+            container.removeClass('valid has-error');
+            error_message.removeClass('errorlist').text('');
+        };
+
+        if (pswd.length > 0){
+            if (pswd === $('#id_reg-password1').val()) {
+                valid();
+            } else {
+                invalid();
+            }
+        } else {
+            reset();
+        }
     }
 
     // Event Binding
@@ -85,6 +157,12 @@ $(function() {
     });
     $('#use_customer_info').change(function() {
         toggleCopyCustomerInfo($(this).is(':checked'));
+    });
+    $('#id_reg-password1').keyup(function() {
+        validate_pswd1($(this));
+    });
+    $('#id_reg-password2').keyup(function() {
+        validate_pswd2($(this));
     });
 
     // On Load
