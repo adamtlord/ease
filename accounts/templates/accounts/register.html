@@ -70,7 +70,7 @@
                     {% render_form_field register_form.last_name %}
                     {% render_form_field register_form.relationship %}
                 {% endif %}
-                <div id="id_reg-password1_container" class="form-group has-feedback-icon">
+                <div id="id_reg-password1_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
                     <label class="control-label" for="id_reg-password1">
                         Create a password<span class="req">*</span>
                     </label>
@@ -81,7 +81,7 @@
                     <input class="form-control" data-remote="{% url 'password_validate' %}" id="id_reg-password1" name="reg-password1" type="password" required="">
                     <i class="feedback-icon"></i>
                 </div>
-                <div id="id_reg-password2_container" class="form-group has-feedback-icon">
+                <div id="id_reg-password2_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
                     <label class="control-label" for="id_reg-password2">
                         Please enter the password again<span class="req">*</span>
                     </label>

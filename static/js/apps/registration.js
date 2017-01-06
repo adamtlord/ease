@@ -77,6 +77,7 @@ $(function() {
                 container.removeClass('valid');
             } else {
                 length_message.removeClass('invalid').addClass('valid');
+                container.removeClass('has-error');
                 valid_length = true;
             }
             if (valid_length) {
@@ -86,6 +87,7 @@ $(function() {
                     if (data.valid) {
                         dynamic_message.removeClass('invalid').html('');
                         container.addClass('valid');
+                        container.removeClass('has-error');
                     } else {
                         dynamic_message.addClass('invalid').html(data.errors.join('<br>'));
                         container.removeClass('valid');
