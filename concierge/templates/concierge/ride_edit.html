@@ -92,7 +92,10 @@
     </div>
 
     <div class="form-actions">
-        <input type="submit" class="btn btn-primary btn-block" value="Save Ride" />
+        <p><input type="submit" class="btn btn-primary btn-block" value="Save Ride" /></p>
+        <p class="text-center">
+            <a href="{% url 'ride_delete' ride.id %}" class="text-danger">Cancel Ride</a>
+        </p>
     </div>
 </form>
 {% endblock %}

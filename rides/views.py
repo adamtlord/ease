@@ -174,6 +174,25 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
 
 
 @staff_member_required
+def ride_delete(request, ride_id):
+
+    next = request.GET.get('next', None)
+    try:
+        ride = get_object_or_404(Ride, pk=ride_id)
+        ride.delete()
+        messages.success(request, "Ride cancelled and deleted")
+        if next:
+            return redirect(next)
+        return redirect('customer_detail', ride.customer.id)
+
+    except Exception as ex:
+        messages.error(request, ex.message)
+        if next:
+            return redirect(next)
+        return redirect('dashboard')
+
+
+@staff_member_required
 def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
     rides = Ride.ready_to_bill.all()

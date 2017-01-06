@@ -8777,8 +8777,6 @@ sup {
   position: relative;
 }
 .feedback-icon {
-  top: 100%;
-  margin-top: -27px;
   display: inline-block;
   font-family: FontAwesome;
   font-style: normal;
@@ -8786,6 +8784,8 @@ sup {
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  top: 100%;
+  margin-top: -27px;
 }
 .valid .feedback-icon {
   color: #75AF2F;

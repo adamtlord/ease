@@ -39,7 +39,7 @@
                             {{ ride.distance }} mi
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
+                    <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
                 </tr>
             {% endfor %}
         </tbody>
