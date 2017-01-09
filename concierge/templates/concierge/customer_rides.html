@@ -5,43 +5,7 @@
 
 {% if rides %}
     <h2>Rides</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Started</th>
-                <th>Ended</th>
-                <th>Distance</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ride in rides %}
-            <tr>
-                <td>{{ ride.id }}</td>
-                <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
-                <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
-                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                <td>{% if ride.end_date %}
-                    {{ ride.end_date }}
-                    {% else %}
-                    <span class="label label-warning">In progress</span>
-                    {% endif %}
-                </td>
-                <td>{% if ride.distance %}
-                        {{ ride.distance }} mi
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                    <a href="{% url 'ride_end' ride.id %}" class="btn btn-success btn-sm">COMPLETE</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% include 'concierge/fragments/ride_history.html' %}
 {% endif %}
 
 {% endblock %}

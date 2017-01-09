@@ -4,47 +4,7 @@
 {% block customer_content %}
 
 <h3>Rides</h3>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Start Time</th>
-                <th>Complete</th>
-                <th>Cost</th>
-                <th>Total</th>
-                {% if customer.plan.includes_rides %}
-                    <th>Included</th>
-                {% endif %}
-                <th>Distance</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ride in rides %}
-                <tr>
-                    <td>{{ ride.id }}</td>
-                    <td>{{ ride.start.name }}<br><small>{{ ride.start.street1 }}</small></td>
-                    <td>{{ ride.destination.name }}<br><small>{{ ride.destination.street1 }}</small></td>
-                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                    <td align="center">{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-                    <td>${{ ride.cost|default:'0' }}</td>
-                    <td>${{ ride.total_cost_estimate|default:'0' }}</td>
-                    {% if customer.plan.includes_rides %}
-                        <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-                    {% endif %}
-                    <td>{% if ride.distance %}
-                            {{ ride.distance }} mi
-                        {% endif %}
-                    </td>
-                    <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% include 'concierge/fragments/ride_history.html' %}
 
 <h3>Contacts</h3>
 <div class="table-responsive">

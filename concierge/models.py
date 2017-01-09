@@ -26,6 +26,9 @@ class Touch(models.Model):
         (OTHER, 'Other'),
     )
 
+    class Meta:
+        ordering = ['-date']
+
     @property
     def start_date(self):
         return self.date

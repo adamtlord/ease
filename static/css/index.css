@@ -8797,6 +8797,10 @@ a.valid .feedback-icon:focus {
 .valid .feedback-icon:before {
   content: "\f00c";
 }
+td small.address {
+  line-height: 1.15em;
+  display: block;
+}
 html {
   position: relative;
   min-height: 100%;

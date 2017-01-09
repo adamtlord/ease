@@ -82,9 +82,12 @@ class Ride(models.Model):
     ready_to_bill = RidesReadyToBillManager()
     incomplete = RidesIncompleteManager()
 
+    class Meta:
+        ordering = ['-start_date']
+
     @property
     def is_complete(self):
-        return self.cost and self.end_date
+        return self.cost or self.complete
 
     @property
     def description(self):
