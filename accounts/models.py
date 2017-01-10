@@ -194,11 +194,14 @@ class Customer(Contact):
 
     def get_rides_this_month(self):
         if self.plan:
-            subscription = get_stripe_subscription(self)
-            if subscription:
-                start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
-                rides = Ride.objects.filter(customer=self).filter(start_date__gt=start_of_billing_period)
-                return rides
+            try:
+                subscription = get_stripe_subscription(self)
+                if subscription:
+                    start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
+                    rides = Ride.objects.filter(customer=self).filter(start_date__gt=start_of_billing_period)
+                    return rides
+            except:
+                Ride.objects.none()
         return Ride.objects.none()
 
     @property

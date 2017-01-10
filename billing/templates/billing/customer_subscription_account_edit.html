@@ -40,7 +40,6 @@
             </div>
             <fieldset>
                 <legend>Subscription Billing Information</legend>
-                <input type="hidden" name="stripe_token" id="stripe_token" value="">
                 {{ payment_form.plan.as_hidden }}
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}

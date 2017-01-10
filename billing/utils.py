@@ -19,7 +19,6 @@ def get_stripe_subscription(customer):
         subscription = ''
 
         if not cached_subscription:
-
             stripe_customer = stripe.Customer.retrieve(customer.subscription_account.stripe_id)
 
             if stripe_customer is not None:
@@ -33,10 +32,9 @@ def get_stripe_subscription(customer):
 
             else:
                 subscription = None
+
         else:
-
             subscription = cached_subscription
-
         return subscription
     return None
 
