@@ -257,6 +257,23 @@ class Customer(Contact):
     def rides_ready_to_bill(self):
         return Ride.ready_to_bill.filter(customer=self)
 
+    @property
+    def phone_numbers(self):
+        phone_string = '<span class="phone-numbers">'
+        if self.home_phone and self.mobile_phone:
+            phone_string += '{} <span>(H)</span>'.format(self.home_phone)
+            if self.preferred_phone == 'h':
+                phone_string += '<i></i>'
+            phone_string += ' | {} <span>(M)</span>'.format(self.mobile_phone)
+            if self.preferred_phone == 'm':
+                phone_string += '<i></i>'
+        elif self.mobile_phone:
+            phone_string += '{} <span>(M)</span>'.format(self.mobile_phone)
+        else:
+            phone_string += '{} <span>(H)</span>'.format(self.home_phone)
+        phone_string += '</span>'
+        return phone_string
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

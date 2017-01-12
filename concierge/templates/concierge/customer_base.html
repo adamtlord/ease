@@ -10,7 +10,6 @@
     <div class="row">
         <div class="col-sm-6">
             <h1>{{ customer }}{% if customer.known_as %} <small>"{{ customer.known_as }}"</small>{% endif %}</h1>
-
         </div>
         <div class="col-sm-6">
             <div class="clearfix">
@@ -26,6 +25,7 @@
     </div>
     <div class="row">
         <div class="col-sm-6">
+            <div class="customer-phone-numbers">{{ customer.phone_numbers|safe }}</div>
             {% if customer.plan %}
                 <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
             {% else %}
@@ -40,7 +40,7 @@
         </div>
         <div class="col-sm-6 text-right">
             {% if customer.user.profile.on_behalf %}
-                Account managed by <strong>{{ customer.user}}</strong> {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
+                <p>Account managed by <strong>{{ customer.user}}</strong> {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}</p>
             {% endif %}
         </div>
     </div>
