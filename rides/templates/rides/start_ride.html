@@ -73,14 +73,43 @@
             </fieldset>
         </div>
     </div>
-    <div class="form-actions">
-        <button type="submit" class="btn btn-success btn-block">Start Ride</button>
+    <div class="form-actions row">
+        <div class="col-sm-6">
+            <button type="submit" class="btn btn-success btn-block"><i class="fa fa-car"></i> Start Ride</button>
+        </div>
+        <div class="col-sm-6">
+            <button type="button" class="btn btn-secondary btn-block" data-toggle="modal" data-target="#schedule_ride_modal"><i class="fa fa-clock-o"></i> Schedule Ride</button>
+        </div>
     </div>
+    <div id="schedule_ride_modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Schedule this ride</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group datetime-start">
+                        <div class="input">{{ ride.start_date|date:'m/d/Y g:i A' }}</div>
+                        {% if start_ride_form.start_date.errors %}
+                            {{ start_ride_form.start_date.errors }}
+                        {% endif %}
+                    </div>
+                    {{ start_ride_form.start_date.as_hidden }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" name="schedule" class="btn btn-secondary" value="Schedule ride">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 </form>
 {% endblock %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/geocomplete.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/ride.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>

@@ -8,6 +8,7 @@
         </div>
         <ul class="nav navbar-nav navbar-right{% if request.user.is_staff %} admin{% endif %}">
             {% if request.user.is_staff %}
+                <li><a href="{% url 'upcoming_rides' %}">Upcoming Rides<i class="fa fa-clock-o"></i></a></li>
                 <li><a href="{% url 'dashboard' %}">Search<i class="fa fa-search"></i></a></li>
                 <li><a href="{% url 'customer_list' %}">Customers<i class="fa fa-users"></i></a></li>
                 <li><a href="{% url 'rides_ready_to_bill' %}">Billing<i class="fa fa-dollar"></i></a></li>

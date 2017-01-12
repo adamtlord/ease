@@ -1,4 +1,28 @@
 $(function(){
+
+    $(".datetime-start input").datetimepicker({
+        autoclose: true,
+        fontAwesome: true,
+        format: "mm/dd/yyyy H:ii P",
+        linkField: "id_start_date",
+        linkFormat: "yyyy-mm-dd hh:ii:ss",
+        showMeridian: true,
+        startView: 1,
+        todayHighlight: true,
+        weekStart: 1,
+    });
+
+    $(".datetime-start .input").datetimepicker({
+        fontAwesome: true,
+        format: "mm/dd/yyyy H:ii P",
+        linkField: "id_start_date",
+        linkFormat: "yyyy-mm-dd hh:ii:ss",
+        showMeridian: true,
+        startView: 2,
+        todayHighlight: true,
+        weekStart: 1,
+    });
+
     $('#id_start, #id_destination').select2({
         theme: 'bootstrap'
     });

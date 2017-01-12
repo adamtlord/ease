@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from accounts.helpers import send_welcome_email
 from accounts.models import Customer, Rider
@@ -37,6 +38,24 @@ def dashboard(request, template='concierge/dashboard.html'):
     d = {
         'to_contact': to_contact,
         'today': datetime.date.today()
+    }
+
+    return render(request, template, d)
+
+
+def upcoming_rides(request, template='concierge/upcoming_rides.html'):
+    if not request.user.is_authenticated:
+        return redirect('concierge_login')
+
+    if not request.user.is_staff:
+        messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
+        return redirect('profile')
+
+    now = timezone.now()
+    rides = Ride.objects.filter(start_date__gte=now)
+
+    d = {
+        'rides': rides
     }
 
     return render(request, template, d)

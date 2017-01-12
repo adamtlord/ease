@@ -22,6 +22,7 @@ DESTINATION_FIELDS = HOME_FIELDS + [
 START_RIDE_FIELDS = [
     'start',
     'destination',
+    'start_date'
 ]
 
 EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
@@ -99,6 +100,7 @@ class StartRideForm(forms.ModelForm):
         label="Destination",
         required=False
         )
+    start_date = forms.DateTimeField(required=False)
 
     class Meta:
         model = Ride
