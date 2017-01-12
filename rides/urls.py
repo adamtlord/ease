@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from rides.views import (ride_end, ride_edit, ride_delete, ride_detail, rides_ready_to_bill,
-                         rides_incomplete, rides_upload, rides_invoiced
+                         rides_incomplete, rides_upload, rides_invoiced, ride_detail_modal
                          )
 
 urlpatterns = [
@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^billing/incomplete/$', rides_incomplete, name='rides_incomplete'),
     url(r'^billing/invoiced/$', rides_invoiced, name='rides_invoiced'),
     url(r'^billing/upload/$', rides_upload, name='rides_upload'),
+
+    url(r'^ride/(?P<ride_id>\d+)/detail-modal/$', ride_detail_modal, name='ride_detail_modal'),
 ]

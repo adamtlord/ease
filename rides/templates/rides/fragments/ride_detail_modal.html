@@ -1,0 +1,90 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Ride {{ ride.id }}: {{ ride }}</h4>
+</div>
+<div class="modal-body">
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th>Start</th>
+                <td>{{ ride.start.fullname }}<br><small class="subtext">{{ ride.start.fulladdress }}</small></td>
+            </tr>
+            <tr>
+                <th>Destination</th>
+                <td>{{ ride.destination.fullname }}<br><small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+            </tr>
+            <tr>
+                <th>Start Time</th>
+                <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+            </tr>
+            <tr>
+                <th>Service</th>
+                <td>{{ ride.service }}</td>
+            </tr>
+            <tr>
+                <th>Complete</th>
+                <td>{% if ride.complete %}
+                        <i class="fa fa-check text-success"></i>
+                    {% endif %}
+                    {% if ride.is_scheduled %}
+                        <i class="fa fa-clock-o text-primary"></i>
+                    {% endif %}
+                </td>
+            </tr>
+            {% if ride.cost %}
+                <tr>
+                    <th>Cost</th>
+                    <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Fee</th>
+                    <td>${{ ride.fee|default:'0' }}</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %}</td>
+                </tr>
+            {% endif %}
+            {% if customer.plan.includes_rides %}
+                <tr>
+                    <th>Included</th>
+                    <td>{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <th>Distance</th>
+                <td>{% if ride.distance %}
+                        {{ ride.distance }} mi
+                    {% endif %}
+                </td>
+            </tr>
+            {% if ride.notes %}
+                <tr>
+                    <th>Notes</th>
+                    <td>{{ ride.notes }}</td>
+                </tr>
+            {% endif %}
+            {% if ride.invoice %}
+                <tr>
+                    <th>Invoice</th>
+                    <td><a href="https://dashboard.stripe.com/invoices/{{ ride.invoice.stripe_id }}" target="_blank">{{ ride.invoice.stripe_id }}<a> <i class="fa fa-cc-stripe stripe-brand"></i></td>
+                </tr>
+                {% if ride.invoice.invoiced_date %}
+                    <tr>
+                        <th>Invoice Sent</th>
+                        <td>{{ ride.invoice.invoiced_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th>Paid</th>
+                    <td>{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <a href="{% url 'ride_edit' ride.id %}" class="btn btn-primary">Edit</a>
+</div>
+</div>

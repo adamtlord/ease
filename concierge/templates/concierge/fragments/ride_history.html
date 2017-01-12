@@ -12,6 +12,7 @@
                 {% if customer.plan.includes_rides %}
                     <th>Included</th>
                 {% endif %}
+                <th>Invoiced</th>
                 <th>Distance</th>
                 <th></th>
             </tr>
@@ -20,20 +21,32 @@
             {% for ride in rides %}
                 <tr>
                     <td>{{ ride.id }}</td>
-                    <td>{{ ride.start.name }}<small class="address">{{ ride.start.street1 }}</small></td>
-                    <td>{{ ride.destination.name }}<small class="address">{{ ride.destination.street1 }}</small></td>
+                    <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
+                    <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                    <td align="center">{% if ride.complete %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    <td align="center">
+                        {% if ride.complete %}
+                            <i class="fa fa-check text-success"></i>
+                        {% endif %}
+                        {% if ride.is_scheduled %}
+                            <i class="fa fa-clock-o text-primary"></i>
+                        {% endif %}
+                    </td>
                     <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
-                    <td>${{ ride.total_cost_estimate|default:'0' }}</td>
+                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %}</td>
                     {% if customer.plan.includes_rides %}
                         <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     {% endif %}
+                    <td align="center">
+                        {% if ride.invoiced or ride.invoice %}
+                            <i class="fa fa-check text-success"></i>
+                        {% endif %}
+                    </td>
                     <td>{% if ride.distance %}
                             {{ ride.distance }} mi
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
+                    <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
                 </tr>
             {% endfor %}
         </tbody>

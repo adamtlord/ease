@@ -29,5 +29,12 @@
         </tbody>
     </table>
 </div>
-
+<div class="modal fade" id="viewRideModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 {% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+{% endblock scripts %}

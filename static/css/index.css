@@ -7575,6 +7575,38 @@ a.validation-messages .valid:hover,
 a.validation-messages .valid:focus {
   color: #5a8724;
 }
+.phone-numbers span {
+  color: #777777;
+}
+.phone-numbers i {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #75AF2F;
+}
+a.phone-numbers i:hover,
+a.phone-numbers i:focus {
+  color: #5a8724;
+}
+.phone-numbers i:before {
+  content: "\f00c";
+}
+.stripe-brand {
+  color: #417CBD;
+}
+.alert dl {
+  margin-bottom: 0;
+}
+.alert dl dt {
+  font-weight: bold;
+}
+.alert dl dd {
+  padding-left: 12px;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\
@@ -8538,6 +8570,12 @@ a.validation-messages .valid:focus {
   margin-top: 0;
   padding-bottom: 21px;
 }
+.page-header.customer h1 {
+  margin-bottom: 5.5px;
+}
+.page-header.customer .customer-phone-numbers {
+  margin-bottom: 5.5px;
+}
 .page-header.customer-list {
   margin-top: 0;
   margin-bottom: 0;
@@ -8797,9 +8835,18 @@ a.valid .feedback-icon:focus {
 .valid .feedback-icon:before {
   content: "\f00c";
 }
-td small.address {
+td small.subtext {
   line-height: 1.15em;
   display: block;
+}
+.datetimepicker-inline {
+  margin: 0 auto;
+}
+td .btn {
+  margin-bottom: 3px;
+}
+td .btn:last-child {
+  margin-bottom: 0;
 }
 html {
   position: relative;

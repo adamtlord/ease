@@ -3,6 +3,12 @@
     &.customer {
         margin-top:0;
         padding-bottom: @line-height-computed - 1;
+        h1 {
+            margin-bottom: @line-height-computed / 4;
+        }
+        .customer-phone-numbers {
+            margin-bottom: @line-height-computed / 4;
+        }
     }
     &.customer-list {
         margin-top:0;
@@ -132,7 +138,17 @@ sup {
         }
     }
 }
-td small.address {
+td small.subtext {
     line-height:1.15em;
     display:block;
 }
+.datetimepicker-inline {
+    margin: 0 auto;
+}
+td .btn {
+    margin-bottom:3px;
+    &:last-child {
+        margin-bottom:0;
+    }
+}
+
