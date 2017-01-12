@@ -43,7 +43,10 @@ def invoice_customer_rides(customer, rides):
 
     from accounts.helpers import send_included_rides_email
 
-    success = []
+    success = {
+        'included': [],
+        'billed': []
+    }
     errors = []
     total = 0
     included_rides = []
@@ -51,11 +54,15 @@ def invoice_customer_rides(customer, rides):
 
     if customer.ride_account and customer.ride_account.stripe_id:
         stripe_id = customer.ride_account.stripe_id
+
         for ride in rides:
             if ride.cost:
                 if ride.included_in_plan:
                     ride.total_cost = 0
+                    ride.complete = True
+                    ride.invoiced = True
                     included_rides.append(ride)
+                    success['included'].append(ride.id)
                 else:
                     if customer.plan.arrive_fee:
                         ride.total_cost = ride.cost + customer.plan.arrive_fee
@@ -72,9 +79,9 @@ def invoice_customer_rides(customer, rides):
                     ride.invoice_item_id = invoiceitem.id
                     billable_rides.append(ride)
 
-                ride.save()
+                    success['billed'].append(ride.id)
 
-                success.append('Ride {} invoiced successfully'.format(ride.id))
+                ride.save()
 
             else:
                 errors.append('Ride {} has a blank cost field'.format(ride.id))
@@ -97,6 +104,7 @@ def invoice_customer_rides(customer, rides):
 
             for ride in billable_rides:
                 ride.invoice = new_invoice
+                ride.invoiced = True
                 ride.full_clean()
                 ride.save()
 

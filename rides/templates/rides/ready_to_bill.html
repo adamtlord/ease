@@ -9,6 +9,7 @@
 {% block page_title %}Ready to Bill{% endblock %}
 
 {% block rides_content %}
+
 {% if results.total > 0 %}
     {% if results.errors|length > 0 %}
         <div class="alert alert-danger">
@@ -17,9 +18,17 @@
             {% endfor %}
         </div>
     {% endif %}
-    {% if results.success|length > 0 %}
+    {% if results.success.billed|length > 0 or results.success.included|length > 0 %}
         <div class="alert alert-success">
-            {{ results.success|length }} rides invoiced successfully
+            <dl>
+                <dt>{{ results.success|length }} rides processed successfully</dt>
+                {% if results.success.billed|length %}
+                    <dd><em>Ride{% if results.success.billed|length > 1 %}s{% endif %} {% for id in results.success.billed %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} {% if results.success.included|length == 1 %}was{% else %}were{% endif %} charged to the customer.</em></dd>
+                {% endif %}
+                {% if results.success.included|length %}
+                    <dd><em>Ride{% if results.success.included|length > 1 %}s{% endif %} {% for id in results.success.included %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} {% if results.success.included|length == 1 %}was{% else %}were{% endif %} included in customer's plan and not invoiced.</em></dd>
+                {% endif %}
+            </dl>
         </div>
     {% endif %}
 {% endif %}

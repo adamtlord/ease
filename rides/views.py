@@ -2,8 +2,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
-
+from django.utils import timezone, formats
 from accounts.models import Customer
 from billing.utils import invoice_customer_rides
 from common.utils import get_distance
@@ -74,11 +73,14 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if adding_destination:
                 destination = add_destination_form.save()
                 new_ride.destination = destination
-            new_ride.start_date = timezone.now()
+
+            if not start_ride_form.cleaned_data['start_date']:
+                new_ride.start_date = timezone.now()
 
             new_ride.distance = get_distance(new_ride)
             new_ride.save()
             # Figure out if this ride is included in the customer's plan
+
             if customer.plan.included_rides_per_month:
 
                 if customer.included_rides_this_month < customer.plan.included_rides_per_month:
@@ -95,12 +97,17 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             else:
 
                 included = False
-            new_ride.included_in_plan = included
 
+            new_ride.included_in_plan = included
             new_ride.save()
+
+            if request.POST.get('schedule', None):
+                messages.success(request, "Ride scheduled for {}".format(formats.date_format(new_ride.start_date, "SHORT_DATETIME_FORMAT")))
+                return redirect('customer_history', customer.id)
 
             messages.success(request, "Ride started")
             return redirect('ride_edit', new_ride.id)
+
         else:
             if not valid_add_start:
                 errors.append('start')
@@ -196,7 +203,7 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
     rides = Ride.ready_to_bill.all()
     customers = sort_rides_by_customer(rides)
     results = {
-        'success': [],
+        'success': {},
         'errors': [],
         'total': 0
     }
@@ -209,9 +216,12 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
         for customer, rides in sorted_rides.items():
             response = invoice_customer_rides(customer, rides)
-            results['success'] += response[0]
-            results['errors'] += response[1]
-            results['total'] += response[2]
+            results['success'] = response[0]
+            results['errors'] = response[1]
+            results['total'] = response[2]
+
+        rides = Ride.ready_to_bill.all()
+        customers = sort_rides_by_customer(rides)
 
     d = {
         'ready_page': True,
@@ -271,3 +281,14 @@ def rides_upload(request, template="rides/upload.html"):
         'results': results,
     }
     return render(request, template, d)
+
+
+@staff_member_required
+def ride_detail_modal(request, ride_id, template="rides/fragments/ride_detail_modal.html"):
+    ride = get_object_or_404(Ride, pk=ride_id)
+    d = {
+        'ride': ride
+    }
+    return render(request, template, d)
+
+

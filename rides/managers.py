@@ -9,9 +9,9 @@ class RidesInProgressManager(models.Manager):
 
 class RidesReadyToBillManager(models.Manager):
     def get_queryset(self):
-        return super(RidesReadyToBillManager, self).get_queryset().filter(complete=True).exclude(cost__isnull=True).exclude(invoice_id__isnull=False)
+        return super(RidesReadyToBillManager, self).get_queryset().filter(complete=True).exclude(invoiced=True).exclude(cost__isnull=True).exclude(invoice_id__isnull=False)
 
 
 class RidesIncompleteManager(models.Manager):
     def get_queryset(self):
-        return super(RidesIncompleteManager, self).get_queryset().filter(Q(cost__isnull=True) | Q(end_date__isnull=True) | Q(distance__isnull=True))
+        return super(RidesIncompleteManager, self).get_queryset().filter(Q(cost__isnull=True) | Q(complete=False) | Q(distance__isnull=True))
