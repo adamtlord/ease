@@ -1,25 +1,13 @@
 $(function(){
 
-    $(".datetime-start input").datetimepicker({
+    $(".datetime-start input, .datetime-end input").datetimepicker({
         autoclose: true,
         fontAwesome: true,
         format: "mm/dd/yyyy H:ii P",
         linkField: "id_start_date",
         linkFormat: "yyyy-mm-dd hh:ii:ss",
         showMeridian: true,
-        startView: 1,
-        todayHighlight: true,
-        weekStart: 1,
-    });
-
-    $(".datetime-end input").datetimepicker({
-        autoclose: true,
-        fontAwesome: true,
-        format: "mm/dd/yyyy HH:ii P",
-        linkField: "id_end_date",
-        linkFormat: "yyyy-mm-dd hh:ii:ss",
-        showMeridian: true,
-        startView: 1,
+        startView: 2,
         todayHighlight: true,
         weekStart: 1,
     });
