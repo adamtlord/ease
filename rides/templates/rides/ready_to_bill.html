@@ -23,10 +23,10 @@
             <dl>
                 <dt>{{ results.success|length }} rides processed successfully</dt>
                 {% if results.success.billed|length %}
-                    <dd><em>Ride{% if results.success.billed|length > 1 %}s{% endif %} {% for id in results.success.billed %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} {% if results.success.included|length == 1 %}was{% else %}were{% endif %} charged to the customer.</em></dd>
+                    <dd><em>Ride {% for id in results.success.billed %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} charged to the customer.</em></dd>
                 {% endif %}
                 {% if results.success.included|length %}
-                    <dd><em>Ride{% if results.success.included|length > 1 %}s{% endif %} {% for id in results.success.included %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} {% if results.success.included|length == 1 %}was{% else %}were{% endif %} included in customer's plan and not invoiced.</em></dd>
+                    <dd><em>Ride {% for id in results.success.included %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} included in customer's plan and not invoiced.</em></dd>
                 {% endif %}
             </dl>
         </div>

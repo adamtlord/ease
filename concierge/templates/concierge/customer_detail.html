@@ -117,41 +117,38 @@
                         <td>
                             {% if customer.subscription_account %}
                                 <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }} <a href="{% url 'payment_subscription_account_edit' customer.id %}">Edit</a>
+                                {% if customer.subscription_account.stripe_id %}
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ customer.subscription_account.stripe_id }}" target="_blank">{{ customer.subscription_account.stripe_id }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% endif %}
                             {% else %}
                                 <strong class="text-danger">None</strong> <a href="{% url 'payment_subscription_account_edit' customer.id %}">Add a payment method</a>
                             {% endif %}
                         </td>
                     </tr>
-                    {% if customer.subscription_account.stripe_id %}
-                        <tr>
-                            <td>Subscription Stripe Account</td>
-                            <td>
-                                <i class="fa fa-cc-stripe stripe-brand"></i> <a href="https://dashboard.stripe.com/customers/{{ customer.subscription_account.stripe_id }}" target="_blank">{{ customer.subscription_account.stripe_id }}<a>
-                            </td>
-                        </tr>
-                    {% endif %}
                     <tr>
                         <td>Rides billed to</td>
                         <td>
                             {% if customer.ride_account %}
-                                <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }} <a href="{% url 'payment_ride_account_edit' customer.id %}">Edit</a></td>
+                                <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }} <a href="{% url 'payment_ride_account_edit' customer.id %}">Edit</a>
+                                {% if customer.ride_account.stripe_id %}
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ customer.ride_account.stripe_id }}" target="_blank">{{ customer.ride_account.stripe_id }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% endif %}
                             {% else %}
                                 <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
                             {% endif %}
+                        </td>
                     </tr>
-                    {% if customer.ride_account.stripe_id %}
-                        <tr>
-                            <td>Ride Stripe Account</td>
-                            <td>
-                                <i class="fa fa-cc-stripe stripe-brand"></i> <a href="https://dashboard.stripe.com/customers/{{ customer.ride_account.stripe_id }}" target="_blank">{{ customer.ride_account.stripe_id }}<a>
-                            </td>
-                        </tr>
-                    {% endif %}
                     {% if customer.user.profile.source %}
-                    <tr>
-                        <td>Marketing source</td>
-                        <td>{{ customer.user.profile.source }}</td>
-                    </tr>
+                        <tr>
+                            <td>Marketing source</td>
+                            <td>{{ customer.user.profile.source }}</td>
+                        </tr>
                     {% endif %}
                 </tbody>
             </table>

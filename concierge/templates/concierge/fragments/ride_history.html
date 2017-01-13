@@ -1,3 +1,4 @@
+{% if rides %}
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -52,3 +53,6 @@
         </tbody>
     </table>
 </div>
+{% else %}
+<p class="text-muted"><em>No rides yet</em></p>
+{% endif %}

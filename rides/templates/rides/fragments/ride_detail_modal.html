@@ -42,13 +42,7 @@
                 </tr>
                 <tr>
                     <th>Total</th>
-                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %}</td>
-                </tr>
-            {% endif %}
-            {% if customer.plan.includes_rides %}
-                <tr>
-                    <th>Included</th>
-                    <td>{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %} {% if ride.included_in_plan %}(included){% endif %}</td>
                 </tr>
             {% endif %}
             <tr>
@@ -77,7 +71,7 @@
                 {% endif %}
                 <tr>
                     <th>Paid</th>
-                    <td>{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                    <td>{% if ride.invoice.paid_date %}{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT" }}{% else %}<em>pending</em>{% endif %}</td>
                 </tr>
             {% endif %}
         </tbody>

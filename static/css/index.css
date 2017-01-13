@@ -3637,8 +3637,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-  color: #555;
-  background-color: #eeeeee;
+  color: #333333;
+  background-color: transparent;
 }
 .navbar-default .navbar-nav > .disabled > a,
 .navbar-default .navbar-nav > .disabled > a:hover,
@@ -3663,8 +3663,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
 .navbar-default .navbar-nav > .open > a:focus {
-  background-color: #eeeeee;
-  color: #555;
+  background-color: transparent;
+  color: #333333;
 }
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
@@ -3678,8 +3678,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-    color: #555;
-    background-color: #eeeeee;
+    color: #333333;
+    background-color: transparent;
   }
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,
   .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,
@@ -8806,6 +8806,8 @@ sup {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }
 .navbar + .container > .page-header {
@@ -8847,6 +8849,9 @@ td .btn {
 }
 td .btn:last-child {
   margin-bottom: 0;
+}
+.fa-sm {
+  font-size: 14px;
 }
 html {
   position: relative;
@@ -8903,8 +8908,8 @@ nav.navbar .navbar-nav > li > a:focus {
 nav.navbar .navbar-nav > .active > a,
 nav.navbar .navbar-nav > .active > a:hover,
 nav.navbar .navbar-nav > .active > a:focus {
-  color: #555;
-  background-color: #eeeeee;
+  color: #333333;
+  background-color: transparent;
 }
 nav.navbar .navbar-nav > .disabled > a,
 nav.navbar .navbar-nav > .disabled > a:hover,
@@ -8929,8 +8934,8 @@ nav.navbar .navbar-form {
 nav.navbar .navbar-nav > .open > a,
 nav.navbar .navbar-nav > .open > a:hover,
 nav.navbar .navbar-nav > .open > a:focus {
-  background-color: #eeeeee;
-  color: #555;
+  background-color: transparent;
+  color: #333333;
 }
 @media (max-width: 767px) {
   nav.navbar .navbar-nav .open .dropdown-menu > li > a {
@@ -8944,8 +8949,8 @@ nav.navbar .navbar-nav > .open > a:focus {
   nav.navbar .navbar-nav .open .dropdown-menu > .active > a,
   nav.navbar .navbar-nav .open .dropdown-menu > .active > a:hover,
   nav.navbar .navbar-nav .open .dropdown-menu > .active > a:focus {
-    color: #555;
-    background-color: #eeeeee;
+    color: #333333;
+    background-color: transparent;
   }
   nav.navbar .navbar-nav .open .dropdown-menu > .disabled > a,
   nav.navbar .navbar-nav .open .dropdown-menu > .disabled > a:hover,
@@ -8994,41 +8999,44 @@ nav.navbar .navbar-brand .tel {
   margin: 0;
   font-size: 18px;
 }
-nav.navbar ul.nav i {
+nav.navbar .navbar-nav > .active > a {
+  font-weight: 500;
+}
+nav.navbar .navbar-nav i {
   display: none !important;
 }
 @media screen and (max-width: 767px) {
-  nav.navbar ul.nav {
+  nav.navbar .navbar-nav {
     width: 100%;
     margin: 0;
   }
-  nav.navbar ul.nav > li {
+  nav.navbar .navbar-nav > li {
     display: table-cell;
     width: 1%;
   }
-  nav.navbar ul.nav > li > a {
+  nav.navbar .navbar-nav > li > a {
     margin-bottom: 0;
     text-align: center;
   }
-  nav.navbar ul.nav.admin {
+  nav.navbar .navbar-nav.admin {
     position: fixed;
     bottom: 0;
     margin: 0 -15px;
     width: 100%;
     background: #222222;
   }
-  nav.navbar ul.nav.admin > li > a {
+  nav.navbar .navbar-nav.admin > li > a {
     font-size: 0;
   }
-  nav.navbar ul.nav.admin > li > a i {
+  nav.navbar .navbar-nav.admin > li > a i {
     font-size: 32px;
   }
-  nav.navbar ul.nav.admin i {
+  nav.navbar .navbar-nav.admin i {
     display: none !important;
   }
 }
 @media screen and (max-width: 767px) and (max-width: 767px) {
-  nav.navbar ul.nav.admin i {
+  nav.navbar .navbar-nav.admin i {
     display: inline-block !important;
   }
 }
@@ -9856,7 +9864,7 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
   color: #82c135;
 }
 #customer_search {
-  margin-bottom: 66px;
+  margin-bottom: 44px;
 }
 #customer_search .form-control {
   border-top-left-radius: 6px;

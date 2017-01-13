@@ -38,10 +38,6 @@ class Plan(AbstractEnumModel):
         return self.id == self.INTRO_GIFT
 
     @property
-    def gift_expiration(self):
-        return datetime.datetime(2017, 2, 1)
-
-    @property
     def includes_rides(self):
         return self.included_rides_per_month > 0
 
