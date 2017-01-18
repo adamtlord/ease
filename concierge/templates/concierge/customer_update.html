@@ -32,9 +32,18 @@
                 {% render_form_field customer_form.notes %}
             </fieldset>
 
+            {% if customer.user.profile.on_behalf %}
+                <h3>Account Holder Info</h3>
+                {% render_form_field account_holder_form.first_name %}
+                {% render_form_field account_holder_form.last_name %}
+                {% render_form_field account_holder_form.email %}
+                {% render_form_field account_holder_form.relationship %}
+                {% render_form_field account_holder_form.phone '' 'phone-mask' %}
+
+            {% endif %}
         </div>
         <div class="col-sm-6">
-            <h3>Home Address</h3>
+            <h3 class="m-t-0">Home Address</h3>
             <fieldset>
                 {% render_form_field home_form.street1 %}
                 {% render_form_field home_form.street2 '' 'no-label' %}

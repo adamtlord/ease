@@ -14,7 +14,8 @@ CUSTOM_USER_FIELDS = [
     'password1',
     'password2',
     'source',
-    'source_other'
+    'source_other',
+    'phone'
 ]
 
 CUSTOMER_FIELDS = [
@@ -95,6 +96,10 @@ class CustomUserRegistrationForm(RegistrationForm):
         required=True,
         error_messages={'required': 'You must accept the Terms of Service to use Arrive'},
     )
+    phone = forms.CharField(
+        required=False,
+        label="Your phone number"
+    )
 
     def clean(self):
         super(RegistrationForm, self).clean()
@@ -127,7 +132,11 @@ class CustomerForm(forms.ModelForm):
         required=False
     )
     known_as = forms.CharField(required=False, help_text="Does your loved one go by something other than his or her first name?")
-    dob = forms.DateField(label="Date of birth", help_text="Please use the format YYYY-MM-DD")
+    dob = forms.DateField(
+        label="Date of birth",
+        help_text="Please use the format MM/DD/YYYY",
+        widget=forms.DateInput(format=('%m/%d/%Y'))
+    )
     gift_date = forms.DateField(
         label="If this is a gift, on what date will you present it?",
         help_text="We call every one of our new members, and don't want to ruin the surprise for you!",

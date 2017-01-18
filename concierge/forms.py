@@ -15,7 +15,8 @@ CUSTOM_USER_FIELDS = [
     'password1',
     'password2',
     'source',
-    'source_other'
+    'source_other',
+    'phone'
 ]
 
 CONTACT_FIELDS = [
@@ -137,6 +138,7 @@ class CustomUserRegistrationForm(RegistrationForm):
         user = super(RegistrationForm, self).save(request)
         # Store the common profile data.
         user.profile.source = self.cleaned_data['source']
+        user.profile.phone = self.cleaned_data['phone']
         user.profile.save()
         return user
 
@@ -149,6 +151,38 @@ class CustomUserRegistrationForm(RegistrationForm):
         for field in CUSTOM_USER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs.pop('autofocus', None)
+
+
+class AccountHolderForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label="First name",
+        required=True
+    )
+    last_name = forms.CharField(
+        label="Last name",
+        required=True
+    )
+    email = forms.EmailField(
+        help_text='Used to log into the member account',
+        required=True
+    )
+    relationship = forms.CharField(
+        label="Relationship to the primary rider",
+        required=False
+    )
+    phone = forms.CharField(
+        label="Phone number",
+        required=False
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'first_name', 'last_name', 'relationship')
+
+    def __init__(self, *args, **kwargs):
+        super(AccountHolderForm, self).__init__(*args, **kwargs)
+        for field in ['email', 'first_name', 'last_name', 'relationship', 'phone']:
+            self.fields[field].widget.attrs['class'] = 'form-control'
 
 
 class CustomerForm(forms.ModelForm):
@@ -165,7 +199,11 @@ class CustomerForm(forms.ModelForm):
         label="Intro call completed",
         required=False
     )
-    dob = forms.DateField(label="Date of birth", help_text="Please use the format YYYY-MM-DD")
+    dob = forms.DateField(
+        label="Date of birth",
+        help_text="Please use the format MM/DD/YYYY",
+        widget=forms.DateInput(format=('%m/%d/%Y'))
+    )
 
     class Meta:
         model = Customer

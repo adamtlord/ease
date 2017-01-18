@@ -69,6 +69,7 @@
                     {% render_form_field register_form.first_name %}
                     {% render_form_field register_form.last_name %}
                     {% render_form_field register_form.relationship %}
+                    {% render_form_field register_form.phone '' 'phone-mask' %}
                 {% endif %}
                 <div id="id_reg-password1_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
                     <label class="control-label" for="id_reg-password1">

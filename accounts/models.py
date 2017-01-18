@@ -102,6 +102,7 @@ class UserProfile(models.Model):
     relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
     source = models.CharField(max_length=255, null=True, blank=True)
+    phone = PhoneNumberField(blank=True, null=True)
 
     def __unicode__(self):
         return "%s's profile" % self.user
@@ -146,23 +147,23 @@ class Customer(Contact):
         (MOBILE_PHONE, 'Mobile'),
     )
 
-    user = models.OneToOneField(CustomUser)
-    known_as = models.CharField(max_length=50, blank=True, null=True)
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
-    last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
-    spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
-    residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
-    residence_instructions = models.TextField(blank=True, null=True)
-    special_assistance = models.CharField(max_length=1024, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-    home_phone = PhoneNumberField(blank=True, null=True)
-    preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
-    send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
-    subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
-    ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
-    plan = models.ForeignKey(Plan, blank=True, null=True)
-    intro_call = models.BooleanField(default=False)
     gift_date = models.DateField(blank=True, null=True)
+    home_phone = PhoneNumberField(blank=True, null=True)
+    intro_call = models.BooleanField(default=False)
+    known_as = models.CharField(max_length=50, blank=True, null=True)
+    last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
+    notes = models.TextField(blank=True, null=True)
+    plan = models.ForeignKey(Plan, blank=True, null=True)
+    preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
+    residence_instructions = models.TextField(blank=True, null=True)
+    residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
+    ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
+    send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
+    special_assistance = models.CharField(max_length=1024, blank=True, null=True)
+    spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
+    user = models.OneToOneField(CustomUser)
 
     @property
     def full_name(self):

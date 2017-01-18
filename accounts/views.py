@@ -375,6 +375,7 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
             new_user.profile.registration_complete = True
             new_user.profile.on_behalf = True
             new_user.profile.relationship = register_form.cleaned_data['relationship']
+            new_user.profile.phone = register_form.cleaned_data['phone']
             new_user.profile.save()
 
             send_welcome_email(new_user)
@@ -454,7 +455,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
             # if chosen plan has an upfront cost, create an invoice line-item
             if customer.plan.signup_cost:
-                # this is only charging $25 for bronze plan. Needs to be $30.
                 # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
                 signup_cost = int(customer.plan.signup_cost * 100)
                 stripe.InvoiceItem.create(
@@ -476,14 +476,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             # save everything
             customer.save()
             new_stripe_customer.save()
-
-            # get their subscription and set a trial end date
-            # (anyone who signs up before january)
-            if customer.plan.monthly_cost > 0:
-                if datetime.datetime.now() < datetime.datetime(2017, 1, 1):
-                    subscription = get_stripe_subscription(customer)
-                    subscription.trial_end = int(time.mktime(pytz.utc.localize(datetime.datetime(2017, 2, 1, 0, 0)).timetuple()))
-                    subscription.save()
 
             send_receipt_email(request.user)
 

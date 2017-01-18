@@ -40,7 +40,14 @@
         </div>
         <div class="col-sm-6 text-right">
             {% if customer.user.profile.on_behalf %}
-                <p>Account managed by <strong>{{ customer.user}}</strong> {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}</p>
+                <p>Account managed by <strong>{{ customer.user}}</strong>
+                {% if customer.user.profile.relationship %}
+                    ({{ customer.user.profile.relationship }})
+                {% endif %}
+                {% if customer.user.profile.phone %}
+                    <br>{{ customer.user.profile.phone }}
+                {% endif %}
+                </p>
             {% endif %}
         </div>
     </div>
