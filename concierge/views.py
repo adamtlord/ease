@@ -4,17 +4,18 @@ import stripe
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
-from accounts.helpers import send_welcome_email
+from accounts.helpers import send_welcome_email, send_receipt_email
 from accounts.models import Customer, Rider
 from billing.models import Plan
 from billing.forms import StripeCustomerForm, AdminPaymentForm
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -33,7 +34,7 @@ def dashboard(request, template='concierge/dashboard.html'):
         if customer_id:
             return redirect('customer_detail', customer_id)
 
-    to_contact = Customer.objects.filter(intro_call=False).order_by('user__date_joined')
+    to_contact = Customer.objects.filter(intro_call=False).filter(user__is_active=True).exclude(plan__isnull=True).order_by('user__date_joined')
 
     d = {
         'to_contact': to_contact,
@@ -52,7 +53,7 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
         return redirect('profile')
 
     now = timezone.now()
-    rides = Ride.objects.filter(start_date__gte=now)
+    rides = Ride.objects.filter(start_date__gte=now).order_by('start_date')
 
     d = {
         'rides': rides
@@ -62,10 +63,19 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
 
 
 @staff_member_required
-def customer_list(request, template='concierge/customer_list.html'):
+def customer_list(request, template='concierge/customer_list_active.html'):
     d = {}
-    d['customers'] = Customer.objects.all()
+    d['customers'] = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
+    d['active_page'] = True
+    return render(request, template, d)
 
+
+@staff_member_required
+def customer_list_inactive(request, template='concierge/customer_list_inactive.html'):
+    d = {}
+
+    d['customers'] = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+    d['inactive_page'] = True
     return render(request, template, d)
 
 
@@ -130,6 +140,7 @@ def customer_create(request, template='concierge/customer_create.html'):
         'rider_form': rider_form,
         'errors': errors,
         'error_count': error_count,
+        'register_page': True
         }
     return render(request, template, d)
 
@@ -164,28 +175,36 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
     if request.method == "POST":
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
+        account_holder_form = AccountHolderForm(request.POST, prefix='user', instance=customer.user)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
         rider_formset = RiderFormSet(request.POST, instance=customer)
 
         if all([customer_form.is_valid(),
                 home_form.is_valid(),
+                account_holder_form.is_valid(),
                 rider_formset.is_valid()
                 ]):
             customer_form.save()
             home_form.save()
             rider_formset.save()
 
+            customer.user.profile.relationship = account_holder_form.cleaned_data['relationship']
+            customer.user.profile.phone = account_holder_form.cleaned_data['phone']
+            customer.user.profile.save()
+
             messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
             return redirect('customer_detail', customer.id)
 
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
+        account_holder_form = AccountHolderForm(instance=customer.user, prefix='user', initial={'phone': customer.user.profile.phone, 'relationship': customer.user.profile.relationship})
         home_form = HomeForm(instance=customer.home, prefix='home')
         rider_formset = RiderFormSet(instance=customer)
 
     d = {
         'customer': customer,
         'customer_form': customer_form,
+        'account_holder_form': account_holder_form,
         'home_form': home_form,
         'rider_formset': rider_formset,
         'update_page': True
@@ -286,37 +305,60 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
         payment_form = AdminPaymentForm(request.POST, instance=customer.subscription_account)
 
         if payment_form.is_valid():
-            stripe_customer = payment_form.save()
+
+            # create our stripe customer
+            new_stripe_customer = payment_form.save()
+
+            # set our customer's plan
+            if payment_form.cleaned_data['same_card_for_both'] == '1':
+                customer.subscription_account = customer.ride_account = new_stripe_customer
+            else:
+                customer.subscription_account = new_stripe_customer
+
             customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
 
-            if payment_form.cleaned_data['same_card_for_both'] == '1':
-                customer.subscription_account = customer.ride_account = stripe_customer
-            else:
-                customer.subscription_account = stripe_customer
-                if payment_form.cleaned_data['same_card_for_both'] == '2':
-                    customer.ride_account = None
+            # create new stripe customer
+            create_stripe_customer = stripe.Customer.create(
+                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
+                email=new_stripe_customer.email,
+                source=payment_form.cleaned_data['stripe_token'],
+                metadata={
+                    'customer': '{} {}'.format(customer.full_name, customer.pk)
+                }
+            )
 
-            if payment_form.cleaned_data['stripe_token']:
-                create_stripe_customer = stripe.Customer.create(
-                    description='{} {}'.format(stripe_customer.first_name, stripe_customer.last_name),
-                    email=stripe_customer.email,
-                    source=payment_form.cleaned_data['stripe_token'],
-                    plan=customer.plan.stripe_id,
-                    metadata={
-                        'customer': '{} {}'.format(customer.full_name, customer.pk)
-                    },
-                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+            # if chosen plan has an upfront cost, create an invoice line-item
+            if customer.plan.signup_cost:
+                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                signup_cost = int(customer.plan.signup_cost * 100)
+                stripe.InvoiceItem.create(
+                    customer=create_stripe_customer.id,
+                    amount=signup_cost,
+                    currency="usd",
+                    description="Initial signup fee",
                 )
 
-                stripe_customer.stripe_id = create_stripe_customer.id
+            # now attach the customer to a plan
+            stripe.Subscription.create(
+                customer=create_stripe_customer.id,
+                plan=customer.plan.stripe_id,
+            )
 
+            # store the customer's stripe id in their record
+            new_stripe_customer.stripe_id = create_stripe_customer.id
+
+            # save everything
             customer.save()
-            stripe_customer.save()
+            new_stripe_customer.save()
+
+            send_receipt_email(user)
 
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             if payment_form.cleaned_data['same_card_for_both'] == '0':
-                return redirect('payment_ride_account_edit')
+
+                return redirect('payment_ride_account_edit', customer.id)
+
             return redirect('customer_detail', customer.id)
 
         else:

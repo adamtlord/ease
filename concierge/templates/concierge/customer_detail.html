@@ -26,6 +26,12 @@
                             </td>
                         </tr>
                     {% endif %}
+                    {% if customer.notes %}
+                        <tr>
+                            <td>Notes</td>
+                            <td>{{ customer.notes }}</td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td>Home address</td>
                         <td>
@@ -90,6 +96,9 @@
                         <td>Account managed by</td>
                         <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
                             <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                            {% if customer.user.profile.phone %}
+                                <br>{{ customer.user.profile.phone }}
+                            {% endif %}
                         </td>
                     </tr>
                     {% endif %}

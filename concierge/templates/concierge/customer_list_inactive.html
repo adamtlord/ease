@@ -1,0 +1,58 @@
+{% extends 'concierge/customer_list_base.html' %}
+{% block pagetitle %}Inactive Customers{% endblock %}
+{% block customer_list_content %}
+<p><em>These customers are either marked "inactive" or have not selected a plan (incomplete registration)</em></p>
+<div class="table-responsive">
+    <table id="customer_list" class="table">
+        <thead>
+            <th>Name</th>
+            <th>Active</th>
+            <th>Home</th>
+            <th>Phone</th>
+            <th>Plan</th>
+            <th>Rides</th>
+            <th>Notes</th>
+            <th>Intro Call</th>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
+                <td class="text-center">
+                    {% if customer.user.is_active %}
+                        <i class="fa fa-check text-success"></i>
+                    {% else %}
+                        <i class="fa fa-remove text-danger"></i>
+                    {% endif %}
+                </td>
+                <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
+                <td>{% if customer.home_phone %}
+                        {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
+                            {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
+                    {% endif %}
+                    {% if customer.mobile_phone %}
+                        {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
+                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
+                    {% endif %}
+                </td>
+                <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
+                <td>{{ customer.rides|length }}</td>
+                <td>{% if not customer.ready_to_ride %}
+                    <ul class="list-unstyled small">
+                        {% for missing in customer.missing %}
+                            <li>{{ missing }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if customer.intro_call %}
+                        <i class="fa fa-check text-success"></i>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

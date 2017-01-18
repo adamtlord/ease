@@ -1,4 +1,5 @@
 {% extends 'base_app.html' %}
+{% load custom_tags %}
 {% block header_includes %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
@@ -11,10 +12,16 @@
     <div class="page-header customer-list">
         <div class="row">
             <div class="col-sm-6">
-                <h1>Customers</h1>
+                <h1>{% block pagetitle %}Customers{% endblock %}</h1>
             </div>
             <div class="col-sm-6">
-                <a href="{% url 'customer_create' %}" class="btn btn-primary pull-right" style="margin-top:22px">Register a New Customer</a>
+                <div class="clearfix">
+                    <ul class="nav nav-pills">
+                        <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'customer_list' %}">Active</a></li>
+                        <li role="presentation" class="{% if inactive_page %}active{% endif %}"><a href="{% url 'customer_list_inactive' %}">Inactive</a></li>
+                        <li role="presentation" class="{% if register_page %}active{% endif %}"><a href="{% url 'customer_create' %}">Register a New Customer</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -27,7 +34,7 @@
     $(function(){
         $('#customer_list').DataTable({
             'info':false,
-            'paging':false
+            'paging':false,
         });
     })
 </script>

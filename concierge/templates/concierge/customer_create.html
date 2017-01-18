@@ -1,11 +1,8 @@
-{% extends 'base_app.html' %}
+{% extends 'concierge/customer_list_base.html' %}
 {% load custom_tags %}
-
 {% block title %}Create Customer{% endblock title %}
-{% block content %}
-<div class="page-header">
-    <h2>Create a New Customer</h2>
-</div>
+<h1>{% block pagetitle %}Create a New Customer{% endblock %}</h1>
+{% block customer_list_content %}
 <div class="row">
     <div class="col-sm-8 col-md-6">
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
@@ -87,6 +84,7 @@
 </div>
 {% endblock %}
 {% block scripts %}
+{{ block.super }}
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
 {% endblock %}

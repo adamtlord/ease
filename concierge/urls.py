@@ -1,8 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.conf.urls import url
 
-from concierge.views import (dashboard, upcoming_rides, customer_list, customer_create,
-                             customer_detail, customer_update,
+from concierge.views import (dashboard, upcoming_rides, customer_list, customer_list_inactive,
+                             customer_create, customer_detail, customer_update,
                              customer_delete, customer_search_data,
                              customer_destinations, customer_destination_edit,
                              customer_destination_add, customer_destination_delete,
@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'concierge/login.html'}, name='concierge_login'),
     url(r'^upcoming-rides/$', upcoming_rides, name='upcoming_rides'),
     url(r'^customers/$', customer_list, name='customer_list'),
+    url(r'^customers-inactive/$', customer_list_inactive, name='customer_list_inactive'),
     url(r'^customers/create/$', customer_create, name='customer_create'),
     url(r'^customers/(?P<customer_id>\d+)/$', customer_detail, name='customer_detail'),
     url(r'^customers/(?P<customer_id>\d+)/update/$', customer_update, name='customer_update'),
