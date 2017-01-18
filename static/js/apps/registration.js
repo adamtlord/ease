@@ -174,7 +174,7 @@ $(function() {
     // Input masking
     $('.phone-mask input').mask('000-000-0000');
     $('.zip-mask input').mask('00000-0000');
-    $('.date-mask input').mask('0000-00-00');
+    $('.date-mask input').mask('00/00/0000');
 
     $(".datepicker input").datetimepicker({
         autoclose: true,
