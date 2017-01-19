@@ -5,7 +5,7 @@
 // parameter when you first load the API. For example:
 // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-var placeSearch, autocomplete;
+var autocomplete;
 var componentForm = {
   street_number: 'short_name',
   route: 'long_name',
@@ -21,28 +21,7 @@ var componentMap = {
   postal_code: 'zip_code'
 };
 
-function initAutocomplete() {
-
-  var acs = [];
-  $('.autocomplete').each(function(){
-    autocomplete = new google.maps.places.Autocomplete(
-      this, {
-        country: 'us'
-      });
-    autocomplete.prefix = $(this).data('prefix');
-    acs.push(autocomplete);
-  });
-  for(var i = 0; i < acs.length; i++){
-    acs[i].addListener('place_changed', fillInAddress);
-  }
-  $('input.autocomplete').keypress(function(e) {
-    if (e.which === 13) {
-      return false;
-    }
-  });
-}
-
-function fillInAddress(e) {
+function fillInAddress() {
 
   $('.destination .form-control').val('').removeAttr('disabled');
 
@@ -69,18 +48,37 @@ function fillInAddress(e) {
   }
 }
 
-function geolocate() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      var geolocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-      var circle = new google.maps.Circle({
-        center: geolocation,
-        radius: position.coords.accuracy
+
+function initAutocomplete() {
+  var acs = [];
+  $('.autocomplete').each(function(){
+    autocomplete = new google.maps.places.Autocomplete(
+      this, {
+        country: 'us'
       });
-      autocomplete.setBounds(circle.getBounds());
-    });
+    autocomplete.prefix = $(this).data('prefix');
+    acs.push(autocomplete);
+  });
+  for(var i = 0; i < acs.length; i++){
+    acs[i].addListener('place_changed', fillInAddress);
   }
+  $('input.autocomplete').keypress(function(e) {
+    if (e.which === 13) {
+      return false;
+    }
+  });
+  setGeoLocate();
+}
+
+
+function geolocate(lat, lng) {
+  var geolocation = {
+    lat: lat,
+    lng: lng
+  };
+  var circle = new google.maps.Circle({
+    center: geolocation,
+    radius: 100
+  });
+  autocomplete.setBounds(circle.getBounds());
 }

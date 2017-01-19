@@ -31,7 +31,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
     customer = get_object_or_404(Customer, pk=customer_id)
     errors = []
     if request.method == 'GET':
-        initial_start = None
+        initial_start = customer.home
         initial_destination = None
         if customer.last_ride:
             if customer.last_ride.destination != customer.home:
@@ -119,6 +119,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         'add_starting_point_form': add_starting_point_form,
         'add_destination_form': add_destination_form,
         'ride_page': True,
+        'geolocate': initial_start,
         'errors': errors
     }
 
@@ -290,5 +291,3 @@ def ride_detail_modal(request, ride_id, template="rides/fragments/ride_detail_mo
         'ride': ride
     }
     return render(request, template, d)
-
-

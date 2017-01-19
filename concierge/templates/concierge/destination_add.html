@@ -38,4 +38,13 @@
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/apps/geocomplete.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>
+<script>
+    function setGeoLocate() {
+        {% if geolocate %}
+            geolocate({{ geolocate.latitude }}, {{ geolocate.longitude }});
+        {% else %}
+            return false;
+        {% endif %}
+    };
+</script>
 {% endblock %}

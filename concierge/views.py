@@ -277,7 +277,8 @@ def customer_destination_add(request, customer_id, template='concierge/destinati
 
     d = {
         'customer': customer,
-        'destination_form': destination_form
+        'destination_form': destination_form,
+        'geolocate': customer.home
     }
 
     return render(request, template, d)

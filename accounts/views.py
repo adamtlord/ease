@@ -305,7 +305,8 @@ def register_self_destinations(request, template='accounts/register_destinations
         'lovedone': False,
         'self': True,
         'payment_complete': payment_complete,
-        'errors': errors
+        'errors': errors,
+        'geolocate': customer.home
     }
     return render(request, template, d)
 
@@ -607,7 +608,8 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
         'home': home,
         'lovedone': True,
         'self': False,
-        'errors': errors
+        'errors': errors,
+        'geolocate': customer.home
     }
     return render(request, template, d)
 
@@ -830,7 +832,8 @@ def destination_add(request, template='accounts/destination_add.html'):
 
     d = {
         'customer': customer,
-        'destination_form': destination_form
+        'destination_form': destination_form,
+        'geolocate': customer.home
     }
 
     return render(request, template, d)
