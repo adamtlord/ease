@@ -122,6 +122,7 @@ def customer_create(request, template='concierge/customer_create.html'):
 
             new_user.profile.registration_complete = True
             new_user.profile.on_behalf = True
+            new_user.profile.phone = register_form.cleaned_data['phone']
             new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 

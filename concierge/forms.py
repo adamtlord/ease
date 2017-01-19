@@ -128,6 +128,10 @@ class CustomUserRegistrationForm(RegistrationForm):
         max_length=255,
         required=False
     )
+    phone = forms.CharField(
+        label="Phone number",
+        required=False
+    )
 
     def clean(self):
         super(RegistrationForm, self).clean()

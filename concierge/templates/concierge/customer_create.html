@@ -39,13 +39,11 @@
                     <div class="checkbox">
                         <label><input id="use_customer_info" type="checkbox"> Use the primary rider's information</label>
                     </div>
-
                 {% render_form_field register_form.email %}
-
-                    {% render_form_field register_form.first_name %}
-                    {% render_form_field register_form.last_name %}
-                    {% render_form_field register_form.relationship %}
-
+                {% render_form_field register_form.first_name %}
+                {% render_form_field register_form.last_name %}
+                {% render_form_field register_form.relationship %}
+                {% render_form_field register_form.phone '' 'phone-mask' %}
                 {% render_form_field register_form.password1 %}
                 {% render_form_field register_form.password2 %}
             </fieldset>
