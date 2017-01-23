@@ -7,7 +7,8 @@ DOMAIN_NAME = 'app.arriverides.com'
 WWW_ROOT = 'https://%s/' % DOMAIN_NAME
 
 ALLOWED_HOSTS = [
-    'app.arriverides.com'
+    'app.arriverides.com',
+    '[2605:de00:1:1:4a:14:0:44]'
 ]
 
 SSH_HOSTS = 'app.arriverides.com'
