@@ -18,6 +18,7 @@ from common.utils import soon
 from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm
 from concierge.models import Touch
 from rides.forms import HomeForm
+from rides.helpers import sort_rides_by_customer
 from rides.models import Destination, Ride
 
 
@@ -56,9 +57,27 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
     rides = Ride.objects.filter(start_date__gte=now).order_by('start_date')
 
     d = {
-        'rides': rides
+        'rides': rides,
+        'upcoming_page': True
     }
 
+    return render(request, template, d)
+
+
+def rides_history(request, template='concierge/rides_history.html'):
+    if not request.user.is_authenticated:
+        return redirect('concierge_login')
+
+    if not request.user.is_staff:
+        messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
+        return redirect('profile')
+
+    rides = Ride.objects.all().order_by('-start_date')
+
+    d = {
+        'rides': rides,
+        'history_page': True
+    }
     return render(request, template, d)
 
 
