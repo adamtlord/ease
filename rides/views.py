@@ -63,8 +63,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         valid_add_start = add_starting_point_form.is_valid() if adding_start else True
         valid_add_destination = add_destination_form.is_valid() if adding_destination else True
 
-        if valid_add_start and valid_add_destination:
-
+        if start_ride_form.is_valid() and valid_add_start and valid_add_destination:
             new_ride = start_ride_form.save(commit=False)
             new_ride.customer = customer
             if adding_start:
