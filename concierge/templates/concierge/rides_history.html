@@ -18,6 +18,7 @@
                 <th>ID</th>
                 <th>Customer</th>
                 <th>Start Time</th>
+                <th>Start Time</th>
                 <th>From</th>
                 <th>To</th>
                 {% if customer.plan.includes_rides %}
@@ -33,6 +34,7 @@
                     <td>{{ ride.id }}</td>
                     <td><a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
+                    <td>{{ ride.start_date|date:"U" }}</td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     {% if customer.plan.includes_rides %}
@@ -59,7 +61,15 @@
 <script>
     $(function(){
         $('#rides_history').DataTable({
-            'order':[[2, 'desc']]
+            'order': [[ 2, "desc" ]],
+            'columnDefs': [
+                {'orderData':[3], 'targets': [2] },
+                {
+                    'targets': [3],
+                    'visible': false,
+                    'searchable': false
+                },
+            ],
         });
     })
 </script>
