@@ -184,7 +184,7 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
 
 @staff_member_required
 def customer_update(request, customer_id, template='concierge/customer_update.html'):
-
+    errors = []
     customer = get_object_or_404(Customer, pk=customer_id)
     home = customer.home
     RiderFormSet = inlineformset_factory(Customer,
@@ -206,6 +206,7 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
                 ]):
             customer_form.save()
             home_form.save()
+            account_holder_form.save()
             rider_formset.save()
 
             customer.user.profile.relationship = account_holder_form.cleaned_data['relationship']
@@ -214,6 +215,9 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
             messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
             return redirect('customer_detail', customer.id)
+        else:
+            errors = [customer_form.errors, home_form.errors, account_holder_form.errors, rider_formset.errors]
+            print errors
 
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
@@ -227,7 +231,8 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
         'account_holder_form': account_holder_form,
         'home_form': home_form,
         'rider_formset': rider_formset,
-        'update_page': True
+        'update_page': True,
+        'errors': errors
     }
 
     return render(request, template, d)

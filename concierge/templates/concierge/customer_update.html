@@ -5,18 +5,17 @@
 {% block customer_content %}
 
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {% if errors %}
+        <p class="alert alert-danger">
+            {% if error|length == 1 %}
+                Please correct the error below.
+            {% else %}
+                Please correct the errors below.
+            {% endif %}
+        </p>
+    {% endif %}
     <div class="row">
         <div class="col-sm-6">
-            {% if errors %}
-                {% if errors|length == 1 %}
-                    Please correct the error below.
-                {% else %}
-                    Please correct the errors below.
-                {% endif %}
-                {{ form.non_field_errors }}
-                {{ home_form.non_field_errors }}
-            {% endif %}
-
             <h3 class="m-t-0">Customer Info</h3>
             <fieldset>
                 {% render_form_field customer_form.intro_call %}
@@ -39,7 +38,10 @@
                 {% render_form_field account_holder_form.email %}
                 {% render_form_field account_holder_form.relationship %}
                 {% render_form_field account_holder_form.phone '' 'phone-mask' %}
-
+            {% else %}
+                {{ account_holder_form.first_name.as_hidden }}
+                {{ account_holder_form.last_name.as_hidden }}
+                {{ account_holder_form.email.as_hidden }}
             {% endif %}
         </div>
         <div class="col-sm-6">
