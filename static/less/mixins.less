@@ -142,10 +142,6 @@
     color:@stripe-brand;
 }
 
-.alert-default {
-    .alert-variant(#f5f5f5; @btn-default-border; @text-color);
-}
-
 .alert dl {
     margin-bottom:0;
     dt {
@@ -153,57 +149,5 @@
     }
     dd {
         padding-left:@padding-base-horizontal;
-    }
-}
-
-.btn.loading {
-    position:relative;
-    color: rgba(255,255,255,.4);
-    &:before {
-        .iconic;
-        .fa-spin;
-        content:@fa-var-spinner;
-        position:absolute;
-        text-align:center;
-        font-size: @font-size-large;
-        left:50%;
-        margin-left: @font-size-large * -.5;
-        line-height: @line-height-computed;
-        color:#fff;
-    }
-}
-#plan_charges {
-    p {
-        .alert;
-        display:none;
-        &:before {
-            .iconic;
-            content:@fa-var-info-circle;
-            margin-right:5px;
-        }
-    }
-    &.plan1 {
-        .bronze {
-            .alert-default;
-            display:block;
-        }
-    }
-    &.plan2 {
-        .silver {
-            .alert-default;
-            display:block;
-        }
-    }
-    &.plan3 {
-        .gold {
-            .alert-default;
-            display:block;
-        }
-    }
-    &.coupon {
-        p.coupon {
-            .alert-success;
-            display:block;
-        }
     }
 }

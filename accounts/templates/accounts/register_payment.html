@@ -147,7 +147,8 @@
                                 {% for month in months %}
                                     <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
                                 {% endfor %}
-                                </select>                                <select class="form-control year" id="expiry_year">
+                                </select>
+                                <select class="form-control year" id="expiry_year">
                                 {% for year in years %}
                                     <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
                                 {% endfor %}
@@ -155,7 +156,7 @@
                             </div>
                         </div>
                     </div>
-                    {% render_form_field payment_form.billing_zip '' 'zip-mask' %}
+                    {% render_form_field payment_form.billing_zip %}
                 {% endif %}
                 {% if self %}
                     <input type="hidden" name="same_card_for_both" value="1" />
@@ -163,24 +164,8 @@
                 {% if lovedone or gift %}
                     {% render_form_field payment_form.same_card_for_both %}
                 {% endif %}
-                <div id="coupon_form_group" class="form-group">
-                    <label>{{ payment_form.coupon.label }}</label>
-                    <div class="input-group">
-                        {{ payment_form.coupon }}
-                        <span class="input-group-btn">
-                            <button id="apply_coupon" class="btn btn-success" type="button">Apply Coupon</button>
-                        </span>
-                    </div>
-                    <span class="help-block"></span>
-                </div>
             </fieldset>
             <div class="form-actions">
-                <div id="plan_charges">
-                    <p class="bronze">Your card will be charged a <strong>one-time fee of $30</strong> now and <strong>$5 per month</strong>, beginning a month from now.</p>
-                    <p class="silver">Your card will automatically be charged <strong>$50 per month</strong>, beginning today.</p>
-                    <p class="gold">Your card will automatically be charged <strong>$75 per month</strong>, beginning today.</p>
-                    <p class="coupon"></p>
-                </div>
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
             </div>
             <p class="small text-muted">

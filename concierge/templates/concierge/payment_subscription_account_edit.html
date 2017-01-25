@@ -93,17 +93,6 @@
                 </div>
 
                 {% render_form_field payment_form.same_card_for_both %}
-
-                <div id="coupon_form_group" class="form-group">
-                    <label>{{ payment_form.coupon.label }}</label>
-                    <div class="input-group">
-                        {{ payment_form.coupon }}
-                        <span class="input-group-btn">
-                            <button id="apply_coupon" class="btn btn-success" type="button">Apply Coupon</button>
-                        </span>
-                    </div>
-                    <span class="help-block"></span>
-                </div>
             </fieldset>
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
