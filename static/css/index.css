@@ -7735,6 +7735,17 @@ a.phone-numbers i:focus {
 .stripe-brand {
   color: #417CBD;
 }
+.alert-default {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333333;
+}
+.alert-default hr {
+  border-top-color: #bfbfbf;
+}
+.alert-default .alert-link {
+  color: #1a1a1a;
+}
 .alert dl {
   margin-bottom: 0;
 }
@@ -7743,6 +7754,109 @@ a.phone-numbers i:focus {
 }
 .alert dl dd {
   padding-left: 12px;
+}
+.btn.loading {
+  position: relative;
+  color: rgba(255, 255, 255, 0.4);
+}
+.btn.loading:before {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+  content: "\f110";
+  position: absolute;
+  text-align: center;
+  font-size: 20px;
+  left: 50%;
+  margin-left: -10px;
+  line-height: 22px;
+  color: #fff;
+}
+#plan_charges p {
+  padding: 15px;
+  margin-bottom: 22px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  display: none;
+}
+#plan_charges p h4 {
+  margin-top: 0;
+  color: inherit;
+}
+#plan_charges p .alert-link {
+  font-weight: bold;
+}
+#plan_charges p > p,
+#plan_charges p > ul {
+  margin-bottom: 0;
+}
+#plan_charges p > p + p {
+  margin-top: 5px;
+}
+#plan_charges p:before {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f05a";
+  margin-right: 5px;
+}
+#plan_charges.plan1 .bronze {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333333;
+  display: block;
+}
+#plan_charges.plan1 .bronze hr {
+  border-top-color: #bfbfbf;
+}
+#plan_charges.plan1 .bronze .alert-link {
+  color: #1a1a1a;
+}
+#plan_charges.plan2 .silver {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333333;
+  display: block;
+}
+#plan_charges.plan2 .silver hr {
+  border-top-color: #bfbfbf;
+}
+#plan_charges.plan2 .silver .alert-link {
+  color: #1a1a1a;
+}
+#plan_charges.plan3 .gold {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333333;
+  display: block;
+}
+#plan_charges.plan3 .gold hr {
+  border-top-color: #bfbfbf;
+}
+#plan_charges.plan3 .gold .alert-link {
+  color: #1a1a1a;
+}
+#plan_charges.coupon p.coupon {
+  background-color: #EEFCDE;
+  border-color: #ebfac7;
+  color: #75AF2F;
+  display: block;
+}
+#plan_charges.coupon p.coupon hr {
+  border-top-color: #e2f8af;
+}
+#plan_charges.coupon p.coupon .alert-link {
+  color: #5a8724;
 }
 .select2-container--bootstrap {
   display: block;

@@ -3,6 +3,7 @@ import stripe
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from billing.forms import PaymentForm, StripeCustomerForm
@@ -136,3 +137,26 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
     }
 
     return render(request, template, d)
+
+
+def retrieve_coupon(request):
+    coupon_code = request.GET.get('coupon_code', None)
+    success = False
+    stripe_coupon = None
+    if coupon_code:
+        try:
+            stripe_coupon = stripe.Coupon.retrieve(coupon_code)
+            message = "Found coupon code"
+            success = True
+        except stripe.error.InvalidRequestError:
+            message = "Sorry, that coupon code is not valid."
+    else:
+        message = "No coupon code entered"
+
+    d = {
+        'success': success,
+        'message': message,
+        'stripe_coupon': stripe_coupon
+    }
+
+    return JsonResponse(d)

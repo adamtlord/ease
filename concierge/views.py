@@ -365,10 +365,23 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                     description="Initial signup fee",
                 )
 
+            coupon_code = payment_form.cleaned_data['coupon']
+            valid_coupon = False
+            if coupon_code:
+                try:
+                    stripe.Coupon.retrieve(coupon_code)
+                    valid_coupon = True
+                except:
+                    pass
+            if not valid_coupon:
+                coupon_code = None
+
             # now attach the customer to a plan
             stripe.Subscription.create(
                 customer=create_stripe_customer.id,
                 plan=customer.plan.stripe_id,
+                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                coupon=coupon_code
             )
 
             # store the customer's stripe id in their record
