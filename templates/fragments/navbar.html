@@ -1,5 +1,6 @@
 {% load custom_tags %}
 {% url 'upcoming_rides' as upcoming_rides_url %}
+{% url 'rides_history' as rides_history_url %}
 {% url 'dashboard' as dashboard_url %}
 {% url 'customer_list' as customer_list_url %}
 {% url 'rides_ready_to_bill' as rides_ready_to_bill_url %}
@@ -16,7 +17,7 @@
         <ul class="nav navbar-nav navbar-right{% if request.user.is_staff %} admin{% endif %}">
             {% if request.user.is_staff %}
                 <li class="{% active request dashboard_url %}"><a href="{% url 'dashboard' %}">Search<i class="fa fa-search"></i></a></li>
-                <li class="{% active_starts request upcoming_rides_url %}"><a href="{% url 'upcoming_rides' %}">Rides<i class="fa fa-clock-o"></i></a></li>
+                <li class="{% active_starts request upcoming_rides_url %}{% active_starts request rides_history_url %}"><a href="{% url 'upcoming_rides' %}">Rides<i class="fa fa-clock-o"></i></a></li>
                 <li class="{% active_starts request customer_list_url %}"><a href="{% url 'customer_list' %}">Customers<i class="fa fa-users"></i></a></li>
                 <li class="{% active_starts request rides_ready_to_bill_url %}"><a href="{% url 'rides_ready_to_bill' %}">Billing<i class="fa fa-dollar"></i></a></li>
             {% endif %}

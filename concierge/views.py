@@ -54,7 +54,8 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
         return redirect('profile')
 
     now = timezone.now()
-    rides = Ride.objects.filter(start_date__gte=now).order_by('start_date')
+    week_from_now = now + datetime.timedelta(days=7)
+    rides = Ride.objects.filter(start_date__gte=now).filter(start_date__lt=week_from_now).order_by('start_date')
 
     d = {
         'rides': rides,
@@ -72,7 +73,7 @@ def rides_history(request, template='concierge/rides_history.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.all().order_by('-start_date')
+    rides = Ride.objects.filter(complete=True).order_by('-start_date')
 
     d = {
         'rides': rides,

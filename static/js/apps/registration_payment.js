@@ -7,22 +7,24 @@ $(function() {
 
     var validateCoupon = function() {
         $.ajax({
-            url: "/billing/retrieve_coupon/",
-            data: { coupon_code: $('#id_coupon').val() },
-            beforeSend: function() {
-                $('#apply_coupon').addClass('loading');
-                $('#coupon_form_group .help-block').text('');
-            }
-        })
-        .done(function(data) {
-            $('#apply_coupon').removeClass('loading');
-            if(data.success){
-                $('#coupon_form_group .help-block').text('Valid coupon!');
-                $('#plan_charges').addClass('coupon').find('.coupon').html('The coupon you entered will reduce your first invoice by $' + parseFloat(data.stripe_coupon.amount_off / 100).toFixed(2));
-            } else {
-                $('#coupon_form_group .help-block').text(data.message);
-            }
-        });
+                url: "/billing/retrieve_coupon/",
+                data: {
+                    coupon_code: $('#id_coupon').val()
+                },
+                beforeSend: function() {
+                    $('#apply_coupon').addClass('loading');
+                    $('#coupon_form_group .help-block').text('');
+                }
+            })
+            .done(function(data) {
+                $('#apply_coupon').removeClass('loading');
+                if (data.success) {
+                    $('#coupon_form_group .help-block').text('Valid coupon!');
+                    $('#plan_charges').addClass('coupon').find('.coupon').html('The coupon you entered will reduce your first invoice by $' + parseFloat(data.stripe_coupon.amount_off / 100).toFixed(2));
+                } else {
+                    $('#coupon_form_group .help-block').text(data.message);
+                }
+            });
     };
 
     $("#user_form").submit(function() {
@@ -60,8 +62,8 @@ $(function() {
     $('#apply_coupon').click(function() {
         validateCoupon();
     });
-    $('#id_coupon').blur(function(){
-        if(this.value.length){
+    $('#id_coupon').blur(function() {
+        if (this.value.length) {
             validateCoupon();
         }
     });
