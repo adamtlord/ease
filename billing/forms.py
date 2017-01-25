@@ -68,6 +68,10 @@ class PaymentForm(StripeCustomerForm):
         required=True,
         label="Billing zip code for this card"
     )
+    coupon = forms.CharField(
+        required=False,
+        label="Do you have a coupon code?"
+    )
 
     class Meta:
         model = StripeCustomer
@@ -75,7 +79,7 @@ class PaymentForm(StripeCustomerForm):
 
     def __init__(self, *args, **kwargs):
         super(PaymentForm, self).__init__(*args, **kwargs)
-        for field in STRIPE_CUSTOMER_FIELDS + ['plan']:
+        for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'coupon']:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
@@ -95,6 +99,10 @@ class AdminPaymentForm(StripeCustomerForm):
         required=True,
         label="Billing zip code for this card"
     )
+    coupon = forms.CharField(
+        required=False,
+        label="Do you have a coupon code?"
+    )
 
     class Meta:
         model = StripeCustomer
@@ -102,5 +110,5 @@ class AdminPaymentForm(StripeCustomerForm):
 
     def __init__(self, *args, **kwargs):
         super(AdminPaymentForm, self).__init__(*args, **kwargs)
-        for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'same_card_for_both']:
+        for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'same_card_for_both', 'coupon']:
             self.fields[field].widget.attrs['class'] = 'form-control'

@@ -163,11 +163,23 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                             description="Initial signup fee",
                             idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                         )
+
+                    coupon_code = payment_form.cleaned_data['coupon']
+                    valid_coupon = False
+                    if coupon_code:
+                        try:
+                            stripe.Coupon.retrieve(coupon_code)
+                            valid_coupon = True
+                        except:
+                            pass
+                    if not valid_coupon:
+                        coupon_code = None
                     # now attach the customer to a plan
                     stripe.Subscription.create(
                         customer=create_stripe_customer.id,
                         plan=customer.plan.stripe_id,
-                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                        coupon=coupon_code
                     )
                     # store the customer's stripe id in their record
                     new_stripe_customer.stripe_id = create_stripe_customer.id
@@ -465,10 +477,23 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     description="Initial signup fee",
                 )
 
+            coupon_code = payment_form.cleaned_data['coupon']
+            valid_coupon = False
+            if coupon_code:
+                try:
+                    stripe.Coupon.retrieve(coupon_code)
+                    valid_coupon = True
+                except:
+                    pass
+            if not valid_coupon:
+                coupon_code = None
+
             # now attach the customer to a plan
             stripe.Subscription.create(
                 customer=create_stripe_customer.id,
                 plan=customer.plan.stripe_id,
+                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                coupon=coupon_code
             )
 
             # store the customer's stripe id in their record
