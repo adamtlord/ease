@@ -44,8 +44,8 @@
                 <tr>
                     <td></td>
                     <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
-                    <td>{{ ride.start.name }}</td>
-                    <td>{{ ride.destination.name }}</td>
+                    <td>{{ ride.start.fullname }}</td>
+                    <td>{{ ride.destination.fullname }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                     <td>{{ ride.distance }} mi</td>
                     <td>${{ ride.cost }}</td>
