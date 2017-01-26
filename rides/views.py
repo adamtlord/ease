@@ -200,7 +200,7 @@ def ride_delete(request, ride_id):
 @staff_member_required
 def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
-    rides = Ride.ready_to_bill.all()
+    rides = Ride.ready_to_bill.all().order_by('-start_date')
     customers = sort_rides_by_customer(rides)
     results = {
         'success': {},
@@ -247,7 +247,7 @@ def rides_incomplete(request, template="rides/incomplete.html"):
 
 @staff_member_required
 def rides_invoiced(request, template="rides/invoiced.html"):
-    rides = Ride.objects.filter(invoice__isnull=False)
+    rides = Ride.objects.filter(invoice__isnull=False).order_by('-start_date')
     customers = sort_rides_by_customer(rides)
 
     d = {
