@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 import pytz
+from collections import OrderedDict
 from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
 from rides.models import Ride
@@ -64,5 +65,5 @@ def sort_rides_by_customer(rides):
                 customers[r.customer].append(r)
             else:
                 customers[r.customer] = [r]
-
+        customers = OrderedDict(sorted(customers.items(), key=lambda t: t[0].last_name))
     return customers
