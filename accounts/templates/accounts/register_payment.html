@@ -73,7 +73,7 @@
                             </ul>
                             <p>You will be charged {% if plan.signup_cost %}${{ plan.signup_cost|floatformat }} on signup, and {% endif %}{% if plan.monthly_cost %}${{ plan.monthly_cost|floatformat }} per month{% endif %}.</p>
                             {% if stripe_customer %}
-                                <p>If you'd like to choose a different plan, please contact customer service at <a href="mailto:hello@arriverides.com">hello@arriverides.com</a> or call <strong>1-866-ARRIVE-8</strong></p>
+                                <p>If you'd like to choose a different plan, please contact customer service at <a href="mailto:hello@arriverides.com">hello@arriverides.com</a> or call <strong>1-866-626-9879</strong></p>
                                 {{ payment_form.plan.as_hidden }}
                             {% else %}
                                 <p>

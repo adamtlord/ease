@@ -121,10 +121,10 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         if customer.subscription_account:
 
             if customer.destinations.count():
-                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
                 return redirect('profile')
 
-            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
             return redirect('register_self_destinations')
 
         payment_form = PaymentForm(request.POST)
@@ -199,7 +199,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
             except Exception as ex:
-                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-277-4838.'
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
             errors = payment_form.errors
@@ -434,10 +434,10 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         if customer.subscription_account:
 
             if customer.destinations.count():
-                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
                 return redirect('profile')
 
-            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-ARRIVE-8 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
             return redirect('register_self_destinations')
 
         payment_form = PaymentForm(request.POST)
