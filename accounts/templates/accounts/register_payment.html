@@ -86,7 +86,7 @@
                 <div class="plan-buttons" data-toggle="buttons" {% if selected_plan %} style="display:none"{% endif %}>
                     <label class="btn btn-default btn-block{% if payment_form.plan.0.is_checked %} active{% endif %}" for="id_plan_0">
                         {{ payment_form.plan.0.tag }}
-                        <h4>$30 <small>signup</small>, $5<small>/month</small></h4>
+                        <h4>$30 <small>signup,</small> $5<small>/month</small></h4>
                         <h5>Bronze Membership</h5>
                         <ul>
                             <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
@@ -147,7 +147,8 @@
                                 {% for month in months %}
                                     <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
                                 {% endfor %}
-                                </select>                                <select class="form-control year" id="expiry_year">
+                                </select>
+                                <select class="form-control year" id="expiry_year">
                                 {% for year in years %}
                                     <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
                                 {% endfor %}
