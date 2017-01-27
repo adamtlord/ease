@@ -31,7 +31,9 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
     customer = get_object_or_404(Customer, pk=customer_id)
     errors = []
     if request.method == 'GET':
-        initial_start = customer.home
+        initial_start = None
+        if customer.home:
+            initial_start = customer.home
         initial_destination = None
         if customer.last_ride:
             if customer.last_ride.destination != customer.home:
