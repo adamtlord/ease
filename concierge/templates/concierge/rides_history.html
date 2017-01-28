@@ -36,7 +36,7 @@
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
                     <td>{{ ride.start_date|date:"U" }}</td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
-                    <td>{{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                    <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     {% if customer.plan.includes_rides %}
                         <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     {% endif %}
