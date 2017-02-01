@@ -9,6 +9,7 @@
             <th>Plan</th>
             <th>Rides</th>
             <th>Last ride</th>
+            <th></th>
             <th>Notes</th>
             <th>Intro Call</th>
         </thead>
@@ -29,6 +30,7 @@
                 <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
                 <td>{{ customer.rides|length }}</td>
                 <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
+                <td>{% if customer.rides %}{{ customer.rides.0.start_date|date:"U" }}{% endif %}</td>
                 <td>{% if not customer.ready_to_ride %}
                     <ul class="list-unstyled small">
                         {% for missing in customer.missing %}
@@ -47,4 +49,23 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            'info':false,
+            'paging':false,
+            'columnDefs': [
+                {'orderData':[6], 'targets': [5] },
+                {
+                    'targets': [6],
+                    'visible': false,
+                    'searchable': false
+                },
+            ],
+        });
+    })
+</script>
 {% endblock %}

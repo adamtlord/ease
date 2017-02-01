@@ -21,14 +21,3 @@
     {% block customer_list_content %}
     {% endblock %}
 {% endblock content %}
-
-{% block scripts %}
-<script>
-    $(function(){
-        $('#customer_list').DataTable({
-            'info':false,
-            'paging':false
-        });
-    })
-</script>
-{% endblock %}
