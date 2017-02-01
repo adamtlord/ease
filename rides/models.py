@@ -63,8 +63,8 @@ class Ride(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     request_time = models.DateTimeField(blank=True, null=True)
-    start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point')
-    destination = models.ForeignKey('rides.Destination', related_name='ending_point')
+    start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point', on_delete=models.SET_NULL, null=True)
+    destination = models.ForeignKey('rides.Destination', related_name='ending_point', on_delete=models.SET_NULL, null=True)
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     fare_estimate = models.CharField(max_length=128, blank=True, null=True)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
@@ -109,8 +109,16 @@ class Ride(models.Model):
         return self.start_date > timezone.now()
 
     def __unicode__(self):
+        if self.start:
+            start = self.start.fullname
+        else:
+            start = '[NONE]'
+        if self.destination:
+            destination = self.destination.fullname
+        else:
+            destination = '[NONE]'
         if self.customer:
-            return '{} from {} to {}'.format(self.customer, self.start.fullname, self.destination.fullname)
+            return '{} from {} to {}'.format(self.customer, start, destination)
 
 
 class Notification(models.Model):
