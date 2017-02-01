@@ -1,0 +1,53 @@
+{% extends 'rides/ride_base.html' %}
+{% load humanize %}
+
+{% block title %}Active Rides{% endblock title %}
+{% block page_title %}Active Rides{% endblock page_title %}
+
+{% block rides_content %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Start Time</th>
+                <th>From</th>
+                <th>To</th>
+                {% if customer.plan.includes_rides %}
+                    <th>Included</th>
+                {% endif %}
+                <th>Distance</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides %}
+                <tr>
+                    <td>{{ ride.id }}</td>
+                    <td><a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a></td>
+                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
+                    <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
+                    <td>{{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                    {% if customer.plan.includes_rides %}
+                        <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                    {% endif %}
+                    <td>{% if ride.distance %}
+                            {{ ride.distance }} mi
+                        {% endif %}
+                    </td>
+                    <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" id="viewRideModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+{% endblock rides_content %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+{% endblock scripts %}

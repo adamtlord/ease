@@ -11,6 +11,7 @@
             <div class="clearfix">
                 <ul class="nav nav-pills">
                     <li role="presentation" class="{% if upcoming_page %}active{% endif %}"><a href="{% url 'upcoming_rides' %}">Upcoming Rides</a></li>
+                    <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'active_rides' %}">Active Rides</a></li>
                     <li role="presentation" class="{% if history_page %}active{% endif %}"><a href="{% url 'rides_history' %}">History</a></li>
                 </ul>
             </div>

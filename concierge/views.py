@@ -65,6 +65,24 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
     return render(request, template, d)
 
 
+def active_rides(request, template='concierge/active_rides.html'):
+    if not request.user.is_authenticated:
+        return redirect('concierge_login')
+
+    if not request.user.is_staff:
+        messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
+        return redirect('profile')
+
+    rides = Ride.objects.exclude(complete=True).order_by('start_date')
+
+    d = {
+        'rides': rides,
+        'active_page': True
+    }
+
+    return render(request, template, d)
+
+
 def rides_history(request, template='concierge/rides_history.html'):
     if not request.user.is_authenticated:
         return redirect('concierge_login')
