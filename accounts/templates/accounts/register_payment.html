@@ -166,13 +166,14 @@
                 {% endif %}
                 <div id="coupon_form_group" class="form-group">
                     <label>{{ payment_form.coupon.label }}</label>
+                    <span class="help-block">Coupon codes are Case-Sensitive</span>
                     <div class="input-group">
                         {{ payment_form.coupon }}
                         <span class="input-group-btn">
                             <button id="apply_coupon" class="btn btn-success" type="button">Apply Coupon</button>
                         </span>
                     </div>
-                    <span class="help-block"></span>
+                    <span class="help-block coupon-validation"></span>
                 </div>
             </fieldset>
             <div class="form-actions">

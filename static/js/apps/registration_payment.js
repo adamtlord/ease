@@ -13,16 +13,16 @@ $(function() {
                 },
                 beforeSend: function() {
                     $('#apply_coupon').addClass('loading');
-                    $('#coupon_form_group .help-block').text('');
+                    $('#coupon_form_group .coupon-validation').text('');
                 }
             })
             .done(function(data) {
                 $('#apply_coupon').removeClass('loading');
                 if (data.success) {
-                    $('#coupon_form_group .help-block').text('Valid coupon!');
+                    $('#coupon_form_group .coupon-validation').text('Valid coupon!');
                     $('#plan_charges').addClass('coupon').find('.coupon').html('The coupon you entered will reduce your first invoice by $' + parseFloat(data.stripe_coupon.amount_off / 100).toFixed(2));
                 } else {
-                    $('#coupon_form_group .help-block').text(data.message);
+                    $('#coupon_form_group .coupon-validation').text(data.message);
                 }
             });
     };
