@@ -406,7 +406,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
     else:
         same_card_for_both = 0
-        default_plan = Plan.objects.get(name='SILVER')
+        default_plan = Plan.objects.get(name='BRONZE')
 
         if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account:
             same_card_for_both = 1
