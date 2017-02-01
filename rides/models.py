@@ -17,6 +17,8 @@ class Destination(Location):
     home = models.BooleanField(default=False)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    included_in_plan = models.BooleanField(default=False)
 
     @property
     def ltlng(self):

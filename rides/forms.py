@@ -17,6 +17,7 @@ HOME_FIELDS = [
 
 DESTINATION_FIELDS = HOME_FIELDS + [
     'nickname',
+    'notes'
 ]
 
 START_RIDE_FIELDS = [
@@ -44,6 +45,12 @@ class DestinationChoiceField(forms.ModelChoiceField):
 
 class DestinationForm(forms.ModelForm):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    notes = forms.CharField(
+        label="Anything we should know about this destination?",
+        help_text="For instance, is there a steep driveway and we should send the driver to the end of it? Is there an entrance you prefer to use?",
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False
+    )
 
     class Meta:
         model = Destination

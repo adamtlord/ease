@@ -4,11 +4,12 @@
 {% block title %}Update Customer {{ customer }}{% endblock title %}
 {% block customer_content %}
 
-<table class="table table-striped">
+<table class="table table-striped table-fixed">
     <thead>
         <tr>
             <th>Name</th>
             <th>Address</th>
+            <th>Notes</th>
             <th>Map</th>
             <th>Actions</th>
         </tr>
@@ -28,6 +29,7 @@
                 {{ destination.state }}
                 {{ destination.zip_code }}
             </td>
+            <td><em class="small">{{ destination.notes|default:'' }}</em></td>
             <td>
                 {% static_map destination %}
             </td>

@@ -22,6 +22,8 @@
                 {% for hidden in destination_form.hidden_fields %}
                     {{ hidden }}
                 {% endfor %}
+                {% render_form_field destination_form.notes %}
+                {% render_form_field destination_form.included_in_plan %}
             </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary" value="Save Destination" />

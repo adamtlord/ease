@@ -158,6 +158,7 @@
                         {{ destination.state }}
                         {{ destination.zip_code }}
                     </td>
+                    <td><em class="small">{{ destination.notes }}</em></td>
                     <td>{% static_map destination %}</td>
                     <td><a href="{% url 'destination_edit' destination.id %}" class="btn btn-default">Edit</a>
                 </tr>
@@ -166,6 +167,7 @@
                 <th>
                     <a href="{% url 'destination_add' %}" class="btn btn-primary">Add a Destination</a>
                 </th>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

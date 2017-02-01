@@ -73,7 +73,8 @@ CREATE_HOME_FIELDS = UPDATE_HOME_FIELDS + [
 
 DESTINATION_FIELDS = CREATE_HOME_FIELDS + [
     'nickname',
-    'customer'
+    'customer',
+    'notes'
 ]
 
 LOVED_ONE_FIELDS = CONTACT_FIELDS + LOCATION_FIELDS + [
@@ -221,10 +222,18 @@ class CustomerForm(forms.ModelForm):
 
 class DestinationForm(forms.ModelForm):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5}),
+        required=False
+    )
+    included_in_plan = forms.BooleanField(
+        label="Always include rides to and from this destination in the customer's plan?",
+        required=False
+    )
 
     class Meta:
         model = Destination
-        fields = DESTINATION_FIELDS + ['customer']
+        fields = DESTINATION_FIELDS + ['customer', 'included_in_plan']
 
     def __init__(self, *args, **kwargs):
         super(DestinationForm, self).__init__(*args, **kwargs)

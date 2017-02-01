@@ -11,15 +11,15 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Customer</th>
-                <th>Start Time</th>
+                <th width="10%">Customer</th>
+                <th width="20%">Start Time</th>
                 <th>From</th>
                 <th>To</th>
                 {% if customer.plan.includes_rides %}
                     <th>Included</th>
                 {% endif %}
                 <th>Distance</th>
-                <th></th>
+                <th width="200"></th>
             </tr>
         </thead>
         <tbody>
@@ -28,8 +28,18 @@
                     <td>{{ ride.id }}</td>
                     <td><a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
-                    <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
-                    <td>{{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                    <td>
+                        {{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small>
+                        {% if ride.start.notes %}
+                            <p class="destination-notes">{{ ride.start.notes }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small>
+                        {% if ride.destination.notes %}
+                            <p class="destination-notes">{{ ride.destination.notes }}</p>
+                        {% endif %}
+                    </td>
                     {% if customer.plan.includes_rides %}
                         <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     {% endif %}

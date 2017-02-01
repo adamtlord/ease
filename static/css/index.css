@@ -7858,6 +7858,9 @@ a.phone-numbers i:focus {
 #plan_charges.coupon p.coupon .alert-link {
   color: #5a8724;
 }
+.table-fixed {
+  table-layout: fixed;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\
@@ -10222,5 +10225,11 @@ th .static-map {
 #rides_to_bill .customer:hover td,
 #rides_to_bill .customer:hover th {
   background-color: #e8e8e8;
+}
+.destination-notes {
+  font-size: small;
+  margin: 5.5px 0 0 0;
+  padding: 5.5px 0 0 0;
+  border-top: 1px solid #ddd;
 }
 /*# sourceMappingURL=index.css.map */
