@@ -43,10 +43,9 @@ def invoice_customer_rides(customer, rides):
 
     from accounts.helpers import send_included_rides_email
 
-    success = {
-        'included': [],
-        'billed': []
-    }
+    success_included = []
+    success_billed = []
+    success_total = 0
     errors = []
     total = 0
     included_rides = []
@@ -62,7 +61,8 @@ def invoice_customer_rides(customer, rides):
                     ride.complete = True
                     ride.invoiced = True
                     included_rides.append(ride)
-                    success['included'].append(ride.id)
+                    success_included.append(ride.id)
+                    success_total += 1
                 else:
                     if customer.plan.arrive_fee:
                         ride.total_cost = ride.cost + customer.plan.arrive_fee
@@ -79,7 +79,8 @@ def invoice_customer_rides(customer, rides):
                     ride.invoice_item_id = invoiceitem.id
                     billable_rides.append(ride)
 
-                    success['billed'].append(ride.id)
+                    success_billed.append(ride.id)
+                    success_total += 1
 
                 ride.save()
 
@@ -115,4 +116,10 @@ def invoice_customer_rides(customer, rides):
     if included_rides:
         send_included_rides_email(customer, included_rides)
 
-    return (success, errors, total)
+    return {
+        'success_included': success_included,
+        'success_billed': success_billed,
+        'success_total': success_total,
+        'errors': errors,
+        'total': total
+    }

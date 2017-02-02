@@ -6,7 +6,8 @@ from django.utils import timezone, formats
 from accounts.models import Customer
 from billing.utils import invoice_customer_rides
 from common.utils import get_distance
-from rides.forms import StartRideForm, DestinationForm, RideForm, CSVUploadForm
+from concierge.forms import DestinationForm
+from rides.forms import StartRideForm, RideForm, CSVUploadForm
 from rides.helpers import handle_lyft_upload, sort_rides_by_customer
 from rides.models import Ride
 
@@ -54,7 +55,6 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         add_destination_form = DestinationForm(prefix='add_dest', initial={'customer': customer})
 
     else:
-
         start_ride_form = StartRideForm(request.POST, customer=customer)
         add_starting_point_form = DestinationForm(request.POST, prefix='add_start')
         add_destination_form = DestinationForm(request.POST, prefix='add_dest')
@@ -80,24 +80,22 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
 
             new_ride.distance = get_distance(new_ride)
             new_ride.save()
+
             # Figure out if this ride is included in the customer's plan
-
             if customer.plan.included_rides_per_month:
-
                 if customer.included_rides_this_month < customer.plan.included_rides_per_month:
-
                     distance = new_ride.distance
-
                     if customer.plan.ride_distance_limit > 0 and distance < customer.plan.ride_distance_limit:
-
                         included = True
                     else:
                         included = False
                 else:
                     included = False
             else:
-
-                included = False
+                if new_ride.start.included_in_plan or new_ride.destination.included_in_plan:
+                    included = True
+                else:
+                    included = False
 
             new_ride.included_in_plan = included
             new_ride.save()
@@ -204,11 +202,12 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
     rides = Ride.ready_to_bill.all().order_by('-start_date')
     customers = sort_rides_by_customer(rides)
-    results = {
-        'success': {},
-        'errors': [],
-        'total': 0
-    }
+
+    success_included = []
+    success_billed = []
+    success_total = 0
+    errors = []
+    total = 0
 
     if request.method == 'POST':
 
@@ -218,9 +217,11 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
 
         for customer, rides in sorted_rides.items():
             response = invoice_customer_rides(customer, rides)
-            results['success'] = response[0]
-            results['errors'] = response[1]
-            results['total'] = response[2]
+            success_included += response['success_included']
+            success_billed += response['success_billed']
+            success_total += response['success_total']
+            errors += response['errors']
+            total += response['total']
 
         rides = Ride.ready_to_bill.all()
         customers = sort_rides_by_customer(rides)
@@ -228,7 +229,11 @@ def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
     d = {
         'ready_page': True,
         'customers': customers,
-        'results': results
+        'success_included': success_included,
+        'success_billed': success_billed,
+        'success_total': success_total,
+        'errors': errors,
+        'total': total
     }
 
     return render(request, template, d)

@@ -36,6 +36,19 @@
                     {{ form.start.errors }}
                 {% endif %}
             </div>
+            {% if ride.start.notes %}
+                <div class="form-group">
+                    <label>Starting point notes</label>
+                    <div class="input-group">
+                        <input id="starting_point_notes" class="form-control" value="{{ ride.start.notes }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point_notes">
+                                <i class="fa fa-clipboard"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {{ form.start.as_hidden }}
             <div class="form-group datetime-start">
                 <label>Start date<span class="req">*</span></label>
@@ -67,6 +80,19 @@
                     {{ form.destination.errors }}
                 {% endif %}
             </div>
+            {% if ride.destination.notes %}
+                <div class="form-group has-info">
+                    <label>Destination notes</label>
+                    <div class="input-group">
+                        <input id="destination_notes" class="form-control" value="{{ ride.destination.notes }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination_notes">
+                                <i class="fa fa-clipboard"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {{ form.destination.as_hidden }}
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}

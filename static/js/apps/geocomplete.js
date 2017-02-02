@@ -29,21 +29,20 @@ function fillInAddress() {
   var prefix = this.prefix;
   for (var i = 0; i < place.address_components.length; i++) {
     var addressType = place.address_components[i].types[0];
-  if (componentForm[addressType]) {
+    if (componentForm[addressType]) {
       var val = place.address_components[i][componentForm[addressType]];
-      if(addressType === 'street_number'){
+      if (addressType === 'street_number') {
         val = val + ' ';
       }
-      if(addressType === 'postal_code' && val.length > 5){
+      if (addressType === 'postal_code' && val.length > 5) {
         val = val.slice(0, 5) + "-" + val.slice(5);
       }
       var input = $('#id_' + prefix + componentMap[addressType]);
-
       input.val(input.val() + val);
     }
   }
 
-  if(place.types[0] !== 'street_address' && place.name){
+  if (place.types[0] !== 'street_address' && place.name) {
     $('#id_' + prefix + 'name').val(place.name);
   }
 }
@@ -51,7 +50,7 @@ function fillInAddress() {
 
 function initAutocomplete() {
   var acs = [];
-  $('.autocomplete').each(function(){
+  $('.autocomplete').each(function() {
     autocomplete = new google.maps.places.Autocomplete(
       this, {
         country: 'us'
@@ -59,7 +58,7 @@ function initAutocomplete() {
     autocomplete.prefix = $(this).data('prefix');
     acs.push(autocomplete);
   });
-  for(var i = 0; i < acs.length; i++){
+  for (var i = 0; i < acs.length; i++) {
     acs[i].addListener('place_changed', fillInAddress);
   }
   $('input.autocomplete').keypress(function(e) {

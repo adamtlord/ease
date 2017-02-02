@@ -73,7 +73,6 @@ CREATE_HOME_FIELDS = UPDATE_HOME_FIELDS + [
 
 DESTINATION_FIELDS = CREATE_HOME_FIELDS + [
     'nickname',
-    'customer',
     'notes'
 ]
 
