@@ -29,7 +29,7 @@
                 {{ destination.state }}
                 {{ destination.zip_code }}
             </td>
-            <td><em class="small">{{ destination.notes|default:'' }}</em></td>
+            <td><em class="small">{{ customer.residence_instructions|default:'' }}</em></td>
             <td>
                 {% static_map destination %}
             </td>
@@ -52,6 +52,7 @@
                 {{ destination.state }}
                 {{ destination.zip_code }}
             </td>
+            <td><em class="small">{{ destination.notes|default:'' }}</em></td>
             <td>
                 {% static_map destination %}
             </td>
