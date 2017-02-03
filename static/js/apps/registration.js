@@ -183,7 +183,7 @@ $(function() {
         startView: 2,
         minView: 2,
         todayHighlight: true,
-        weekStart: 1,
+        weekStart: 0,
     });
 
 });

@@ -23,6 +23,6 @@ $(function(){
         showMeridian: true,
         startView: 1,
         todayHighlight: true,
-        weekStart: 1,
+        weekStart: 0,
     });
 });

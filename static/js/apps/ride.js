@@ -9,7 +9,7 @@ $(function(){
         showMeridian: true,
         startView: 2,
         todayHighlight: true,
-        weekStart: 1,
+        weekStart: 0,
     });
 
     $('#id_start, #id_destination').select2({
