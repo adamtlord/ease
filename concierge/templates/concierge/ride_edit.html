@@ -97,13 +97,16 @@
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
+            {% if customer.send_updates %}
+                <p class="alert alert-info"><i class="fa fa-lg fa-commenting"></i> Please send text updates to {{ customer.mobile_phone }}</p>
+            {% endif %}
             {% if customer.notes %}
-                <div class="well well-sm">
+                <div class="alert alert-default">
                     <i class="fa fa-comment fa-lg"></i> {{ customer.notes }}
                 </div>
             {% endif %}
             {% if customer.special_assistance %}
-                <p class="alert alert-warning"><i class="fa fa-wheelchair fa-lg"></i> {{ customer.special_assistance }}</p>
+                <p class="alert alert-warning"><i class="fa fa-plus-square fa-lg"></i> {{ customer.special_assistance }}</p>
             {% endif %}
             {% if customer.residence_instructions %}
                 <p class="alert alert-info">

@@ -749,6 +749,7 @@ def profile(request, template='accounts/profile.html'):
 def profile_edit(request, template='accounts/profile_edit.html'):
 
     user = request.user
+    errors = []
 
     if user.is_staff:
         return redirect('dashboard')
@@ -789,12 +790,16 @@ def profile_edit(request, template='accounts/profile_edit.html'):
 
             return redirect('profile')
 
+        else:
+            errors = [customer_form.errors, home_form.errors, rider_form.errors]
+
     d = {
         'self': not user.profile.on_behalf,
         'lovedone': user.profile.on_behalf,
         'customer_form': customer_form,
         'home_form': home_form,
-        'rider_form': rider_form
+        'rider_form': rider_form,
+        'errors': errors
         }
     return render(request, template, d)
 

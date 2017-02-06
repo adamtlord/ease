@@ -142,10 +142,18 @@ class CustomerForm(forms.ModelForm):
         help_text="We call every one of our new members, and don't want to ruin the surprise for you!",
         required=False
     )
+    send_updates = forms.TypedChoiceField(
+        coerce=lambda x: x == 'True',
+        choices=((False, 'No'), (True, 'Yes')),
+        initial=False,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Should we send the Primary Rider ride updates via text message?"
+    )
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS
+        fields = CUSTOMER_FIELDS + ['send_updates']
 
     def clean(self):
         cleaned_data = super(CustomerForm, self).clean()
@@ -169,6 +177,7 @@ class CustomerForm(forms.ModelForm):
         if is_self:
             self.fields['first_name'].required = False
             self.fields['last_name'].required = False
+            self.fields['send_updates'].label = "Do you want to receive ride updates via text message?"
 
 
 class RiderForm(forms.ModelForm):

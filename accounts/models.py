@@ -159,7 +159,7 @@ class Customer(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
-    send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
+    send_updates = models.BooleanField(default=False)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')

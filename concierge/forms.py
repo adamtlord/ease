@@ -48,7 +48,7 @@ CUSTOMER_FIELDS = [
     'notes',
     'home_phone',
     'mobile_phone',
-    'preferred_phone',
+    'preferred_phone'
 ]
 
 TOUCH_FIELDS = [
@@ -208,10 +208,18 @@ class CustomerForm(forms.ModelForm):
         help_text="Please use the format MM/DD/YYYY",
         widget=forms.DateInput(format=('%m/%d/%Y'))
     )
+    send_updates = forms.TypedChoiceField(
+        coerce=lambda x: x == 'True',
+        choices=((False, 'No'), (True, 'Yes')),
+        initial=False,
+        widget=forms.RadioSelect,
+        required=False,
+        label="Should we send the Primary Rider ride updates via text message?"
+    )
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS + ['intro_call']
+        fields = CUSTOMER_FIELDS + ['intro_call', 'send_updates']
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)

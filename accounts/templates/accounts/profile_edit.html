@@ -9,6 +9,15 @@
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">
+            {% if errors %}
+            <p class="alert alert-danger">
+                {% if error|length == 1 %}
+                    Please correct the error below.
+                {% else %}
+                    Please correct the errors below.
+                {% endif %}
+            </p>
+            {% endif %}
             {{ form.non_field_errors }}
             {{ customer_form.non_field_errors }}
             {{ home_form.non_field_errors }}
@@ -27,6 +36,8 @@
                 {% render_form_field customer_form.home_phone '', 'phone-mask' %}
                 {% render_form_field customer_form.mobile_phone '', 'phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
+                {% render_form_field customer_form.send_updates %}
+                {% render_form_field customer_form.dob  '' 'date-mask' %}
             </fieldset>
             <fieldset>
                 <legend>{% if lovedone %}Primary Customer's {% endif %}Home Address</legend>

@@ -31,6 +31,14 @@
                     {% endif %}
                 </td>
             </tr>
+            {% if ride.customer.special_assistance %}
+                <tr class="warning">
+                    <th>Special Assitance</th>
+                    <td>
+                        {{ ride.customer.special_assistance }}
+                    </td>
+                </tr>
+            {% endif %}
             {% if ride.cost %}
                 <tr>
                     <th>Cost</th>

@@ -176,14 +176,16 @@ $(function() {
     $('.zip-mask input').mask('00000-0000');
     $('.date-mask input').mask('00/00/0000');
 
-    $(".datepicker input").datetimepicker({
-        autoclose: true,
-        fontAwesome: true,
-        format: "yyyy-mm-dd",
-        startView: 2,
-        minView: 2,
-        todayHighlight: true,
-        weekStart: 0,
-    });
+    if($('.datepicker input').length){
+        $(".datepicker input").datetimepicker({
+            autoclose: true,
+            fontAwesome: true,
+            format: "yyyy-mm-dd",
+            startView: 2,
+            minView: 2,
+            todayHighlight: true,
+            weekStart: 0,
+        });
+    }
 
 });
