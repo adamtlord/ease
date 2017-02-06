@@ -234,7 +234,7 @@ class DestinationForm(forms.ModelForm):
         required=False
     )
     included_in_plan = forms.BooleanField(
-        label="Always include rides to and from this destination in the customer's plan?",
+        label="Always include rides between Home and this destination in the customer's plan?",
         required=False
     )
 

@@ -82,20 +82,16 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             new_ride.save()
 
             # Figure out if this ride is included in the customer's plan
+            included = False
             if customer.plan.included_rides_per_month:
                 if customer.included_rides_this_month < customer.plan.included_rides_per_month:
                     distance = new_ride.distance
                     if customer.plan.ride_distance_limit > 0 and distance < customer.plan.ride_distance_limit:
                         included = True
-                    else:
-                        included = False
-                else:
-                    included = False
-            else:
-                if new_ride.start.included_in_plan or new_ride.destination.included_in_plan:
-                    included = True
-                else:
-                    included = False
+                # (or)
+                if new_ride.start.home or new_ride.destination.home:
+                    if new_ride.start.included_in_plan or new_ride.destination.included_in_plan:
+                        included = True
 
             new_ride.included_in_plan = included
             new_ride.save()

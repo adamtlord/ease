@@ -179,7 +179,7 @@ class Customer(Contact):
 
     @property
     def destinations(self):
-        return self.destination_set.exclude(home=True)
+        return self.destination_set.exclude(home=True).order_by('name')
 
     @property
     def rider(self):
