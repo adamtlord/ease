@@ -98,7 +98,7 @@
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
             {% if customer.send_updates %}
-                <p class="alert alert-info"><i class="fa fa-lg fa-commenting"></i> Please send text updates to {{ customer.mobile_phone }}</p>
+                <p class="alert alert-info"><i class="fa fa-lg fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
             {% endif %}
             {% if customer.notes %}
                 <div class="alert alert-default">
