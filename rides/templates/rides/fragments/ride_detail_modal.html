@@ -17,10 +17,6 @@
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
             </tr>
-            <tr>
-                <th>Company</th>
-                <td>{{ ride.company }}</td>
-            </tr>
             {% if ride.customer.preferred_service %}
                 <tr>
                     <th>Preferred Service</th>
