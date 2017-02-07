@@ -27,6 +27,14 @@
                     <td>{{ ride.customer.preferred_service }}</td>
                 </tr>
             {% endif %}
+            {% if ride.customer.send_updates %}
+                <tr>
+                    <th>Send Text Updates</th>
+                    <td>
+                        <i class="fa fa-commenting text-info"></i> {% if ride.customer.mobile_phone %}<strong>{{ ride.customer.mobile_phone }}</strong>{% else %}<em>no mobile phone entered!</em>{% endif %}
+                    </td>
+                </tr>
+            {% endif %}
             <tr>
                 <th>Complete</th>
                 <td>{% if ride.complete %}
