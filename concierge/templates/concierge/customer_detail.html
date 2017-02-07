@@ -57,6 +57,12 @@
                             <td>{{ customer.special_assistance }}</td>
                         </tr>
                     {% endif %}
+                    {% if customer.preferred_service %}
+                        <tr>
+                            <td>Preferred service</td>
+                            <td>{{ customer.preferred_service }}</td>
+                        </tr>
+                    {% endif %}
                     {% if customer.residence_instructions %}
                     <tr>
                         <td>Residence instructions</td>
@@ -153,12 +159,6 @@
                             {% endif %}
                         </td>
                     </tr>
-                    {% if customer.preferred_service %}
-                        <tr>
-                            <td>Preferred service</td>
-                            <td>{{ customer.preferred_service }}</td>
-                        </tr>
-                    {% endif %}
                     {% if customer.user.profile.source %}
                         <tr>
                             <td>Marketing source</td>
