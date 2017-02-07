@@ -147,6 +147,21 @@ class Customer(Contact):
         (MOBILE_PHONE, 'Mobile'),
     )
 
+    UBER = 'Uber'
+    LYFT = 'Lyft'
+    UBERX = 'UberX'
+    UBERXL = 'UberXL'
+    UBERASSIST = 'UberASSIST'
+    OTHER = 'Other'
+
+    PREFERRED_SERVICE_CHOICES = (
+        (LYFT, 'Lyft'),
+        (UBERX, 'UberX'),
+        (UBERXL, 'UberXL'),
+        (UBERASSIST, 'UberASSIST'),
+        (OTHER, 'Other')
+    )
+
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
     gift_date = models.DateField(blank=True, null=True)
     home_phone = PhoneNumberField(blank=True, null=True)
@@ -159,6 +174,7 @@ class Customer(Contact):
     residence_instructions = models.TextField(blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
+    preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
     send_updates = models.BooleanField(default=False)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)

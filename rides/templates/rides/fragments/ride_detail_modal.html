@@ -18,9 +18,15 @@
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
             </tr>
             <tr>
-                <th>Service</th>
-                <td>{{ ride.service }}</td>
+                <th>Company</th>
+                <td>{{ ride.company }}</td>
             </tr>
+            {% if ride.customer.preferred_service %}
+                <tr>
+                    <th>Preferred Service</th>
+                    <td>{{ ride.customer.preferred_service }}</td>
+                </tr>
+            {% endif %}
             <tr>
                 <th>Complete</th>
                 <td>{% if ride.complete %}

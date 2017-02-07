@@ -8,12 +8,6 @@
     </p>
 {% endif %}
 <form id="start_ride_form" action="" class="form" method="POST" novalidate>{% csrf_token %}
-    {% if customer.send_updates %}
-        <p><i class="fa fa-lg fa-commenting text-info"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
-    {% endif %}
-    {% if customer.last_ride %}
-        <p><em>Last ride was to {{ customer.last_ride.destination.display_name }}</em></p>
-    {% endif %}
 
     <div class="row">
         <div class="col-sm-6">

@@ -48,7 +48,8 @@ CUSTOMER_FIELDS = [
     'notes',
     'home_phone',
     'mobile_phone',
-    'preferred_phone'
+    'preferred_phone',
+    'preferred_service'
 ]
 
 TOUCH_FIELDS = [

@@ -23,6 +23,7 @@
                 <th>Invoiced On</th>
                 <th>Paid</th>
                 <th>Paid On</th>
+                <th>Company</th>
                 <th>Notes</th>
                 <th></th>
             </tr>
@@ -30,7 +31,7 @@
         <tbody>
             {% for customer,rides in customers.items %}
                  <tr class="customer">
-                    <th colspan="12">
+                    <th colspan="13">
                         <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
                         {% if customer.plan %}
                             <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
@@ -52,6 +53,7 @@
                     <td>{{ ride.invoice.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
                     <td>{% if ride.invoice.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     <td>{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
+                    <td>{{ ride.company }}</td>
                     <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
                     <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
                 </tr>

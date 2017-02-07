@@ -21,6 +21,7 @@
                 <th>Distance</th>
                 <th>Cost</th>
                 <th>Total</th>
+                <th>Company</th>
                 <th>Notes</th>
                 <th></th>
             </tr>
@@ -28,7 +29,7 @@
         <tbody>
             {% for customer,rides in customers.items %}
                 <tr class="customer">
-                    <th colspan="10">
+                    <th colspan="11">
                         <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
                         {% if customer.plan %}
                             <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
@@ -48,6 +49,7 @@
                         <td>{{ ride.distance }} mi</td>
                         <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
                         <td>{% if ride.total_cost_estimate %}${{ ride.total_cost_estimate }}{% endif %}</td>
+                        <td>{{ ride.company }}</td>
                         <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
                         <td><a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
                     </tr>

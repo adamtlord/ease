@@ -7,7 +7,7 @@ from common.models import Location
 from common.utils import geocode_address
 
 from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
-from rides.const import SERVICES, UBER, LYFT
+from rides.const import COMPANIES, UBER, LYFT
 from billing.models import Invoice
 
 
@@ -70,7 +70,7 @@ class Ride(models.Model):
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     fare_estimate = models.CharField(max_length=128, blank=True, null=True)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
-    service = models.CharField(max_length=64, blank=True, null=True, choices=SERVICES, default=UBER)
+    company = models.CharField(max_length=64, blank=True, null=True, choices=COMPANIES, default=UBER)
     external_id = models.CharField(max_length=64, blank=True, null=True)
     complete = models.BooleanField(default=False)
     invoice_item_id = models.CharField(max_length=64, blank=True, null=True)

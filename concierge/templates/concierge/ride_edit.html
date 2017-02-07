@@ -59,7 +59,7 @@
             </div>
             {{ form.start_date.as_hidden }}
             {% render_form_field form.cost %}
-            {% render_form_field form.service %}
+            {% render_form_field form.company %}
             {% render_form_field form.customer %}
             {% render_form_field form.notes %}
             {% render_form_field form.complete %}
@@ -97,26 +97,29 @@
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
-            {% if customer.send_updates %}
-                <p class="alert alert-info"><i class="fa fa-lg fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
-            {% endif %}
-            {% if customer.notes %}
-                <div class="alert alert-default">
-                    <i class="fa fa-comment fa-lg"></i> {{ customer.notes }}
-                </div>
-            {% endif %}
-            {% if customer.special_assistance %}
-                <p class="alert alert-warning"><i class="fa fa-plus-square fa-lg"></i> {{ customer.special_assistance }}</p>
-            {% endif %}
-            {% if customer.residence_instructions %}
-                <p class="alert alert-info">
-                    <i class="fa fa-home fa-lg"></i>
-                    {% if customer.residence_type %}
-                        <small>({{ customer.get_residence_type_display }})</small><br>
-                    {% endif %}
-                    {{ customer.residence_instructions }}
-                </p>
-            {% endif %}
+            <div class="ride-notes">
+                {% if customer.send_updates %}
+                    <p class="alert alert-info"><i class="fa fa-fw fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
+                {% endif %}
+                {% if customer.preferred_service %}
+                    <p class="alert alert-info"><i class="fa fa-fw fa-car"></i> Preferred service: <strong>{{ customer.preferred_service }}</strong></p>
+                {% endif %}
+                {% if customer.notes %}
+                    <p class="alert alert-default"><i class="fa fa-comment fa-fw"></i> {{ customer.notes }}</p>
+                {% endif %}
+                {% if customer.special_assistance %}
+                    <p class="alert alert-warning"><i class="fa fa-plus-square fa-fw"></i> {{ customer.special_assistance }}</p>
+                {% endif %}
+                {% if customer.residence_instructions %}
+                    <p class="alert alert-info">
+                        <i class="fa fa-home fa-fw"></i>
+                        {% if customer.residence_type %}
+                            <small>({{ customer.get_residence_type_display }})</small><br>
+                        {% endif %}
+                        {{ customer.residence_instructions }}
+                    </p>
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -126,7 +129,9 @@
             <a href="{% url 'ride_delete' ride.id %}" class="text-danger">Cancel Ride</a>
         </p>
     </div>
+
 </form>
+
 {% endblock %}
 
 {% block scripts %}

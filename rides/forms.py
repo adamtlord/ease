@@ -32,7 +32,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'cost',
     'fare_estimate',
     'distance',
-    'service',
+    'company',
     'external_id',
     'notes',
 ]

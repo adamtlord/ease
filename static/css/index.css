@@ -279,12 +279,12 @@ textarea {
   line-height: inherit;
 }
 a {
-  color: #056571;
+  color: #0346b2;
   text-decoration: none;
 }
 a:hover,
 a:focus {
-  color: #022428;
+  color: #022867;
   text-decoration: underline;
 }
 a:focus {
@@ -2523,7 +2523,7 @@ fieldset[disabled] .btn-danger.focus {
   background-color: #fff;
 }
 .btn-link {
-  color: #056571;
+  color: #0346b2;
   font-weight: normal;
   border-radius: 0;
 }
@@ -2544,7 +2544,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #022428;
+  color: #022867;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -3124,7 +3124,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav .open > a:hover,
 .nav .open > a:focus {
   background-color: #E0E0E0;
-  border-color: #056571;
+  border-color: #0346b2;
 }
 .nav .nav-divider {
   height: 1px;
@@ -3843,7 +3843,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   padding: 6px 12px;
   line-height: 1.42857143;
   text-decoration: none;
-  color: #056571;
+  color: #0346b2;
   background-color: #fff;
   border: 1px solid #ddd;
   margin-left: -1px;
@@ -3864,7 +3864,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > li > a:focus,
 .pagination > li > span:focus {
   z-index: 2;
-  color: #022428;
+  color: #022867;
   background-color: #E0E0E0;
   border-color: #ddd;
 }
@@ -4062,7 +4062,7 @@ a.badge:focus {
 }
 .list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
-  color: #056571;
+  color: #0346b2;
   background-color: #fff;
 }
 .list-group-item > .badge {
@@ -10174,6 +10174,46 @@ th .static-map {
 }
 .rides-in-progress table tr > td {
   vertical-align: middle;
+}
+.ride-preferences {
+  padding: 15px;
+  margin-bottom: 22px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #333333;
+  padding: 7.5px;
+}
+.ride-preferences h4 {
+  margin-top: 0;
+  color: inherit;
+}
+.ride-preferences .alert-link {
+  font-weight: bold;
+}
+.ride-preferences > p,
+.ride-preferences > ul {
+  margin-bottom: 0;
+}
+.ride-preferences > p + p {
+  margin-top: 5px;
+}
+.ride-preferences hr {
+  border-top-color: #bfbfbf;
+}
+.ride-preferences .alert-link {
+  color: #1a1a1a;
+}
+.ride-preferences ul > li > i {
+  color: #056571;
+}
+a.ride-preferences ul > li > i:hover,
+a.ride-preferences ul > li > i:focus {
+  color: #033940;
+}
+.ride-notes .alert {
+  margin-bottom: 11px;
 }
 .nav > .start-ride-btn > a {
   color: #82c135;
