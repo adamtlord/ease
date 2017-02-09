@@ -78,7 +78,7 @@
                             <td>${{ ride.total_cost_estimate }}</td>
                             <td>{{ ride.company }}</td>
                             <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
-                            <td><a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
+                            <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
                 {% endfor %}
@@ -89,8 +89,14 @@
         <input type="submit" class="btn btn-primary btn-block" value="Bill Checked Rides" disabled="disabled" />
     </div>
 </form>
+<div class="modal fade" id="viewRideModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/apps/ready_to_bill.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 {% endblock %}
