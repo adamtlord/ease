@@ -7,11 +7,19 @@
         <tbody>
             <tr>
                 <th>Start</th>
-                <td>{{ ride.start.fullname }}<br><small class="subtext">{{ ride.start.fulladdress }}</small></td>
+                <td>{{ ride.start.fullname }}<br><small class="subtext">{{ ride.start.fulladdress }}</small>
+                    {% if ride.start.notes %}
+                        <p class="destination-notes">{{ ride.start.notes }}</p>
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Destination</th>
-                <td>{{ ride.destination.fullname }}<br><small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                <td>{{ ride.destination.fullname }}<br><small class="subtext">{{ ride.destination.fulladdress }}</small>
+                    {% if ride.destination.notes %}
+                        <p class="destination-notes">{{ ride.destination.notes }}</p>
+                    {% endif %}
+               </td>
             </tr>
             <tr>
                 <th>Start Time</th>
@@ -23,24 +31,24 @@
                     <td>{{ ride.customer.preferred_service }}</td>
                 </tr>
             {% endif %}
-            {% if ride.customer.send_updates %}
+            {% if ride.customer.residence_instructions %}
                 <tr>
-                    <th>Send Text Updates</th>
-                    <td>
-                        <i class="fa fa-commenting text-info"></i> {% if ride.customer.mobile_phone %}<strong>{{ ride.customer.mobile_phone }}</strong>{% else %}<em>no mobile phone entered!</em>{% endif %}
-                    </td>
+                    <th>Residence Instructions</th>
+                    <td>{{ ride.customer.residence_instructions }}</td>
                 </tr>
             {% endif %}
             <tr>
-                <th>Complete</th>
-                <td>{% if ride.complete %}
-                        <i class="fa fa-check text-success"></i>
-                    {% endif %}
-                    {% if ride.is_scheduled %}
-                        <i class="fa fa-clock-o text-primary"></i>
-                    {% endif %}
-                </td>
+                <th>Phone</th>
+                <td>{{ ride.customer.phone_numbers|safe }}</td>
             </tr>
+            {% if ride.customer.send_updates %}
+                <tr>
+                    <th>Send Text Updates To</th>
+                    <td>
+                        {% if ride.customer.mobile_phone %}{{ ride.customer.mobile_phone }}{% else %}<em>no mobile phone entered</em>{% endif %}
+                    </td>
+                </tr>
+            {% endif %}
             {% if ride.customer.special_assistance %}
                 <tr class="warning">
                     <th>Special Assitance</th>
@@ -63,13 +71,7 @@
                     <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %} {% if ride.included_in_plan %}(included){% endif %}</td>
                 </tr>
             {% endif %}
-            <tr>
-                <th>Distance</th>
-                <td>{% if ride.distance %}
-                        {{ ride.distance }} mi
-                    {% endif %}
-                </td>
-            </tr>
+
             {% if ride.notes %}
                 <tr>
                     <th>Notes</th>
