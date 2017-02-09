@@ -1,3 +1,5 @@
+/* global Clipboard */
+
 $(function(){
 
     $(".datetime-start input, .datetime-end input").datetimepicker({
@@ -15,6 +17,10 @@ $(function(){
     $('.input-group-btn').tooltip({
         placement: 'bottom',
         trigger: 'manual'
+    });
+
+    $('#id_start, #id_destination').select2({
+        theme: 'bootstrap'
     });
 
     var clipboard = new Clipboard('.copybtn');

@@ -154,12 +154,11 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     customer = get_object_or_404(Customer, pk=ride.customer.id)
     errors = {}
     if request.method == 'GET':
-        form = RideForm(instance=ride)
+        form = RideForm(instance=ride, customer=customer)
     else:
-        form = RideForm(request.POST, instance=ride)
+        form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():
             form.save()
-            return redirect('customer_history', customer.id)
         else:
             errors = form.errors
 

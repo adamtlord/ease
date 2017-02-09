@@ -128,13 +128,26 @@ class RideForm(forms.ModelForm):
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
     complete = forms.BooleanField(required=False)
+    start = DestinationChoiceField(
+        queryset=Destination.objects.none(),
+        empty_label=None,
+        label="Pick up at"
+        )
+    destination = DestinationChoiceField(
+        queryset=Destination.objects.none(),
+        empty_label=None,
+        label="Destination"
+        )
 
     class Meta:
         model = Ride
         fields = EDIT_RIDE_FIELDS + ['complete', 'included_in_plan']
 
     def __init__(self, *args, **kwargs):
+        customer = kwargs.pop('customer')
         super(RideForm, self).__init__(*args, **kwargs)
+        self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
+        self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
         self.fields['notes'].widget.attrs['rows'] = 4
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'

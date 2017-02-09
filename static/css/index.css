@@ -325,7 +325,7 @@ hr {
   margin-top: 22px;
   margin-bottom: 22px;
   border: 0;
-  border-top: 1px solid #E0E0E0;
+  border-top: 1px solid #F5F5F5;
 }
 .sr-only {
   position: absolute;
@@ -588,7 +588,7 @@ a.bg-danger:focus {
 .page-header {
   padding-bottom: 10px;
   margin: 44px 0 22px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid #F5F5F5;
 }
 ul,
 ol {
@@ -656,7 +656,7 @@ blockquote {
   padding: 11px 22px;
   margin: 0 0 22px;
   font-size: 20px;
-  border-left: 5px solid #E0E0E0;
+  border-left: 5px solid #F5F5F5;
 }
 blockquote p:last-child,
 blockquote ul:last-child,
@@ -680,7 +680,7 @@ blockquote .small:before {
 blockquote.pull-right {
   padding-right: 15px;
   padding-left: 0;
-  border-right: 5px solid #E0E0E0;
+  border-right: 5px solid #F5F5F5;
   border-left: 0;
   text-align: right;
 }
@@ -1711,7 +1711,7 @@ output {
 .form-control[disabled],
 .form-control[readonly],
 fieldset[disabled] .form-control {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   opacity: 1;
 }
 .form-control[disabled],
@@ -3022,7 +3022,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   line-height: 1;
   color: #555555;
   text-align: center;
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -3108,7 +3108,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav > li > a:hover,
 .nav > li > a:focus {
   text-decoration: none;
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
 }
 .nav > li.disabled > a {
   color: #777777;
@@ -3123,7 +3123,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav .open > a,
 .nav .open > a:hover,
 .nav .open > a:focus {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   border-color: #0346b2;
 }
 .nav .nav-divider {
@@ -3149,7 +3149,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   border-radius: 4px 4px 0 0;
 }
 .nav-tabs > li > a:hover {
-  border-color: #E0E0E0 #E0E0E0 #ddd;
+  border-color: #F5F5F5 #F5F5F5 #ddd;
 }
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
@@ -3865,7 +3865,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pagination > li > span:focus {
   z-index: 2;
   color: #022867;
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   border-color: #ddd;
 }
 .pagination > .active > a,
@@ -3943,7 +3943,7 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
 .pager li > a:hover,
 .pager li > a:focus {
   text-decoration: none;
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
 }
 .pager .next > a,
 .pager .next > span {
@@ -4079,7 +4079,7 @@ a.badge:focus {
   padding-bottom: 30px;
   margin-bottom: 30px;
   color: inherit;
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
 }
 .jumbotron h1,
 .jumbotron .h1 {
@@ -4091,7 +4091,7 @@ a.badge:focus {
   font-weight: 200;
 }
 .jumbotron > hr {
-  border-top-color: #c7c7c7;
+  border-top-color: #dcdcdc;
 }
 .container .jumbotron,
 .container-fluid .jumbotron {
@@ -4237,7 +4237,7 @@ button.list-group-item {
 .list-group-item.disabled,
 .list-group-item.disabled:hover,
 .list-group-item.disabled:focus {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   color: #777777;
   cursor: not-allowed;
 }
@@ -7584,7 +7584,7 @@ fieldset[disabled] .form-controller input[type="url"],
 fieldset[disabled] .form-controller input[type="search"],
 fieldset[disabled] .form-controller input[type="tel"],
 fieldset[disabled] .form-controller input[type="color"] {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   opacity: 1;
 }
 .form-controller select[disabled],
@@ -7861,6 +7861,11 @@ a.phone-numbers i:focus {
 .table-fixed {
   table-layout: fixed;
 }
+.form-control.monospace {
+  font-family: monospace;
+  background-color: #F5F5F5;
+  box-shadow: none;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\
@@ -8075,7 +8080,7 @@ a.phone-numbers i:focus {
 }
 .select2-container--bootstrap.select2-container--disabled .select2-selection,
 .select2-container--bootstrap.select2-container--disabled .select2-selection--multiple .select2-selection__choice {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
 }
 .select2-container--bootstrap.select2-container--disabled .select2-selection__clear,
 .select2-container--bootstrap.select2-container--disabled .select2-selection--multiple .select2-selection__choice__remove {
@@ -8531,15 +8536,15 @@ a.phone-numbers i:focus {
   margin: 0;
 }
 .datetimepicker table tr td.minute:hover {
-  background: #E0E0E0;
+  background: #F5F5F5;
   cursor: pointer;
 }
 .datetimepicker table tr td.hour:hover {
-  background: #E0E0E0;
+  background: #F5F5F5;
   cursor: pointer;
 }
 .datetimepicker table tr td.day:hover {
-  background: #E0E0E0;
+  background: #F5F5F5;
   cursor: pointer;
 }
 .datetimepicker table tr td span {
@@ -8552,7 +8557,7 @@ a.phone-numbers i:focus {
   cursor: pointer;
 }
 .datetimepicker table tr td span:hover {
-  background: #E0E0E0;
+  background: #F5F5F5;
 }
 .datetimepicker table tr td span.old {
   color: #777777;
@@ -8808,7 +8813,7 @@ a.phone-numbers i:focus {
 }
 .datetimepicker thead tr:first-child th:hover,
 .datetimepicker tfoot tr:first-child th:hover {
-  background: #E0E0E0;
+  background: #F5F5F5;
 }
 .input-append.date .add-on i,
 .input-prepend.date .add-on i,
@@ -8937,6 +8942,9 @@ h3,
   font-size: 16px;
   line-height: 1.42857143;
   border-radius: 4px;
+  line-height: 22px;
+  font-size: 14px;
+  font-weight: normal;
 }
 .btn-secondary {
   color: #FFF;
@@ -9123,7 +9131,7 @@ body {
   background-color: #111;
 }
 .footer p {
-  color: #E0E0E0;
+  color: #F5F5F5;
   font-size: 14px;
   margin: 0;
 }
@@ -9499,7 +9507,7 @@ fieldset[disabled] .add-control input[type="url"],
 fieldset[disabled] .add-control input[type="search"],
 fieldset[disabled] .add-control input[type="tel"],
 fieldset[disabled] .add-control input[type="color"] {
-  background-color: #E0E0E0;
+  background-color: #F5F5F5;
   opacity: 1;
 }
 .add-control select[disabled],
@@ -9612,7 +9620,7 @@ legend + .help-block {
 .stacked-fieldset {
   padding: 22px 0 0;
   margin: 22px 0;
-  border-top: 1px solid #E0E0E0;
+  border-top: 1px solid #F5F5F5;
 }
 .form-error-container {
   display: block;
@@ -9646,7 +9654,7 @@ fieldset.lovedone + fieldset.lovedone,
 fieldset.rider + fieldset.rider {
   padding: 22px 0 0;
   margin: 22px 0;
-  border-top: 1px solid #E0E0E0;
+  border-top: 1px solid #F5F5F5;
 }
 fieldset + fieldset legend {
   padding-top: 22px;

@@ -103,15 +103,15 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <input type="submit" name="schedule" class="btn btn-secondary" value="Schedule ride">
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
 </form>
 {% endblock %}
 {% block scripts %}
-<script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
-<script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/geocomplete.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/ride.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAutocomplete" async defer></script>

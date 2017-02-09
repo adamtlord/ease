@@ -22,13 +22,14 @@
     {% endif %}
     <div class="row">
         <div class="col-sm-6">
+            {% render_form_field form.start %}
             <div class="form-group">
-                <label>Starting point</label>
+                <label>Start address</label>
                 <div class="input-group">
-                    <input id="starting_point" class="form-control" value="{{ ride.start.fulladdress }}">
+                    <input id="starting_point" readonly class="form-control monospace" value="{{ ride.start.fulladdress }}">
                     <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                         <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point">
-                            <i class="fa fa-clipboard"></i>
+                            copy
                         </button>
                     </span>
                 </div>
@@ -40,16 +41,15 @@
                 <div class="form-group">
                     <label>Starting point notes</label>
                     <div class="input-group">
-                        <input id="starting_point_notes" class="form-control" value="{{ ride.start.notes }}">
+                        <input id="starting_point_notes" class="form-control monospace" value="{{ ride.start.notes }}">
                         <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                             <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point_notes">
-                                <i class="fa fa-clipboard"></i>
+                                copy
                             </button>
                         </span>
                     </div>
                 </div>
             {% endif %}
-            {{ form.start.as_hidden }}
             <div class="form-group datetime-start">
                 <label>Start date<span class="req">*</span></label>
                 <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
@@ -66,13 +66,14 @@
             {% render_form_field form.included_in_plan %}
         </div>
         <div class="col-sm-6">
+            {% render_form_field form.destination %}
             <div class="form-group">
-                <label>Destination</label>
+                <label>Destination address</label>
                 <div class="input-group">
-                    <input id="destination" class="form-control" value="{{ ride.destination.fulladdress }}">
+                    <input id="destination" class="form-control monospace" value="{{ ride.destination.fulladdress }}">
                     <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                         <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination">
-                            <i class="fa fa-clipboard"></i>
+                            copy
                         </button>
                     </span>
                 </div>
@@ -84,16 +85,15 @@
                 <div class="form-group has-info">
                     <label>Destination notes</label>
                     <div class="input-group">
-                        <input id="destination_notes" class="form-control" value="{{ ride.destination.notes }}">
+                        <input id="destination_notes" class="form-control monospace" value="{{ ride.destination.notes }}">
                         <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
                             <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination_notes">
-                                <i class="fa fa-clipboard"></i>
+                                copy
                             </button>
                         </span>
                     </div>
                 </div>
             {% endif %}
-            {{ form.destination.as_hidden }}
             {{ form.end_date.as_hidden }}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
