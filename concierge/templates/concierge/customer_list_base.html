@@ -17,8 +17,8 @@
             <div class="col-sm-6">
                 <div class="clearfix">
                     <ul class="nav nav-pills">
-                        <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'customer_list' %}">Active</a></li>
-                        <li role="presentation" class="{% if inactive_page %}active{% endif %}"><a href="{% url 'customer_list_inactive' %}">Inactive</a></li>
+                        <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'customer_list' %}">Active <span class="badge">{{ active_count }}</span></a></li>
+                        <li role="presentation" class="{% if inactive_page %}active{% endif %}"><a href="{% url 'customer_list_inactive' %}">Inactive <span class="badge">{{ inactive_count }}</span></a></li>
                         <li role="presentation" class="{% if register_page %}active{% endif %}"><a href="{% url 'customer_create' %}">Register a New Customer</a></li>
                     </ul>
                 </div>

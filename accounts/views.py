@@ -1,7 +1,5 @@
 import datetime
-import pytz
 import stripe
-import time
 
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required

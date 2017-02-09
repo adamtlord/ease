@@ -143,6 +143,14 @@
                             {% endif %}
                         </td>
                     </tr>
+                    {% if subscription %}
+                        <tr>
+                            <td>Subscription renews on</td>
+                            <td>
+                                {{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                            </td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td>Rides billed to</td>
                         <td>
@@ -158,6 +166,10 @@
                                 <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
                             {% endif %}
                         </td>
+                    </tr>
+                    <tr>
+                        <td>Customer Since:</td>
+                        <td>{{ customer.user.date_joined|date:"DATE_FORMAT" }}</td>
                     </tr>
                     {% if customer.user.profile.source %}
                         <tr>

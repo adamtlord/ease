@@ -4039,7 +4039,7 @@ a.label:focus {
   vertical-align: middle;
   white-space: nowrap;
   text-align: center;
-  background-color: #777777;
+  background-color: #b7b7b7;
   border-radius: 10px;
 }
 .badge:empty {
@@ -9117,6 +9117,11 @@ td .btn:last-child {
 }
 .tab-content.profile > .tab-pane {
   padding-top: 22px;
+}
+.nav-pills > li > a > .badge {
+  font-weight: normal;
+  vertical-align: 1px;
+  font-size: 12px;
 }
 html {
   position: relative;

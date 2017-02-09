@@ -14,11 +14,11 @@ from accounts.helpers import send_welcome_email, send_receipt_email
 from accounts.models import Customer, Rider
 from billing.models import Plan
 from billing.forms import StripeCustomerForm, AdminPaymentForm
+from billing.utils import get_stripe_subscription
 from common.utils import soon
 from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm
 from concierge.models import Touch
 from rides.forms import HomeForm
-from rides.helpers import sort_rides_by_customer
 from rides.models import Destination, Ride
 
 
@@ -102,18 +102,31 @@ def rides_history(request, template='concierge/rides_history.html'):
 
 @staff_member_required
 def customer_list(request, template='concierge/customer_list_active.html'):
-    d = {}
-    d['customers'] = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
-    d['active_page'] = True
+    active_customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
+    inactive_customers = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+
+    d = {
+        'customers': active_customers,
+        'active_count': active_customers.count(),
+        'inactive_count': inactive_customers.count(),
+        'active_page': True
+    }
+
     return render(request, template, d)
 
 
 @staff_member_required
 def customer_list_inactive(request, template='concierge/customer_list_inactive.html'):
-    d = {}
+    active_customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
+    inactive_customers = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
 
-    d['customers'] = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
-    d['inactive_page'] = True
+    d = {
+        'customers': inactive_customers,
+        'active_count': active_customers.count(),
+        'inactive_count': inactive_customers.count(),
+        'active_page': True
+    }
+
     return render(request, template, d)
 
 
@@ -187,11 +200,15 @@ def customer_create(request, template='concierge/customer_create.html'):
 @staff_member_required
 def customer_detail(request, customer_id, template='concierge/customer_detail.html'):
 
+    subscription = None
     customer = get_object_or_404(Customer, pk=customer_id)
+    if customer.subscription_account and customer.subscription_account.stripe_id:
+        subscription = get_stripe_subscription(customer)
     rides_in_progress = Ride.in_progress.filter(customer=customer)
 
     d = {
         'customer': customer,
+        'subscription': subscription,
         'profile_page': True,
         'riders': customer.riders.all(),
         'lovedones': customer.lovedones.all(),
