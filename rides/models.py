@@ -95,7 +95,12 @@ class Ride(models.Model):
 
     @property
     def description(self):
-        return '{} - {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), self.start.street1, self.destination.street1)
+        startstreet = destinationstreet = ''
+        if self.start.street1:
+            startstreet = self.start.street1
+        if self.destination.street1:
+            destinationstreet = self.destination.street1
+        return '{} - {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
 
     @property
     def total_cost_estimate(self):
