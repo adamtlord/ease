@@ -250,11 +250,10 @@ def rides_incomplete(request, template="rides/incomplete.html"):
 @staff_member_required
 def rides_invoiced(request, template="rides/invoiced.html"):
     rides = Ride.objects.filter(invoice__isnull=False).order_by('-start_date')
-    customers = sort_rides_by_customer(rides)
 
     d = {
         'invoiced_page': True,
-        'customers': customers
+        'rides': rides
     }
     return render(request, template, d)
 
