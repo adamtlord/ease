@@ -159,6 +159,7 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
         form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():
             form.save()
+            messages.success(request, "Ride saved successfully")
         else:
             errors = form.errors
 

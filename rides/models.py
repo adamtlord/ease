@@ -70,7 +70,7 @@ class Ride(models.Model):
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     fare_estimate = models.CharField(max_length=128, blank=True, null=True)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
-    company = models.CharField(max_length=64, blank=True, null=True, choices=COMPANIES, default=UBER)
+    company = models.CharField(max_length=64, blank=True, null=True, choices=COMPANIES)
     external_id = models.CharField(max_length=64, blank=True, null=True)
     complete = models.BooleanField(default=False)
     invoice_item_id = models.CharField(max_length=64, blank=True, null=True)
