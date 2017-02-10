@@ -34,7 +34,8 @@ def handle_lyft_upload(uploaded_file):
             ride_id = int(row[ID_COL])
             ride = Ride.objects.get(pk=ride_id)
             ride.cost = Decimal(row[COST_COL].replace('$', '').strip(' '))
-            ride.company = row[COMPANY_COL].title()
+            if row[COMPANY_COL]:
+                ride.company = row[COMPANY_COL].title()
             ride.complete = True
             ride.save()
             results['success'] += 1
