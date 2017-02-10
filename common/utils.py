@@ -30,9 +30,14 @@ def get_distance(ride):
 
     mode = 'driving'
 
-    distance_result = gmaps.distance_matrix(origins, destinations, mode=mode)
-    distance_in_meters = distance_result['rows'][0]['elements'][0]['distance']['value']
-    distance_in_miles = distance_in_meters * METERS_TO_MILES
+    distance_in_miles = None
+
+    try:
+        distance_result = gmaps.distance_matrix(origins, destinations, mode=mode)
+        distance_in_meters = distance_result['rows'][0]['elements'][0]['distance']['value']
+        distance_in_miles = distance_in_meters * METERS_TO_MILES
+    except:
+        pass
 
     return distance_in_miles
 
