@@ -14,7 +14,10 @@
         {% render_form_field field %}
     {% endfor %}
     <input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'dashboard' %}{% endif %}" />
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <div class="form-actions">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </div>
 </form>
+<p><a href="{% url 'auth_password_reset' %}">Forgot your password?</a></p>
 
 {% endblock %}

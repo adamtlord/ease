@@ -46,10 +46,11 @@ urlpatterns = [
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
     url(r'^destinations/add/$', destination_add, name='destination_add'),
     url(r'^password_validate/$', password_validate, name='password_validate'),
-    url(r'^password_reset/$',
+    url(r'^password/reset/$',
         auth_views.password_reset,
         {
-            'html_email_template_name': 'registration/password_reset_html_email.html'
+            'html_email_template_name': 'registration/password_reset_html_email.html',
+            'email_template_name': 'registration/password_reset_email.txt'
         },
         name='auth_password_reset'
         ),
