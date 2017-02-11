@@ -291,6 +291,23 @@ class Customer(Contact):
         phone_string += '</span>'
         return phone_string
 
+    @property
+    def phone_numbers_br(self):
+        phone_string = '<span class="phone-numbers">'
+        if self.home_phone and self.mobile_phone:
+            phone_string += '{} <span>(H)</span>'.format(self.home_phone)
+            if self.preferred_phone == 'h':
+                phone_string += '<i></i>'
+            phone_string += '<br />{} <span>(M)</span>'.format(self.mobile_phone)
+            if self.preferred_phone == 'm':
+                phone_string += '<i></i>'
+        elif self.mobile_phone:
+            phone_string += '{} <span>(M)</span>'.format(self.mobile_phone)
+        else:
+            phone_string += '{} <span>(H)</span>'.format(self.home_phone)
+        phone_string += '</span>'
+        return phone_string
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 

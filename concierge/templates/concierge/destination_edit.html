@@ -4,7 +4,7 @@
 {% block title %}Update Customer {{ customer }}{% endblock title %}
 {% block customer_content %}
 
-<h3>Editing {{ destination.name }}</h3>
+<h3>{{ destination.name }}</h3>
 <div class="row">
     <div class="col-sm-6">
         <form action="" class="form add-destinations" method="POST" novalidate>{% csrf_token %}
