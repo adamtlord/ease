@@ -43,7 +43,7 @@
         {% block footer %}
             {% include 'fragments/footer.html' %}
         {% endblock %}
-
+        {% block scripts %}{% endblock %}
         {% if is_prod %}
             {% include 'fragments/ga.html' %}
         {% endif %}

@@ -32,7 +32,29 @@
         </form>
     </div>
     <div class="col-sm-6">
-        {% static_map destination %}
+        <div id="map"></div>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    function sizeMap() {
+       $('#map').css({'height': $('fieldset.destination').outerHeight() + 'px'});
+    }
+    function initMap() {
+        var lat = {{ destination.latitude|default:'' }};
+        var lng = {{ destination.longitude|default:'' }};
+        var destination = {lat: lat, lng: lng};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 17,
+          center: destination
+        });
+        var marker = new google.maps.Marker({
+          position: destination,
+          map: map,
+        });
+        sizeMap();
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
 {% endblock %}
