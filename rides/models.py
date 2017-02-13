@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import formats, timezone
 
 from common.models import Location
-from common.utils import geocode_address
+from common.utils import geocode_address, get_timezone
 
 from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
 from rides.const import COMPANIES, UBER, LYFT
@@ -24,17 +24,30 @@ class Destination(Location):
     def ltlng(self):
         return '{},{}'.format(self.latitude, self.longitude)
 
+    def set_ltlng(self):
+        address_string = '{} {} {} {}'.format(self.street1, self.city, self.state, self.zip_code)
+        ltlng = geocode_address(address_string)
+        self.latitude = ltlng[0]
+        self.longitude = ltlng[1]
+
+    def set_timezone(self):
+        tz_name = get_timezone(self.ltlng)
+        self.customer.timezone = tz_name
+        self.customer.save()
+
     def save(self, *args, **kwargs):
         super(Destination, self).save(*args, **kwargs)
         if not (self.latitude and self.longitude):
-            address_string = '{} {} {} {}'.format(self.street1, self.city, self.state, self.zip_code)
             try:
-                ltlng = geocode_address(address_string)
-                self.latitude = ltlng[0]
-                self.longitude = ltlng[1]
-            except Exception:
+                self.set_ltlng()
+            except:
                 pass
-            super(Destination, self).save(*args, **kwargs)
+        if self.home and not self.customer.timezone:
+            try:
+                self.set_timezone()
+            except:
+                pass
+        super(Destination, self).save(*args, **kwargs)
 
     @property
     def fullname(self):

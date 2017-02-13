@@ -1,3 +1,4 @@
+import pytz
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
@@ -78,6 +79,19 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if not start_ride_form.cleaned_data['start_date']:
                 new_ride.start_date = timezone.now()
 
+            if request.POST.get('schedule', None):
+                tz_abbrev = ''
+                if customer.timezone:
+                    # get timezone object for customer
+                    cust_tz = pytz.timezone(customer.timezone)
+                    # convert default (pac) datetime to naive
+                    naived_start_date = new_ride.start_date.replace(tzinfo=None)
+                    # re-localize datetime to customer's timezone
+                    localized_start_date = cust_tz.localize(naived_start_date)
+                    tz_abbrev = localized_start_date.tzname()
+                    # set start_date to re-localized datetime
+                    new_ride.start_date = localized_start_date
+
             new_ride.distance = get_distance(new_ride)
             new_ride.save()
 
@@ -97,7 +111,8 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             new_ride.save()
 
             if request.POST.get('schedule', None):
-                messages.success(request, "Ride scheduled for {}".format(formats.date_format(new_ride.start_date, "SHORT_DATETIME_FORMAT")))
+
+                messages.success(request, "Ride scheduled for {} {}".format(formats.date_format(new_ride.start_date, "SHORT_DATETIME_FORMAT"), tz_abbrev))
                 return redirect('customer_history', customer.id)
 
             messages.success(request, "Ride started")

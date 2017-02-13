@@ -15,6 +15,12 @@ def geocode_address(address_string):
     return (lat, lng)
 
 
+def get_timezone(latlng):
+    gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
+    timezone_result = gmaps.timezone(latlng)
+    return timezone_result['timeZoneId']
+
+
 def get_distance(ride):
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
 

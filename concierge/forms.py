@@ -248,6 +248,16 @@ class DestinationForm(forms.ModelForm):
         for field in DESTINATION_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
+    def save(self, commit=True):
+        dest = super(DestinationForm, self).save(commit=False)
+        if self.has_changed():
+            dest.set_ltlng()
+            if dest.home:
+                dest.set_timezone()
+        if commit:
+            dest.save()
+        return dest
+
 
 class CreateHomeForm(forms.ModelForm):
     name = forms.CharField(widget=forms.HiddenInput(), initial='Home')
@@ -274,6 +284,15 @@ class UpdateHomeForm(forms.ModelForm):
         super(UpdateHomeForm, self).__init__(*args, **kwargs)
         for field in UPDATE_HOME_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+    def save(self, commit=True):
+        home = super(UpdateHomeForm, self).save(commit=False)
+        if self.has_changed():
+            home.set_ltlng()
+            home.set_timezone()
+        if commit:
+            home.save()
+        return home
 
 
 class LovedOneForm(forms.ModelForm):

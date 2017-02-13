@@ -1,4 +1,5 @@
 import datetime
+import pytz
 import stripe
 
 from django.contrib import messages
@@ -205,10 +206,18 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
     if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
     rides_in_progress = Ride.in_progress.filter(customer=customer)
+    tz_abbrev = ''
+    customer_tz = customer.timezone
+
+    if customer_tz:
+        tz = pytz.timezone(customer.timezone)
+        day = tz.localize(datetime.datetime.now(), is_dst=None)
+        tz_abbrev = day.tzname()
 
     d = {
         'customer': customer,
         'subscription': subscription,
+        'timezone': tz_abbrev,
         'profile_page': True,
         'riders': customer.riders.all(),
         'lovedones': customer.lovedones.all(),

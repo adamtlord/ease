@@ -9123,6 +9123,12 @@ td .btn:last-child {
   vertical-align: 1px;
   font-size: 12px;
 }
+#schedule_ride_modal .datetimepicker-inline {
+  width: 360px;
+}
+#schedule_ride_modal .datetimepicker-inline table {
+  width: 100%;
+}
 html {
   position: relative;
   min-height: 100%;

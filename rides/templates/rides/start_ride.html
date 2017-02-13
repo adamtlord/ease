@@ -84,13 +84,14 @@
         </div>
     </div>
     <div id="schedule_ride_modal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Schedule this ride</h4>
                 </div>
                 <div class="modal-body">
+                    <p>Choose the date and time the customer wishes to be picked up, in the <strong>customer's local time</strong>. (Don't do any timezone conversions yourself)</p>
                     <div class="form-group datetime-start">
                         <div class="input">{{ ride.start_date|date:'m/d/Y g:i A' }}</div>
                         {% if start_ride_form.start_date.errors %}

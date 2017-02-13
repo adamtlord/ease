@@ -179,6 +179,7 @@ class Customer(Contact):
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
+    timezone = models.CharField(max_length=128, blank=True, null=True)
     user = models.OneToOneField(CustomUser)
 
     @property

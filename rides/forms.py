@@ -63,6 +63,14 @@ class DestinationForm(forms.ModelForm):
         for field in DESTINATION_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
+    def save(self, commit=True):
+        dest = super(DestinationForm, self).save(commit=False)
+        if dest.has_changed():
+            dest.set_ltlng()
+        if commit:
+            dest.save()
+        return dest
+
 
 class HomeForm(forms.ModelForm):
     street1 = forms.CharField(label="Address")
@@ -92,6 +100,15 @@ class HomeForm(forms.ModelForm):
         if customer:
             self.fields['residence_type'].initial = customer.residence_type
             self.fields['residence_instructions'].initial = customer.residence_instructions
+
+    def save(self, commit=True):
+        home = super(HomeForm, self).save(commit=False)
+        if self.has_changed():
+            home.set_ltlng()
+            home.set_timezone()
+        if commit:
+            home.save()
+        return home
 
 
 class StartRideForm(forms.ModelForm):
