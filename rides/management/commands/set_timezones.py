@@ -23,4 +23,4 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.NOTICE('{} <{}> does not have a home address!'.format(customer, customer.id)))
 
-            self.stdout.write(self.style.SUCCESS('Successfully set timezone for {} <{}>'.format(customer. customer.id)))
+            self.stdout.write(self.style.SUCCESS('Successfully set timezone for {} <{}>'.format(customer, customer.id)))
