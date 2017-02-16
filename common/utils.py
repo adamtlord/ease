@@ -9,10 +9,13 @@ METERS_TO_MILES = 0.000621371
 def geocode_address(address_string):
     gmaps = googlemaps.Client(key=settings.GOOGLE_MAPS_API_KEY)
     geocode_result = gmaps.geocode(address_string)
-    location = geocode_result[0]['geometry']['location']
-    lat = location['lat']
-    lng = location['lng']
-    return (lat, lng)
+    try:
+        location = geocode_result[0]['geometry']['location']
+        lat = location['lat']
+        lng = location['lng']
+        return (lat, lng)
+    except IndexError:
+        return (0, 0)
 
 
 def get_timezone(latlng):

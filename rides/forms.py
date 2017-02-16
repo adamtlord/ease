@@ -104,8 +104,11 @@ class HomeForm(forms.ModelForm):
     def save(self, commit=True):
         home = super(HomeForm, self).save(commit=False)
         if self.has_changed():
-            home.set_ltlng()
-            home.set_timezone()
+            try:
+                home.set_ltlng()
+                home.set_timezone()
+            except Customer.DoesNotExist:
+                pass
         if commit:
             home.save()
         return home

@@ -26,14 +26,22 @@ class Destination(Location):
 
     def set_ltlng(self):
         address_string = '{} {} {} {}'.format(self.street1, self.city, self.state, self.zip_code)
-        ltlng = geocode_address(address_string)
-        self.latitude = ltlng[0]
-        self.longitude = ltlng[1]
+        try:
+            ltlng = geocode_address(address_string)
+            self.latitude = ltlng[0]
+            self.longitude = ltlng[1]
+        except:
+            pass
 
     def set_timezone(self):
-        tz_name = get_timezone(self.ltlng)
-        self.customer.timezone = tz_name
-        self.customer.save()
+        if self.zip_code and self.customer:
+            try:
+                ltlng = geocode_address(self.zip_code)
+                tz_name = get_timezone(ltlng)
+                self.customer.timezone = tz_name
+                self.customer.save()
+            except:
+                pass
 
     def save(self, *args, **kwargs):
         super(Destination, self).save(*args, **kwargs)
