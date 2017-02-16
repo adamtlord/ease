@@ -1,4 +1,5 @@
 {% extends 'base_app.html' %}
+{% load tz %}
 {% load custom_tags %}
 {% load map_tags %}
 {% load billing_tags %}
@@ -12,15 +13,9 @@
     {% endif %}
     </h2>
 </div>
-{% if customer.rides_this_month %}
+{% if customer.rides_this_month and customer.subscription_account and customer.plan.included_rides_per_month %}
     <p class="alert alert-info">
-        {% if customer.rides_this_month == 1 %}
-            You have taken one ride this billing cycle. It was{% if not customer.included_rides_this_month %} not{% endif %} included in your plan.
-        {% else %}
-            You have taken {{ customer.rides_this_month }} ride{% if customer.rides_this_month != 1%}s{% endif %} this billing cycle, of which
-            {{ customer.included_rides_this_month|length }} {% if customer.included_rides_this_month|length == 1 %}was{% else %}were{% endif %}
-            included in your plan.
-        {% endif %}
+            Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
     </p>
 {% endif %}
 <div class="row">
@@ -192,7 +187,11 @@
             <tbody>
                 {% for ride in customer.rides %}
                 <tr>
-                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    <td>
+                        {% timezone ride.customer.timezone %}
+                            {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}
+                        {% endtimezone %}
+                    </td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{% if ride.distance %}
