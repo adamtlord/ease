@@ -15,7 +15,7 @@ def geocode_address(address_string):
         lng = location['lng']
         return (lat, lng)
     except IndexError:
-        return (0, 0)
+        pass
 
 
 def get_timezone(latlng):

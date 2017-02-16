@@ -7866,6 +7866,13 @@ a.phone-numbers i:focus {
   background-color: #F5F5F5;
   box-shadow: none;
 }
+.static-map .error {
+  background: #777777;
+  padding: 12px;
+  font-size: 12.6px;
+  text-align: center;
+  color: #F5F5F5;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\
