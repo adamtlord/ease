@@ -356,3 +356,12 @@ class ActivityForm(forms.ModelForm):
         super(ActivityForm, self).__init__(*args, **kwargs)
         for field in TOUCH_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+    def save(self, commit=True):
+        touch = super(ActivityForm, self).save(commit=False)
+        if touch.type == Touch.INTRO:
+            touch.customer.intro_call = True
+            touch.customer.save()
+        if commit:
+            touch.save()
+        return touch
