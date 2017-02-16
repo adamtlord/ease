@@ -9,9 +9,7 @@
                 <th>From</th>
                 <th>To</th>
                 <th>Start Time</th>
-                {% if TIME_ZONE != ride.customer.timezone %}
-                    <th>Local Time</th>
-                {% endif %}
+                <th>Local Time</th>
                 <th>Complete</th>
                 <th>Cost</th>
                 <th>Total</th>
@@ -30,11 +28,9 @@
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                    {% if TIME_ZONE != ride.customer.timezone %}
-                        {% timezone ride.customer.timezone %}
-                            <td>{{ ride.start_date|date:"P (T)" }}</td>
-                        {% endtimezone %}
-                    {% endif %}
+                    {% timezone ride.customer.timezone %}
+                        <td>{{ ride.start_date|date:"P (T)" }}</td>
+                    {% endtimezone %}
                     <td align="center">
                         {% if ride.complete %}
                             <i class="fa fa-check text-success"></i>
