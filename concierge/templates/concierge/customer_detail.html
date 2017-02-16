@@ -5,6 +5,11 @@
 
     <div class="row">
         <div class="col-sm-8">
+            {% if not customer.home.latitude and not customer.home.longitude %}
+                <p class="alert alert-danger">
+                    <strong>Unable to map customer's home!</strong> Please confirm/update home address before starting any rides.
+                </p>
+            {% endif %}
             {% if not customer.intro_call %}
                 <p class="alert alert-warning">
                     <strong>Intro call needed</strong>

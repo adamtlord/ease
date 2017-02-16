@@ -7755,6 +7755,9 @@ a.phone-numbers i:focus {
 .alert dl dd {
   padding-left: 12px;
 }
+.alert + .alert {
+  margin-top: -11px;
+}
 .btn.loading {
   position: relative;
   color: rgba(255, 255, 255, 0.4);
