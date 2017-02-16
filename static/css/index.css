@@ -7873,6 +7873,9 @@ a.phone-numbers i:focus {
   text-align: center;
   color: #F5F5F5;
 }
+.portal .static-map .error {
+  display: none;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\

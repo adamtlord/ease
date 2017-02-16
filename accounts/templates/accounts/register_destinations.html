@@ -44,13 +44,13 @@
 <div class="row">
     <div class="col-sm-4 col-sm-push-8">
         <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Home</h3>
-        {{ home.street1 }}<br>
+        <p>{{ home.street1 }}<br>
         {% if home.street2 %}
             {{ home.street2 }}<br>
         {% endif %}
         {{ home.city }},
         {{ home.state }}
-        {{ home.zip_code }}
+        {{ home.zip_code }}</p>
         {% static_map home %}
         {% if customer.destinations %}
             <h3>{% if self %}Your{% endif %}{% if lovedone %}{{ customer.first_name }}'s{% endif %} Destinations</h3>
