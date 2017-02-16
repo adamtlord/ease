@@ -1,3 +1,4 @@
+{% load tz %}
 {% if rides %}
 <div class="table-responsive">
     <table class="table table-striped">
@@ -7,6 +8,7 @@
                 <th>From</th>
                 <th>To</th>
                 <th>Start Time</th>
+                <th>Local Time</th>
                 <th>Complete</th>
                 <th>Cost</th>
                 <th>Total</th>
@@ -25,6 +27,9 @@
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    {% timezone ride.customer.timezone %}
+                        <td>{{ ride.start_date|date:"P (T)" }}</td>
+                    {% endtimezone %}
                     <td align="center">
                         {% if ride.complete %}
                             <i class="fa fa-check text-success"></i>

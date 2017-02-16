@@ -1,3 +1,5 @@
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <h4 class="modal-title">Ride {{ ride.id }}: {{ ride }}</h4>
@@ -25,6 +27,14 @@
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
             </tr>
+            {% if TIME_ZONE != ride.customer.timezone %}
+                {% timezone ride.customer.timezone %}
+                    <tr class="info">
+                        <th>Local Start Time</th>
+                        <td>{{ ride.start_date|date:"P (T)" }}</td>
+                    </tr>
+                {% endtimezone %}
+            {% endif %}
             {% if ride.customer.preferred_service %}
                 <tr>
                     <th>Preferred Service</th>
