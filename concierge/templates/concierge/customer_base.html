@@ -32,7 +32,7 @@
                 <span class="label label-danger">No Plan Selected</span>
             {% endif %}
             {% if customer.subscription_account and customer.plan.included_rides_per_month %}
-                Included rides taken this cycle: {{ customer.rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
+                Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
             {% endif %}
         </div>
         <div class="col-sm-6 text-right">
