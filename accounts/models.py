@@ -39,7 +39,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=True,
         help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'
     )
-    date_joined = models.DateTimeField(verbose_name='date joined', default=timezone.now)
+    date_joined = models.DateTimeField(verbose_name='date joined', default=timezone.now())
 
     objects = CustomUserManager()
 
@@ -216,7 +216,8 @@ class Customer(Contact):
                 subscription = get_stripe_subscription(self)
                 if subscription:
                     start_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_start))
-                    rides = Ride.objects.filter(customer=self).filter(start_date__gt=start_of_billing_period)
+                    end_of_billing_period = pytz.utc.localize(datetime.datetime.fromtimestamp(subscription.current_period_end))
+                    rides = Ride.objects.filter(customer=self).filter(start_date__lte=timezone.now()).filter(start_date__gt=start_of_billing_period).filter(start_date__lt=end_of_billing_period)
                     return rides
             except:
                 Ride.objects.none()

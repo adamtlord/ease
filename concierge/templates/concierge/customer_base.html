@@ -31,11 +31,8 @@
             {% else %}
                 <span class="label label-danger">No Plan Selected</span>
             {% endif %}
-            {% if customer.subscription_account %}
-                {{ customer.rides_this_month|default:'No' }} ride{% if customer.rides_this_month != 1 %}s{% endif %} this month{% if customer.included_rides_this_month %},
-                    {{ customer.included_rides_this_month }} included{% endif %}{% if customer.plan.included_rides_per_month %},
-                    {{ customer.remaining_rides_this_month }} remaining
-                {% endif %}
+            {% if customer.subscription_account and customer.plan.included_rides_per_month %}
+                Included rides taken this cycle: {{ customer.rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
             {% endif %}
         </div>
         <div class="col-sm-6 text-right">
