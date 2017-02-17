@@ -34,6 +34,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'distance',
     'company',
     'external_id',
+    'fees',
     'notes',
 ]
 
@@ -147,7 +148,7 @@ class RideForm(forms.ModelForm):
     start_date = forms.DateTimeField()
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
-    complete = forms.BooleanField(required=False)
+    complete = forms.BooleanField(required=False, label="Complete (or cancelled)")
     start = DestinationChoiceField(
         queryset=Destination.objects.none(),
         empty_label=None,
@@ -157,6 +158,10 @@ class RideForm(forms.ModelForm):
         queryset=Destination.objects.none(),
         empty_label=None,
         label="Destination"
+        )
+    fees = forms.DecimalField(
+        required=False,
+        help_text="Use for cancellation fees or surcharges, NOT for the standard Arrive fee!"
         )
 
     class Meta:

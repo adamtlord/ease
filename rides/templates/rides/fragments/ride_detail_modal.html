@@ -72,16 +72,25 @@
                     <th>Cost</th>
                     <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
                 </tr>
+            {% endif %}
+            {% if ride.arrive_fee %}
                 <tr>
-                    <th>Fee</th>
-                    <td>${{ ride.fee|default:'0' }}</td>
-                </tr>
-                <tr>
-                    <th>Total</th>
-                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %} {% if ride.included_in_plan %}(included){% endif %}</td>
+                    <th>Arrive Fee</th>
+                    <td>${{ ride.arrive_fee|default:'0' }}</td>
                 </tr>
             {% endif %}
-
+            {% if ride.fees %}
+                <tr>
+                    <th>Other Fees</th>
+                    <td>${{ ride.fees|default:'0' }}</td>
+                </tr>
+            {% endif %}
+            {% if ride.cost or ride.arrive_fees or ride.fees %}
+                <tr>
+                    <th>Total</th>
+                    <td>${{ ride.total_cost_estimate|default:'0' }} {% if ride.included_in_plan %}(included){% endif %}</td>
+                </tr>
+            {% endif %}
             {% if ride.notes %}
                 <tr>
                     <th>Notes</th>

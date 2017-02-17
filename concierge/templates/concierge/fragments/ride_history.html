@@ -12,6 +12,7 @@
                 <th>Local Time</th>
                 <th>Complete</th>
                 <th>Cost</th>
+                <th>Fees</th>
                 <th>Total</th>
                 {% if customer.plan.includes_rides %}
                     <th>Included</th>
@@ -39,8 +40,18 @@
                             <i class="fa fa-clock-o text-primary"></i>
                         {% endif %}
                     </td>
-                    <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
-                    <td>{% if ride.cost %}${{ ride.total_cost_estimate|default:'0' }}{% endif %}</td>
+                    <td>{% if ride.cost %}${{ ride.cost|default:'0' }}{% endif %}</td>
+                    <td>{% if ride.invoiced or ride.total_cost %}
+                            {% if ride.total_fees %}${{ ride.total_fees|default:'0' }}{% endif %}
+                        {% else %}
+                            {% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
+                        {% endif %}
+                    <td>{% if ride.invoiced or ride.total_cost %}
+                            ${{ ride.total_cost|default:'0' }}
+                        {% else %}
+                            ${{ ride.total_cost_estimate|default:'0' }}
+                        {% endif %}
+                    </td>
                     {% if customer.plan.includes_rides %}
                         <td align="center">{% if ride.included_in_plan %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     {% endif %}

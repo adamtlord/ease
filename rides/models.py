@@ -89,6 +89,7 @@ class Ride(models.Model):
     start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point', on_delete=models.SET_NULL, null=True)
     destination = models.ForeignKey('rides.Destination', related_name='ending_point', on_delete=models.SET_NULL, null=True)
     cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    fees = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     fare_estimate = models.CharField(max_length=128, blank=True, null=True)
     distance = models.DecimalField(blank=True, null=True, decimal_places=4, max_digits=9)
     company = models.CharField(max_length=64, blank=True, null=True, choices=COMPANIES)
@@ -96,7 +97,7 @@ class Ride(models.Model):
     complete = models.BooleanField(default=False)
     invoice_item_id = models.CharField(max_length=64, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    arrive_fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     included_in_plan = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, related_name="rides", blank=True, null=True)
@@ -124,13 +125,19 @@ class Ride(models.Model):
         return '{} - {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
 
     @property
+    def total_fees_estimate(self):
+        fees = self.fees or 0
+        arrive_fee = 0 if self.included_in_plan else self.customer.plan.arrive_fee
+        return fees + arrive_fee
+
+    @property
     def total_cost_estimate(self):
-        if self.cost:
-            if self.included_in_plan:
-                return 0
-            else:
-                return self.cost + self.customer.plan.arrive_fee
-        return None
+        cost = self.cost or 0
+        return cost + self.total_fees_estimate
+
+    @property
+    def total_fees(self):
+        return self.fees or 0 + self.arrive_fee
 
     @property
     def is_scheduled(self):

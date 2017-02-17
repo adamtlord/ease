@@ -10,6 +10,7 @@ from django.forms import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from accounts.helpers import send_welcome_email, send_receipt_email
 from accounts.models import Customer, Rider
@@ -125,7 +126,7 @@ def customer_list_inactive(request, template='concierge/customer_list_inactive.h
         'customers': inactive_customers,
         'active_count': active_customers.count(),
         'inactive_count': inactive_customers.count(),
-        'active_page': True
+        'inactive_page': True
     }
 
     return render(request, template, d)
@@ -258,8 +259,21 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             customer.user.profile.phone = account_holder_form.cleaned_data['phone']
             customer.user.profile.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
-            return redirect('customer_detail', customer.id)
+            if '_activate' in request.POST:
+                customer.user.is_active = True
+                customer.user.save()
+                messages.add_message(request, messages.SUCCESS, 'Customer {} activated'.format(customer))
+                return redirect('customer_detail', customer.id)
+
+            if '_deactivate' in request.POST:
+                customer.user.is_active = False
+                customer.user.save()
+                messages.add_message(request, messages.SUCCESS, 'Customer {} deactivated'.format(customer))
+                return redirect('customer_list')
+
+            else:
+                messages.add_message(request, messages.SUCCESS, 'Customer {} successfully updated!'.format(customer))
+                return redirect('customer_detail', customer.id)
         else:
             errors = [customer_form.errors, home_form.errors, account_holder_form.errors, rider_formset.errors]
             print errors
@@ -543,9 +557,23 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
     return render(request, template, d)
 
 
+@require_POST
 @staff_member_required
-def customer_delete(request, customer_id):
-    messages.add_message(request, messages.SUCCESS, 'Deleted')
+def customer_deactivate(request, customer_id):
+    customer = get_object_or_404(Customer, pk=customer_id)
+    customer.user.is_active = False
+    customer.user.save()
+    messages.add_message(request, messages.SUCCESS, '{} set to inactive'.format(customer.full_name))
+    return redirect(reverse('customer_list'))
+
+
+@require_POST
+@staff_member_required
+def customer_activate(request, customer_id):
+    customer = get_object_or_404(Customer, pk=customer_id)
+    customer.user.is_active = True
+    customer.user.save()
+    messages.add_message(request, messages.SUCCESS, '{} set to active'.format(customer.full_name))
     return redirect(reverse('customer_list'))
 
 

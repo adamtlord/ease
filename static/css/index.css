@@ -9142,6 +9142,44 @@ td .btn:last-child {
 #schedule_ride_modal .datetimepicker-inline table {
   width: 100%;
 }
+.btn-link {
+  font-weight: normal;
+}
+.btn-link.text-primary {
+  color: #0346b2;
+}
+a.btn-link.text-primary:hover,
+a.btn-link.text-primary:focus {
+  color: #023280;
+}
+.btn-link.text-success {
+  color: #75AF2F;
+}
+a.btn-link.text-success:hover,
+a.btn-link.text-success:focus {
+  color: #5a8724;
+}
+.btn-link.text-info {
+  color: #056571;
+}
+a.btn-link.text-info:hover,
+a.btn-link.text-info:focus {
+  color: #033940;
+}
+.btn-link.text-warning {
+  color: #CA6020;
+}
+a.btn-link.text-warning:hover,
+a.btn-link.text-warning:focus {
+  color: #9e4b19;
+}
+.btn-link.text-danger {
+  color: #CD3C17;
+}
+a.btn-link.text-danger:hover,
+a.btn-link.text-danger:focus {
+  color: #9f2f12;
+}
 html {
   position: relative;
   min-height: 100%;
@@ -10246,9 +10284,6 @@ th .static-map {
 a.ride-preferences ul > li > i:hover,
 a.ride-preferences ul > li > i:focus {
   color: #033940;
-}
-.ride-notes .alert {
-  margin-bottom: 11px;
 }
 .nav > .start-ride-btn > a {
   color: #82c135;

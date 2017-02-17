@@ -21,12 +21,14 @@
                 <th>Start Time</th>
                 <th>Distance</th>
                 <th>Cost</th>
+                <th>Fees</th>
+                <th>Total Cost</th>
                 <th>Invoiced On</th>
                 <th>Paid</th>
                 <th>Paid On</th>
                 <th>Company</th>
                 <th>Notes</th>
-                <th width="200"></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -40,6 +42,8 @@
                     <td>{{ ride.start_date|date:"U" }}</td>
                     <td>{{ ride.distance }} mi</td>
                     <td>${{ ride.cost }}</td>
+                    <td>{% if ride.total_fees %}${{ ride.total_fees }}{% endif %}</td>
+                    <td>${{ ride.total_cost }}</td>
                     <td>{{ ride.invoice.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
                     <td>{% if ride.invoice.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
                     <td>{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>

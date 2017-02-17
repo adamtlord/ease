@@ -58,8 +58,9 @@
                 {% endif %}
             </div>
             {{ form.start_date.as_hidden }}
-            {% render_form_field form.cost %}
             {% render_form_field form.customer %}
+            {% render_form_field form.cost %}
+            {% render_form_field form.fees %}
             {% render_form_field form.notes %}
             {% render_form_field form.complete %}
             {% render_form_field form.included_in_plan %}
@@ -104,7 +105,7 @@
                     <p class="alert alert-info"><i class="fa fa-fw fa-car"></i> Preferred service: <strong>{{ customer.preferred_service }}</strong></p>
                 {% endif %}
                 {% if customer.notes %}
-                    <p class="alert alert-default"><i class="fa fa-comment fa-fw"></i> {{ customer.notes }}</p>
+                    <p class="alert alert-default"><i class="fa fa-sticky-note-o fa-fw"></i> {{ customer.notes }}</p>
                 {% endif %}
                 {% if customer.special_assistance %}
                     <p class="alert alert-warning"><i class="fa fa-plus-square fa-fw"></i> {{ customer.special_assistance }}</p>

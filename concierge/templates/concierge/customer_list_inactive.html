@@ -12,7 +12,6 @@
             <th>Plan</th>
             <th>Rides</th>
             <th>Notes</th>
-            <th>Intro Call</th>
         </thead>
         <tbody>
             {% for customer in customers %}
@@ -43,11 +42,6 @@
                             <li>{{ missing }}</li>
                         {% endfor %}
                     </ul>
-                    {% endif %}
-                </td>
-                <td class="text-center">
-                    {% if customer.intro_call %}
-                        <i class="fa fa-check text-success"></i>
                     {% endif %}
                 </td>
             </tr>

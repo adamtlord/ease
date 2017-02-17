@@ -55,8 +55,8 @@ def invoice_customer_rides(customer, rides):
         stripe_id = customer.ride_account.stripe_id
 
         for ride in rides:
-            if ride.cost:
-                if ride.included_in_plan:
+            if ride.cost or ride.fees:
+                if ride.included_in_plan and not ride.fees:
                     ride.total_cost = 0
                     ride.complete = True
                     ride.invoiced = True
@@ -64,11 +64,16 @@ def invoice_customer_rides(customer, rides):
                     success_included.append(ride.id)
                     success_total += 1
                 else:
-                    if customer.plan.arrive_fee:
-                        ride.total_cost = ride.cost + customer.plan.arrive_fee
-                        ride.fee = customer.plan.arrive_fee
+                    if ride.included_in_plan and ride.fees:
+                        ride.total_cost = ride.fees
                     else:
-                        ride.total_cost = ride.cost
+                        if customer.plan.arrive_fee:
+                            ride.total_cost = ride.cost + customer.plan.arrive_fee
+                            ride.arrive_fee = customer.plan.arrive_fee
+                        else:
+                            ride.total_cost = ride.cost
+                        ride.total_cost += ride.fees
+
                     invoiceitem = stripe.InvoiceItem.create(
                         customer=stripe_id,
                         amount=int(ride.total_cost * 100),

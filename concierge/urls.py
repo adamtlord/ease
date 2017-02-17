@@ -3,7 +3,7 @@ from django.conf.urls import url
 
 from concierge.views import (dashboard, upcoming_rides, active_rides, rides_history,
                              customer_list, customer_list_inactive, customer_create,
-                             customer_detail, customer_update, customer_delete,
+                             customer_detail, customer_update,
                              customer_search_data, customer_destinations,
                              customer_destination_edit, customer_destination_add,
                              customer_destination_delete,
@@ -11,6 +11,8 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              payment_ride_account_edit,
                              customer_history,
                              customer_activity_add,
+                             customer_deactivate,
+                             customer_activate
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -27,7 +29,9 @@ urlpatterns = [
     url(r'^customers/create/$', customer_create, name='customer_create'),
     url(r'^customers/(?P<customer_id>\d+)/$', customer_detail, name='customer_detail'),
     url(r'^customers/(?P<customer_id>\d+)/update/$', customer_update, name='customer_update'),
-    url(r'^customers/(?P<customer_id>\d+)/delete/$', customer_delete, name='customer_delete'),
+
+    url(r'^customers/(?P<customer_id>\d+)/deactivate/$', customer_deactivate, name='customer_deactivate'),
+    url(r'^customers/(?P<customer_id>\d+)/activate/$', customer_activate, name='customer_activate'),
 
     url(r'^customers/(?P<customer_id>\d+)/destinations/$', customer_destinations, name='customer_destinations'),
     url(r'^customers/(?P<customer_id>\d+)/destination/add/$', customer_destination_add, name='customer_destination_add'),
