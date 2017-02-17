@@ -65,7 +65,7 @@ class DestinationForm(forms.ModelForm):
 
     def save(self, commit=True):
         dest = super(DestinationForm, self).save(commit=False)
-        if dest.has_changed():
+        if self.has_changed():
             dest.set_ltlng()
         if commit:
             dest.save()
