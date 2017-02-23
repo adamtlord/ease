@@ -70,12 +70,14 @@
                     <th>Subscription plan</th>
                     <td>{{ customer.plan.display_name }}
                 </tr>
-                <tr>
-                    <th>Subscription renews on</th>
-                    <td>
-                        {{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
-                    </td>
-                </tr>
+                {% if subscription.current_period_end %}
+                    <tr>
+                        <th>Subscription renews on</th>
+                        <td>
+                            {{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                        </td>
+                    </tr>
+                {% endif %}
                 {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
                     <tr>
                         <th>Credit card on file</th>

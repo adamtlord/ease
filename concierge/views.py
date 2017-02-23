@@ -391,67 +391,76 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
         if payment_form.is_valid():
 
+            existing_customer = customer.subscription_account and customer.subscription_account.stripe_id
+
             # create our stripe customer
             new_stripe_customer = payment_form.save()
 
-            # set our customer's plan
-            if payment_form.cleaned_data['same_card_for_both'] == '1':
-                customer.subscription_account = customer.ride_account = new_stripe_customer
-            else:
-                customer.subscription_account = new_stripe_customer
+            if not existing_customer:
+                # set our customer's plan
+                if payment_form.cleaned_data['same_card_for_both'] == '1':
+                    customer.subscription_account = customer.ride_account = new_stripe_customer
+                else:
+                    customer.subscription_account = new_stripe_customer
 
-            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+                customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
 
-            # create new stripe customer
-            create_stripe_customer = stripe.Customer.create(
-                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
-                email=new_stripe_customer.email,
-                source=payment_form.cleaned_data['stripe_token'],
-                metadata={
-                    'customer': '{} {}'.format(customer.full_name, customer.pk)
-                }
-            )
-
-            # if chosen plan has an upfront cost, create an invoice line-item
-            if customer.plan.signup_cost:
-                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
-                signup_cost = int(customer.plan.signup_cost * 100)
-                stripe.InvoiceItem.create(
-                    customer=create_stripe_customer.id,
-                    amount=signup_cost,
-                    currency="usd",
-                    description="Initial signup fee",
+                # create new stripe customer
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
+                    email=new_stripe_customer.email,
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    }
                 )
 
-            coupon_code = payment_form.cleaned_data['coupon']
-            valid_coupon = False
-            if coupon_code:
-                try:
-                    stripe.Coupon.retrieve(coupon_code)
-                    valid_coupon = True
-                except:
-                    pass
-            if not valid_coupon:
-                coupon_code = None
+                # if chosen plan has an upfront cost, create an invoice line-item
+                if customer.plan.signup_cost:
+                    # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                    signup_cost = int(customer.plan.signup_cost * 100)
+                    stripe.InvoiceItem.create(
+                        customer=create_stripe_customer.id,
+                        amount=signup_cost,
+                        currency="usd",
+                        description="Initial signup fee",
+                    )
 
-            # now attach the customer to a plan
-            stripe.Subscription.create(
-                customer=create_stripe_customer.id,
-                plan=customer.plan.stripe_id,
-                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
-                coupon=coupon_code
-            )
+                coupon_code = payment_form.cleaned_data['coupon']
+                valid_coupon = False
+                if coupon_code:
+                    try:
+                        stripe.Coupon.retrieve(coupon_code)
+                        valid_coupon = True
+                    except:
+                        pass
+                if not valid_coupon:
+                    coupon_code = None
 
-            # store the customer's stripe id in their record
-            new_stripe_customer.stripe_id = create_stripe_customer.id
+                # now attach the customer to a plan
+                stripe.Subscription.create(
+                    customer=create_stripe_customer.id,
+                    plan=customer.plan.stripe_id,
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                    coupon=coupon_code
+                )
 
+                # store the customer's stripe id in their record
+                new_stripe_customer.stripe_id = create_stripe_customer.id
+                messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+            else:
+                stripe_cust = stripe.Customer.retrieve(customer.subscription_account.stripe_id)
+                stripe_cust.description = '{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name)
+                stripe_cust.email = new_stripe_customer.email
+                stripe_cust.source = payment_form.cleaned_data['stripe_token']
+                stripe_cust.metadata = {'customer': '{} {}'.format(customer.full_name, customer.pk)}
+                stripe_cust.save()
+                messages.add_message(request, messages.SUCCESS, 'Billing info updated')
             # save everything
             customer.save()
             new_stripe_customer.save()
 
             send_receipt_email(user)
-
-            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
             if payment_form.cleaned_data['same_card_for_both'] == '0':
 
@@ -502,10 +511,14 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 
     customer = get_object_or_404(Customer, pk=customer_id)
     errors = {}
+    existing_customer = customer.ride_account and customer.ride_account.stripe_id
 
     if request.method == 'POST':
+
         if request.POST.get('add_stripe_customer') == '1':
             payment_form = StripeCustomerForm(request.POST)
+            existing_customer = False
+
         else:
             payment_form = StripeCustomerForm(request.POST, instance=customer.ride_account)
 
@@ -516,17 +529,27 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
             customer.ride_account = stripe_customer
 
             if payment_form.cleaned_data['stripe_token']:
-                create_stripe_customer = stripe.Customer.create(
-                    description='{} {}'.format(stripe_customer.first_name, stripe_customer.last_name),
-                    email=stripe_customer.email,
-                    source=payment_form.cleaned_data['stripe_token'],
-                    metadata={
-                        'customer': '{} [{}]'.format(customer.full_name, customer.pk),
-                    },
-                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-                )
 
-                stripe_customer.stripe_id = create_stripe_customer.id
+                if not existing_customer:
+                    create_stripe_customer = stripe.Customer.create(
+                        description='{} {}'.format(stripe_customer.first_name, stripe_customer.last_name),
+                        email=stripe_customer.email,
+                        source=payment_form.cleaned_data['stripe_token'],
+                        metadata={
+                            'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                        },
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                    )
+
+                    stripe_customer.stripe_id = create_stripe_customer.id
+
+                else:
+                    stripe_cust = stripe.Customer.retrieve(customer.ride_account.stripe_id)
+                    stripe_cust.description = '{} {}'.format(stripe_customer.first_name, stripe_customer.last_name)
+                    stripe_cust.email = stripe_customer.email
+                    stripe_cust.source = payment_form.cleaned_data['stripe_token']
+                    stripe_cust.metadata = {'customer': '{} [{}]'.format(customer.full_name, customer.pk)}
+                    stripe_cust.save()
 
             customer.save()
             stripe_customer.save()
