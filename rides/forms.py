@@ -148,7 +148,7 @@ class RideForm(forms.ModelForm):
     start_date = forms.DateTimeField()
     end_date = forms.DateTimeField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
-    complete = forms.BooleanField(required=False, label="Complete (or cancelled)")
+    complete = forms.BooleanField(required=False, label="Complete/Ready to Bill")
     start = DestinationChoiceField(
         queryset=Destination.objects.none(),
         empty_label=None,
@@ -161,6 +161,7 @@ class RideForm(forms.ModelForm):
         )
     fees = forms.DecimalField(
         required=False,
+        label="Additional fees",
         help_text="Use for cancellation fees or surcharges, NOT for the standard Arrive fee!"
         )
 
