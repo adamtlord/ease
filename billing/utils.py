@@ -56,7 +56,9 @@ def invoice_customer_rides(customer, rides):
 
         for ride in rides:
             if ride.cost or ride.fees:
+                # the ride cost something
                 if ride.included_in_plan and not ride.fees:
+                    # including, no fees: no billing
                     ride.total_cost = 0
                     ride.complete = True
                     ride.invoiced = True
@@ -65,14 +67,21 @@ def invoice_customer_rides(customer, rides):
                     success_total += 1
                 else:
                     if ride.included_in_plan and ride.fees:
+                        # included ride, but with fees. total cost is fees.
                         ride.total_cost = ride.fees
                     else:
+                        # not included
                         if customer.plan.arrive_fee:
+                            # plan includes arrive fee
+                            # total cost is cost plus arrive fee
                             ride.total_cost = ride.cost + customer.plan.arrive_fee
                             ride.arrive_fee = customer.plan.arrive_fee
                         else:
+                            # plan has no arrive fee
                             ride.total_cost = ride.cost
-                        ride.total_cost += ride.fees
+
+                        if ride.fees:
+                            ride.total_cost += ride.fees
 
                     invoiceitem = stripe.InvoiceItem.create(
                         customer=stripe_id,
