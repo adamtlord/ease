@@ -1,4 +1,4 @@
-/* global Clipboard */
+/* global Clipboard, confirm */
 
 $(function(){
 
@@ -21,6 +21,10 @@ $(function(){
 
     $('#id_start, #id_destination').select2({
         theme: 'bootstrap'
+    });
+
+    $('a.cancel-ride').on('click', function() {
+        return confirm('Are you sure you want to cancel and permanently delete this ride?');
     });
 
     var clipboard = new Clipboard('.copybtn');

@@ -130,9 +130,9 @@
         <p><input type="submit" class="btn btn-primary btn-lg btn-block" value="Update" /></p>
         <p class="text-center">
             {% if customer.user.is_active %}
-                <input name="_deactivate" type="submit" class="btn text-danger btn-link" value="Deactivate Customer" />
+                <input name="_deactivate" type="submit" class="btn text-danger btn-link deactivate" value="Deactivate Customer" />
             {% else %}
-                <input name="_activate" type="submit" class="btn text-success btn-link" value="Activate Customer" />
+                <input name="_activate" type="submit" class="btn text-success btn-link reactivate" value="Activate Customer" />
             {% endif %}
         </p>
     </div>

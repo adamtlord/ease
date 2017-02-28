@@ -1,3 +1,4 @@
+/* global confirm */
 $(function() {
     // Internal Functions
     function toggleOtherSource(val) {
@@ -165,6 +166,16 @@ $(function() {
     });
     $('#id_reg-password2').keyup(function() {
         validate_pswd2($(this));
+    });
+    $('.btn.deactivate').on('click', function(){
+        return confirm('Are you sure you want to deactivate this customer? ' +
+                        'If the customer has an active subscription, you must ' +
+                        'separately cancel it in Stripe.');
+    });
+    $('.btn.reactivate').on('click', function(){
+        return confirm('Are you sure you want to re-activate this customer? ' +
+                        'Please remember to restart the customer\'s subscription ' +
+                        'in Stripe if necessary.');
     });
 
     // On Load
