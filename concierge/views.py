@@ -75,7 +75,13 @@ def active_rides(request, template='concierge/active_rides.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.filter(start_date__lte=timezone.now()).exclude(complete=True).order_by('start_date')
+    rides = Ride.objects.filter(start_date__lte=timezone.now()).exclude(complete=True).order_by('start_date').prefetch_related('customer')
+
+    for ride in rides:
+        if ride.customer.last_ride.destination == ride.customer.home:
+            ride.at_home = True
+        else:
+            ride.at_home = False
 
     d = {
         'rides': rides,

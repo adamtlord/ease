@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Home</th>
                 <th width="10%">Customer</th>
                 <th width="20%">Start Time</th>
                 <th>From</th>
@@ -23,8 +24,9 @@
         </thead>
         <tbody>
             {% for ride in rides %}
-                <tr>
+                <tr{% if not ride.at_home %} class="warning"{% endif %}>
                     <td>{{ ride.id }}</td>
+                    <td>{% if ride.at_home %}<i class="fa fa-lg text-success fa-home"></i>{% endif %}</td>
                     <td><a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
                     <td>
@@ -46,7 +48,11 @@
                             {{ ride.distance }} mi
                         {% endif %}
                     </td>
-                    <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a> <a href="{% url 'ride_delete' ride.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
+                    <td>
+                        <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
+                        <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
+                        <a href="{% url 'ride_delete' ride.id %}" class="btn btn-danger btn-sm cancel-ride">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -484,7 +484,7 @@ small,
 }
 mark,
 .mark {
-  background-color: #FFF4CE;
+  background-color: #FFFAE7;
   padding: .2em;
 }
 .text-left {
@@ -572,11 +572,11 @@ a.bg-info:focus {
   background-color: #cbdfd7;
 }
 .bg-warning {
-  background-color: #FFF4CE;
+  background-color: #FFFAE7;
 }
 a.bg-warning:hover,
 a.bg-warning:focus {
-  background-color: #ffe99b;
+  background-color: #ffefb4;
 }
 .bg-danger {
   background-color: #FFE0DB;
@@ -1533,14 +1533,14 @@ table th[class*="col-"] {
 .table > thead > tr.warning > th,
 .table > tbody > tr.warning > th,
 .table > tfoot > tr.warning > th {
-  background-color: #FFF4CE;
+  background-color: #FFFAE7;
 }
 .table-hover > tbody > tr > td.warning:hover,
 .table-hover > tbody > tr > th.warning:hover,
 .table-hover > tbody > tr.warning:hover > td,
 .table-hover > tbody > tr:hover > .warning,
 .table-hover > tbody > tr.warning:hover > th {
-  background-color: #ffeeb4;
+  background-color: #fff5cd;
 }
 .table > thead > tr > td.danger,
 .table > tbody > tr > td.danger,
@@ -1990,7 +1990,7 @@ select[multiple].input-lg {
 .has-warning .input-group-addon {
   color: #CA6020;
   border-color: #CA6020;
-  background-color: #FFF4CE;
+  background-color: #FFFAE7;
 }
 .has-warning .form-control-feedback {
   color: #CA6020;
@@ -4171,12 +4171,12 @@ a.badge:focus {
   color: #033940;
 }
 .alert-warning {
-  background-color: #FFF4CE;
-  border-color: #ffe2b5;
+  background-color: #FFFAE7;
+  border-color: #ffeccd;
   color: #CA6020;
 }
 .alert-warning hr {
-  border-top-color: #ffd89b;
+  border-top-color: #ffe3b4;
 }
 .alert-warning .alert-link {
   color: #9e4b19;
@@ -4335,7 +4335,7 @@ button.list-group-item-info.active:focus {
 }
 .list-group-item-warning {
   color: #CA6020;
-  background-color: #FFF4CE;
+  background-color: #FFFAE7;
 }
 a.list-group-item-warning,
 button.list-group-item-warning {
@@ -4350,7 +4350,7 @@ button.list-group-item-warning:hover,
 a.list-group-item-warning:focus,
 button.list-group-item-warning:focus {
   color: #CA6020;
-  background-color: #ffeeb4;
+  background-color: #fff5cd;
 }
 a.list-group-item-warning.active,
 button.list-group-item-warning.active,
@@ -10215,8 +10215,8 @@ th .static-map {
   margin-bottom: 22px;
   border: 1px solid transparent;
   border-radius: 4px;
-  background-color: #FFF4CE;
-  border-color: #ffe2b5;
+  background-color: #FFFAE7;
+  border-color: #ffeccd;
   color: #CA6020;
 }
 .rides-in-progress h4 {
@@ -10234,7 +10234,7 @@ th .static-map {
   margin-top: 5px;
 }
 .rides-in-progress hr {
-  border-top-color: #ffd89b;
+  border-top-color: #ffe3b4;
 }
 .rides-in-progress .alert-link {
   color: #9e4b19;
