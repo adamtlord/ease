@@ -204,7 +204,7 @@ class Customer(Contact):
 
     @property
     def rides(self):
-        return self.ride_set.all().order_by('-end_date')
+        return self.ride_set.all().order_by('-start_date')
 
     @property
     def last_ride(self):
