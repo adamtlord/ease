@@ -453,7 +453,14 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
                 # store the customer's stripe id in their record
                 new_stripe_customer.stripe_id = create_stripe_customer.id
+                # save everything
+                customer.save()
+                new_stripe_customer.save()
+
+                send_receipt_email(user)
+
                 messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+
             else:
                 stripe_cust = stripe.Customer.retrieve(customer.subscription_account.stripe_id)
                 stripe_cust.description = '{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name)
@@ -462,11 +469,9 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                 stripe_cust.metadata = {'customer': '{} {}'.format(customer.full_name, customer.pk)}
                 stripe_cust.save()
                 messages.add_message(request, messages.SUCCESS, 'Billing info updated')
-            # save everything
-            customer.save()
-            new_stripe_customer.save()
-
-            send_receipt_email(user)
+                # save everything
+                customer.save()
+                new_stripe_customer.save()
 
             if payment_form.cleaned_data['same_card_for_both'] == '0':
 
