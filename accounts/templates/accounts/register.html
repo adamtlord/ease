@@ -93,7 +93,7 @@
                 </div>
             </fieldset>
             <fieldset>
-                <legend>{% if lovedone %}Primary Customer's {% endif %}Home Address</legend>
+                <legend>{% if lovedone %}Primary Rider's {% endif %}Home Address</legend>
                 {% render_form_field home_form.street1 %}
                 {% render_form_field home_form.street2 '' 'no-label' %}
                 <div class="address-inline">
@@ -101,11 +101,11 @@
                     {% render_form_field home_form.state '' 'state' %}
                     {% render_form_field home_form.zip_code '' 'zip zip-mask' %}
                 </div>
-                {% render_form_field customer_form.residence_instructions %}
+                {% render_form_field home_form.notes %}
             </fieldset>
             <fieldset>
                 <legend>Secondary Rider's Information</legend>
-                <span class="help-block">Must share the same residence.</span>
+                <span class="help-block">Must share the same residence as the primary rider.</span>
                 {% render_form_field rider_form.first_name %}
                 {% render_form_field rider_form.last_name %}
                 {% render_form_field rider_form.mobile_phone '' 'phone-mask' %}

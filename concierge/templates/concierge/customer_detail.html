@@ -73,11 +73,11 @@
                             <td>{{ customer.preferred_service }}</td>
                         </tr>
                     {% endif %}
-                    {% if customer.residence_instructions %}
+                    {% if customer.home.notes %}
                     <tr>
                         <td>Residence instructions</td>
                         <td>
-                            <p>{{ customer.residence_instructions }}</p>
+                            <p>{{ customer.home.notes }}</p>
                         </td>
                     </tr>
                     {% endif %}
@@ -99,14 +99,6 @@
                         </td>
                     </tr>
                     {% endif %}
-                    <tr>
-                        <td>
-                            Email
-                        </td>
-                        <td>
-                            <a href="mailto:{{ customer.email }}">{{ customer.email }}</a>
-                        </td>
-                    </tr>
                     {% if customer.user.profile.on_behalf %}
                     <tr>
                         <td>Account managed by</td>
@@ -117,6 +109,21 @@
                             {% endif %}
                         </td>
                     </tr>
+                        {% if customer.email %}
+                            <tr>
+                                <td>Customer email</td>
+                                <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></td>
+                            </tr>
+                        {% endif %}
+                    {% else %}
+                        <tr>
+                            <td>
+                                Email
+                            </td>
+                            <td>
+                                <a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                            </td>
+                        </tr>
                     {% endif %}
                     {% if riders %}
                         <tr>

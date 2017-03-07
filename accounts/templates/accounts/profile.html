@@ -55,6 +55,10 @@
                         {{ customer.home.zip_code }}
                     </td>
                 </tr>
+                {% if customer.home.notes %}
+                    <th>About your home:</th>
+                    <td>{{ customer.home.notes }}</td>
+                {% endif %}
                 <tr>
                     <th>Customer Since:</th>
                     <td>{{ customer.user.date_joined|date:"DATE_FORMAT" }}</td>

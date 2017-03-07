@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from common.decorators import anonymous_required
-from accounts.forms import (CustomUserRegistrationForm, CustomerForm, RiderForm,
+from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomerForm, RiderForm,
                             CustomerPreferencesForm, LovedOneForm, LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_receipt_email
 from billing.models import Plan
@@ -758,10 +758,12 @@ def profile_edit(request, template='accounts/profile_edit.html'):
     rider = customer.rider
 
     if request.method == 'GET':
+        user_form = CustomUserForm(prefix='reg', instance=user)
         customer_form = CustomerForm(prefix='cust', instance=customer, is_self=is_self)
         home_form = HomeForm(prefix='home', instance=home)
         rider_form = RiderForm(prefix='rider', instance=rider)
     else:
+        user_form = CustomUserForm(request.POST, prefix='reg', instance=user)
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer, is_self=is_self)
         home_form = HomeForm(request.POST, prefix='home', instance=home)
         rider_form = RiderForm(request.POST, prefix='rider', instance=rider)
@@ -795,6 +797,7 @@ def profile_edit(request, template='accounts/profile_edit.html'):
         'self': not user.profile.on_behalf,
         'lovedone': user.profile.on_behalf,
         'customer_form': customer_form,
+        'user_form': user_form,
         'home_form': home_form,
         'rider_form': rider_form,
         'errors': errors

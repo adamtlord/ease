@@ -10,6 +10,9 @@ CUSTOM_USER_FIELDS = [
     'email',
     'first_name',
     'last_name',
+]
+
+CUSTOM_USER_REGISTRATION_FIELDS = CUSTOM_USER_FIELDS + [
     'relationship',
     'password1',
     'password2',
@@ -119,9 +122,22 @@ class CustomUserRegistrationForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomUserRegistrationForm, self).__init__(*args, **kwargs)
-        for field in CUSTOM_USER_FIELDS:
+        for field in CUSTOM_USER_REGISTRATION_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs.pop('autofocus', None)
+
+class CustomUserForm(forms.ModelForm):
+    email = forms.EmailField(
+        required=False
+    )
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'first_name', 'last_name')
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserForm, self).__init__(*args, **kwargs)
+        for field in CUSTOM_USER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
 
 
 class CustomerForm(forms.ModelForm):

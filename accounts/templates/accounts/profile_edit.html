@@ -24,14 +24,12 @@
             {{ rider_form.non_field_errors }}
             <fieldset>
                 <legend>Primary Rider's Information</legend>
-                {% if lovedone %}
-                    {% render_form_field customer_form.first_name %}
-                    {% render_form_field customer_form.last_name %}
-                    {% render_form_field customer_form.email %}
-                {% endif %}
+                {% render_form_field customer_form.first_name %}
+                {% render_form_field customer_form.last_name %}
                 {% if self %}
-                    {% render_form_field register_form.first_name %}
-                    {% render_form_field register_form.last_name %}
+                    {% render_form_field user_form.email %}
+                {% else %}
+                    {% render_form_field customer_form.email %}
                 {% endif %}
                 {% render_form_field customer_form.home_phone '', 'phone-mask' %}
                 {% render_form_field customer_form.mobile_phone '', 'phone-mask' %}
@@ -48,7 +46,7 @@
                     {% render_form_field home_form.state '' 'state' %}
                     {% render_form_field home_form.zip_code '', 'zip zip-mask' %}
                 </div>
-                {% render_form_field customer_form.residence_instructions %}
+                {% render_form_field home_form.notes %}
             </fieldset>
         </div>
         <div class="col-sm-6">

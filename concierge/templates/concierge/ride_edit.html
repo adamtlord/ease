@@ -3,12 +3,7 @@
 {% load map_tags %}
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
-{% if to_from_home %}
-    <div class="well well-sm">
-        Residence Type: {{ customer.get_residence_type_display }}<br>
-        Residence Instructions: {{ customer.residence_instructions|default:'None' }}
-    </div>
-{% endif %}
+
 <h3>Ride ID: {{ ride.id }}</h3>
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     {% if errors %}
@@ -40,14 +35,10 @@
             {% if ride.start.notes %}
                 <div class="form-group">
                     <label>Starting point notes</label>
-                    <div class="input-group">
-                        <input id="starting_point_notes" class="form-control monospace" value="{{ ride.start.notes }}">
-                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
-                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point_notes">
-                                copy
-                            </button>
-                        </span>
-                    </div>
+                    {% if ride.start.home %}
+                        <span class="help-block">({{ customer.get_residence_type_display }})</span>
+                    {% endif %}
+                    <textarea id="starting_point_notes" class="form-control monospace">{{ ride.start.notes }}</textarea>
                 </div>
             {% endif %}
             <div class="form-group datetime-start">
@@ -110,13 +101,13 @@
                 {% if customer.special_assistance %}
                     <p class="alert alert-warning"><i class="fa fa-plus-square fa-fw"></i> {{ customer.special_assistance }}</p>
                 {% endif %}
-                {% if customer.residence_instructions %}
+                {% if ride.start.home %}
                     <p class="alert alert-info">
                         <i class="fa fa-home fa-fw"></i>
                         {% if customer.residence_type %}
                             <small>({{ customer.get_residence_type_display }})</small><br>
                         {% endif %}
-                        {{ customer.residence_instructions }}
+                        {{ ride.start.notes }}
                     </p>
                 {% endif %}
             </div>

@@ -41,12 +41,6 @@
                     <td>{{ ride.customer.preferred_service }}</td>
                 </tr>
             {% endif %}
-            {% if ride.customer.residence_instructions %}
-                <tr>
-                    <th>Residence Instructions</th>
-                    <td>{{ ride.customer.residence_instructions }}</td>
-                </tr>
-            {% endif %}
             <tr>
                 <th>Phone</th>
                 <td>{{ ride.customer.phone_numbers|safe }}</td>

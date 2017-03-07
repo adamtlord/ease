@@ -12,12 +12,12 @@ HOME_FIELDS = [
     'street2',
     'city',
     'state',
-    'zip_code'
+    'zip_code',
+    'notes'
 ]
 
 DESTINATION_FIELDS = HOME_FIELDS + [
     'nickname',
-    'notes'
 ]
 
 START_RIDE_FIELDS = [
@@ -80,7 +80,7 @@ class HomeForm(forms.ModelForm):
         initial=Customer.SINGLE_FAMILY_HOME,
         required=False
         )
-    residence_instructions = forms.CharField(
+    notes = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4}),
         required=False,
         label="Anything we should know about this home pickup location?",
@@ -94,13 +94,12 @@ class HomeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop('customer', None)
         super(HomeForm, self).__init__(*args, **kwargs)
-        for field in HOME_FIELDS + ['residence_type', 'residence_instructions']:
+        for field in HOME_FIELDS + ['residence_type']:
             self.fields[field].widget.attrs['class'] = 'form-control'
         for field in ['street1', 'city', 'state', 'zip_code']:
             self.fields[field].required = True
         if customer:
             self.fields['residence_type'].initial = customer.residence_type
-            self.fields['residence_instructions'].initial = customer.residence_instructions
 
     def save(self, commit=True):
         home = super(HomeForm, self).save(commit=False)
