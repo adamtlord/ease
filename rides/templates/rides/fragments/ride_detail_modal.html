@@ -27,8 +27,8 @@
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
             </tr>
-            {% if TIME_ZONE != ride.customer.timezone %}
-                {% timezone ride.customer.timezone %}
+            {% if TIME_ZONE != ride.start.timezone %}
+                {% timezone ride.start.timezone %}
                     <tr class="info">
                         <th>Local Start Time</th>
                         <td>{{ ride.start_date|date:"P (T)" }}</td>

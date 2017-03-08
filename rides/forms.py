@@ -106,7 +106,7 @@ class HomeForm(forms.ModelForm):
         if self.has_changed():
             try:
                 home.set_ltlng()
-                home.set_timezone()
+                home.set_customer_timezone()
             except Customer.DoesNotExist:
                 pass
         if commit:

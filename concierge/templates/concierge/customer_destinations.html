@@ -51,6 +51,9 @@
                 {{ destination.city }},
                 {{ destination.state }}
                 {{ destination.zip_code }}
+                {% if destination.timezone != customer.timezone %}<br>
+                    ({{ destination.tz }})
+                {% endif %}
             </td>
             <td>
                 {% if destination.included_in_plan %}

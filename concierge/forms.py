@@ -253,7 +253,7 @@ class DestinationForm(forms.ModelForm):
         if self.has_changed():
             dest.set_ltlng()
             if dest.home:
-                dest.set_timezone()
+                dest.set_customer_timezone()
         if commit:
             dest.save()
         return dest
@@ -289,7 +289,7 @@ class UpdateHomeForm(forms.ModelForm):
         home = super(UpdateHomeForm, self).save(commit=False)
         if self.has_changed():
             home.set_ltlng()
-            home.set_timezone()
+            home.set_customer_timezone()
         if commit:
             home.save()
         return home

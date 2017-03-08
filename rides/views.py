@@ -56,6 +56,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         add_destination_form = DestinationForm(prefix='add_dest', initial={'customer': customer})
 
     else:
+        initial_start = None
         start_ride_form = StartRideForm(request.POST, customer=customer)
         add_starting_point_form = DestinationForm(request.POST, prefix='add_start')
         add_destination_form = DestinationForm(request.POST, prefix='add_dest')
@@ -81,13 +82,13 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
 
             if request.POST.get('schedule', None):
                 tz_abbrev = ''
-                if customer.timezone:
+                if new_ride.start.timezone:
                     # get timezone object for customer
-                    cust_tz = pytz.timezone(customer.timezone)
+                    start_tz = pytz.timezone(new_ride.start.timezone)
                     # convert default (pac) datetime to naive
                     naived_start_date = new_ride.start_date.replace(tzinfo=None)
                     # re-localize datetime to customer's timezone
-                    localized_start_date = cust_tz.localize(naived_start_date)
+                    localized_start_date = start_tz.localize(naived_start_date)
                     tz_abbrev = localized_start_date.tzname()
                     # set start_date to re-localized datetime
                     new_ride.start_date = localized_start_date

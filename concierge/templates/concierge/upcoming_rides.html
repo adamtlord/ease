@@ -31,7 +31,7 @@
                     <td><a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a></td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
                     <td>
-                        {% timezone ride.customer.timezone %}
+                        {% timezone ride.start.timezone %}
                             {{ ride.start_date|date:"P (T)" }}
                         {% endtimezone %}
                     </td>

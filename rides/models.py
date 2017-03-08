@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import pytz
+import datetime
 from django.db import models
 from django.utils import formats, timezone
 
@@ -17,6 +19,7 @@ class Destination(Location):
     home = models.BooleanField(default=False)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    timezone = models.CharField(max_length=128, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     included_in_plan = models.BooleanField(default=False)
 
@@ -33,13 +36,22 @@ class Destination(Location):
         except:
             pass
 
-    def set_timezone(self):
+    def set_customer_timezone(self):
         if self.zip_code and self.customer:
             try:
                 ltlng = geocode_address(self.zip_code)
                 tz_name = get_timezone(ltlng)
                 self.customer.timezone = tz_name
                 self.customer.save()
+            except:
+                pass
+
+    def set_timezone(self):
+        if self.zip_code:
+            try:
+                ltlng = geocode_address(self.zip_code)
+                tz_name = get_timezone(ltlng)
+                self.timezone = tz_name
             except:
                 pass
 
@@ -50,7 +62,7 @@ class Destination(Location):
                 self.set_ltlng()
             except:
                 pass
-        if self.home and not self.customer.timezone:
+        if not self.timezone:
             try:
                 self.set_timezone()
             except:
@@ -76,6 +88,16 @@ class Destination(Location):
     def fulladdress(self):
         street2 = ' {}'.format(self.street2) if self.street2 else ''
         return '{}{} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code)
+
+    @property
+    def tz(self):
+        tz_abbrev = ''
+        if self.timezone:
+            tz = pytz.timezone(self.timezone)
+            day = tz.localize(datetime.datetime.now(), is_dst=None)
+            tz_abbrev = day.tzname()
+        return tz_abbrev
+
 
     def __unicode__(self):
         return '{} - {}'.format(self.fullname, self.customer)
