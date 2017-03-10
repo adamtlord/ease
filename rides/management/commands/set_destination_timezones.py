@@ -9,13 +9,9 @@ class Command(BaseCommand):
         destinations = Destination.objects.filter(timezone__isnull=True)
         self.stdout.write('Found {} destinations'.format(destinations.count()))
         for destination in destinations:
-            if not (destination.latitude and destination.longitude):
-                try:
-                    destination.set_ltlng()
-                except Exception as ex:
-                    self.stdout.write(self.style.NOTICE('Could not set ltlng for {} home: {} <{}>'.format(destination, destination.id, ex)))
             try:
                 destination.set_timezone()
+                destination.save()
             except Exception as ex:
                 self.stdout.write(self.style.NOTICE('Could not set timezone for {}: {} <{}>'.format(destination, destination.id, ex)))
 
