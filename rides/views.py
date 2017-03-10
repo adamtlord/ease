@@ -80,9 +80,10 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if not start_ride_form.cleaned_data['start_date']:
                 new_ride.start_date = timezone.now()
 
-
             tz_abbrev = ''
-            if new_ride.start.timezone:
+            # immediate dispatch start_date comes in as UTC; scheduled start_date
+            # comes in as tz of starting point
+            if new_ride.start.timezone and new_ride.start_date.tzinfo != pytz.utc:
                 # get timezone object for customer
                 start_tz = pytz.timezone(new_ride.start.timezone)
                 # convert default (pac) datetime to naive
