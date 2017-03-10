@@ -80,18 +80,18 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if not start_ride_form.cleaned_data['start_date']:
                 new_ride.start_date = timezone.now()
 
-            if request.POST.get('schedule', None):
-                tz_abbrev = ''
-                if new_ride.start.timezone:
-                    # get timezone object for customer
-                    start_tz = pytz.timezone(new_ride.start.timezone)
-                    # convert default (pac) datetime to naive
-                    naived_start_date = new_ride.start_date.replace(tzinfo=None)
-                    # re-localize datetime to customer's timezone
-                    localized_start_date = start_tz.localize(naived_start_date)
-                    tz_abbrev = localized_start_date.tzname()
-                    # set start_date to re-localized datetime
-                    new_ride.start_date = localized_start_date
+
+            tz_abbrev = ''
+            if new_ride.start.timezone:
+                # get timezone object for customer
+                start_tz = pytz.timezone(new_ride.start.timezone)
+                # convert default (pac) datetime to naive
+                naived_start_date = new_ride.start_date.replace(tzinfo=None)
+                # re-localize datetime to customer's timezone
+                localized_start_date = start_tz.localize(naived_start_date)
+                tz_abbrev = localized_start_date.tzname()
+                # set start_date to re-localized datetime
+                new_ride.start_date = localized_start_date
 
             new_ride.distance = get_distance(new_ride)
             new_ride.save()
@@ -174,7 +174,19 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     else:
         form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():
-            form.save()
+            ride = form.save(commit=False)
+            tz_abbrev = ''
+            if ride.start.timezone:
+                # get timezone object for customer
+                start_tz = pytz.timezone(ride.start.timezone)
+                # convert default (pac) datetime to naive
+                naived_start_date = ride.start_date.replace(tzinfo=None)
+                # re-localize datetime to customer's timezone
+                localized_start_date = start_tz.localize(naived_start_date)
+                tz_abbrev = localized_start_date.tzname()
+                # set start_date to re-localized datetime
+                ride.start_date = localized_start_date
+            ride.save()
             messages.success(request, "Ride saved successfully")
         else:
             errors = form.errors
