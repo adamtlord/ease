@@ -209,7 +209,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             selected_plan = Plan.objects.get(name=plan_selection.upper())
             default_plan = selected_plan
         else:
-            default_plan = Plan.objects.get(name='BRONZE')
+            default_plan = Plan.objects.get(name='COPPER')
 
         if customer.subscription_account:
             payment_form = PaymentForm(instance=customer.subscription_account, initial={
@@ -523,7 +523,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             selected_plan = Plan.objects.get(name=plan_selection.upper())
             default_plan = selected_plan
         else:
-            default_plan = Plan.objects.get(name='BRONZE')
+            default_plan = Plan.objects.get(name='COPPER')
 
         if customer.subscription_account:
             payment_form = PaymentForm(instance=customer.subscription_account, initial={

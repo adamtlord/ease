@@ -70,10 +70,12 @@
         <h3 class="m-t-0">Payment Information</h3>
         <table class="table table-striped">
             <tbody>
-                <tr>
-                    <th>Subscription plan</th>
-                    <td>{{ customer.plan.display_name }}
-                </tr>
+                {% if not customer.plan.is_default %}
+                    <tr>
+                        <th>Subscription plan</th>
+                        <td>{{ customer.plan.display_name }}
+                    </tr>
+                {% endif %}
                 {% if subscription.current_period_end %}
                     <tr>
                         <th>Subscription renews on</th>

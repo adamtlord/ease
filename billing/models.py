@@ -12,12 +12,16 @@ class Plan(AbstractEnumModel):
     SILVER = 2
     GOLD = 3
     INTRO_GIFT = 4
+    COPPER = 5
+
+    DEFAULT = COPPER
 
     CHOICES = (
         (BRONZE, 'Bronze Membership'),
         (SILVER, 'Silver Membership'),
         (GOLD, 'Gold Membership'),
         (INTRO_GIFT, 'Unlimited Gift Certificate'),
+        (COPPER, 'Copper (standard)'),
     )
 
     active = models.BooleanField(default=True)
@@ -36,6 +40,10 @@ class Plan(AbstractEnumModel):
     @property
     def is_gift(self):
         return self.id == self.INTRO_GIFT
+
+    @property
+    def is_default(self):
+        return self.id == self.DEFAULT
 
     @property
     def includes_rides(self):

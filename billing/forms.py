@@ -53,6 +53,7 @@ class PaymentForm(StripeCustomerForm):
     plan = forms.ChoiceField(
         required=True,
         choices=Plan.CHOICES,
+        initial=Plan.DEFAULT,
         widget=forms.RadioSelect()
     )
     same_card_for_both = forms.ChoiceField(

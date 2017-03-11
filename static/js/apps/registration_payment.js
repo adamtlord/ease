@@ -1,9 +1,5 @@
+/* global Stripe */
 $(function() {
-
-    var updatePlanCharges = function() {
-        $('#plan_charges').removeClass('plan1 plan2 plan3');
-        $('#plan_charges').addClass('plan' + $('input[name=plan]:checked').val());
-    };
 
     var validateCoupon = function() {
         $.ajax({
@@ -92,8 +88,4 @@ $(function() {
     $('.cc-mask input').mask('0000-0000-0000-0000');
     $('.zip-mask input').mask('00000-0000');
 
-    $('input[name=plan]').change(function() {
-        updatePlanCharges();
-    });
-    updatePlanCharges();
 });
