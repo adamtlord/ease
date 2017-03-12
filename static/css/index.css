@@ -10180,6 +10180,20 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
 .selected-plan .fa.fa-check {
   color: #82c135;
 }
+.cost-table th,
+.cost-table td {
+  vertical-align: top;
+  padding-bottom: 5.5px;
+  line-height: 1.2;
+}
+.cost-table th {
+  text-align: right;
+  width: 60%;
+}
+.cost-table td {
+  width: 40%;
+  padding-left: 12px;
+}
 #customer_search {
   margin-bottom: 44px;
 }

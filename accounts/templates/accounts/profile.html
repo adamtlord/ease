@@ -196,7 +196,7 @@
                 {% for ride in customer.rides %}
                 <tr>
                     <td>
-                        {% timezone ride.customer.timezone %}
+                        {% timezone ride.start.timezone %}
                             {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}
                         {% endtimezone %}
                     </td>

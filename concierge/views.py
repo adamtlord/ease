@@ -214,10 +214,10 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
         subscription = get_stripe_subscription(customer)
     rides_in_progress = Ride.in_progress.filter(customer=customer)
     tz_abbrev = ''
-    customer_tz = customer.timezone
+    customer_tz = customer.home.timezone
 
     if customer_tz:
-        tz = pytz.timezone(customer.timezone)
+        tz = pytz.timezone(customer_tz)
         day = tz.localize(datetime.datetime.now(), is_dst=None)
         tz_abbrev = day.tzname()
 
