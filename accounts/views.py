@@ -112,7 +112,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
     customer = request.user.get_customer()
     errors = {}
     card_errors = ''
-    selected_plan = default_plan = None
 
     if request.method == 'POST':
 
@@ -203,19 +202,11 @@ def register_self_payment(request, template='accounts/register_payment.html'):
             errors = payment_form.errors
 
     else:
-        plan_selection = request.session.get('plan', None)
-
-        if plan_selection:
-            selected_plan = Plan.objects.get(name=plan_selection.upper())
-            default_plan = selected_plan
-        else:
-            default_plan = Plan.objects.get(name='BRONZE')
 
         if customer.subscription_account:
             payment_form = PaymentForm(instance=customer.subscription_account, initial={
                 'plan': customer.plan.id
             })
-            selected_plan = customer.plan
 
         else:
             payment_form = PaymentForm(initial={
@@ -223,7 +214,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                 'last_name': request.user.last_name,
                 'email': request.user.email,
                 'same_card_for_both': 1,
-                'plan': default_plan.id
             })
 
     d = {
@@ -236,7 +226,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'selected_plan': selected_plan,
         'card_errors': card_errors
     }
 
@@ -425,7 +414,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
     customer = request.user.get_customer()
     errors = {}
-    selected_plan = default_plan = None
 
     if request.method == 'POST':
 
@@ -517,19 +505,11 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             errors = payment_form.errors
 
     else:
-        plan_selection = request.session.get('plan', None)
-
-        if plan_selection:
-            selected_plan = Plan.objects.get(name=plan_selection.upper())
-            default_plan = selected_plan
-        else:
-            default_plan = Plan.objects.get(name='BRONZE')
 
         if customer.subscription_account:
             payment_form = PaymentForm(instance=customer.subscription_account, initial={
                 'plan': customer.plan.id
             })
-            selected_plan = customer.plan
 
         else:
             payment_form = PaymentForm(initial={
@@ -537,7 +517,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                 'last_name': request.user.last_name,
                 'email': request.user.email,
                 'same_card_for_both': 1,
-                'plan': default_plan.id
             })
 
     d = {
@@ -552,7 +531,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'errors': errors,
         'gift': gift,
         'gift_plan': Plan.objects.get(name="INTRO_GIFT"),
-        'selected_plan': selected_plan,
         'errors': errors
     }
 

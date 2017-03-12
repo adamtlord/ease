@@ -20,11 +20,29 @@
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <div class="page-header">
-            {% if gift %}
-                <h2 class="text-center">Payment Information</h2>
-            {% else %}
-                <h2 class="text-center">Choose a Plan</h2>
-            {% endif %}
+            <h2 class="text-center">Sign up to become an Arrive&nbsp;member</h2>
+        </div>
+        <div class="alert alert-info">
+            <table class="cost-table">
+                <tbody>
+                    <tr>
+                        <th>Arrive membership:</th>
+                        <td>$10/month</td>
+                    </tr>
+                    <tr>
+                        <th>Ride cost:</th>
+                        <td>Lyft or Uber fare</td>
+                    </tr>
+                    <tr>
+                        <th>Arrive transaction fee:</th>
+                        <td>$3/ride</td>
+                    </tr>
+                    <tr>
+                        <th>Surcharge for after-hours rides:</th>
+                        <td>$7/ride</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <form action="" id="user_form" method="post" novalidate>{% csrf_token %}
             {% if errors %}
@@ -36,88 +54,13 @@
                     {% endif %}
                 </p>
             {% endif %}
+            {{ payment_form.plan.as_hidden }}
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
             {% render_form_field payment_form.last_4_digits %}
             <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
                 <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
             </div>
-            {% if gift %}
-                <div class="selected-plan">
-                    <input type="hidden" name="plan" type="radio" value="4">
-                    <p>The Unlimited Gift Certificate includes:</p>
-                    <ul class="list-unstyled">
-                        <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                        <li><i class="fa fa-check"></i> Unlimited neighborhood rides<sup>*</sup> for the month of January 2017</li>
-                    </ul>
-                    <p>You will be charged ${{ gift_plan.signup_cost|floatformat }}.</p>
-                </div>
-            {% else %}
-                {% if selected_plan %}
-                    {% with selected_plan as plan %}
-                        <div class="selected-plan" id="selected_plan">
-                            <p>
-                                You have selected the <strong>{{ plan.display_name }}</strong> plan. The {{ plan.display_name }} includes:
-                            </p>
-
-                            <ul class="list-unstyled">
-                                <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                                {% if plan.unlimited_rides %}
-                                    <li><i class="fa fa-check"></i> Unlimited neighborhood rides for one month<sup>*</sup></li>
-                                {% else %}
-                                    {% if plan.included_rides_per_month > 0 %}
-                                        <li><i class="fa fa-check"></i> {{ plan.included_rides_per_month }} neighborhood rides per month<sup>*</sup></li>
-                                    {% else %}
-                                        <li><i class="fa fa-check"></i> Pay-as-you-go for the rides you book through Arrive</li>
-                                    {% endif %}
-                                {% endif %}
-                            </ul>
-                            <p>You will be charged {% if plan.signup_cost %}${{ plan.signup_cost|floatformat }} on signup, and {% endif %}{% if plan.monthly_cost %}${{ plan.monthly_cost|floatformat }} per month{% endif %}.</p>
-                            {% if stripe_customer %}
-                                <p>If you'd like to choose a different plan, please contact customer service at <a href="mailto:hello@arriverides.com">hello@arriverides.com</a> or call <strong>1-866-626-9879</strong></p>
-                                {{ payment_form.plan.as_hidden }}
-                            {% else %}
-                                <p>
-                                    If you'd like to choose a different plan, <a href="" id="change_plan">click here</a>.
-                                </p>
-                            {% endif %}
-                        </div>
-                    {% endwith %}
-                {% endif %}
-                <div class="plan-buttons" data-toggle="buttons" {% if selected_plan %} style="display:none"{% endif %}>
-                    <label class="btn btn-default btn-block{% if payment_form.plan.0.is_checked %} active{% endif %}" for="id_plan_0">
-                        {{ payment_form.plan.0.tag }}
-                        <h4>$30 <small>signup,</small> $5<small>/month</small></h4>
-                        <h5>Bronze Membership</h5>
-                        <ul>
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                        </ul>
-                    </label>
-
-                    <label class="btn btn-default btn-block{% if payment_form.plan.1.is_checked %} active{% endif %}" for="id_plan_1">
-                        {{ payment_form.plan.1.tag }}
-                        <h4>$50<small>/month</small></h4>
-                        <h5>Silver Membership</h5>
-                        <ul>
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            <li><i class="fa fa-check"></i> 4 neighborhood rides per month<sup>*</sup></li>
-                        </ul>
-                    </label>
-
-                    <label class="btn btn-default btn-block{% if payment_form.plan.2.is_checked %} active{% endif %}" for="id_plan_2">
-                        {{ payment_form.plan.2.tag }}
-                        <h4>$75<small>/month</small></h4>
-                        <h5>Gold Membership</h5>
-                        <ul>
-                            <li><i class="fa fa-check"></i> Unlimited access to concierge</li>
-                            <li><i class="fa fa-check"></i> 6 neighborhood rides per month<sup>*</sup></li>
-                        </ul>
-                    </label>
-                </div>
-            {% endif %}
             <fieldset>
-                {% if not gift %}
-                    <legend>Billing Information</legend>
-                {% endif %}
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
@@ -177,18 +120,8 @@
                 </div>
             </fieldset>
             <div class="form-actions">
-                <div id="plan_charges">
-                    <p class="bronze">Your card will be charged a <strong>one-time fee of $30</strong> now and <strong>$5 per month</strong>, beginning a month from now.</p>
-                    <p class="silver">Your card will automatically be charged <strong>$50 per month</strong>, beginning today.</p>
-                    <p class="gold">Your card will automatically be charged <strong>$75 per month</strong>, beginning today.</p>
-                    <p class="coupon"></p>
-                </div>
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
             </div>
-            <p class="small text-muted">
-                <sup>*</sup> A ride refers to a one-way trip. A round-trip is considered 2 rides. A neighborhood ride is any ride that is 5 or fewer miles (as calculated by the driver).
-            </p>
-
         </form>
     </div>
 </div>
