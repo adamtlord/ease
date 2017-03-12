@@ -4,11 +4,11 @@ Hi {{ account.first_name }},
 
 Thanks for becoming an Arrive Rides member! You now have unlimited access to our concierge service that will order or schedule a ride for you at your convenience.
 
-You have signed up for the {{ plan.display_name }} and will be automatically billed on a monthly basis. Your next membership charge will be for ${{ plan.monthly_cost }} on {{ next_bill_date }}.
+You will be automatically billed on a monthly basis. Your next membership charge will be for ${{ plan.monthly_cost }} on {{ next_bill_date }}.
 
 ____________________________________________
 
-{{ plan.display_name }}
+Arrive Membership
 {% if plan.signup_cost %}Signup Cost: ${{ plan.signup_cost }}{% endif %}
 ${{ plan.monthly_cost }} per month
     {% if plan.included_rides_per_month %}includes {{ plan.included_rides_per_month }} neighborhood rides{% endif %}

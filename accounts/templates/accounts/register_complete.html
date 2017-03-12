@@ -13,12 +13,7 @@
 {% if self %}
     <p>Welcome to Arrive! We’re so glad you’re here.</p>
 
-    <p>You are currently signed up for our <strong>{{ customer.plan.display_name }}</strong> plan.
-        {% if customer.plan.monthly_cost %}You will be charged <strong>${{ customer.plan.monthly_cost|floatformat }} monthly</strong>.{% endif %}
-        {% if customer.plan.included_rides_per_month > 0 %}
-            <p>Your plan includes <strong>{{ customer.plan.included_rides_per_month }} rides</strong> of <strong>{{ customer.plan.ride_distance_limit|floatformat }} miles or less</strong> per month. Additional rides will be charged to your credit card on file.</p>
-        {% endif %}
-
+    <p>{% if customer.plan.monthly_cost %}You will be charged <strong>${{ customer.plan.monthly_cost|floatformat }} monthly</strong>.{% endif %}
     <p>We make sure to talk to each of our new members individually, to make sure we have
         complete profile information for you and to answer any questions you have.
         We’ll be in touch within the next business day to have that conversation.
@@ -26,7 +21,7 @@
         Here’s the members-only concierge line:
     </p>
 
-    <h3>1-866-ARRIVE-8</h3>
+    <h3>1-866-626-9879</h3>
 
     <p>To view your account, <a href="{% url 'profile' %}">go here</a>.</p>
 {% endif %}
@@ -34,11 +29,7 @@
 {% if lovedone %}
     <p>Thanks for signing your loved one up for Arrive! We’ll take good care of them.</p>
 
-    <p>You are currently signed up for our <strong>{{ customer.plan.display_name }}</strong> plan.
-        {% if customer.plan.monthly_cost %}You or your loved one will be charged <strong>${{ customer.plan.monthly_cost|floatformat }} monthly</strong>.{% endif %}
-        {% if customer.plan.included_rides_per_month > 0 %}
-            <p>This plan includes <strong>{{ customer.plan.included_rides_per_month }} rides</strong> of <strong>{{ customer.plan.ride_distance_limit|floatformat }} miles or less</strong> per month. Additional rides will be charged to the credit card on file.</p>
-        {% endif %}
+    <p>{% if customer.plan.monthly_cost %}You or your loved one will be charged <strong>${{ customer.plan.monthly_cost|floatformat }} monthly</strong>.{% endif %}
 
     <p>We make sure to talk to each of our new members individually, to make sure we have
         complete profile information for you and to answer any questions they have.
@@ -46,7 +37,7 @@
         If they’re ready to start riding now, though, have at it! Here’s the members’-only concierge line:
     </p>
 
-    <h3>1-866-ARRIVE-8</h3>
+    <h3>1-866-626-9879</h3>
 
     <p>To view your account, <a href="{% url 'profile' %}">go here</a>.</p>
 {% endif %}
