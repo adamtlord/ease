@@ -107,7 +107,6 @@ class RiderInline(admin.StackedInline):
 
 class CustomerAdmin(admin.ModelAdmin):
     inlines = [
-        LovedOneInline,
         RiderInline,
         DestinationInline,
     ]
