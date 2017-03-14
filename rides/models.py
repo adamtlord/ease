@@ -155,6 +155,8 @@ class Ride(models.Model):
     @property
     def total_cost_estimate(self):
         cost = self.cost or 0
+        if self.included_in_plan:
+            cost = 0
         return cost + self.total_fees_estimate
 
     @property
