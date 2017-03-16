@@ -87,7 +87,8 @@ class PaymentForm(StripeCustomerForm):
 class AdminPaymentForm(StripeCustomerForm):
     plan = forms.ChoiceField(
         required=True,
-        choices=Plan.CHOICES
+        choices=Plan.CHOICES,
+        initial=Plan.DEFAULT
     )
     same_card_for_both = forms.ChoiceField(
         choices=(

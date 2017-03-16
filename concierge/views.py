@@ -500,8 +500,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
-                'same_card_for_both': 1,
-                'plan': default_plan.id
+                'same_card_for_both': 1
             })
 
     d = {
