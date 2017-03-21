@@ -200,10 +200,6 @@ class CustomerForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 3}),
         required=False
     )
-    intro_call = forms.BooleanField(
-        label="Intro call completed",
-        required=False
-    )
     dob = forms.DateField(
         label="Date of birth",
         help_text="Please use the format MM/DD/YYYY",
@@ -220,7 +216,7 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS + ['intro_call', 'send_updates']
+        fields = CUSTOMER_FIELDS + ['send_updates']
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
