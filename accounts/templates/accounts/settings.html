@@ -1,0 +1,44 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
+{% block title %}Settings{% endblock title %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Settings</h1>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <form action="" method="post" novalidate>{% csrf_token %}
+
+            {% render_form_field user_form.email %}
+            {% render_form_field user_form.first_name %}
+            {% render_form_field user_form.last_name %}
+
+            {% render_form_field profile_form.user %}
+            {% render_form_field profile_form.phone '' 'phone-mask' %}
+            {% render_form_field profile_form.timezone %}
+
+            <div class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Save">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
+<script>
+    $(function(){
+        $('.phone-mask input').mask('000-000-0000');
+        $('#id_timezone').select2({
+            theme: 'bootstrap'
+        });
+    });
+</script>
+{% endblock scripts %}

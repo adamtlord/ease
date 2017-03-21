@@ -1,3 +1,4 @@
+import pytz
 from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
@@ -34,6 +35,16 @@ CUSTOMER_FIELDS = [
     'gift_date'
 ]
 
+USER_PROFILE_FIELDS = [
+    'user',
+    'registration_complete',
+    'on_behalf',
+    'relationship',
+    'receive_updates',
+    'source',
+    'phone',
+    'timezone'
+]
 
 RIDER_FIELDS = [
     'first_name',
@@ -126,6 +137,7 @@ class CustomUserRegistrationForm(RegistrationForm):
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['email'].widget.attrs.pop('autofocus', None)
 
+
 class CustomUserForm(forms.ModelForm):
     email = forms.EmailField(
         required=False
@@ -137,6 +149,20 @@ class CustomUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CustomUserForm, self).__init__(*args, **kwargs)
         for field in CUSTOM_USER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class CustomUserProfileForm(forms.ModelForm):
+    user = forms.ModelChoiceField(queryset=CustomUser.objects.all(), widget=forms.HiddenInput())
+    timezone = forms.ChoiceField(choices=[(x, x) for x in pytz.country_timezones['us']])
+
+    class Meta:
+        model = UserProfile
+        fields = ['phone', 'timezone', 'user']
+
+    def __init__(self, *args, **kwargs):
+        super(CustomUserProfileForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 

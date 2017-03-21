@@ -8,7 +8,8 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 
 WSGI_APPLICATION = 'ease.wsgi.application'
 
-TIME_ZONE = 'America/Los_Angeles'
+DEFAULT_TIMEZONE = 'America/Los_Angeles'
+TIME_ZONE = DEFAULT_TIMEZONE
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
@@ -61,6 +62,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'common.middleware.TimezoneMiddleware'
 ]
 
 ROOT_URLCONF = 'ease.urls'

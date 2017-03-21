@@ -3,6 +3,7 @@ import pytz
 import datetime
 from dateutil.relativedelta import relativedelta
 
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
@@ -103,6 +104,7 @@ class UserProfile(models.Model):
     receive_updates = models.BooleanField(default=False)
     source = models.CharField(max_length=255, null=True, blank=True)
     phone = PhoneNumberField(blank=True, null=True)
+    timezone = models.CharField(max_length=128, blank=True, null=True, default=settings.DEFAULT_TIMEZONE)
 
     def __unicode__(self):
         return "%s's profile" % self.user
