@@ -786,7 +786,7 @@ def profile_edit(request, template='accounts/profile_edit.html'):
 
 
 @login_required
-def settings(request, template='accounts/settings.html'):
+def concierge_settings(request, template='accounts/settings.html'):
     user = request.user
 
     if request.method == 'GET':
@@ -805,7 +805,7 @@ def settings(request, template='accounts/settings.html'):
             tz_abbrev = day.tzname()
             messages.add_message(request, messages.SUCCESS, 'Settings saved. Your timezone is set to {} ({}).'.format(user.profile.timezone, tz_abbrev))
 
-            return redirect('settings')
+            return redirect('concierge_settings')
 
     d = {
         'user': user,

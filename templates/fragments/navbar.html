@@ -6,7 +6,7 @@
 {% url 'customer_list' as customer_list_url %}
 {% url 'customer_list_inactive' as customer_list_inactive_url %}
 {% url 'profile' as profile_url %}
-{% url 'settings' as settings_url %}
+{% url 'concierge_settings' as settings_url %}
 
 <nav class="navbar">
     <div class="container">
@@ -22,7 +22,7 @@
                 <li class="{% active_starts request upcoming_rides_url %}{% active_starts request active_rides_url %}{% active_starts request rides_history_url %}"><a href="{% url 'upcoming_rides' %}">Rides<i class="fa fa-clock-o"></i></a></li>
                 <li class="{% active_starts request customer_list_url %}{% active_starts request customer_list_inactive_url %}"><a href="{% url 'customer_list' %}">Customers<i class="fa fa-users"></i></a></li>
                 <li class="{% active_starts request '/concierge/billing' %}"><a href="{% url 'rides_ready_to_bill' %}">Billing<i class="fa fa-dollar"></i></a></li>
-                <li class="{% active request settings_url %}"><a href="{% url 'settings' %}">Settings<i class="fa fa-gear"></i></a></li>
+                <li class="{% active request settings_url %}"><a href="{% url 'concierge_settings' %}">Settings<i class="fa fa-gear"></i></a></li>
             {% endif %}
             {% if request.user.is_authenticated %}
                 {% if not request.user.is_staff %}
