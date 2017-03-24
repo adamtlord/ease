@@ -326,6 +326,10 @@ class Rider(Contact):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
 
+    @property
+    def full_name(self):
+        return self.get_full_name()
+
 
 class LovedOne(Location, Contact):
     """ A friend or family member who may be the account holder or may wish to receive updates.

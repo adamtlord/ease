@@ -153,7 +153,7 @@ $(function() {
     $('#add_rider_fields').click(function(e) {
         e.preventDefault();
         if ($('fieldset.rider').is(':visible')) {
-            cloneMore('fieldset.rider:last', 'rider');
+            cloneMore('fieldset.rider:last', 'riders');
         } else {
             $('fieldset.rider').slideDown();
         }

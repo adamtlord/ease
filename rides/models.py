@@ -98,13 +98,13 @@ class Destination(Location):
             tz_abbrev = day.tzname()
         return tz_abbrev
 
-
     def __unicode__(self):
         return '{} - {}'.format(self.fullname, self.customer)
 
 
 class Ride(models.Model):
     customer = models.ForeignKey('accounts.Customer')
+    rider = models.CharField(max_length=128, blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     request_time = models.DateTimeField(blank=True, null=True)

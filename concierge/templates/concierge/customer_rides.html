@@ -1,6 +1,12 @@
 {% extends 'concierge/customer_base.html' %}
 {% load map_tags %}
 
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
 {% block customer_content %}
 
 {% if rides %}
@@ -15,4 +21,19 @@
 {% endblock %}
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+<script>
+    $(function(){
+        $('#ride_table').DataTable({
+            'order': [[ 5, "desc" ]],
+            'columnDefs': [
+                {'orderData':[5], 'targets': [4] },
+                {
+                    'targets': [5],
+                    'visible': false,
+                    'searchable': false
+                },
+            ],
+        });
+    })
+</script>
 {% endblock scripts %}

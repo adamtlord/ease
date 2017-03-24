@@ -2,12 +2,14 @@
 {% get_current_timezone as TIME_ZONE %}
 {% if rides %}
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table id="ride_table" class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>From</th>
                 <th>To</th>
+                <th>Rider</th>
+                <th>Start Time</th>
                 <th>Start Time</th>
                 <th>Local Time</th>
                 <th>Complete</th>
@@ -28,7 +30,9 @@
                     <td>{{ ride.id }}</td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                    <td>{{ ride.rider|default:'' }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    <td>{{ ride.start_date|date:"U" }}</td>
                     {% timezone ride.start.timezone %}
                         <td>{{ ride.start_date|date:"P (T)" }}</td>
                     {% endtimezone %}
@@ -67,7 +71,7 @@
                     <td>
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                        <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a>
+                        <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm cancel-ride">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -90,6 +90,7 @@
                 </div>
             {% endif %}
             {{ form.end_date.as_hidden }}
+            {% render_form_field form.rider %}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
             <div class="ride-notes">
