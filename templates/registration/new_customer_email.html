@@ -1,0 +1,44 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>
+A new customer has signed up and entered subscription payment information.
+</p>
+<table class="body-wrap">
+    <tr>
+        <td class="container" bgcolor="#ECF8FF"  style="padding:15px;">
+            <table>
+                <tr>
+                    <td><strong>
+                        Customer
+                        </strong>
+                    </td>
+                    <td align="right">
+                        {{ customer.first_name }} {{ customer.last_name }}<br>
+                        {{ customer.home.city }}, {{ customer.home.state }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>
+                        Account Holder
+                    </strong></td>
+                    <td>
+                        {{ user.first_name }} {{ user.last_name }}
+                        {% if profile.on_behalf %}
+                         ({{ profile.relationship }})
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>
+                        Plan
+                        </strong>
+                    </td>
+                    <td align="right">
+                        {{ plan.name }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

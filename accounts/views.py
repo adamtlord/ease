@@ -14,7 +14,7 @@ from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUserProfileForm,
                             CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm,
                             LovedOnePreferencesForm)
-from accounts.helpers import send_welcome_email, send_receipt_email
+from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
 from billing.models import Plan
 from billing.forms import PaymentForm, StripeCustomerForm
 from billing.utils import get_stripe_subscription
@@ -101,7 +101,7 @@ def register_self(request, template='accounts/register.html'):
         'home_form': home_form,
         'rider_form': rider_form,
         'errors': errors
-        }
+    }
     return render(request, template, d)
 
 
@@ -149,7 +149,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                     customer.subscription_account = customer.ride_account = new_stripe_customer
                     customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
                     selected_plan = customer.plan
-                     # if chosen plan has an upfront cost, create an invoice line-item
+                    # if chosen plan has an upfront cost, create an invoice line-item
                     if customer.plan.signup_cost:
                         # create signup invoice item
                         # this is only charging $25 for bronze plan. Needs to be $30.
@@ -187,6 +187,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                     new_stripe_customer.save()
 
                     send_receipt_email(request.user)
+
+                    send_new_customer_email(request.user)
 
                     messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 
@@ -492,6 +494,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             new_stripe_customer.save()
 
             send_receipt_email(request.user)
+
+            send_new_customer_email(request.user)
 
             messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 

@@ -27,7 +27,7 @@ def send_welcome_email(user):
         date=timezone.now(),
         type=Touch.EMAIL,
         notes='Sent welcome email after registration'
-        )
+    )
     new_touch.full_clean()
     new_touch.save()
 
@@ -65,7 +65,7 @@ def send_receipt_email(user):
         date=timezone.now(),
         type=Touch.EMAIL,
         notes='Sent receipt email after payment'
-        )
+    )
     new_touch.full_clean()
     new_touch.save()
 
@@ -98,6 +98,33 @@ def send_included_rides_email(customer, rides):
         date=timezone.now(),
         type=Touch.EMAIL,
         notes='Sent included ride email'
-        )
+    )
     new_touch.full_clean()
     new_touch.save()
+
+
+def send_new_customer_email(user):
+
+    customer = user.get_customer()
+    profile = user.profile
+    plan = customer.plan
+
+    d = {
+        'user': user,
+        'customer': customer,
+        'profile': profile,
+        'plan': plan
+    }
+
+    msg_plain = render_to_string('registration/new_customer_email.txt', d)
+    msg_html = render_to_string('registration/new_customer_email.html', d)
+
+    to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+    send_mail(
+        'New Arrive Signup',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        [to_email],
+        html_message=msg_html,
+    )
