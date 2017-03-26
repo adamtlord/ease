@@ -10,12 +10,7 @@ $(function(){
         startView: 2,
         todayHighlight: true,
         weekStart: 0,
-    }).on('changeDate', function(e){
-        if($('#id_start_date').val()){
-            $('input[name="schedule"]').removeAttr('disabled');
-        };
     });
-
     $('#id_start, #id_destination').select2({
         theme: 'bootstrap'
     });
