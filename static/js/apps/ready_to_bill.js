@@ -27,7 +27,7 @@ $(function() {
     }
 
     $('tr').on('click', function(e) {
-        if (!$(e.target).is('input')) {
+        if (!$(e.target).is('input') && !$(e.target).is('.btn')) {
             $(this).find('input').click();
         }
     });

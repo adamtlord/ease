@@ -17,6 +17,12 @@
             {% endif %}
             <table class="table">
                 <tbody>
+                    {% if customer.group_membership %}
+                        <tr>
+                            <td>Group Membership</td>
+                            <td>{{ customer.group_membership }}</td>
+                        </tr>
+                    {% endif %}
                     {% if customer.known_as %}
                         <tr>
                             <td>Known as</td>
@@ -156,7 +162,15 @@
                                     <i class="fa fa-sm text-muted fa-external-link"></i>
                                 {% endif %}
                             {% else %}
-                                <strong class="text-danger">None</strong> <a href="{% url 'payment_subscription_account_edit' customer.id %}">Add a payment method</a>
+                                {% if customer.group_membership and customer.group_membership.includes_subscription %}
+                                    <em>Included in group membership</em>
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ customer.group_membership.subscription_account.stripe_id }}" target="_blank">{{ customer.group_membership.subscription_account }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% else %}
+                                    <strong class="text-danger">None</strong> <a href="{% url 'payment_subscription_account_edit' customer.id %}">Add a payment method</a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>
@@ -180,7 +194,15 @@
                                     <i class="fa fa-sm text-muted fa-external-link"></i>
                                 {% endif %}
                             {% else %}
-                                <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
+                                {% if customer.group_membership and customer.group_membership.includes_ride_cost %}
+                                    <em>Included in group membership</em>
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ customer.group_membership.ride_account.stripe_id }}" target="_blank">{{ customer.group_membership.ride_account }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% else %}
+                                    <strong class="text-danger">None</strong> <a href="{% url 'payment_ride_account_edit' customer.id %}">Add a payment method</a>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

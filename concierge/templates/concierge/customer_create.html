@@ -74,7 +74,10 @@
                     {% render_form_field register_form.source_other %}
                 </div>
             </fieldset>
-
+            <fieldset>
+                <legend>Group Memberships</legend>
+                {% render_form_field customer_form.group_membership %}
+            </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary btn-block" value="Create" />
             </div>

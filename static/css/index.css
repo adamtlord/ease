@@ -8870,6 +8870,13 @@ input[type="checkbox"] {
 .label {
   font-weight: 500;
 }
+.label-secondary {
+  background-color: #056571;
+}
+.label-secondary[href]:hover,
+.label-secondary[href]:focus {
+  background-color: #033940;
+}
 .twitter-typeahead {
   width: 100%;
 }
@@ -10298,6 +10305,7 @@ a.ride-preferences ul > li > i:focus {
 }
 .label.plan-label {
   vertical-align: .125em;
+  background: #056571;
 }
 .label.plan-label.bronze {
   background: #c19e67;

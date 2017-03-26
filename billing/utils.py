@@ -54,6 +54,11 @@ def invoice_customer_rides(customer, rides):
     if customer.ride_account and customer.ride_account.stripe_id:
         stripe_id = customer.ride_account.stripe_id
 
+    if customer.group_membership and customer.group_membership.includes_ride_cost:
+        stripe_id = customer.group_membership.ride_account.stripe_id
+
+    if stripe_id:
+
         for ride in rides:
             if ride.cost or ride.fees:
                 # the ride cost something
@@ -71,7 +76,7 @@ def invoice_customer_rides(customer, rides):
                         ride.total_cost = ride.fees
                     else:
                         # not included
-                        if customer.plan.arrive_fee:
+                        if customer.plan.arrive_fee and not customer.group_membership.includes_arrive_fee:
                             # plan includes arrive fee
                             # total cost is cost plus arrive fee
                             ride.total_cost = ride.cost + customer.plan.arrive_fee

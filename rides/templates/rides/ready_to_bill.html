@@ -79,7 +79,10 @@
                             <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
                             <td>${{ ride.total_cost_estimate|default:'0' }}</td>
                             <td>{{ ride.company }}</td>
-                            <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
+                            <td class="small">
+                                {% if ride.included_in_plan %}(included in plan) {% endif %}
+                                {{ ride.notes|default:'' }}
+                            </td>
                             <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
                         </tr>
                     {% endfor %}

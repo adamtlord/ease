@@ -149,13 +149,14 @@ class Ride(models.Model):
     @property
     def total_fees_estimate(self):
         fees = self.fees or 0
-        arrive_fee = 0 if self.included_in_plan else self.customer.plan.arrive_fee
+        arrive_fee_included = self.included_in_plan or self.customer.group_membership and self.customer.group_membership.includes_arrive_fee
+        arrive_fee = 0 if arrive_fee_included or not self.customer.plan else self.customer.plan.arrive_fee
         return fees + arrive_fee
 
     @property
     def total_cost_estimate(self):
         cost = self.cost or 0
-        if self.included_in_plan:
+        if self.included_in_plan or self.customer.group_membership and self.customer.group_membership.includes_ride_cost:
             cost = 0
         return cost + self.total_fees_estimate
 

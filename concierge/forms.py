@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 
 from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
+from billing.models import GroupMembership
 from concierge.models import Touch
 from rides.models import Destination
 from registration.forms import RegistrationForm
@@ -49,7 +50,8 @@ CUSTOMER_FIELDS = [
     'home_phone',
     'mobile_phone',
     'preferred_phone',
-    'preferred_service'
+    'preferred_service',
+    'group_membership'
 ]
 
 TOUCH_FIELDS = [
@@ -212,6 +214,11 @@ class CustomerForm(forms.ModelForm):
         widget=forms.RadioSelect,
         required=False,
         label="Should we send the Primary Rider ride updates via text message?"
+    )
+    group_membership = forms.ModelChoiceField(
+        required=False,
+        queryset=GroupMembership.objects.filter(active=True),
+        label="Is this customer part of a group membership?"
     )
 
     class Meta:

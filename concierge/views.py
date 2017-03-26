@@ -165,6 +165,10 @@ def customer_create(request, template='concierge/customer_create.html'):
             # populate and save customer
             new_customer = customer_form.save(commit=False)
             new_customer.user = new_user
+
+            if customer_form.cleaned_data['group_membership']:
+                new_customer.plan = customer_form.cleaned_data['group_membership'].plan
+
             new_customer.save()
             # populate and save home address
             home_address = home_form.save(commit=False)
@@ -264,6 +268,10 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             customer.user.profile.relationship = account_holder_form.cleaned_data['relationship']
             customer.user.profile.phone = account_holder_form.cleaned_data['phone']
             customer.user.profile.save()
+
+            if customer_form.cleaned_data['group_membership']:
+                customer.plan = customer_form.cleaned_data['group_membership'].plan
+                customer.save()
 
             if '_activate' in request.POST:
                 customer.user.is_active = True
@@ -579,7 +587,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 
     d = {
         'customer': customer,
-        'same_card_for_both': customer.subscription_account == customer.ride_account,
+        'same_card_for_both': customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account,
         'payment_form': payment_form,
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),

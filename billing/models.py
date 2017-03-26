@@ -13,6 +13,7 @@ class Plan(AbstractEnumModel):
     GOLD = 3
     INTRO_GIFT = 4
     COPPER = 5
+    TERRACES = 6
 
     DEFAULT = COPPER
 
@@ -22,6 +23,7 @@ class Plan(AbstractEnumModel):
         (GOLD, 'Gold Membership'),
         (INTRO_GIFT, 'Unlimited Gift Certificate'),
         (COPPER, 'Copper (standard)'),
+        (TERRACES, 'Terraces'),
     )
 
     active = models.BooleanField(default=True)
@@ -80,3 +82,25 @@ class Invoice(models.Model):
 
     def __unicode__(self):
         return '{} {}'.format(self.customer, self.stripe_id)
+
+
+class GroupMembership(AbstractEnumModel):
+
+    TERRACES = 1
+
+    DEFAULT = TERRACES
+
+    CHOICES = (
+        (TERRACES, 'The Terraces of Los Gatos'),
+    )
+
+    active = models.BooleanField(default=True)
+    includes_ride_cost = models.BooleanField(default=False)
+    includes_arrive_fee = models.BooleanField(default=False)
+    includes_subscription = models.BooleanField(default=False)
+    plan = models.ForeignKey(Plan, related_name="group_membership")
+    subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_group_plan')
+    ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_group_plan')
+
+    def __unicode__(self):
+        return self.display_name
