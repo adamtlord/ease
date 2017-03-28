@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.helpers import send_welcome_email, send_receipt_email
+from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
 from accounts.models import Customer, Rider
 from billing.models import Plan
 from billing.forms import StripeCustomerForm, AdminPaymentForm
@@ -186,6 +186,7 @@ def customer_create(request, template='concierge/customer_create.html'):
             new_user.profile.save()
 
             send_welcome_email(new_user)
+            send_new_customer_email(new_user)
 
             return redirect('customer_detail', new_customer.id)
 

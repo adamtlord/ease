@@ -8,33 +8,22 @@ A new customer has signed up and entered subscription payment information.
         <td class="container" bgcolor="#ECF8FF"  style="padding:15px;">
             <table>
                 <tr>
-                    <td><strong>
-                        Customer
-                        </strong>
-                    </td>
-                    <td align="right">
-                        {{ customer.first_name }} {{ customer.last_name }}<br>
-                        {{ customer.home.city }}, {{ customer.home.state }}
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>
-                        Account Holder
-                    </strong></td>
                     <td>
+                        <p><strong>Customer</strong>:
+                        {{ customer.first_name }} {{ customer.last_name }},
+                        {{ customer.home.city }}, {{ customer.home.state }}
+                        <p>
+                        <p><strong>Account Holder</strong>:
                         {{ user.first_name }} {{ user.last_name }}
                         {% if profile.on_behalf %}
                          ({{ profile.relationship }})
                         {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>
-                        Plan
-                        </strong>
-                    </td>
-                    <td align="right">
-                        {{ plan.name }}
+                        <p><strong>Plan</strong>:
+                            {% if customer.plan %}
+                                {{ customer.plan.name }}
+                            {% else %}
+                                <em>No plan selected yet</em>
+                            {% endif %}</p>
                     </td>
                 </tr>
             </table>
