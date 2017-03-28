@@ -99,6 +99,7 @@ class GroupMembership(AbstractEnumModel):
     includes_arrive_fee = models.BooleanField(default=False)
     includes_subscription = models.BooleanField(default=False)
     plan = models.ForeignKey(Plan, related_name="group_membership")
+    bill_online = models.BooleanField(default=False)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_group_plan')
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_group_plan')
 

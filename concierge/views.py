@@ -205,7 +205,7 @@ def customer_create(request, template='concierge/customer_create.html'):
         'errors': errors,
         'error_count': error_count,
         'register_page': True
-        }
+    }
     return render(request, template, d)
 
 
