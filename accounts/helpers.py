@@ -107,13 +107,11 @@ def send_new_customer_email(user):
 
     customer = user.get_customer()
     profile = user.profile
-    plan = customer.plan
 
     d = {
         'user': user,
         'customer': customer,
-        'profile': profile,
-        'plan': plan
+        'profile': profile
     }
 
     msg_plain = render_to_string('registration/new_customer_email.txt', d)
