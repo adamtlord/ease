@@ -1,39 +1,38 @@
-{% extends 'rides/billing_base.html' %}
+{% extends 'billing/billing_base.html' %}
+{% load custom_tags %}
+
 {% block header_includes %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
     <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
 {% endblock %}
 
-{% block title %}Ready to Bill{% endblock %}
-{% block page_title %}Ready to Bill{% endblock %}
+{% block title %}Group Billing{% endblock %}
+{% block page_title %}Group Billing{% endblock %}
 
 {% block rides_content %}
 
-{% if total > 0 %}
-    {% if errors|length > 0 %}
-        <div class="alert alert-danger">
-            {% for error in errors %}
-                {{ error }}{% if not forloop.last %}<br />{% endif %}
-            {% endfor %}
+<form action="" method="GET">
+    <div class="row">
+        <div class="col-sm-3">
+            {% render_form_field search_form.group %}
         </div>
-    {% endif %}
-    {% if success_total > 0 %}
-        <div class="alert alert-success">
-            <dl>
-                <dt>{{ success_total }} rides processed successfully</dt>
-                {% if success_billed|length %}
-                    <dd><em>Ride {% for id in success_billed %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} charged to the customer.</em></dd>
-                {% endif %}
-                {% if success_included|length %}
-                    <dd><em>Ride {% for id in success_included %}{{ id }}{% if not forloop.last %}, {% endif %}{% endfor %} included in customer's plan and not invoiced.</em></dd>
-                {% endif %}
-            </dl>
+        <div class="col-sm-2">
+            {% render_form_field search_form.start_date %}
         </div>
-    {% endif %}
-{% endif %}
-<form id="bill_rides" action="" method="POST">{% csrf_token %}
-    <div class="table-responsive">
+        <div class="col-sm-2">
+            {% render_form_field search_form.end_date %}
+        </div>
+        <div class="col-sm-2">
+            {% render_form_field search_form.invoiced %}
+        </div>
+        <div class="col-sm-3">
+            <input type="submit" class="btn btn-primary" value="Search" />
+        </div>
+    </div>
+</form>
+<h1>{{ group }}</h1>
+<!--     <div class="table-responsive">
         <table id="rides_to_bill" class="table table-hover">
             <thead>
                 <tr>
@@ -79,21 +78,15 @@
                             <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
                             <td>${{ ride.total_cost_estimate|default:'0' }}</td>
                             <td>{{ ride.company }}</td>
-                            <td class="small">
-                                {% if ride.included_in_plan %}(included in plan) {% endif %}
-                                {{ ride.notes|default:'' }}
-                            </td>
+                            <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
                             <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
                         </tr>
                     {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div class="form-actions">
-        <input type="submit" class="btn btn-primary btn-block" value="Bill Checked Rides" disabled="disabled" />
-    </div>
-</form>
+    </div> -->
+
 <div class="modal fade" id="viewRideModal" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content"></div>
@@ -102,6 +95,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ STATIC_URL }}js/apps/ready_to_bill.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 {% endblock %}

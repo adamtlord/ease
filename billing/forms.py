@@ -1,7 +1,7 @@
 from django import forms
 
 
-from billing.models import StripeCustomer, Plan
+from billing.models import StripeCustomer, Plan, GroupMembership
 
 
 STRIPE_CUSTOMER_FIELDS = [
@@ -113,4 +113,28 @@ class AdminPaymentForm(StripeCustomerForm):
     def __init__(self, *args, **kwargs):
         super(AdminPaymentForm, self).__init__(*args, **kwargs)
         for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'same_card_for_both', 'coupon']:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class CSVUploadForm(forms.Form):
+    file_upload = forms.FileField()
+
+    def clean_file_upload(self):
+        file_object = self.cleaned_data['file_upload']
+        if file_object.content_type != 'text/csv':
+            raise ValidationError(
+                'Not a csv file?!',
+                code='invalid')
+
+
+class GroupMembershipFilterForm(forms.Form):
+
+    group = forms.ModelChoiceField(queryset=GroupMembership.objects.all(), required=False)
+    start_date = forms.DateField(widget=forms.DateInput(format=('%m/%d/%Y')), required=False)
+    end_date = forms.DateField(widget=forms.DateInput(format=('%m/%d/%Y')), required=False)
+    invoiced = forms.BooleanField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(GroupMembershipFilterForm, self).__init__(*args, **kwargs)
+        for field in ['group', 'start_date', 'end_date']:
             self.fields[field].widget.attrs['class'] = 'form-control'

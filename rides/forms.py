@@ -213,14 +213,3 @@ class RideForm(forms.ModelForm):
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
-
-
-class CSVUploadForm(forms.Form):
-    file_upload = forms.FileField()
-
-    def clean_file_upload(self):
-        file_object = self.cleaned_data['file_upload']
-        if file_object.content_type != 'text/csv':
-            raise ValidationError(
-                'Not a csv file?!',
-                code='invalid')

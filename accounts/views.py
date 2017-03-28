@@ -790,37 +790,6 @@ def profile_edit(request, template='accounts/profile_edit.html'):
 
 
 @login_required
-def concierge_settings(request, template='accounts/settings.html'):
-    user = request.user
-
-    if request.method == 'GET':
-        user_form = CustomUserForm(instance=user)
-        profile_form = CustomUserProfileForm(instance=user.profile)
-
-    else:
-        user_form = CustomUserForm(request.POST, instance=user)
-        profile_form = CustomUserProfileForm(request.POST, instance=user.profile)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            tz = pytz.timezone(user.profile.timezone)
-            day = tz.localize(datetime.datetime.now(), is_dst=None)
-            tz_abbrev = day.tzname()
-            messages.add_message(request, messages.SUCCESS, 'Settings saved. Your timezone is set to {} ({}).'.format(user.profile.timezone, tz_abbrev))
-
-            return redirect('concierge_settings')
-
-    d = {
-        'user': user,
-        'user_form': user_form,
-        'profile_form': profile_form
-
-    }
-    return render(request, template, d)
-
-
-@login_required
 def destination_edit(request, destination_id, template='accounts/destinations_edit.html'):
 
     user = request.user

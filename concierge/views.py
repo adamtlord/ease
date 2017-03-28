@@ -3,6 +3,7 @@ import pytz
 import stripe
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -12,6 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from accounts.forms import CustomUserForm, CustomUserProfileForm
 from accounts.helpers import send_welcome_email, send_receipt_email
 from accounts.models import Customer, Rider
 from billing.models import Plan
@@ -657,6 +659,37 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
         'form': activity_form,
         'touches': touches,
         'errors': errors
+    }
+    return render(request, template, d)
+
+
+@login_required
+def concierge_settings(request, template='accounts/settings.html'):
+    user = request.user
+
+    if request.method == 'GET':
+        user_form = CustomUserForm(instance=user)
+        profile_form = CustomUserProfileForm(instance=user.profile)
+
+    else:
+        user_form = CustomUserForm(request.POST, instance=user)
+        profile_form = CustomUserProfileForm(request.POST, instance=user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            tz = pytz.timezone(user.profile.timezone)
+            day = tz.localize(datetime.datetime.now(), is_dst=None)
+            tz_abbrev = day.tzname()
+            messages.add_message(request, messages.SUCCESS, 'Settings saved. Your timezone is set to {} ({}).'.format(user.profile.timezone, tz_abbrev))
+
+            return redirect('concierge_settings')
+
+    d = {
+        'user': user,
+        'user_form': user_form,
+        'profile_form': profile_form
+
     }
     return render(request, template, d)
 

@@ -12,7 +12,8 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              customer_history,
                              customer_activity_add,
                              customer_deactivate,
-                             customer_activate
+                             customer_activate,
+                             concierge_settings,
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -21,6 +22,7 @@ from rides.views import (ride_start, customer_rides)
 urlpatterns = [
     url(r'^$', dashboard, name='dashboard'),
     url(r'^login/$', auth_views.login, {'template_name': 'concierge/login.html'}, name='concierge_login'),
+    url(r'^settings/$', concierge_settings, name='concierge_settings'),
     url(r'^upcoming-rides/$', upcoming_rides, name='upcoming_rides'),
     url(r'^active-rides/$', active_rides, name='active_rides'),
     url(r'^rides-history/$', rides_history, name='rides_history'),
