@@ -53,12 +53,4 @@ $(function() {
         toggleAllRides(this.checked);
     });
 
-    $('#bill_rides').on('submit', function(){
-        var ride_count = $('input[class^="customer_"]:checked').length;
-        var noun = ride_count > 1 ? 'rides' : 'ride';
-        if(window.confirm("Are you sure you want to create and send invoices for " + ride_count + " " + noun + "?")){
-            return true;
-        }
-        return false;
-    });
 });

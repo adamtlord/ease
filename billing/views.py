@@ -1,3 +1,4 @@
+import csv
 import datetime
 import pytz
 import stripe
@@ -6,8 +7,9 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.utils import formats
 
 from billing.forms import PaymentForm, StripeCustomerForm, CSVUploadForm, GroupMembershipFilterForm
 from billing.models import GroupMembership
@@ -263,36 +265,69 @@ def rides_upload(request, template="billing/upload.html"):
 def group_billing(request, template="billing/group_billing.html"):
 
     search_form = GroupMembershipFilterForm(request.GET)
-    try:
-        tz = pytz.timezone(request.user.profile.timezone)
-    except:
-        tz = settings.TIME_ZONE
-
     customers = None
-    filters = {}
 
-    if search_form.is_valid():
-        cd = search_form.cleaned_data
-        if cd['group']:
-            group = GroupMembership.objects.get(pk=request.GET.get('group', None))
-            filters['customer__group_membership'] = group
+    if request.POST:
+        idlist = request.POST.getlist('ride')
+        rides_to_bill = Ride.objects.filter(id__in=idlist)
+        customers = sort_rides_by_customer(rides_to_bill)
 
-            if cd['start_date']:
-                start_datetime = tz.localize(datetime.datetime.combine(cd['start_date'], datetime.datetime.min.time()), is_dst=None)
-                filters['start_date__gte'] = start_datetime
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="group_membership_export.csv"'
 
-            if cd['end_date']:
-                end_datetime = tz.localize(datetime.datetime.combine(cd['end_date'], datetime.datetime.max.time()), is_dst=None)
-                filters['start_date__lt'] = end_datetime
+        writer = csv.writer(response)
+        writer.writerow(['Customer', 'Ride ID', 'From', 'To', 'Start', 'Distance', 'Cost', 'Fees', 'Total', 'Company', 'Notes'])
 
-            if cd['invoiced']:
-                filters['invoiced'] = cd['invoiced']
+        for customer, rides in customers.items():
+            for ride in rides:
+                writer.writerow([
+                                customer,
+                                ride.id,
+                                ride.start.fullname,
+                                ride.destination.fullname,
+                                formats.date_format(ride.start_date, "SHORT_DATETIME_FORMAT"),
+                                '{} mi.'.format(ride.distance),
+                                '${0:.2f}'.format(ride.cost),
+                                '${0:.2f}'.format(ride.total_fees_estimate),
+                                '${0:.2f}'.format(ride.total_cost_estimate),
+                                ride.company,
+                                ride.notes
+                                ])
 
-            rides = Ride.objects.filter(**filters)
+        return response
 
-            customers = sort_rides_by_customer(rides)
+    if request.GET:
+        search_form = GroupMembershipFilterForm(request.GET)
+        try:
+            tz = pytz.timezone(request.user.profile.timezone)
+        except:
+            tz = settings.TIME_ZONE
+
+        filters = {}
+
+        if search_form.is_valid():
+            cd = search_form.cleaned_data
+            if cd['group']:
+                group = GroupMembership.objects.get(pk=request.GET.get('group', None))
+                filters['customer__group_membership'] = group
+
+                if cd['start_date']:
+                    start_datetime = tz.localize(datetime.datetime.combine(cd['start_date'], datetime.datetime.min.time()), is_dst=None)
+                    filters['start_date__gte'] = start_datetime
+
+                if cd['end_date']:
+                    end_datetime = tz.localize(datetime.datetime.combine(cd['end_date'], datetime.datetime.max.time()), is_dst=None)
+                    filters['start_date__lt'] = end_datetime
+
+                if cd['invoiced']:
+                    filters['invoiced'] = cd['invoiced']
+
+                rides = Ride.objects.filter(**filters)
+
+                customers = sort_rides_by_customer(rides)
 
     d = {
+        'group_page': True,
         'search_form': search_form,
         'customers': customers
     }
