@@ -195,4 +195,32 @@ td .btn {
       .text-emphasis-variant(@state-danger-text);
     }
 }
+.daterangepicker {
+    border-radius:@border-radius-base;
+    .ranges li {
+        font-size:@font-size-small;
+        color:@brand-primary;
+        &:hover,
+        &.active {
+            background-color:@brand-primary;
+            border-color:@brand-primary;
+            color:#fff;
+        }
+    }
+    .calendar {
+        font-size:@font-size-small;
+        td.in-range {
+            background-color:fade(@brand-primary, 5%);
+        }
+        td.active,
+        td.active:hover {
+            background-color:@brand-primary;
+        }
+    }
+    .input-mini.active {
+        border-color: @brand-primary;
+    }
+
+}
+
 

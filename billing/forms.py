@@ -128,13 +128,16 @@ class CSVUploadForm(forms.Form):
 
 
 class GroupMembershipFilterForm(forms.Form):
-
+    INVOICE_STATUS_CHOICES = (
+        (False, 'Not invoiced'),
+        (True, 'Invoiced')
+    )
     group = forms.ModelChoiceField(queryset=GroupMembership.objects.all(), required=False)
-    start_date = forms.DateField(widget=forms.DateInput(format=('%m/%d/%Y')), required=False)
-    end_date = forms.DateField(widget=forms.DateInput(format=('%m/%d/%Y')), required=False)
-    invoiced = forms.BooleanField(required=False)
+    start_date = forms.DateField(widget=forms.DateInput(), required=False)
+    end_date = forms.DateField(widget=forms.DateInput(), required=False)
+    invoiced = forms.ChoiceField(choices=INVOICE_STATUS_CHOICES, required=False, label="Invoice status")
 
     def __init__(self, *args, **kwargs):
         super(GroupMembershipFilterForm, self).__init__(*args, **kwargs)
-        for field in ['group', 'start_date', 'end_date']:
+        for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'

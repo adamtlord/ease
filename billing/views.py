@@ -1,4 +1,5 @@
 import datetime
+import pytz
 import stripe
 
 from django.contrib import messages
@@ -261,17 +262,39 @@ def rides_upload(request, template="billing/upload.html"):
 
 def group_billing(request, template="billing/group_billing.html"):
 
-    search_form = GroupMembershipFilterForm()
+    search_form = GroupMembershipFilterForm(request.GET)
+    try:
+        tz = pytz.timezone(request.user.profile.timezone)
+    except:
+        tz = settings.TIME_ZONE
 
-    queryset = []
-    group = None
+    customers = None
+    filters = {}
 
-    if 'group' in request.GET:
-        group = GroupMembership.objects.get(pk=request.GET.get('group', None))
+    if search_form.is_valid():
+        cd = search_form.cleaned_data
+        if cd['group']:
+            group = GroupMembership.objects.get(pk=request.GET.get('group', None))
+            filters['customer__group_membership'] = group
+
+            if cd['start_date']:
+                start_datetime = tz.localize(datetime.datetime.combine(cd['start_date'], datetime.datetime.min.time()), is_dst=None)
+                filters['start_date__gte'] = start_datetime
+
+            if cd['end_date']:
+                end_datetime = tz.localize(datetime.datetime.combine(cd['end_date'], datetime.datetime.max.time()), is_dst=None)
+                filters['start_date__lt'] = end_datetime
+
+            if cd['invoiced']:
+                filters['invoiced'] = cd['invoiced']
+
+            rides = Ride.objects.filter(**filters)
+
+            customers = sort_rides_by_customer(rides)
 
     d = {
         'search_form': search_form,
-        'group': group
+        'customers': customers
     }
 
     return render(request, template, d)

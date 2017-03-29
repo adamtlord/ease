@@ -4,7 +4,9 @@
 {% block header_includes %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
-    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+    <script src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+    <script src="{{ STATIC_URL }}js/lib/moment.min.js"></script>
+    <script src="{{ STATIC_URL }}js/lib/daterangepicker.js"></script>
 {% endblock %}
 
 {% block title %}Group Billing{% endblock %}
@@ -17,76 +19,79 @@
         <div class="col-sm-3">
             {% render_form_field search_form.group %}
         </div>
-        <div class="col-sm-2">
-            {% render_form_field search_form.start_date %}
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label>Date Range</label>
+                <input type="text" id="range-picker" class="form-control" />
+                {{ search_form.start_date.as_hidden }}
+                {{ search_form.end_date.as_hidden }}
+            </div>
         </div>
-        <div class="col-sm-2">
-            {% render_form_field search_form.end_date %}
-        </div>
-        <div class="col-sm-2">
+
+        <div class="col-sm-3">
             {% render_form_field search_form.invoiced %}
         </div>
-        <div class="col-sm-3">
-            <input type="submit" class="btn btn-primary" value="Search" />
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-primary btn-block row-form-submit"><i class="fa fa-search"></i> Search</button>
         </div>
     </div>
 </form>
-<h1>{{ group }}</h1>
-<!--     <div class="table-responsive">
-        <table id="rides_to_bill" class="table table-hover">
-            <thead>
-                <tr>
-                    <th><input class="master" type="checkbox"></tH>
-                    <th>Cust.</th>
-                    <th>ID</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Start Time</th>
-                    <th>Distance</th>
-                    <th>Cost</th>
-                    <th>Fees</th>
-                    <th>Total</th>
-                    <th>Company</th>
-                    <th>Notes</th>
-                    <th></th>
+{% if customers %}
+<div class="table-responsive">
+    <table id="rides_to_bill" class="table table-hover">
+        <thead>
+            <tr>
+                <th><input class="master" type="checkbox"></tH>
+                <th>Cust.</th>
+                <th>ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Start Time</th>
+                <th>Distance</th>
+                <th>Cost</th>
+                <th>Fees</th>
+                <th>Total</th>
+                <th>Company</th>
+                <th>Notes</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer,rides in customers.items %}
+                <tr class="customer">
+                    <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
+                    <th colspan="12">
+                        <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
+                        {% if customer.plan %}
+                            <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                        {% else %}
+                            <span class="label label-danger">No Plan Selected</span>
+                        {% endif %}
+                        <small>ID {{ customer.id }}</small>
+                    </th>
                 </tr>
-            </thead>
-            <tbody>
-                {% for customer,rides in customers.items %}
-                    <tr class="customer">
-                        <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
-                        <th colspan="12">
-                            <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
-                            {% if customer.plan %}
-                                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
-                            {% else %}
-                                <span class="label label-danger">No Plan Selected</span>
-                            {% endif %}
-                            <small>ID {{ customer.id }}</small>
-                        </th>
+                {% for ride in rides %}
+                    <tr class="ride">
+                        <td></td>
+                        <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
+                        <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
+                        <td>{{ ride.start.fullname }}</td>
+                        <td>{{ ride.destination.fullname }}</td>
+                        <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ ride.distance }} mi</td>
+                        <td>${{ ride.cost|default:'0' }}</td>
+                        <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
+                        <td>${{ ride.total_cost_estimate|default:'0' }}</td>
+                        <td>{{ ride.company }}</td>
+                        <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
+                        <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
                     </tr>
-                    {% for ride in rides %}
-                        <tr class="ride">
-                            <td></td>
-                            <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
-                            <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
-                            <td>{{ ride.start.fullname }}</td>
-                            <td>{{ ride.destination.fullname }}</td>
-                            <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-                            <td>{{ ride.distance }} mi</td>
-                            <td>${{ ride.cost|default:'0' }}</td>
-                            <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
-                            <td>${{ ride.total_cost_estimate|default:'0' }}</td>
-                            <td>{{ ride.company }}</td>
-                            <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
-                            <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
-                        </tr>
-                    {% endfor %}
                 {% endfor %}
-            </tbody>
-        </table>
-    </div> -->
-
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 <div class="modal fade" id="viewRideModal" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content"></div>
@@ -96,4 +101,5 @@
 
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/group_billing.min.js"></script>
 {% endblock %}
