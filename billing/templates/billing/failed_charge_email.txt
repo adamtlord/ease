@@ -1,0 +1,13 @@
+{% extends 'base_email_txt.html' %}
+{% load humanize %}
+{% block content %}
+
+A charge in Stripe just failed.
+
+Customer: {{ customer }}
+Amount: ${{ amount }}
+For: {{ charge.statement_descriptor }}
+Stripe charge: https://dashboard.stripe.com/charges/{{ charge.id }}
+Stripe invoice: https://dashboard.stripe.com/invoices/{{ charge.invoice }}
+
+{% endblock %}
