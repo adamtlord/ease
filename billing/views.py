@@ -266,7 +266,7 @@ def group_billing(request, template="billing/group_billing.html"):
 
     search_form = GroupMembershipFilterForm(request.GET)
     customers = None
-
+    group = None
     if request.POST:
         idlist = request.POST.getlist('ride')
         rides_to_bill = Ride.objects.filter(id__in=idlist)
@@ -276,20 +276,32 @@ def group_billing(request, template="billing/group_billing.html"):
         response['Content-Disposition'] = 'attachment; filename="group_membership_export.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['Customer', 'Ride ID', 'From', 'To', 'Start', 'Distance', 'Cost', 'Fees', 'Total', 'Company', 'Notes'])
+        writer.writerow([
+            'Customer',
+            'Ride ID',
+            # 'From',
+            # 'To',
+            'Date & Time',
+            'Distance',
+            # 'Cost',
+            'Fee',
+            # 'Total',
+            'Company',
+            'Notes'
+        ])
 
         for customer, rides in customers.items():
             for ride in rides:
                 writer.writerow([
                                 customer,
                                 ride.id,
-                                ride.start.fullname,
-                                ride.destination.fullname,
+                                # ride.start.fullname,
+                                # ride.destination.fullname,
                                 formats.date_format(ride.start_date, "SHORT_DATETIME_FORMAT"),
                                 '{} mi.'.format(ride.distance),
-                                '${0:.2f}'.format(ride.cost),
-                                '${0:.2f}'.format(ride.total_fees_estimate),
-                                '${0:.2f}'.format(ride.total_cost_estimate),
+                                # '${0:.2f}'.format(ride.cost),
+                                '${0:.2f}'.format(ride.customer.plan.arrive_fee),
+                                # '${0:.2f}'.format(ride.total_cost_estimate),
                                 ride.company,
                                 ride.notes
                                 ])
@@ -304,6 +316,7 @@ def group_billing(request, template="billing/group_billing.html"):
             tz = settings.TIME_ZONE
 
         filters = {}
+        group = None
 
         if search_form.is_valid():
             cd = search_form.cleaned_data
@@ -328,6 +341,7 @@ def group_billing(request, template="billing/group_billing.html"):
 
     d = {
         'group_page': True,
+        'group': group,
         'search_form': search_form,
         'customers': customers
     }

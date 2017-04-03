@@ -50,9 +50,9 @@
                     <th>To</th>
                     <th>Start Time</th>
                     <th>Distance</th>
-                    <th>Cost</th>
-                    <th>Fees</th>
-                    <th>Total</th>
+                    <!-- <th>Cost</th> -->
+                    <th>Fee</th>
+                    <!-- <th>Total</th> -->
                     <th>Company</th>
                     <th>Notes</th>
                     <th></th>
@@ -81,9 +81,9 @@
                             <td>{{ ride.destination.fullname }}</td>
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{{ ride.distance }} mi</td>
-                            <td>${{ ride.cost|default:'0' }}</td>
-                            <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
-                            <td>${{ ride.total_cost_estimate|default:'0' }}</td>
+                            <!-- <td>${{ ride.cost|default:'0' }}</td> -->
+                            <td>{% if group.includes_arrive_fee %}${{ group.plan.arrive_fee }}{% endif %}
+                            <!-- <td>${{ ride.total_cost_estimate|default:'0' }}</td> -->
                             <td>{{ ride.company }}</td>
                             <td class="small">{{ ride.notes|default:'' }}</td>
                             <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
