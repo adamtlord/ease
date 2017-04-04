@@ -39,6 +39,7 @@
 </div>
 {% if customers %}
 <form id="export_rides" action="" method="POST">{% csrf_token %}
+    <input type="hidden" name="target_status" value="{{ target_status }}" />
     <div class="table-responsive">
         <table id="rides_to_bill" class="table table-hover">
             <thead>
@@ -50,9 +51,10 @@
                     <th>To</th>
                     <th>Start Time</th>
                     <th>Distance</th>
-                    <!-- <th>Cost</th> -->
-                    <th>Fee</th>
-                    <!-- <th>Total</th> -->
+                    {% if group.includes_ride_cost %}
+                        <th>Ride Cost</th>
+                    {% endif %}
+                    <th>Cost To Group</th>
                     <th>Company</th>
                     <th>Notes</th>
                     <th></th>
@@ -62,7 +64,11 @@
                 {% for customer,rides in customers.items %}
                     <tr class="customer">
                         <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
-                        <th colspan="12">
+                        <th {% if group.includes_ride_cost %}
+                                colspan="11"
+                            {% else %}
+                                colspan="10"
+                            {% endif %}>
                             <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
                             {% if customer.plan %}
                                 <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
@@ -81,9 +87,15 @@
                             <td>{{ ride.destination.fullname }}</td>
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{{ ride.distance }} mi</td>
-                            <!-- <td>${{ ride.cost|default:'0' }}</td> -->
-                            <td>{% if group.includes_arrive_fee %}${{ group.plan.arrive_fee }}{% endif %}
-                            <!-- <td>${{ ride.total_cost_estimate|default:'0' }}</td> -->
+                            {% if group.includes_ride_cost %}
+                                <td>
+                                    {{ ride.cost|default:'0' }}
+                                    {% if ride.fees %}
+                                        + ${{ ride.fees }}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            <td>${{ ride.cost_to_group|default:'0' }}</td>
                             <td>{{ ride.company }}</td>
                             <td class="small">{{ ride.notes|default:'' }}</td>
                             <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a> <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a></td>
@@ -94,7 +106,14 @@
         </table>
     </div>
     <div class="form-actions">
-        <input type="submit" class="btn btn-primary btn-block" value="Export Checked Rides" disabled="disabled" />
+        <div class="row">
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary btn-block" name="action" value="export" disabled="disabled">Export Rides</button>
+            </div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-secondary btn-block" name="action" value="update" disabled="disabled">Mark Rides as {{ target_status }}</button>
+            </div>
+        </div>
     </div>
 </form>
 {% else %}

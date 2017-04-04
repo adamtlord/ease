@@ -13,8 +13,7 @@ class RidesReadyToBillManager(models.Manager):
             .filter(complete=True) \
             .exclude(invoiced=True) \
             .exclude(cost__isnull=True) \
-            .exclude(invoice_id__isnull=False) \
-            .exclude(customer__group_membership__bill_online=False)
+            .exclude(invoice_id__isnull=False)
 
 
 class RidesIncompleteManager(models.Manager):

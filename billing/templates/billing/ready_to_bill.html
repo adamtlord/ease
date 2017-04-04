@@ -76,7 +76,11 @@
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{{ ride.distance }} mi</td>
                             <td>${{ ride.cost|default:'0' }}</td>
-                            <td>{% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
+                            <td>{% if ride.total_fees_estimate %}
+                                    ${{ ride.total_fees_estimate }}
+                                {% else %}
+                                    --
+                                {% endif %}
                             <td>${{ ride.total_cost_estimate|default:'0' }}</td>
                             <td>{{ ride.company }}</td>
                             <td class="small">

@@ -184,6 +184,12 @@
                             </td>
                         </tr>
                     {% endif %}
+                    {% if customer.group_membership and customer.group_membership.expiration_date %}
+                        <tr>
+                            <td>Group Membership expires on</td>
+                            <td>{{ customer.group_membership.expiration_date|date:"DATE_FORMAT" }}</td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td>Rides billed to</td>
                         <td>

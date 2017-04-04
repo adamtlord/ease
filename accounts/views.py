@@ -406,7 +406,7 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
         'errors': errors,
         'error_count': error_count,
         'gift': gift
-        }
+    }
     return render(request, template, d)
 
 
@@ -715,6 +715,8 @@ def profile(request, template='accounts/profile.html'):
 
     if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
+    elif customer.group_membership:
+        subscription = None
     else:
         return redirect('register_payment_redirect')
 

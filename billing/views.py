@@ -13,6 +13,7 @@ from django.utils import formats
 
 from billing.forms import PaymentForm, StripeCustomerForm, CSVUploadForm, GroupMembershipFilterForm
 from billing.models import GroupMembership
+from billing.utils import invoice_customer_rides
 from common.utils import soon
 from rides.models import Ride
 from rides.helpers import handle_lyft_upload, sort_rides_by_customer
@@ -263,50 +264,58 @@ def rides_upload(request, template="billing/upload.html"):
 
 
 def group_billing(request, template="billing/group_billing.html"):
+    INVOICED = 'Invoiced'
+    NOT_INVOICED = 'Not Invoiced'
+    EXPORT = 'export'
+    UPDATE = 'update'
 
     search_form = GroupMembershipFilterForm(request.GET)
     customers = None
     group = None
+    target_status = INVOICED
+
     if request.POST:
+        action = request.POST.get('action')
         idlist = request.POST.getlist('ride')
         rides_to_bill = Ride.objects.filter(id__in=idlist)
-        customers = sort_rides_by_customer(rides_to_bill)
 
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="group_membership_export.csv"'
+        if action == EXPORT:
+            customers = sort_rides_by_customer(rides_to_bill)
 
-        writer = csv.writer(response)
-        writer.writerow([
-            'Customer',
-            'Ride ID',
-            # 'From',
-            # 'To',
-            'Date & Time',
-            'Distance',
-            # 'Cost',
-            'Fee',
-            # 'Total',
-            'Company',
-            'Notes'
-        ])
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="group_membership_export.csv"'
 
-        for customer, rides in customers.items():
-            for ride in rides:
-                writer.writerow([
-                                customer,
-                                ride.id,
-                                # ride.start.fullname,
-                                # ride.destination.fullname,
-                                formats.date_format(ride.start_date, "SHORT_DATETIME_FORMAT"),
-                                '{} mi.'.format(ride.distance),
-                                # '${0:.2f}'.format(ride.cost),
-                                '${0:.2f}'.format(ride.customer.plan.arrive_fee),
-                                # '${0:.2f}'.format(ride.total_cost_estimate),
-                                ride.company,
-                                ride.notes
-                                ])
+            writer = csv.writer(response)
+            writer.writerow([
+                'Customer',
+                'Ride ID',
+                'Date & Time',
+                'Distance',
+                'Fee',
+                'Company',
+                'Notes'
+            ])
 
-        return response
+            for customer, rides in customers.items():
+                for ride in rides:
+                    writer.writerow([
+                                    customer,
+                                    ride.id,
+                                    formats.date_format(ride.start_date, "SHORT_DATETIME_FORMAT"),
+                                    '{} mi.'.format(ride.distance),
+                                    '${0:.2f}'.format(ride.customer.plan.arrive_fee),
+                                    ride.company,
+                                    ride.notes
+                                    ])
+
+            return response
+
+        elif action == UPDATE:
+            target_status = request.POST.get('target_status', NOT_INVOICED)
+            if target_status == INVOICED:
+                rides_to_bill.update(invoiced=True)
+            elif target_status == NOT_INVOICED:
+                rides_to_bill.update(invoiced=False)
 
     if request.GET:
         search_form = GroupMembershipFilterForm(request.GET)
@@ -334,6 +343,8 @@ def group_billing(request, template="billing/group_billing.html"):
 
                 if cd['invoiced']:
                     filters['invoiced'] = cd['invoiced']
+                    if cd['invoiced'] == 'True':
+                        target_status = NOT_INVOICED
 
                 rides = Ride.objects.filter(**filters)
 
@@ -343,7 +354,8 @@ def group_billing(request, template="billing/group_billing.html"):
         'group_page': True,
         'group': group,
         'search_form': search_form,
-        'customers': customers
+        'customers': customers,
+        'target_status': target_status
     }
 
     return render(request, template, d)

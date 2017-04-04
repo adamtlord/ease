@@ -84,6 +84,12 @@
                         </td>
                     </tr>
                 {% endif %}
+                {% if customer.group_membership and customer.group_membership.expiration_date %}
+                    <tr>
+                        <td>Group Membership expires on</td>
+                        <td>{{ customer.group_membership.expiration_date|date:"DATE_FORMAT" }}</td>
+                    </tr>
+                {% endif %}
                 {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
                     <tr>
                         <th>Credit card on file</th>
@@ -95,38 +101,44 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr{% if not customer.subscription_account %} class="warning"{% endif %}>
-                        <th>Subscription card</th>
-                        <td>{% if customer.subscription_account %}
-                                <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}
-                            {% else %}
-                                <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% if customer.subscription_account %}
-                        <tr>
-                            <td colspan="2" class="small">
-                                This credit card is used to pay for your monthly subscription. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                    {% if customer.group_membership and customer.group_membership.includes_subscription %}
+                    {% else %}
+                        <tr{% if not customer.subscription_account %} class="warning"{% endif %}>
+                            <th>Subscription card</th>
+                            <td>{% if customer.subscription_account %}
+                                    <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}
+                                {% else %}
+                                    <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                                {% endif %}
                             </td>
                         </tr>
+                        {% if customer.subscription_account %}
+                            <tr>
+                                <td colspan="2" class="small">
+                                    This credit card is used to pay for your monthly subscription. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endif %}
-                    <tr{% if not customer.ride_account %} class="warning"{% endif %}>
-                        <th>Ride card</th>
-                        <td>
-                            {% if customer.ride_account %}
-                                <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}
-                            {% else %}
-                                <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% if customer.ride_account %}
-                        <tr>
-                            <td colspan="2" class="small">
-                                This credit card is used to pay for the rides you take through Arrive. <a href="{% url 'customer_ride_account_edit' %}">Change your payment information.</a>
+                    {% if customer.group_membership and customer.group_membership.includes_ride_cost %}
+                    {% else %}
+                        <tr{% if not customer.ride_account %} class="warning"{% endif %}>
+                            <th>Ride card</th>
+                            <td>
+                                {% if customer.ride_account %}
+                                    <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}
+                                {% else %}
+                                    <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                                {% endif %}
                             </td>
                         </tr>
+                        {% if customer.ride_account %}
+                            <tr>
+                                <td colspan="2" class="small">
+                                    This credit card is used to pay for the rides you take through Arrive. <a href="{% url 'customer_ride_account_edit' %}">Change your payment information.</a>
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             </tbody>

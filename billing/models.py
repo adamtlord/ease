@@ -95,6 +95,7 @@ class GroupMembership(AbstractEnumModel):
     )
 
     active = models.BooleanField(default=True)
+    expiration_date = models.DateField(blank=True, null=True)
     includes_ride_cost = models.BooleanField(default=False)
     includes_arrive_fee = models.BooleanField(default=False)
     includes_subscription = models.BooleanField(default=False)

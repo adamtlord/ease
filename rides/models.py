@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
-from django.db import models
+from django.db import models, NotSupportedError
 from django.utils import formats, timezone
 
 from common.models import Location
@@ -170,7 +170,8 @@ class Ride(models.Model):
 
     @property
     def total_fees(self):
-        return self.fees or 0 + self.arrive_fee
+        fees = self.fees or 0
+        return fees + self.arrive_fee
 
     @property
     def total_cost_estimate(self):
@@ -180,6 +181,18 @@ class Ride(models.Model):
     @property
     def is_scheduled(self):
         return self.start_date > timezone.now()
+
+    @property
+    def cost_to_group(self):
+        cost = 0
+        group = self.customer.group_membership
+        if not group:
+            return cost
+        if group.includes_ride_cost:
+            cost += self.cost + self.fees
+        if group.includes_arrive_fee:
+            cost += group.plan.arrive_fee
+        return cost
 
     def __unicode__(self):
         if self.start:
