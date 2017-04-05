@@ -113,7 +113,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
     customer = request.user.get_customer()
     errors = {}
-    card_errors = ''
+    card_errors = None
 
     if request.method == 'POST':
 
@@ -145,8 +145,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                 if create_stripe_customer:
                     # create our stripe customer
                     new_stripe_customer = payment_form.save()
-                    # set our customer's plan
                     customer.subscription_account = customer.ride_account = new_stripe_customer
+                    # set our customer's plan
                     customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
                     selected_plan = customer.plan
                     # if chosen plan has an upfront cost, create an invoice line-item
@@ -196,9 +196,11 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
                     return redirect('register_self_destinations')
 
+            # catch Stripe card validation errors
             except stripe.error.CardError as ex:
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
+            # catch any other type of error
             except Exception as ex:
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
@@ -233,38 +235,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
         'card_errors': card_errors
     }
 
-    return render(request, template, d)
-
-
-@login_required
-def register_self_preferences(request, template='accounts/register_preferences.html'):
-
-    if request.user.is_staff:
-        redirect('dashboard')
-
-    customer = request.user.get_customer()
-
-    if request.method == 'POST':
-        preferences_form = CustomerPreferencesForm(request.POST, instance=customer)
-        lovedone_form = LovedOneForm(request.POST)
-
-        if preferences_form.is_valid() and lovedone_form.is_valid():
-            preferences_form.save()
-            lovedone = lovedone_form.save(commit=False)
-            lovedone.customer = customer
-            lovedone.save()
-
-            return redirect('register_self_destinations')
-    else:
-        preferences_form = CustomerPreferencesForm(instance=customer)
-        lovedone_form = LovedOneForm()
-
-    d = {
-        'self': True,
-        'lovedone': False,
-        'preferences_form': preferences_form,
-        'lovedone_form': lovedone_form
-    }
     return render(request, template, d)
 
 
@@ -406,7 +376,8 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
         'errors': errors,
         'error_count': error_count,
         'gift': gift
-        }
+    }
+
     return render(request, template, d)
 
 
@@ -418,6 +389,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
     customer = request.user.get_customer()
     errors = {}
+    card_errors = None
 
     if request.method == 'POST':
 
@@ -431,87 +403,99 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
             return redirect('register_self_destinations')
 
         payment_form = PaymentForm(request.POST)
+
         if payment_form.is_valid():
 
-            # create our stripe customer
-            new_stripe_customer = payment_form.save()
-
-            # set our customer's plan
-            if payment_form.cleaned_data['same_card_for_both'] == '1':
-                customer.subscription_account = customer.ride_account = new_stripe_customer
-            else:
-                customer.subscription_account = new_stripe_customer
-
-            customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
-
-            selected_plan = customer.plan
-
-            # create new stripe customer
-            create_stripe_customer = stripe.Customer.create(
-                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
-                email=new_stripe_customer.email,
-                source=payment_form.cleaned_data['stripe_token'],
-                metadata={
-                    'customer': '{} {}'.format(customer.full_name, customer.pk)
-                }
-            )
-
-            # if chosen plan has an upfront cost, create an invoice line-item
-            if customer.plan.signup_cost:
-                # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
-                signup_cost = int(customer.plan.signup_cost * 100)
-                stripe.InvoiceItem.create(
-                    customer=create_stripe_customer.id,
-                    amount=signup_cost,
-                    currency="usd",
-                    description="Initial signup fee",
+            try:
+                # create new stripe customer
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                    email=payment_form.cleaned_data['email'],
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    }
                 )
 
-            coupon_code = payment_form.cleaned_data['coupon']
-            valid_coupon = False
-            if coupon_code:
-                try:
-                    stripe.Coupon.retrieve(coupon_code)
-                    valid_coupon = True
-                except:
-                    pass
-            if not valid_coupon:
-                coupon_code = None
+                if create_stripe_customer:
+                    # create our stripe customer
+                    new_stripe_customer = payment_form.save()
 
-            # now attach the customer to a plan
-            stripe.Subscription.create(
-                customer=create_stripe_customer.id,
-                plan=customer.plan.stripe_id,
-                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
-                coupon=coupon_code
-            )
+                    # set our customer's plan
+                    if payment_form.cleaned_data['same_card_for_both'] == '1':
+                        customer.subscription_account = customer.ride_account = new_stripe_customer
+                    else:
+                        customer.subscription_account = new_stripe_customer
 
-            # store the customer's stripe id in their record
-            new_stripe_customer.stripe_id = create_stripe_customer.id
+                    customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
 
-            # save everything
-            customer.save()
-            new_stripe_customer.save()
+                    selected_plan = customer.plan
 
-            send_receipt_email(request.user)
+                    # if chosen plan has an upfront cost, create an invoice line-item
+                    if customer.plan.signup_cost:
+                        # signup_cost = int((customer.plan.signup_cost - customer.plan.monthly_cost) * 100)
+                        signup_cost = int(customer.plan.signup_cost * 100)
+                        stripe.InvoiceItem.create(
+                            customer=create_stripe_customer.id,
+                            amount=signup_cost,
+                            currency="usd",
+                            description="Initial signup fee",
+                        )
 
-            send_new_customer_email(request.user)
+                    coupon_code = payment_form.cleaned_data['coupon']
+                    valid_coupon = False
+                    if coupon_code:
+                        try:
+                            stripe.Coupon.retrieve(coupon_code)
+                            valid_coupon = True
+                        except:
+                            pass
+                    if not valid_coupon:
+                        coupon_code = None
 
-            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+                    # now attach the customer to a plan
+                    stripe.Subscription.create(
+                        customer=create_stripe_customer.id,
+                        plan=customer.plan.stripe_id,
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                        coupon=coupon_code
+                    )
 
-            if payment_form.cleaned_data['same_card_for_both'] == '0':
+                    # store the customer's stripe id in their record
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
+                    # save everything
+                    customer.save()
+                    new_stripe_customer.save()
 
-                return redirect('register_payment_ride_account')
+                    send_receipt_email(request.user)
 
-            request.session['payment_complete'] = True
+                    send_new_customer_email(request.user)
 
-            return redirect('register_lovedone_destinations')
+                    messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
+                    if payment_form.cleaned_data['same_card_for_both'] == '0':
+
+                        return redirect('register_payment_ride_account')
+
+                    request.session['payment_complete'] = True
+
+                    return redirect('register_lovedone_destinations')
+
+            # catch Stripe card validation errors
+            except stripe.error.CardError as ex:
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            # catch any other type of error
+            except Exception as ex:
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
+
+        # form is invalid
         else:
             errors = payment_form.errors
 
+    # GET
     else:
-
+        # set defaults and initials
         if customer.subscription_account:
             payment_form = PaymentForm(instance=customer.subscription_account, initial={
                 'plan': customer.plan.id
@@ -524,7 +508,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                 'email': request.user.email,
                 'same_card_for_both': 1,
             })
-
+    # context
     d = {
         'self': False,
         'lovedone': True,
@@ -537,44 +521,10 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'errors': errors,
         'gift': gift,
         'gift_plan': Plan.objects.get(name="INTRO_GIFT"),
-        'errors': errors
+        'errors': errors,
+        'card_errors': card_errors
     }
 
-    return render(request, template, d)
-
-
-@login_required
-def register_lovedone_preferences(request, template='accounts/register_preferences.html'):
-
-    if request.user.is_staff:
-        redirect('dashboard')
-
-    user = request.user
-    customer = request.user.get_customer()
-
-    if request.method == 'GET':
-        lovedone_form = LovedOnePreferencesForm(prefix='reg')
-    else:
-        lovedone_form = LovedOnePreferencesForm(request.POST, prefix='reg')
-
-        if lovedone_form.is_valid():
-            new_loved_one = lovedone_form.save(commit=False)
-            new_loved_one.customer = customer
-            new_loved_one.first_name = user.first_name
-            new_loved_one.last_name = user.last_name
-            new_loved_one.email = user.email
-            new_loved_one.save()
-
-            user.profile.receive_updates = new_loved_one.receive_updates
-            user.profile.save()
-
-            return redirect('register_lovedone_destinations')
-
-    d = {
-        'self': False,
-        'lovedone': True,
-        'lovedone_form': lovedone_form,
-    }
     return render(request, template, d)
 
 
@@ -642,42 +592,69 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
 
     customer = request.user.get_customer()
     errors = {}
+    card_errors = None
 
     if request.method == 'POST':
+
+        if customer.ride_account:
+
+            if customer.destinations.count():
+                messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please edit your profile or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+                return redirect('profile')
+
+            messages.warning(request, 'This form has already been submitted. To make changes to your subscription, please <a href={}>visit your profile</a> or contact customer service at 1-866-626-9879 or <a href="mailto:helloa@arriverides.com">hello@arriverides.com</a>.'.format(reverse('profile')))
+            return redirect('register_self_destinations')
+
         payment_form = StripeCustomerForm(request.POST)
+
         if payment_form.is_valid():
 
-            new_stripe_customer = payment_form.save()
+            try:
+                # create new stripe customer
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                    email=payment_form.cleaned_data['email'],
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                    }
+                )
 
-            customer.ride_account = new_stripe_customer
+                if create_stripe_customer:
+                    # create our stripe customer
+                    new_stripe_customer = payment_form.save()
+                    customer.ride_account = new_stripe_customer
 
-            create_stripe_customer = stripe.Customer.create(
-                description='{} {}'.format(new_stripe_customer.first_name, new_stripe_customer.last_name),
-                email=new_stripe_customer.email,
-                source=payment_form.cleaned_data['stripe_token'],
-                metadata={
-                    'customer': '{} [{}]'.format(customer.full_name, customer.pk),
-                }
-            )
+                    # store the customer's stripe id in their record
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
 
-            new_stripe_customer.stripe_id = create_stripe_customer.id
+                    # save everything
+                    customer.save()
+                    new_stripe_customer.save()
 
-            customer.save()
-            new_stripe_customer.save()
+                    messages.add_message(request, messages.SUCCESS, 'Credit card saved')
 
-            messages.add_message(request, messages.SUCCESS, 'Credit card saved')
+                    return redirect('register_lovedone_destinations')
 
-            return redirect('register_lovedone_destinations')
+            except stripe.error.CardError as ex:
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            except Exception as ex:
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
             errors = payment_form.errors
 
     else:
-        payment_form = StripeCustomerForm(initial={
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'email': request.user.email
-        })
+        if customer.ride_account:
+            payment_form = StripeCustomerForm(instance=customer.ride_account)
+
+        else:
+            payment_form = StripeCustomerForm(initial={
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email
+            })
 
     d = {
         'customer': customer,
@@ -685,7 +662,8 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
         'months': range(1, 13),
         'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
         'soon': soon(),
-        'errors': errors
+        'errors': errors,
+        'card_errors': card_errors
     }
 
     return render(request, template, d)
@@ -911,3 +889,69 @@ def password_validate(request):
             response = JsonResponse({'valid': False, 'errors': [str(error) for error in errors]})
             return response
     return JsonResponse({'valid': False})
+
+
+# @login_required
+# def register_self_preferences(request, template='accounts/register_preferences.html'):
+
+#     if request.user.is_staff:
+#         redirect('dashboard')
+
+#     customer = request.user.get_customer()
+
+#     if request.method == 'POST':
+#         preferences_form = CustomerPreferencesForm(request.POST, instance=customer)
+#         lovedone_form = LovedOneForm(request.POST)
+
+#         if preferences_form.is_valid() and lovedone_form.is_valid():
+#             preferences_form.save()
+#             lovedone = lovedone_form.save(commit=False)
+#             lovedone.customer = customer
+#             lovedone.save()
+
+#             return redirect('register_self_destinations')
+#     else:
+#         preferences_form = CustomerPreferencesForm(instance=customer)
+#         lovedone_form = LovedOneForm()
+
+#     d = {
+#         'self': True,
+#         'lovedone': False,
+#         'preferences_form': preferences_form,
+#         'lovedone_form': lovedone_form
+#     }
+#     return render(request, template, d)
+
+# @login_required
+# def register_lovedone_preferences(request, template='accounts/register_preferences.html'):
+
+#     if request.user.is_staff:
+#         redirect('dashboard')
+
+#     user = request.user
+#     customer = request.user.get_customer()
+
+#     if request.method == 'GET':
+#         lovedone_form = LovedOnePreferencesForm(prefix='reg')
+#     else:
+#         lovedone_form = LovedOnePreferencesForm(request.POST, prefix='reg')
+
+#         if lovedone_form.is_valid():
+#             new_loved_one = lovedone_form.save(commit=False)
+#             new_loved_one.customer = customer
+#             new_loved_one.first_name = user.first_name
+#             new_loved_one.last_name = user.last_name
+#             new_loved_one.email = user.email
+#             new_loved_one.save()
+
+#             user.profile.receive_updates = new_loved_one.receive_updates
+#             user.profile.save()
+
+#             return redirect('register_lovedone_destinations')
+
+#     d = {
+#         'self': False,
+#         'lovedone': True,
+#         'lovedone_form': lovedone_form,
+#     }
+#     return render(request, template, d)

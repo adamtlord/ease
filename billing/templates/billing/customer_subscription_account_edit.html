@@ -15,6 +15,8 @@
     </script>
 {% endblock header_includes %}
 
+{% block messages %}{% endblock messages %}
+
 {% block content %}
 
 <div class="row">
@@ -22,6 +24,7 @@
         <div class="page-header">
             <h2 class="text-center">Edit Payment Information</h2>
         </div>
+        {% include 'fragments/messages.html' %}
         <form action="" id="user_form" method="post" novalidate>{% csrf_token %}
             {% if errors %}
                 <p class="alert alert-danger">
@@ -35,9 +38,10 @@
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
             {% render_form_field payment_form.last_4_digits %}
 
-            <div id="credit-card-errors" style="display:none">
-                <div class="alert alert-danger" id="stripe-error-message"></div>
+            <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
+                <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
             </div>
+
             <fieldset>
                 <legend>Subscription Billing Information</legend>
                 {{ payment_form.plan.as_hidden }}
@@ -50,7 +54,7 @@
                         <input class="form-control" id="billing_zip" type="text" value="">
                     </div>
                 {% endif %}
-                {% if customer.subscription_account %}
+                {% if customer.subscription_account and not card_errors %}
                     <div id="card_on_file" class="form-group">
                         <label>Credit card on file</label>
                         <div class="input-group">
@@ -61,7 +65,7 @@
                         </div>
                     </div>
                 {% endif %}
-                <div id="add_card" class="well well-sm"{% if customer.subscription_account %} style="display:none;"{% endif %}>
+                <div id="add_card" class="well well-sm"{% if customer.subscription_account and not card_errors %} style="display:none;"{% endif %}>
                     <h4>Add a new credit card</h4>
                     <div class="cc-inline">
                         <div class="form-group cc-mask">
