@@ -192,7 +192,6 @@ def customer_create(request, template='concierge/customer_create.html'):
 
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
-            print errors
             error_count = sum([len(d) for d in errors])
     d = {
         'register_form': register_form,
@@ -202,7 +201,7 @@ def customer_create(request, template='concierge/customer_create.html'):
         'errors': errors,
         'error_count': error_count,
         'register_page': True
-        }
+    }
     return render(request, template, d)
 
 
@@ -400,7 +399,6 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
             # an existing customer already has a subscription account and is in Stripe
             existing_customer = customer.subscription_account and customer.subscription_account.stripe_id
-
             if not existing_customer:
                 # create a new customer
                 try:
@@ -437,37 +435,37 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                                 description="Initial signup fee",
                             )
 
-                            # handle coupon code
-                            coupon_code = payment_form.cleaned_data['coupon']
-                            valid_coupon = False
-                            if coupon_code:
-                                try:
-                                    stripe.Coupon.retrieve(coupon_code)
-                                    valid_coupon = True
-                                except:
-                                    pass
-                            if not valid_coupon:
-                                coupon_code = None
+                        # handle coupon code
+                        coupon_code = payment_form.cleaned_data['coupon']
+                        valid_coupon = False
+                        if coupon_code:
+                            try:
+                                stripe.Coupon.retrieve(coupon_code)
+                                valid_coupon = True
+                            except:
+                                pass
+                        if not valid_coupon:
+                            coupon_code = None
 
-                            # now attach the customer to a plan (including the optional the coupon code)
-                            stripe.Subscription.create(
-                                customer=create_stripe_customer.id,
-                                plan=customer.plan.stripe_id,
-                                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
-                                coupon=coupon_code
-                            )
+                        # now attach the customer to a plan (including the optional the coupon code)
+                        stripe.Subscription.create(
+                            customer=create_stripe_customer.id,
+                            plan=customer.plan.stripe_id,
+                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                            coupon=coupon_code
+                        )
 
-                            # store the customer's stripe id in their record
-                            new_stripe_customer.stripe_id = create_stripe_customer.id
+                        # store the customer's stripe id in their record
+                        new_stripe_customer.stripe_id = create_stripe_customer.id
 
-                            # save everything
-                            customer.save()
-                            new_stripe_customer.save()
+                        # save everything
+                        customer.save()
+                        new_stripe_customer.save()
 
-                            # everything was successful, so we can send a receipt to the user
-                            send_receipt_email(user)
+                        # everything was successful, so we can send a receipt to the user
+                        send_receipt_email(user)
 
-                            messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
+                        messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
                 # catch Stripe card validation errors
                 except stripe.error.CardError as ex:
@@ -476,7 +474,6 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                 # catch any other type of error
                 except Exception as ex:
                     card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
-
             else:
                 if payment_form.cleaned_data['stripe_token']:
                     # this is an existing customer, get their record from Stripe
@@ -500,7 +497,6 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                     # catch any other type of error
                     except Exception as ex:
                         card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
-
             # if card_errors is still None, we didn't hit any exceptions in Stripe
             if not card_errors:
 
@@ -566,6 +562,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 
     if request.method == 'POST':
         existing_customer = customer.ride_account and customer.ride_account.stripe_id
+
         if request.POST.get('add_stripe_customer') == '1':
             payment_form = StripeCustomerForm(request.POST)
             existing_customer = False
@@ -574,7 +571,9 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
             payment_form = StripeCustomerForm(request.POST, instance=customer.ride_account)
 
         if payment_form.is_valid():
+
             if not existing_customer:
+
                 try:
                     create_stripe_customer = stripe.Customer.create(
                         description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
@@ -610,6 +609,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
                     card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
             else:
+
                 stripe_cust = stripe.Customer.retrieve(customer.ride_account.stripe_id)
                 stripe_cust.description = '{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name'])
                 stripe_cust.email = payment_form.cleaned_data['email']
