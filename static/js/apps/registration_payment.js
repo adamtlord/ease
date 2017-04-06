@@ -88,4 +88,10 @@ $(function() {
     $('.cc-mask input').mask('0000-0000-0000-0000');
     $('.zip-mask input').mask('00000-0000');
 
+    if($('#credit-card-errors').is(':visible')){
+        $('html, body').animate({
+            scrollTop: $("#credit-card-errors").offset().top - 40
+        }, 500);
+    }
+
 });

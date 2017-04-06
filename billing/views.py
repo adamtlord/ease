@@ -74,6 +74,7 @@ def customer_subscription_account_edit(request, template="billing/customer_subsc
 
                     try:
                         stripe_cust.save()
+                        payment_form.save()
                         messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
                     # catch Stripe card validation errors
@@ -186,9 +187,9 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
                 stripe_cust.email = payment_form.cleaned_data['email']
                 stripe_cust.source = payment_form.cleaned_data['stripe_token']
                 stripe_cust.metadata = {'customer': '{} [{}]'.format(customer.full_name, customer.pk)}
-
                 try:
                     stripe_cust.save()
+                    payment_form.save()
                     messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
                     return redirect('profile')

@@ -488,6 +488,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                     try:
                         # now try to save the new card in Stripe
                         stripe_cust.save()
+                        payment_form.save()
                         messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
                     # catch Stripe card validation errors
@@ -618,6 +619,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 
                 try:
                     stripe_cust.save()
+                    payment_form.save()
                     messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
                     return redirect('customer_detail', customer.id)
