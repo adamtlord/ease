@@ -45,8 +45,25 @@
                 {% render_form_field register_form.last_name %}
                 {% render_form_field register_form.relationship %}
                 {% render_form_field register_form.phone '' 'phone-mask' %}
-                {% render_form_field register_form.password1 %}
-                {% render_form_field register_form.password2 %}
+                <div id="id_reg-password1_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
+                    <label class="control-label" for="id_reg-password1">
+                        Create a password<span class="req">*</span>
+                    </label>
+                    <div class="validation-messages help-block">Passwords must be
+                        <span id="pswd_length">at least 8 characters long</span>
+                        <div id="pswd_dynamic"></div>
+                    </div>
+                    <input class="form-control" data-remote="{% url 'password_validate' %}" id="id_reg-password1" name="reg-password1" type="password" required="">
+                    <i class="feedback-icon"></i>
+                </div>
+                <div id="id_reg-password2_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
+                    <label class="control-label" for="id_reg-password2">
+                        Please enter the password again<span class="req">*</span>
+                    </label>
+                    <input class="form-control" data-match="#id_reg-password1" id="id_reg-password2" name="reg-password2" type="password" required="">
+                    <i class="feedback-icon"></i>
+                    <div id="pswd_match_error"></div>
+                </div>
             </fieldset>
             <fieldset>
                 <legend>Primary Customer's Home Address</legend>
@@ -73,10 +90,6 @@
                 <div id="source_other" style="display:none;">
                     {% render_form_field register_form.source_other %}
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend>Group Memberships</legend>
-                {% render_form_field customer_form.group_membership %}
             </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary btn-block" value="Create" />

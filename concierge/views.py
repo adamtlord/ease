@@ -168,9 +168,6 @@ def customer_create(request, template='concierge/customer_create.html'):
             new_customer = customer_form.save(commit=False)
             new_customer.user = new_user
 
-            if customer_form.cleaned_data['group_membership']:
-                new_customer.plan = customer_form.cleaned_data['group_membership'].plan
-
             new_customer.save()
             # populate and save home address
             home_address = home_form.save(commit=False)

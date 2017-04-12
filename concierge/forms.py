@@ -51,7 +51,6 @@ CUSTOMER_FIELDS = [
     'mobile_phone',
     'preferred_phone',
     'preferred_service',
-    'group_membership'
 ]
 
 TOUCH_FIELDS = [
@@ -214,11 +213,6 @@ class CustomerForm(forms.ModelForm):
         widget=forms.RadioSelect,
         required=False,
         label="Should we send the Primary Rider ride updates via text message?"
-    )
-    group_membership = forms.ModelChoiceField(
-        required=False,
-        queryset=GroupMembership.objects.filter(active=True),
-        label="Is this customer part of a group membership?"
     )
 
     class Meta:
