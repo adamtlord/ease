@@ -1,13 +1,16 @@
 import json
 
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from billing.utils import datetime_from_timestamp
-from billing.models import Invoice
+from billing.models import Invoice, StripeCustomer
 from concierge.models import Touch
 
 # INVOICE
@@ -93,7 +96,91 @@ from concierge.models import Touch
 #     'api_version': '2016-07-06'
 # }
 
-
+# CHARGE
+# {
+#   "created": 1326853478,
+#   "livemode": false,
+#   "id": "evt_00000000000000",
+#   "type": "charge.failed",
+#   "object": "event",
+#   "request": null,
+#   "pending_webhooks": 1,
+#   "api_version": "2017-02-14",
+#   "data": {
+#     "object": {
+#       "id": "ch_00000000000000",
+#       "object": "charge",
+#       "amount": 3000,
+#       "amount_refunded": 0,
+#       "application": null,
+#       "application_fee": null,
+#       "balance_transaction": "txn_00000000000000",
+#       "captured": true,
+#       "created": 1490818219,
+#       "currency": "usd",
+#       "customer": "cus_00000000000000",
+#       "description": null,
+#       "destination": null,
+#       "dispute": null,
+#       "failure_code": null,
+#       "failure_message": null,
+#       "fraud_details": {},
+#       "invoice": "in_00000000000000",
+#       "livemode": false,
+#       "metadata": {},
+#       "on_behalf_of": null,
+#       "order": null,
+#       "outcome": {
+#         "network_status": "approved_by_network",
+#         "reason": null,
+#         "risk_level": "normal",
+#         "seller_message": "Payment complete.",
+#         "type": "authorized"
+#       },
+#       "paid": false,
+#       "receipt_email": null,
+#       "receipt_number": null,
+#       "refunded": false,
+#       "refunds": {
+#         "object": "list",
+#         "data": [],
+#         "has_more": false,
+#         "total_count": 0,
+#         "url": "/v1/charges/ch_1A2n7XK2sMDdae4KHRuUJZ68/refunds"
+#       },
+#       "review": null,
+#       "shipping": null,
+#       "source": {
+#         "id": "card_00000000000000",
+#         "object": "card",
+#         "address_city": null,
+#         "address_country": null,
+#         "address_line1": null,
+#         "address_line1_check": null,
+#         "address_line2": null,
+#         "address_state": null,
+#         "address_zip": null,
+#         "address_zip_check": null,
+#         "brand": "Visa",
+#         "country": "US",
+#         "customer": "cus_00000000000000",
+#         "cvc_check": null,
+#         "dynamic_last4": null,
+#         "exp_month": 12,
+#         "exp_year": 2017,
+#         "funding": "credit",
+#         "last4": "4242",
+#         "metadata": {},
+#         "name": null,
+#         "tokenization_method": null
+#       },
+#       "source_transfer": null,
+#       "statement_descriptor": "Arrive membership",
+#       "status": "succeeded",
+#       "transfer_group": null
+#     }
+#   }
+# }
 # @require_POST
 # @csrf_exempt
 # def invoice_item(request):
@@ -114,6 +201,7 @@ from concierge.models import Touch
 # invoice.payment_succeeded
 # invoice.sent
 # invoice.updated
+
 
 @require_POST
 @csrf_exempt
@@ -155,4 +243,33 @@ def invoice(request):
     except:
         pass
 
+    return HttpResponse(status=200)
+
+
+@require_POST
+@csrf_exempt
+def charge_failed(request):
+    event = json.loads(request.body)
+    stripe_customer = event['data']['object']['customer']
+    stripe_customer = get_object_or_404(StripeCustomer, stripe_id=stripe_customer)
+    customer = stripe_customer.ride_customer.first()
+
+    d = {
+        'customer': customer,
+        'charge': event['data']['object'],
+        'amount': event['data']['object']['amount'] / 100
+    }
+
+    msg_plain = render_to_string('billing/failed_charge_email.txt', d)
+    msg_html = render_to_string('billing/failed_charge_email.html', d)
+
+    to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+    send_mail(
+        'Arrive: Failed Charge in Stripe',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        [to_email],
+        html_message=msg_html,
+    )
     return HttpResponse(status=200)

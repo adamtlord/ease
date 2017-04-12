@@ -15,15 +15,19 @@
     </script>
 {% endblock header_includes %}
 
-{% block content %}
+{% block messages %}{% endblock messages %}
 
+{% block content %}
 
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <div class="page-header">
             <h2 class="text-center">Enter Payment Information</h2>
         </div>
-        <p>You selected the {{ customer.plan.display_name }} plan.</p>
+        {% include 'fragments/messages.html' %}
+        {% if not customer.plan.is_default %}
+            <p>You selected the {{ customer.plan.display_name }} plan.</p>
+        {% endif %}
         <p>Please enter the credit card you would like us to bill for rides{% if not customer.plan.ride_distance_limit %}.{% else %}
             not included in your monthly subscription ({% if customer.plan.included_rides_per_month > 0 %}rides in addition to the {{ customer.plan.included_rides_per_month }} included, or {% endif %}rides over {{ customer.plan.ride_distance_limit|floatformat }} miles).{% endif %}
         </p>
@@ -39,7 +43,9 @@
             {% endif %}
             <input type="hidden" name="stripe_token" id="stripe_token" value="">
             {% render_form_field payment_form.last_4_digits %}
-
+            <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
+                <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
+            </div>
             <div id="credit-card-errors" style="display:none">
                 <div class="alert alert-danger" id="stripe-error-message"></div>
             </div>

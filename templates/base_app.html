@@ -5,7 +5,9 @@
 {% endblock header_includes %}
 {% block body %}
     <div class="container">
-        {% include 'fragments/messages.html' %}
+        {% block messages %}
+          {% include 'fragments/messages.html' %}
+        {% endblock messages %}
         {% block content %}
         {% endblock content %}
     </div>

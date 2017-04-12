@@ -1,0 +1,13 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>
+A charge in Stripe just failed.<br /><br />
+
+<strong>Customer:</strong> <a href="https://app.arriverides.com/concierge/customers/{{ customer.id }}">{{ customer }}</a><br />
+<strong>Amount:</strong> ${{ amount }}<br />
+<strong>For:</strong> {{ charge.statement_descriptor }}<br />
+<strong>Stripe Charge:</strong> <a href="https://dashboard.stripe.com/charges/{{ charge.id }}">{{ charge.id }}</a><br />
+<strong>Stripe Invoice:</strong> <a href="https://dashboard.stripe.com/invoices/{{ charge.invoice }}">{{ charge.invoice }}</a><br />
+
+</p>
+{% endblock %}

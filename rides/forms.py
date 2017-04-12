@@ -43,7 +43,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
 
 class DestinationChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return "{} - {}".format(obj.fullname, obj.fulladdress)
+        return u"{} - {}".format(obj.fullname, obj.fulladdress)
 
 
 class DestinationForm(forms.ModelForm):

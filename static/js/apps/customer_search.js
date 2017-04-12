@@ -1,3 +1,5 @@
+/* global Bloodhound */
+
 $(function() {
     var customers = new Bloodhound({
         datumTokenizer: function(obj) {
@@ -26,6 +28,7 @@ $(function() {
             return obj.display;
         },
         name: 'customers',
+        limit: 10,
         source: customers
     }).on('typeahead:select typeahead:autocomplete', function(event, suggestion) {
         $('#customer_id').val(suggestion.id);
