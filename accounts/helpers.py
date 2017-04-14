@@ -1,10 +1,13 @@
-import datetime
-
+from datetime import datetime
+import csv
 from django.conf import settings
 from django.core.mail import send_mail
 from django.utils import formats, timezone
 from django.template.loader import render_to_string
 
+from accounts.models import CustomUser, Customer
+from rides.models import Destination
+from billing.models import Plan, GroupMembership
 from billing.utils import get_stripe_subscription
 from concierge.models import Touch
 
@@ -39,7 +42,7 @@ def send_receipt_email(user):
     plan = customer.plan
     subscription = get_stripe_subscription(customer)
 
-    next_bill_date = formats.date_format(datetime.datetime.fromtimestamp(subscription.current_period_end), "DATE_FORMAT")
+    next_bill_date = formats.date_format(datetime.fromtimestamp(subscription.current_period_end), "DATE_FORMAT")
 
     d = {
         'account': account,
@@ -126,3 +129,110 @@ def send_new_customer_email(user):
         [to_email],
         html_message=msg_html,
     )
+
+
+def create_customers_from_upload(uploaded_file):
+    UPLOAD_COLUMNS = (
+        ('First'),
+        ('Last'),
+        ('Email'),
+        ('Home Phone'),
+        ('Mobile Phone'),
+        ('Preferred Phone (h/m)'),
+        ('DOB (M/D/YY)'),
+        ('Home Address 1'),
+        ('Home Address 2'),
+        ('Home City'),
+        ('Home State'),
+        ('Home Zip'),
+        ('Residence Type'),
+        ('Home notes'),
+        ('Plan'),
+        ('Group'),
+    )
+
+    FIRST_COL = UPLOAD_COLUMNS[0]
+    LAST_COL = UPLOAD_COLUMNS[1]
+    EMAIL_COL = UPLOAD_COLUMNS[2]
+    H_PHONE_COL = UPLOAD_COLUMNS[3]
+    M_PHONE_COL = UPLOAD_COLUMNS[4]
+    PREFERRED_PHONE_COL = UPLOAD_COLUMNS[5]
+    DOB_COL = UPLOAD_COLUMNS[6]
+    ADDRESS1_COL = UPLOAD_COLUMNS[7]
+    ADDRESS2_COL = UPLOAD_COLUMNS[8]
+    CITY_COL = UPLOAD_COLUMNS[9]
+    STATE_COL = UPLOAD_COLUMNS[10]
+    ZIP_COL = UPLOAD_COLUMNS[11]
+    RESIDENCE_COL = UPLOAD_COLUMNS[12]
+    HOME_NOTES_COL = UPLOAD_COLUMNS[13]
+    PLAN_COL = UPLOAD_COLUMNS[14]
+    GROUP_COL = UPLOAD_COLUMNS[15]
+
+    results = {
+        'warnings': [],
+        'errors': [],
+        'success': 0,
+        'total': 0
+    }
+
+    reader = csv.DictReader(uploaded_file)
+    for idx, row in enumerate(reader):
+        results['total'] += 1
+        try:
+            plan = group = None
+            if row[PLAN_COL]:
+                plan = Plan.objects.get(pk=row[PLAN_COL])
+            if row[GROUP_COL]:
+                group = GroupMembership.objects.get(pk=row[GROUP_COL])
+
+            user, created = CustomUser.objects.update_or_create(
+                email=row[EMAIL_COL],
+                first_name=row[FIRST_COL],
+                last_name=row[LAST_COL],
+            )
+            user.save()
+            customer, created = Customer.objects.update_or_create(
+                user=user,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
+                home_phone=row[H_PHONE_COL],
+                mobile_phone=row[M_PHONE_COL],
+                preferred_phone=row[PREFERRED_PHONE_COL],
+                residence_type=row[RESIDENCE_COL],
+                plan=plan,
+                group_membership=group,
+                dob=datetime.strptime(row[DOB_COL], "%m/%d/%y").date()
+            )
+            customer.save()
+            try:
+                home = Destination.objects.get(
+                    customer=customer,
+                    home=True,
+                    name='Home',
+                    street1=row[ADDRESS1_COL],
+                    street2=row[ADDRESS2_COL],
+                    city=row[CITY_COL],
+                    state=row[STATE_COL],
+                    zip_code=row[ZIP_COL],
+                    notes=row[HOME_NOTES_COL]
+                )
+            except Destination.DoesNotExist:
+                home = Destination.objects.get(
+                    customer=customer,
+                    home=True,
+                    name='Home',
+                    street1=row[ADDRESS1_COL],
+                    street2=row[ADDRESS2_COL],
+                    city=row[CITY_COL],
+                    state=row[STATE_COL],
+                    zip_code=row[ZIP_COL],
+                    notes=row[HOME_NOTES_COL]
+                )
+                home.save()
+
+            results['success'] += 1
+        except Exception as ex:
+            results['errors'].append('{}'.format(ex))
+
+    return results

@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
@@ -362,3 +363,14 @@ class ActivityForm(forms.ModelForm):
         if commit:
             touch.save()
         return touch
+
+
+class CustomerUploadForm(forms.Form):
+    file_upload = forms.FileField()
+
+    def clean_file_upload(self):
+        file_object = self.cleaned_data['file_upload']
+        if file_object.content_type != 'text/csv':
+            raise ValidationError(
+                'Not a csv file?!',
+                code='invalid')

@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
@@ -14,13 +15,13 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_receipt_email
+from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload
 from accounts.models import Customer, Rider
-from billing.models import Plan
+from billing.models import Plan, GroupMembership
 from billing.forms import StripeCustomerForm, AdminPaymentForm
 from billing.utils import get_stripe_subscription
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -752,6 +753,37 @@ def concierge_settings(request, template='accounts/settings.html'):
         'profile_form': profile_form
 
     }
+    return render(request, template, d)
+
+
+@staff_member_required
+def customer_upload(request, template="concierge/customer_upload.html"):
+
+    results = {}
+    plans = Plan.objects.filter(active=True).order_by('id')
+    groups = GroupMembership.objects.filter(active=True).order_by('id')
+    residence_types = Customer.RESIDENCE_TYPE_CHOICES
+
+    if request.method == 'POST':
+        form = CustomerUploadForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            upload = request.FILES['file_upload']
+            if upload:
+                results = create_customers_from_upload(upload)
+            else:
+                message.error(request, "No file!")
+    else:
+        form = CustomerUploadForm()
+
+    d = {
+        'form': form,
+        'results': results,
+        'plans': plans,
+        'groups': groups,
+        'residence_types': residence_types
+    }
+
     return render(request, template, d)
 
 

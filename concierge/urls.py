@@ -3,6 +3,7 @@ from django.conf.urls import url
 
 from concierge.views import (dashboard, upcoming_rides, active_rides, rides_history,
                              customer_list, customer_list_inactive, customer_create,
+                             customer_upload,
                              customer_detail, customer_update,
                              customer_search_data, customer_destinations,
                              customer_destination_edit, customer_destination_add,
@@ -29,6 +30,7 @@ urlpatterns = [
     url(r'^customers/$', customer_list, name='customer_list'),
     url(r'^customers-inactive/$', customer_list_inactive, name='customer_list_inactive'),
     url(r'^customers/create/$', customer_create, name='customer_create'),
+    url(r'^customers/upload/$', customer_upload, name='customer_upload'),
     url(r'^customers/(?P<customer_id>\d+)/$', customer_detail, name='customer_detail'),
     url(r'^customers/(?P<customer_id>\d+)/update/$', customer_update, name='customer_update'),
 

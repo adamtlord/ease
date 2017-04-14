@@ -4039,7 +4039,7 @@ a.label:focus {
   vertical-align: middle;
   white-space: nowrap;
   text-align: center;
-  background-color: #b7b7b7;
+  background-color: #555555;
   border-radius: 10px;
 }
 .badge:empty {
@@ -10740,4 +10740,3 @@ a.ride-preferences ul > li > i:focus {
   padding: 5.5px 0 0 0;
   border-top: 1px solid #ddd;
 }
-/*# sourceMappingURL=index.css.map */
