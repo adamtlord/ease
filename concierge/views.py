@@ -217,7 +217,9 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
         subscription = get_stripe_subscription(customer)
     rides_in_progress = Ride.in_progress.filter(customer=customer)
     tz_abbrev = ''
-    customer_tz = customer.home.timezone
+    customer_tz = None
+    if customer.home and customer.home.timezone:
+        customer_tz = customer.home.timezone
 
     if customer_tz:
         tz = pytz.timezone(customer_tz)
@@ -759,7 +761,7 @@ def concierge_settings(request, template='accounts/settings.html'):
 @staff_member_required
 def customer_upload(request, template="concierge/customer_upload.html"):
 
-    results = {}
+    results = request.session.pop('results', {})
     plans = Plan.objects.filter(active=True).order_by('id')
     groups = GroupMembership.objects.filter(active=True).order_by('id')
     residence_types = Customer.RESIDENCE_TYPE_CHOICES
@@ -771,8 +773,12 @@ def customer_upload(request, template="concierge/customer_upload.html"):
             upload = request.FILES['file_upload']
             if upload:
                 results = create_customers_from_upload(upload)
+                request.session['results'] = results
             else:
                 message.error(request, "No file!")
+
+            return redirect('customer_upload')
+
     else:
         form = CustomerUploadForm()
 

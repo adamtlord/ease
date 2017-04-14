@@ -8,68 +8,89 @@
 <div class="page-header">
     <h1>Upload Customers</h1>
 </div>
+
+{% if results %}
+    {% if results.errors %}
+        <div class="alert alert-danger">
+            There were some errors in the upload:<br />
+            <ul>
+            {% for error in results.errors %}
+                <li>{{ error|linebreaksbr }}{% if not forloop.last %}{% endif %}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if results.success > 0 %}
+        <div class="alert alert-success">
+            {{ results.total }} rows uploaded; {{ results.success }} rows processed successfully
+            {% if results.created %}
+                <br>Created the following users:
+                <ul>
+                {% for created in results.created %}
+                    <li>{{ created }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endif %}
 <div class="row">
-    <div class="col-sm-8">
-        {% if results %}
-            {% if results.errors %}
-                <div class="alert alert-danger">
-                    {% for error in results.errors %}
-                        {{ error }}{% if not forloop.last %}<br />{% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% if results.warning %}
-                <div class="alert alert-warning">
-                    {% for warning in results.warning %}
-                        {{ warning }}{% if not forloop.last %}<br />{% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% if results.success > 0 %}
-                <div class="alert alert-success">
-                    {{ results.total }} rows uploaded; {{ results.success }} rows processed successfully
-                </div>
-            {% endif %}
-        {% endif %}
-        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="col-sm-4">
+        <form action="" method="post" enctype="multipart/form-data" class="well">{% csrf_token %}
             {% render_form_field form.file_upload %}
-            <div class="form-actions">
+            <div class="form-actions p-b-0">
                 <input type="submit" class="btn btn-primary" value="Upload">
             </div>
         </form>
     </div>
-    <div class="col-sm-4">
-        <a href="#" class="btn btn-default btn-success"><i class="fa fa-file-excel-o"></i> Download Template File</a>
-        <h4>Plan IDs</h4>
-        <ul class="list-group">
-            {% for plan in plans %}
-            <li class="list-group-item">
-                <span class="badge">{{ plan.id }}</span>
-                {{ plan.display_name }}
-            </li>
-            {% endfor %}
-        </ul>
-        <h4>Group Membership IDs</h4>
-        <ul class="list-group">
-            {% for group in groups %}
-            <li class="list-group-item">
-                <span class="badge">{{ group.id }}</span>
-                {{ group.display_name }}
-            </li>
-            {% endfor %}
-        </ul>
-        <h4>Residence Types</h4>
-        <ul class="list-group">
-            {% for type in residence_types %}
-                {% if type.0 %}
-                    <li class="list-group-item">
-                        <span class="badge">{{ type.0 }}</span>
-                        {{ type.1 }}
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+</div>
 
+<div class="page-header clearfix">
+    <h3>Reference</h3>
+</div>
+<div class="row">
+    <div class="col-sm-8">
+        <p>Please use the following values in the Plan, Group, and Residence Type columns of your upload file.</p>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Plan IDs</h4>
+                <ul class="list-group">
+                    {% for plan in plans %}
+                    <li class="list-group-item">
+                        <span class="badge">{{ plan.id }}</span>
+                        {{ plan.display_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <h4>Group Membership IDs</h4>
+                <ul class="list-group">
+                    {% for group in groups %}
+                    <li class="list-group-item">
+                        <span class="badge">{{ group.id }}</span>
+                        {{ group.display_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h4>Residence Types</h4>
+                <ul class="list-group">
+                    {% for type in residence_types %}
+                        {% if type.0 %}
+                            <li class="list-group-item">
+                                <span class="badge">{{ type.0 }}</span>
+                                {{ type.1 }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <h4 class="m-t-0">Template File</h4>
+        <a href="{{ STATIC_URL }}files/Arrive Customer Upload.csv" target="_blank" class="btn btn-block btn-success"><i class="fa fa-file-excel-o"></i> Download csv Template File</a>
     </div>
 </div>
+
 {% endblock %}

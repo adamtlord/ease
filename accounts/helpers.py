@@ -1,7 +1,10 @@
 from datetime import datetime
 import csv
+import string
+import random
 from django.conf import settings
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
 from django.utils import formats, timezone
 from django.template.loader import render_to_string
 
@@ -10,6 +13,24 @@ from rides.models import Destination
 from billing.models import Plan, GroupMembership
 from billing.utils import get_stripe_subscription
 from concierge.models import Touch
+
+
+def generate_password(size=12, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def convert_date(string):
+    for date_format in settings.DATE_INPUT_FORMATS:
+        try:
+            date = datetime.strptime(string, date_format)
+        except ValueError:
+            pass
+        else:
+            break
+    else:
+        date = None
+
+    return date
 
 
 def send_welcome_email(user):
@@ -169,9 +190,9 @@ def create_customers_from_upload(uploaded_file):
     GROUP_COL = UPLOAD_COLUMNS[15]
 
     results = {
-        'warnings': [],
         'errors': [],
         'success': 0,
+        'created': [],
         'total': 0
     }
 
@@ -189,8 +210,11 @@ def create_customers_from_upload(uploaded_file):
                 email=row[EMAIL_COL],
                 first_name=row[FIRST_COL],
                 last_name=row[LAST_COL],
+                password=generate_password()
             )
+            user.full_clean()
             user.save()
+
             customer, created = Customer.objects.update_or_create(
                 user=user,
                 first_name=user.first_name,
@@ -198,27 +222,23 @@ def create_customers_from_upload(uploaded_file):
                 email=user.email,
                 home_phone=row[H_PHONE_COL],
                 mobile_phone=row[M_PHONE_COL],
-                preferred_phone=row[PREFERRED_PHONE_COL],
+                preferred_phone=row[PREFERRED_PHONE_COL] or 'h',
                 residence_type=row[RESIDENCE_COL],
                 plan=plan,
                 group_membership=group,
-                dob=datetime.strptime(row[DOB_COL], "%m/%d/%y").date()
+                dob=convert_date(row[DOB_COL])
             )
+
+            customer.full_clean()
             customer.save()
+
             try:
                 home = Destination.objects.get(
                     customer=customer,
-                    home=True,
-                    name='Home',
-                    street1=row[ADDRESS1_COL],
-                    street2=row[ADDRESS2_COL],
-                    city=row[CITY_COL],
-                    state=row[STATE_COL],
-                    zip_code=row[ZIP_COL],
-                    notes=row[HOME_NOTES_COL]
+                    home=True
                 )
-            except Destination.DoesNotExist:
-                home = Destination.objects.get(
+            except Exception as ex:
+                home = Destination(
                     customer=customer,
                     home=True,
                     name='Home',
@@ -229,10 +249,17 @@ def create_customers_from_upload(uploaded_file):
                     zip_code=row[ZIP_COL],
                     notes=row[HOME_NOTES_COL]
                 )
-                home.save()
+
+            home.full_clean()
+            home.save()
 
             results['success'] += 1
+            results['created'].append('{}, {} {}'.format(user, home.city, home.state))
+
+        except ValidationError as ex:
+            for k, v in ex.message_dict.items():
+                results['errors'].append(u'Row {}: {} - {}'.format(idx + 1, k, ', '.join(v)))
         except Exception as ex:
-            results['errors'].append('{}'.format(ex))
+            results['errors'].append(u'Row {}: {}'.format(idx + 1, ex))
 
     return results
