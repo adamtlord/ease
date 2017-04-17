@@ -20,14 +20,14 @@ $(function() {
 
     function toggleSubmit() {
         if ($('input[class^="customer_"]:checked').length > 0) {
-            $('input[type="submit"]').removeAttr('disabled');
+            $('[type="submit"]').removeAttr('disabled');
         }else {
-            $('input[type="submit"]').attr('disabled', 'disabled');
+            $('[type="submit"]').attr('disabled', 'disabled');
         }
     }
 
     $('tr').on('click', function(e) {
-        if (!$(e.target).is('input')) {
+        if (!$(e.target).is('input') && !$(e.target).is('.btn') && !$(e.target).is('a')) {
             $(this).find('input').click();
         }
     });
@@ -53,12 +53,4 @@ $(function() {
         toggleAllRides(this.checked);
     });
 
-    $('#bill_rides').on('submit', function(){
-        var ride_count = $('input[class^="customer_"]:checked').length;
-        var noun = ride_count > 1 ? 'rides' : 'ride';
-        if(window.confirm("Are you sure you want to create and send invoices for " + ride_count + " " + noun + "?")){
-            return true;
-        }
-        return false;
-    });
 });

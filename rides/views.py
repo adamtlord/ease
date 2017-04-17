@@ -8,7 +8,7 @@ from accounts.models import Customer
 from billing.utils import invoice_customer_rides
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm, CSVUploadForm
+from rides.forms import StartRideForm, RideForm
 from rides.helpers import handle_lyft_upload, sort_rides_by_customer
 from rides.models import Ride
 
@@ -99,7 +99,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
 
             # Figure out if this ride is included in the customer's plan
             included = False
-            if customer.plan.included_rides_per_month:
+            if customer.plan and customer.plan.included_rides_per_month:
                 if customer.included_rides_this_month < customer.plan.included_rides_per_month:
                     distance = new_ride.distance
                     if customer.plan.ride_distance_limit > 0 and distance < customer.plan.ride_distance_limit:
@@ -220,98 +220,6 @@ def ride_delete(request, ride_id):
         if next:
             return redirect(next)
         return redirect('dashboard')
-
-
-@staff_member_required
-def rides_ready_to_bill(request, template="rides/ready_to_bill.html"):
-
-    rides = Ride.ready_to_bill.all().order_by('-start_date')
-    customers = sort_rides_by_customer(rides)
-
-    success_included = []
-    success_billed = []
-    success_total = 0
-    errors = []
-    total = 0
-
-    if request.method == 'POST':
-
-        idlist = request.POST.getlist('ride')
-        rides_to_bill = Ride.objects.filter(id__in=idlist)
-        sorted_rides = sort_rides_by_customer(rides_to_bill)
-
-        for customer, rides in sorted_rides.items():
-            response = invoice_customer_rides(customer, rides)
-            success_included += response['success_included']
-            success_billed += response['success_billed']
-            success_total += response['success_total']
-            errors += response['errors']
-            total += response['total']
-
-        rides = Ride.ready_to_bill.all()
-        customers = sort_rides_by_customer(rides)
-
-    d = {
-        'ready_page': True,
-        'customers': customers,
-        'success_included': success_included,
-        'success_billed': success_billed,
-        'success_total': success_total,
-        'errors': errors,
-        'total': total
-    }
-
-    return render(request, template, d)
-
-
-@staff_member_required
-def rides_incomplete(request, template="rides/incomplete.html"):
-
-    rides = Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)).order_by('-start_date')
-    customers = sort_rides_by_customer(rides)
-
-    d = {
-        'incomplete_page': True,
-        'customers': customers
-    }
-    return render(request, template, d)
-
-
-@staff_member_required
-def rides_invoiced(request, template="rides/invoiced.html"):
-    rides = Ride.objects.filter(invoice__isnull=False).order_by('-start_date')
-
-    d = {
-        'invoiced_page': True,
-        'rides': rides
-    }
-    return render(request, template, d)
-
-
-@staff_member_required
-def rides_upload(request, template="rides/upload.html"):
-
-    results = {}
-
-    if request.method == 'POST':
-        form = CSVUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            upload = request.FILES['file_upload']
-            if upload:
-                results = handle_lyft_upload(request.FILES['file_upload'])
-            else:
-                messages.error(request, "No file!")
-
-    else:
-        form = CSVUploadForm()
-
-    d = {
-        'upload_page': True,
-        'form': form,
-        'results': results,
-    }
-    return render(request, template, d)
 
 
 @staff_member_required

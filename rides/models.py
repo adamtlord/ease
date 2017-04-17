@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
-from django.db import models
+from django.db import models, NotSupportedError
 from django.utils import formats, timezone
 
 from common.models import Location
@@ -134,6 +134,22 @@ class Ride(models.Model):
         ordering = ['-start_date']
 
     @property
+    def get_arrive_fee(self):
+        if self.customer.group_membership and self.customer.group_membership.includes_arrive_fee:
+            return 0
+        if self.included_in_plan:
+            return 0
+        return self.customer.plan.arrive_fee or 0
+
+    @property
+    def get_cost(self):
+        if self.customer.group_membership and self.customer.group_membership.includes_ride_cost:
+            return 0
+        if self.included_in_plan:
+            return 0
+        return self.cost or 0
+
+    @property
     def is_complete(self):
         return self.cost or self.complete
 
@@ -149,23 +165,34 @@ class Ride(models.Model):
     @property
     def total_fees_estimate(self):
         fees = self.fees or 0
-        arrive_fee = 0 if self.included_in_plan else self.customer.plan.arrive_fee
+        arrive_fee = self.get_arrive_fee
         return fees + arrive_fee
 
     @property
-    def total_cost_estimate(self):
-        cost = self.cost or 0
-        if self.included_in_plan:
-            cost = 0
-        return cost + self.total_fees_estimate
+    def total_fees(self):
+        fees = self.fees or 0
+        return fees + self.arrive_fee
 
     @property
-    def total_fees(self):
-        return self.fees or 0 + self.arrive_fee
+    def total_cost_estimate(self):
+        cost = self.get_cost
+        return cost + self.total_fees_estimate
 
     @property
     def is_scheduled(self):
         return self.start_date > timezone.now()
+
+    @property
+    def cost_to_group(self):
+        cost = 0
+        group = self.customer.group_membership
+        if not group:
+            return cost
+        if group.includes_ride_cost:
+            cost += self.cost + self.fees
+        if group.includes_arrive_fee:
+            cost += group.plan.arrive_fee
+        return cost
 
     def __unicode__(self):
         if self.start:

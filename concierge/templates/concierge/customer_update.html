@@ -44,6 +44,8 @@
                 {{ account_holder_form.last_name.as_hidden }}
                 {{ account_holder_form.email.as_hidden }}
             {% endif %}
+            <h3>Group Membership</h3>
+            {% render_form_field customer_form.group_membership %}
         </div>
         <div class="col-sm-6">
             <h3 class="m-t-0">Home Address</h3>

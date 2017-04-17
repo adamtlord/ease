@@ -3,6 +3,7 @@ from django.conf.urls import url
 
 from concierge.views import (dashboard, upcoming_rides, active_rides, rides_history,
                              customer_list, customer_list_inactive, customer_create,
+                             customer_upload,
                              customer_detail, customer_update,
                              customer_search_data, customer_destinations,
                              customer_destination_edit, customer_destination_add,
@@ -12,7 +13,8 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              customer_history,
                              customer_activity_add,
                              customer_deactivate,
-                             customer_activate
+                             customer_activate,
+                             concierge_settings,
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -21,12 +23,14 @@ from rides.views import (ride_start, customer_rides)
 urlpatterns = [
     url(r'^$', dashboard, name='dashboard'),
     url(r'^login/$', auth_views.login, {'template_name': 'concierge/login.html'}, name='concierge_login'),
+    url(r'^settings/$', concierge_settings, name='concierge_settings'),
     url(r'^upcoming-rides/$', upcoming_rides, name='upcoming_rides'),
     url(r'^active-rides/$', active_rides, name='active_rides'),
     url(r'^rides-history/$', rides_history, name='rides_history'),
     url(r'^customers/$', customer_list, name='customer_list'),
     url(r'^customers-inactive/$', customer_list_inactive, name='customer_list_inactive'),
     url(r'^customers/create/$', customer_create, name='customer_create'),
+    url(r'^customers/upload/$', customer_upload, name='customer_upload'),
     url(r'^customers/(?P<customer_id>\d+)/$', customer_detail, name='customer_detail'),
     url(r'^customers/(?P<customer_id>\d+)/update/$', customer_update, name='customer_update'),
 

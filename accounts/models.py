@@ -165,6 +165,7 @@ class Customer(Contact):
     )
 
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
+    group_membership = models.ForeignKey('billing.GroupMembership', blank=True, null=True)
     gift_date = models.DateField(blank=True, null=True)
     home_phone = PhoneNumberField(blank=True, null=True)
     intro_call = models.BooleanField(default=False)
@@ -261,17 +262,30 @@ class Customer(Contact):
         if self.ride_account and self.subscription_account and self.plan:
             return True
         else:
+            if self.group_membership:
+                if not self.group_membership.includes_ride_cost and not self.ride_account:
+                    return False
+                elif not self.group_membership.includes_subscription and not self.subscription_account:
+                    return False
+                else:
+                    return True
             return False
 
     @property
     def missing(self):
         missing_items = []
-        if not self.ride_account:
-            missing_items.append('No rides account')
-        if not self.subscription_account:
-            missing_items.append('No subscription account')
-        if not self.plan:
-            missing_items.append('No plan selected')
+        if self.group_membership:
+            if not self.group_membership.includes_ride_cost and not self.ride_account:
+                missing_items.append('No rides account (not included in group membership)')
+            if not self.group_membership.includes_subscription and not self.subscription_account:
+                missing_items.append('No subscription account (not included in group membership)')
+        else:
+            if not self.ride_account:
+                missing_items.append('No rides account')
+            if not self.subscription_account:
+                missing_items.append('No subscription account')
+            if not self.plan:
+                missing_items.append('No plan selected')
         return missing_items
 
     @property

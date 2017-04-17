@@ -61,34 +61,37 @@
             {% endif %}
             {% if ride.customer.special_assistance %}
                 <tr class="warning">
-                    <th>Special Assitance</th>
+                    <th>Special Assistance</th>
                     <td>
                         {{ ride.customer.special_assistance }}
                     </td>
                 </tr>
             {% endif %}
-            {% if ride.cost %}
+            <tr>
+                <th>Cost</th>
+                <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+            </tr>
+            {% if ride.total_fees_estimate %}
                 <tr>
-                    <th>Cost</th>
-                    <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+                    <th>Fees</th>
+                    <td>{% if ride.total_fees_estimate %}
+                            ${{ ride.total_fees_estimate }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
                 </tr>
             {% endif %}
-            {% if ride.arrive_fee %}
+            {% if ride.total_cost_estimate %}
                 <tr>
-                    <th>Arrive Fee</th>
-                    <td>${{ ride.arrive_fee|default:'0' }}</td>
-                </tr>
-            {% endif %}
-            {% if ride.fees %}
-                <tr>
-                    <th>Other Fees</th>
-                    <td>${{ ride.fees|default:'0' }}</td>
-                </tr>
-            {% endif %}
-            {% if ride.cost or ride.arrive_fees or ride.fees %}
-                <tr>
-                    <th>Total</th>
+                    <th>Total{% if ride.customer.group_membership %} to customer{% endif %}</th>
                     <td>${{ ride.total_cost_estimate|default:'0' }} {% if ride.included_in_plan %}(included){% endif %}</td>
+                </tr>
+            {% endif %}
+            {% if ride.customer.group_membership %}
+                <tr>
+                    <th>Total to Group</th>
+                    <td>${{ ride.cost_to_group|default:'0' }}</td>
                 </tr>
             {% endif %}
             {% if ride.notes %}
