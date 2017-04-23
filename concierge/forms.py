@@ -44,6 +44,7 @@ CUSTOMER_FIELDS = [
     'email',
     'known_as',
     'dob',
+    'group_membership',
     'residence_type',
     'residence_instructions',
     'special_assistance',
