@@ -3,22 +3,21 @@ $(function() {
 
     var validateCoupon = function() {
         $.ajax({
-                url: "/billing/retrieve_coupon/",
+                url: "/concierge/billing/retrieve_coupon/",
                 data: {
                     coupon_code: $('#id_coupon').val()
                 },
                 beforeSend: function() {
                     $('#apply_coupon').addClass('loading');
-                    $('#coupon_form_group .coupon-validation').text('');
+                    $('#coupon_form_group .coupon-validation').removeClass('alert alert-danger alert-success').text('');
                 }
             })
             .done(function(data) {
                 $('#apply_coupon').removeClass('loading');
                 if (data.success) {
-                    $('#coupon_form_group .coupon-validation').text('Valid coupon!');
-                    $('#plan_charges').addClass('coupon').find('.coupon').html('The coupon you entered will reduce your first invoice by $' + parseFloat(data.stripe_coupon.amount_off / 100).toFixed(2));
+                    $('#coupon_form_group .coupon-validation').addClass('alert alert-success').html('<strong>Coupon accepted!</strong><br>The coupon you entered will reduce your first invoice by $' + parseFloat(data.stripe_coupon.amount_off / 100).toFixed(2));
                 } else {
-                    $('#coupon_form_group .coupon-validation').text(data.message);
+                    $('#coupon_form_group .coupon-validation').addClass('alert alert-danger').text(data.message);
                 }
             });
     };

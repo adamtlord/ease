@@ -10603,6 +10603,10 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
   padding-bottom: 12px;
   line-height: 1.42857143;
 }
+.coupon-validation {
+  margin-bottom: 0;
+  margin-top: 10px;
+}
 #customer_search {
   margin-bottom: 44px;
 }
