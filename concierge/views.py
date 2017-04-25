@@ -870,7 +870,8 @@ def customer_data_export(request):
     writer = csv.writer(response)
     writer.writerow([
         'Customer',
-        'Email',
+        'Customer Email',
+        'User Email',
         'Home Phone',
         'Mobile Phone',
         'User Phone',
@@ -878,9 +879,11 @@ def customer_data_export(request):
     ])
 
     for customer in customers:
+        user_email = customer.user.email if customer.user.email != customer.email else ''
         writer.writerow([
                         customer,
                         customer.email,
+                        user_email,
                         customer.home_phone,
                         customer.mobile_phone,
                         customer.user.profile.phone,
