@@ -1,3 +1,4 @@
+import csv
 import datetime
 import pytz
 import stripe
@@ -9,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import inlineformset_factory
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -850,3 +851,40 @@ def customer_search_data(request):
         'customers': customer_list
     }
     return JsonResponse(d)
+
+
+def rider_phones(customer):
+    numbers = []
+    riders = customer.riders.all()
+    for rider in riders:
+        numbers.append(rider.mobile_phone)
+    
+    return ' '.join(numbers)
+    
+def customer_data_export(request):
+    customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="active_customers_export.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Customer',
+        'Email',
+        'Home Phone',
+        'Mobile Phone',
+        'User Phone',
+        'Loved One Phones'
+    ])
+
+    for customer in customers:
+        writer.writerow([
+                        customer,
+                        customer.email,
+                        customer.home_phone,
+                        customer.mobile_phone,
+                        customer.user.profile.phone,
+                        rider_phones(customer)
+                        ])
+
+    return response
