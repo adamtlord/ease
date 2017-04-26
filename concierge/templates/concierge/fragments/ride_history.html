@@ -28,14 +28,18 @@
             {% for ride in rides %}
                 <tr>
                     <td>{{ ride.id }}</td>
-                    <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
-                    <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
+                    <td>{{ ride.start.fullname|default:'--' }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
+                    <td>{{ ride.destination.fullname|default:'--' }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{{ ride.rider|default:'' }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                     <td>{{ ride.start_date|date:"U" }}</td>
-                    {% timezone ride.start.timezone %}
+                    {% if ride.start.timezone %}
+                        {% timezone ride.start.timezone %}
+                            <td>{{ ride.start_date|date:"P (T)" }}</td>
+                        {% endtimezone %}
+                    {% else %}
                         <td>{{ ride.start_date|date:"P (T)" }}</td>
-                    {% endtimezone %}
+                    {% endif %}
                     <td align="center">
                         {% if ride.complete %}
                             <i class="fa fa-check text-success"></i>
