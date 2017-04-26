@@ -33,7 +33,7 @@
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
             </tr>
-            {% if TIME_ZONE != ride.start.timezone %}
+            {% if ride.start.timezone and TIME_ZONE != ride.start.timezone %}
                 {% timezone ride.start.timezone %}
                     <tr class="info">
                         <th>Local Start Time</th>
