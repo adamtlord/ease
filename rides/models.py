@@ -71,8 +71,8 @@ class Destination(Location):
 
     @property
     def fullname(self):
-        if self.home:
-            name = 'Home'
+        if self.home and not self.name:
+            return 'Home'
         if self.name:
             name = self.name
             if name and self.nickname:
