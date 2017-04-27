@@ -73,12 +73,17 @@ class Destination(Location):
     def fullname(self):
         if self.home:
             name = 'Home'
-        else:
+        if self.name:
             name = self.name
-        if name and self.nickname:
-            return '{} ({})'.format(self.nickname, name)
+            if name and self.nickname:
+                return '{} ({})'.format(self.nickname, name)
+            else:
+                return name
         else:
-            return name if name else self.nickname
+            if self.nickname:
+                return self.nickname
+            else:
+                return self.street1
 
     @property
     def display_name(self):
