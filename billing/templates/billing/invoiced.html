@@ -40,7 +40,10 @@
                     <td>{{ ride.destination.fullname }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                     <td>{{ ride.start_date|date:"U" }}</td>
-                    <td>{{ ride.distance }} mi</td>
+                    <td>{% if ride.distance %}
+                            {{ ride.distance }} mi
+                        {% endif %}
+                    </td>
                     <td>${{ ride.cost }}</td>
                     <td>{% if ride.total_fees %}${{ ride.total_fees }}{% endif %}</td>
                     <td>${{ ride.total_cost }}</td>
