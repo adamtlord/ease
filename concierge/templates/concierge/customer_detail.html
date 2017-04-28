@@ -55,6 +55,12 @@
                             {{ customer.home.zip_code }}
                         </td>
                     </tr>
+                    {% if customer.home.unit %}
+                        <tr>
+                            <td>Unit #</td>
+                            <td>{{ customer.home.unit }}
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td>Home Timezone</td>
                         <td>{{ timezone|default:'not set' }}</td>

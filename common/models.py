@@ -25,6 +25,7 @@ class Location(models.Model):
     name = models.CharField(max_length=50, blank=True, null=True)
     street1 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Address 1")
     street2 = models.CharField(max_length=100, blank=True, null=True, verbose_name="Address 2")
+    unit = models.CharField(max_length=100, blank=True, null=True, verbose_name="Unit #")
     city = models.CharField(max_length=100, blank=True, null=True)
     state = USStateField(blank=True, null=True)
     zip_code = USZipCodeField(blank=True, null=True, verbose_name="ZIP")

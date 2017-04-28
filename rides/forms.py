@@ -10,6 +10,7 @@ HOME_FIELDS = [
     'name',
     'street1',
     'street2',
+    'unit',
     'city',
     'state',
     'zip_code',
