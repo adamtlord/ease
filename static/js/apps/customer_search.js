@@ -13,7 +13,7 @@ $(function() {
         },
         prefetch: {
             url: '/concierge/customers/search',
-            ttl: 900000,
+            ttl: 30000,
             transform: function(response) {
                 return response.customers;
             },

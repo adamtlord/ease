@@ -796,7 +796,7 @@ def customer_upload(request, template="concierge/customer_upload.html"):
 
 # AJAX VIEWS
 def customer_search_data(request):
-    customers = Customer.objects.all()
+    customers = Customer.objects.select_related('user').select_related('user__profile').all()
     customer_list = list()
     for customer in customers:
 
@@ -815,20 +815,26 @@ def customer_search_data(request):
 
         if customer.home_phone:
             tokens.append(customer.home_phone)
-            tokens.extend(customer.home_phone.split('-'))
+            # tokens.extend(customer.home_phone.split('-'))
             tokens.append(customer.home_phone.replace('-', ''))
             customer_obj['display'] += ' {} (H)'.format(customer.home_phone)
 
         if customer.mobile_phone:
             tokens.append(customer.mobile_phone)
-            tokens.extend(customer.home_phone.split('-'))
-            tokens.append(customer.home_phone.replace('-', ''))
+            # tokens.extend(customer.mobile_phone.split('-'))
+            tokens.append(customer.mobile_phone.replace('-', ''))
             customer_obj['display'] += ' {} (M)'.format(customer.mobile_phone)
 
         if customer.user.profile.on_behalf:
             tokens.append(customer.user.first_name)
             tokens.append(customer.user.last_name)
             customer_obj['display'] += ' | Account: {}'.format(customer.user.get_full_name())
+
+            if customer.user.profile.phone:
+                tokens.append(customer.user.profile.phone)
+                # tokens.extend(customer.user.profile.phone.split('-'))
+                tokens.append(customer.user.profile.phone.replace('-', ''))
+                customer_obj['display'] += ' {}'.format(customer.user.profile.phone)
 
         if customer.riders:
             riders = []
@@ -858,9 +864,10 @@ def rider_phones(customer):
     riders = customer.riders.all()
     for rider in riders:
         numbers.append(rider.mobile_phone)
-    
+
     return ' '.join(numbers)
-    
+
+
 def customer_data_export(request):
     customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
 
