@@ -10,6 +10,7 @@ django-extensions
 django-localflavor
 django-common-helpers
 django-registration
+djangorestframework
 
 googlemaps==2.4.4
 uber-rides==0.3.1
