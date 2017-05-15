@@ -176,7 +176,6 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
         form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():
             ride = form.save(commit=False)
-            tz_abbrev = ''
             if ride.start.timezone:
                 # get timezone object for customer
                 start_tz = pytz.timezone(ride.start.timezone)
@@ -184,7 +183,6 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
                 naived_start_date = ride.start_date.replace(tzinfo=None)
                 # re-localize datetime to customer's timezone
                 localized_start_date = start_tz.localize(naived_start_date)
-                tz_abbrev = localized_start_date.tzname()
                 # set start_date to re-localized datetime
                 ride.start_date = localized_start_date
             ride.save()

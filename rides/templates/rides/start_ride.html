@@ -104,6 +104,7 @@
                         {% endif %}
                     </div>
                     {{ start_ride_form.start_date.as_hidden }}
+                    {% render_form_field start_ride_form.rider %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
