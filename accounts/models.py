@@ -213,6 +213,10 @@ class Customer(Contact):
     def last_ride(self):
         return self.rides.filter(start_date__lt=timezone.now()).first()
 
+    @property
+    def last_ride_dt(self):
+        return self.last_ride.start_date
+
     def get_rides_this_month(self):
         if self.plan:
             try:

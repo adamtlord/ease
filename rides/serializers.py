@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from rides.models import Destination, Ride
-from accounts.serializers import CustomerSerializer
 
 
 class DestinationSerializer(serializers.HyperlinkedModelSerializer):

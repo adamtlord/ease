@@ -12,9 +12,48 @@
             <th></th>
             <th>Notes</th>
         </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
+
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            // 'info':false,
+            // 'paging':false,
+            // columnDefs: [
+            //     {orderData:[6], targets: [5] },
+            //     {
+            //         targets: [6],
+            //         visible: false,
+            //         searchable: false
+            //     },
+            // ],
+            serverSide: true,
+            ajax: {
+                url: '/api/customers/?active=True',
+                dataSrc: 'results',
+            },
+            columns: [
+                { data: 'full_name'},
+                { data: 'home'},
+                { data: 'phone_numbers_br'},
+                { data: 'plan.name',
+                  defaultContent: ''
+                },
+                { data: 'rides'},
+                { data: 'last_ride_dt'},
+                { data: 'last_ride_dt_u'},
+                { data: 'notes'},
+            ]
+        });
+    })
+</script>
+{% endblock %}
+
+<!-- <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
                 <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
                 <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
                 <td>{{ customer.phone_numbers_br|safe }}</td>
@@ -30,28 +69,4 @@
                     </ul>
                     {% endif %}
                 </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    $(function(){
-        $('#customer_list').DataTable({
-            'info':false,
-            'paging':false,
-            'columnDefs': [
-                {'orderData':[6], 'targets': [5] },
-                {
-                    'targets': [6],
-                    'visible': false,
-                    'searchable': false
-                },
-            ],
-        });
-    })
-</script>
-{% endblock %}
+            </tr> -->
