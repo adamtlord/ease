@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.utils import formats
 from rest_framework import serializers
 

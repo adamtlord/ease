@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
-from django.db import models, NotSupportedError
-from django.utils import formats, timezone
+from django.db import models
+from django.utils import timezone
 
 from common.models import Location
 from common.utils import geocode_address, get_timezone

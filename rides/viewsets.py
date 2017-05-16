@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -24,15 +26,29 @@ class RideViewSet(viewsets.ModelViewSet):
         # pp.pprint(dict(request.GET))
         # print
 
-        # ORDERING (1-dimensional)
         dt = request.GET
+
+        # SEARCHING
+        search_value = dt.get('search[value]', None)
+        if search_value:
+            for term in search_value.split():
+                queryset = queryset.filter(
+                    Q(customer__first_name__icontains=term) |
+                    Q(customer__last_name__icontains=term) |
+                    Q(start__name__icontains=term) |
+                    Q(start__street1__icontains=term) |
+                    Q(start__street2__icontains=term) |
+                    Q(start__city__icontains=term) |
+                    Q(destination__name__icontains=term) |
+                    Q(destination__street1__icontains=term) |
+                    Q(destination__street2__icontains=term) |
+                    Q(destination__city__icontains=term)
+                )
+
+        # ORDERING (1-dimensional)
         order_param = dt.get('columns[{}][data]'.format(int(dt.get('order[0][column]', '0'))))
         order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
         order = '{}{}'.format(order_dir, order_param)
-
-        print
-        print order
-        print
 
         queryset = queryset.order_by(order)
         return queryset
