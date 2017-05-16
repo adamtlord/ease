@@ -76,7 +76,7 @@ class Destination(Location):
         if self.name:
             name = self.name
             if name and self.nickname:
-                return '{} ({})'.format(self.nickname, name)
+                return u'{} ({})'.format(self.nickname, name)
             else:
                 return name
         else:
@@ -144,7 +144,9 @@ class Ride(models.Model):
             return 0
         if self.included_in_plan:
             return 0
-        return self.customer.plan.arrive_fee or 0
+        if self.customer.plan:
+            return self.customer.plan.arrive_fee or 0
+        return 0
 
     @property
     def get_cost(self):

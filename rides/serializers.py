@@ -1,3 +1,5 @@
+from django.urls import reverse
+from django.utils import formats
 from rest_framework import serializers
 
 from rides.models import Destination, Ride
@@ -12,6 +14,8 @@ class DestinationSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'name',
             'nickname',
+            'fullname',
+            'fulladdress',
             'street1',
             'street2',
             'unit',
@@ -31,29 +35,26 @@ class DestinationSerializer(serializers.HyperlinkedModelSerializer):
 
 class RideSerializer(serializers.HyperlinkedModelSerializer):
     start = DestinationSerializer()
+    customer = serializers.CharField(source='customer.full_name')
+    customer_id = serializers.CharField(source='customer.id')
+    start_date = serializers.SerializerMethodField()
+    start = DestinationSerializer()
     destination = DestinationSerializer()
-    customer = serializers.HyperlinkedIdentityField(view_name='customer-detail')
+
+    def get_start_date(self, obj):
+        return formats.date_format(obj.start_date, "SHORT_DATETIME_FORMAT")
 
     class Meta:
         model = Ride
         fields = (
+            'id',
+            'complete',
+            'customer',
+            'customer_id',
+            'rider',
             'start_date',
-            'end_date',
-            'request_time',
             'start',
             'destination',
-            'cost',
-            'fees',
-            'fare_estimate',
             'distance',
-            'company',
-            'external_id',
-            'complete',
-            'invoice_item_id',
-            'notes',
-            'arrive_fee',
-            'total_cost',
-            'included_in_plan',
-            'invoiced',
-            'customer'
+            'included_in_plan'
         )
