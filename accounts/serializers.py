@@ -1,6 +1,7 @@
-from django.utils import formats
+from django.utils.timesince import timesince
 
 from accounts.models import CustomUser, Customer, Rider
+from rides.serializers import DestinationSerializer
 from billing.serializers import GroupMembershipSerializer, PlanSerializer
 
 from rest_framework import serializers
@@ -48,61 +49,45 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer()
     riders = RiderSerializer(many=True)
     group_membership = GroupMembershipSerializer()
-    home = serializers.SerializerMethodField()
-    rides = serializers.SerializerMethodField()
-    last_ride_dt_u = serializers.SerializerMethodField()
-    plan = serializers.SerializerMethodField()
+    home = DestinationSerializer()
+    ride_count = serializers.SerializerMethodField()
+    plan = PlanSerializer()
+    last_ride = serializers.SerializerMethodField()
+    serializers.DateTimeField(source='last_ride.start_date')
 
-    def get_home(self, obj):
-        if obj.home:
-            if obj.home.city and obj.home.state:
-                return '{}, {}'.format(obj.home.city, obj.home.state)
-            elif obj.home.state:
-                return obj.home.state
+    def get_last_ride(self, obj):
+        if obj.last_ride:
+            return u'{} ago'.format(timesince(obj.last_ride.start_date))
         return ''
 
-    def get_plan(self, obj):
-        if obj.plan:
-            return obj.plan.name
-        else:
-            return 'None'
-
-    def get_rides(self, obj):
-        return obj.ride_set.count()
-
-    def get_last_ride_dt_u(self, obj):
-        if obj.rides:
-            return formats.date_format(obj.last_ride_dt, "U")
+    def get_ride_count(self, obj):
+        return obj.rides.count()
 
     class Meta:
         model = Customer
         fields = (
-            'first_name',
-            'last_name',
-            'full_name',
             'age',
-            'email',
-            'mobile_phone',
             'dob',
+            'email',
+            'full_name',
             'group_membership',
-            'gift_date',
-            'home_phone',
             'home',
-            'intro_call',
+            'home_phone',
+            'id',
             'known_as',
-            'last_ride_dt',
-            'last_ride_dt_u',
+            'last_ride',
+            'mobile_phone',
             'notes',
+            'phone_numbers_br',
             'plan',
             'preferred_phone',
-            'phone_numbers_br',
+            'preferred_service',
             'residence_instructions',
             'residence_type',
-            'rides',
-            'preferred_service',
+            'ride_count',
+            'riders',
             'send_updates',
             'special_assistance',
             'timezone',
-            'user',
-            'riders'
+            'user'
         )

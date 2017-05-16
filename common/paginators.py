@@ -33,6 +33,7 @@ class DataTablesPagination(LimitOffsetPagination):
 
         if self.count == 0 or self.offset > self.count:
             return []
+
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):

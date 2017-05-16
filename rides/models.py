@@ -108,7 +108,7 @@ class Destination(Location):
 
 
 class Ride(models.Model):
-    customer = models.ForeignKey('accounts.Customer')
+    customer = models.ForeignKey('accounts.Customer', related_name='rides')
     rider = models.CharField(max_length=128, blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
