@@ -19,14 +19,12 @@ class RideViewSet(viewsets.ModelViewSet):
     def filter_queryset(self, request):
         queryset = self.base_queryset()
 
-        # DEBUG request
-        # import pprint
-        # pp = pprint.PrettyPrinter(indent=4)
-        # print
-        # pp.pprint(dict(request.GET))
-        # print
-
         dt = request.GET
+
+        # FILTERING
+        invoiced_filter = dt.get('invoiced')
+        if invoiced_filter:
+            queryset = queryset.filter(invoiced=invoiced_filter)
 
         # SEARCHING
         search_value = dt.get('search[value]', None)
