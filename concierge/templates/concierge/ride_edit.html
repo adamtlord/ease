@@ -42,17 +42,20 @@
                     <textarea id="starting_point_notes" class="form-control monospace">{{ ride.start.notes }}</textarea>
                 </div>
             {% endif %}
-            {% timezone ride.start.timezone %}
                 <div class="form-group datetime-start">
                     <label>Start time<span class="req">*</span></label>
-                    <span class="help-block">(Local time for starting point)</span>
-                    <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+                    {% if ride.start.timezone %}
+                        {% timezone ride.start.timezone %}
+                            <span class="help-block">(Local time for starting point)</span>
+                        {% endtimezone %}
+                    {% else %}
+                        <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+                    {% endif %}
                     {% if form.start_date.errors %}
                         {{ form.start_date.errors }}
                     {% endif %}
                 </div>
                 {{ form.start_date.as_hidden }}
-            {% endtimezone %}
             {% render_form_field form.customer %}
             {% render_form_field form.cost %}
             {% render_form_field form.fees %}

@@ -26,6 +26,9 @@
             ajax: {
                 url: '/api/customers/?active=True'
             },
+            language: {
+                infoFiltered: ""
+            },
             columns: [
                 { data: 'last_name',
                   render: function(data, type, full){
@@ -57,9 +60,7 @@
                   }
                 },
                 { data: 'ride_count'},
-                { data: 'last_ride',
-                  orderable: false
-                },
+                { data: 'last_ride'},
                 { data: 'notes'},
             ]
         });

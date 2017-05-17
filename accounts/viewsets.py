@@ -1,7 +1,7 @@
-from django.db.models import Count
+from django.db.models import Count, Max
+
 from rest_framework import viewsets
 from rest_framework.response import Response
-from accounts.filters import CustomerFilter
 from accounts.models import CustomUser, Customer
 from accounts.serializers import UserSerializer, CustomerSerializer
 from common.paginators import DataTablesPagination
@@ -16,7 +16,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # filter_class = CustomerFilter
 
     def base_queryset(self):
-        return Customer.objects.all().annotate(ride_count=Count('rides'))
+        return Customer.objects.all().annotate(ride_count=Count('rides')).annotate(last_ride_at=Max('rides__start_date'))
 
     def filter_queryset(self, request):
         queryset = self.base_queryset()
@@ -29,6 +29,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         print
 
         dt = request.GET
+
+        # FILTERING
+        active_filter = dt.get('active')
+        if active_filter:
+            queryset = queryset.filter(user__is_active=active_filter)
 
         # SEARCHING
         # search_value = dt.get('search[value]', None)
@@ -50,8 +55,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
         # ORDERING (1-dimensional)
         if dt.get('columns[0][data]'):
             order_param = dt.get('columns[{}][data]'.format(int(dt.get('order[0][column]', '0'))), 0)
-            # if order_param == 'last_ride':
-            #     order_param =
+            if order_param == 'last_ride':
+                # not a real field, it's an annotation only guaranteed to be on this queryset
+                order_param = 'last_ride_at'
             order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
             order = '{}{}'.format(order_dir, order_param)
 
