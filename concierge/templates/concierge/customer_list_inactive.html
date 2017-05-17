@@ -24,13 +24,15 @@
 <script>
     $(function(){
         $('#customer_list').DataTable({
+            ajax: {
+                url: '{% url "customer-list" %}',
+                data: {
+                    active: 'False'
+                }
+            },
             autowidth: false,
-            serverSide: true,
             language: {
                 infoFiltered: ""
-            },
-            ajax: {
-                url: '/api/customers/?active=False'
             },
             columns: [
                 { data: 'last_name',
@@ -70,7 +72,8 @@
                 },
                 { data: 'ride_count'},
                 { data: 'notes'},
-            ]
+            ],
+            serverSide: true
         });
     })
 </script>

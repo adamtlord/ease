@@ -178,7 +178,8 @@ class Ride(models.Model):
     @property
     def total_fees(self):
         fees = self.fees or 0
-        return fees + self.arrive_fee
+        arrive_fee = self.arrive_fee or 0
+        return fees + arrive_fee
 
     @property
     def total_cost_estimate(self):

@@ -46,11 +46,13 @@ class RideViewSet(viewsets.ModelViewSet):
                 )
 
         # ORDERING (1-dimensional)
-        order_param = dt.get('columns[{}][data]'.format(int(dt.get('order[0][column]', '0'))))
-        order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
-        order = '{}{}'.format(order_dir, order_param)
+        if dt.get('columns[0][data]'):
+            order_param = dt.get('columns[{}][data]'.format(int(dt.get('order[0][column]', '0'))))
+            order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
+            order = '{}{}'.format(order_dir, order_param)
 
-        queryset = queryset.order_by(order)
+            queryset = queryset.order_by(order)
+
         return queryset
 
     def list(self, request):

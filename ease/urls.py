@@ -8,7 +8,7 @@ from rest_framework import routers
 
 from accounts.viewsets import UserViewSet, CustomerViewSet
 from rides.viewsets import RideViewSet, DestinationViewSet
-from billing.viewsets import PlanViewSet, GroupMembershipViewSet
+from billing.viewsets import PlanViewSet, GroupMembershipViewSet, InvoiceViewSet
 
 from django.contrib import admin
 admin.autodiscover()
@@ -20,6 +20,7 @@ router.register(r'rides', RideViewSet)
 router.register(r'destinations', DestinationViewSet)
 router.register(r'plans', PlanViewSet)
 router.register(r'group-memberships', GroupMembershipViewSet)
+router.register(r'invoices', InvoiceViewSet)
 
 
 urlpatterns = [

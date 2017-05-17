@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from billing.models import Plan, GroupMembership
+from billing.models import Plan, GroupMembership, Invoice
 
 
 class PlanSerializer(serializers.HyperlinkedModelSerializer):
@@ -29,3 +29,23 @@ class GroupMembershipSerializer(serializers.HyperlinkedModelSerializer):
             'includes_subscription',
             'bill_online',
         )
+
+
+class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
+    customer_id = serializers.IntegerField()
+
+    class Meta:
+        model = Invoice
+        fields = [
+            'stripe_id',
+            'customer_id',
+            'created_date',
+            'invoiced',
+            'invoiced_date',
+            'paid',
+            'paid_date',
+            'period_start',
+            'period_end',
+            'attempt_count',
+            'total'
+        ]

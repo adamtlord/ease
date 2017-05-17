@@ -1,4 +1,4 @@
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Q
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -36,21 +36,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(user__is_active=active_filter)
 
         # SEARCHING
-        # search_value = dt.get('search[value]', None)
-        # if search_value:
-        #     for term in search_value.split():
-        #         queryset = queryset.filter(
-        #             Q(customer__first_name__icontains=term) |
-        #             Q(customer__last_name__icontains=term) |
-        #             Q(start__name__icontains=term) |
-        #             Q(start__street1__icontains=term) |
-        #             Q(start__street2__icontains=term) |
-        #             Q(start__city__icontains=term) |
-        #             Q(destination__name__icontains=term) |
-        #             Q(destination__street1__icontains=term) |
-        #             Q(destination__street2__icontains=term) |
-        #             Q(destination__city__icontains=term)
-        #         )
+        search_value = dt.get('search[value]', None)
+        if search_value:
+            for term in search_value.split():
+                queryset = queryset.filter(
+                    Q(first_name__icontains=term) |
+                    Q(last_name__icontains=term) |
+                    Q(home_phone__icontains=term) |
+                    Q(mobile_phone__icontains=term) |
+                    Q(notes__icontains=term)
+                )
 
         # ORDERING (1-dimensional)
         if dt.get('columns[0][data]'):

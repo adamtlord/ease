@@ -1,6 +1,6 @@
-from billing.models import Plan, GroupMembership
+from billing.models import Plan, GroupMembership, Invoice
 from rest_framework import viewsets
-from billing.serializers import PlanSerializer, GroupMembershipSerializer
+from billing.serializers import PlanSerializer, GroupMembershipSerializer, InvoiceSerializer
 
 
 class PlanViewSet(viewsets.ModelViewSet):
@@ -11,3 +11,8 @@ class PlanViewSet(viewsets.ModelViewSet):
 class GroupMembershipViewSet(viewsets.ModelViewSet):
     queryset = GroupMembership.objects.all()
     serializer_class = GroupMembershipSerializer
+
+
+class InvoiceViewSet(viewsets.ModelViewSet):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
