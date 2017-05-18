@@ -2,6 +2,7 @@ from django.utils import formats
 from rest_framework import serializers
 
 from rides.models import Destination, Ride
+
 from billing.serializers import InvoiceSerializer
 
 
@@ -35,12 +36,18 @@ class DestinationSerializer(serializers.HyperlinkedModelSerializer):
 
 class RideSerializer(serializers.HyperlinkedModelSerializer):
     start = DestinationSerializer()
-    customer = serializers.CharField(source='customer.full_name')
-    customer_id = serializers.CharField(source='customer.id')
+    customer = serializers.SerializerMethodField()
     start_date = serializers.SerializerMethodField()
     start = DestinationSerializer()
     destination = DestinationSerializer()
     invoice = InvoiceSerializer()
+
+    def get_customer(self, obj):
+        return dict(
+            id=obj.customer.id,
+            first_name=obj.customer.first_name,
+            last_name=obj.customer.last_name,
+        )
 
     def get_start_date(self, obj):
         return formats.date_format(obj.start_date, "SHORT_DATETIME_FORMAT")
@@ -52,7 +59,6 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
             'complete',
             'cost',
             'customer',
-            'customer_id',
             'destination',
             'distance',
             'id',

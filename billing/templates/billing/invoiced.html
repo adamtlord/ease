@@ -31,7 +31,6 @@
             </tr>
         </thead>
         <tbody>
-
         </tbody>
     </table>
 </div>
@@ -41,6 +40,7 @@
     </div>
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 <script>
@@ -54,18 +54,26 @@
             },
             autowidth: false,
             columns: [
-                { data: 'customer' },
+                { data: 'customer.last_name',
+                  render: function(data, type, full){
+                    return full.customer.first_name + ' ' + full.customer.last_name;
+                  }
+                },
                 { data: 'id',
                   render: function(data){
                     return '<a href="/concierge/ride/' + data + '/edit/">' + data + '</a>';
                   }
                 },
-                { data: 'start.fullname' },
-                { data: 'destination.fullname' },
+                { data: 'start.fullname',
+                  orderable: false
+                },
+                { data: 'destination.fullname',
+                  orderable: false
+                },
                 { data: 'start_date' },
                 { data: 'distance',
                   render: function (data) {
-                    return parseFloat(data).toFixed(2) + ' mi';
+                    return data ? parseFloat(data).toFixed(2) + ' mi' : '--';
                   }
                 },
                 { data: 'cost',
@@ -99,48 +107,22 @@
                 },
                 { data: 'company' },
                 { data: 'notes',
-                  defaultContent: ''
+                  defaultContent: '',
+                  orderable: false
                 },
                 { data: 'id',
                   render: function(data){
                     return '<a href="#viewRideModal" data-rideID="' + data + '" data-toggle="modal" class="btn btn-primary btn-sm">View</a> '
-                  }
-
+                  },
+                  orderable: false
                 },
-            ]
-            // 'order': [[ 4, "desc" ]],
-            // 'columnDefs': [
-            //     {'orderData':[5], 'targets': [4] },
-            //     {
-            //         'targets': [5],
-            //         'visible': false,
-            //         'searchable': false
-            //     },
-            // ],
+            ],
+            language: {
+                infoFiltered: "",
+                info: "Showing _START_ to _END_ of _TOTAL_ rides",
+            },
+            serverSide: true
         });
     })
 </script>
 {% endblock scripts %}
-<!-- {% for ride in rides %}
-    <tr>
-        <td>{{ ride.customer }}</td>
-        <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
-        <td>{{ ride.start.fullname }}</td>
-        <td>{{ ride.destination.fullname }}</td>
-        <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
-        <td>{{ ride.start_date|date:"U" }}</td>
-        <td>{% if ride.distance %}
-                {{ ride.distance }} mi
-            {% endif %}
-        </td>
-        <td>${{ ride.cost }}</td>
-        <td>{% if ride.total_fees %}${{ ride.total_fees }}{% endif %}</td>
-        <td>${{ ride.total_cost }}</td>
-        <td>{{ ride.invoice.invoiced_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
-        <td>{% if ride.invoice.paid %}<i class="fa fa-check text-success"></i>{% endif %}</td>
-        <td>{{ ride.invoice.paid_date|date:"SHORT_DATETIME_FORMAT"|default:'' }}</td>
-        <td>{{ ride.company }}</td>
-        <td class="small">{% if ride.included_in_plan %}(included in plan) {% endif %}{{ ride.notes|default:'' }}</td>
-        <td><a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a></td>
-    </tr>
-{% endfor %} -->

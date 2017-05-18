@@ -61,10 +61,10 @@
             },
             columns: [
                 { data: 'id' },
-                { data: 'customer',
+                { data: 'customer.last_name',
                   render: function(data, type, full, meta){
                     var rider = full.rider && full.rider !== data ? '<br /><strong>Rider:</strong> ' + full.rider : '';
-                    return '<a href="/concierge/customers/' + full.customer_id + '">' + data + '</a>' + rider
+                    return '<a href="/concierge/customers/' + full.customer.id + '">' + full.customer.first_name + ' ' + full.customer.last_name + '</a>' + rider
                   } },
                 { data: 'start_date' },
                 { data: 'start',

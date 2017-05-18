@@ -21,6 +21,13 @@ class RideViewSet(viewsets.ModelViewSet):
 
         dt = request.GET
 
+        # DEBUG request
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # print
+        # pp.pprint(dict(request.GET))
+        # print
+
         # FILTERING
         invoiced_filter = dt.get('invoiced')
         if invoiced_filter:
@@ -40,12 +47,18 @@ class RideViewSet(viewsets.ModelViewSet):
                     Q(destination__name__icontains=term) |
                     Q(destination__street1__icontains=term) |
                     Q(destination__street2__icontains=term) |
-                    Q(destination__city__icontains=term)
+                    Q(destination__city__icontains=term) |
+                    Q(cost__icontains=term) |
+                    Q(total_cost__icontains=term) |
+                    Q(notes__icontains=term)
                 )
 
         # ORDERING (1-dimensional)
         if dt.get('columns[0][data]'):
             order_param = dt.get('columns[{}][data]'.format(int(dt.get('order[0][column]', '0'))))
+            if '.' in order_param:
+                order_param = order_param.replace('.', '__')
+
             order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
             order = '{}{}'.format(order_dir, order_param)
 

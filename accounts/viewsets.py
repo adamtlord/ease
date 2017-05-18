@@ -22,11 +22,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
         queryset = self.base_queryset()
 
         # DEBUG request
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        print
-        pp.pprint(dict(request.GET))
-        print
+        # import pprint
+        # pp = pprint.PrettyPrinter(indent=4)
+        # print
+        # pp.pprint(dict(request.GET))
+        # print
 
         dt = request.GET
 
