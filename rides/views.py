@@ -211,12 +211,16 @@ def ride_delete(request, ride_id):
         messages.success(request, "Ride cancelled and deleted")
         if next:
             return redirect(next)
+        elif request.META['HTTP_REFERER']:
+            return redirect(request.META['HTTP_REFERER'])
         return redirect('customer_detail', ride.customer.id)
 
     except Exception as ex:
         messages.error(request, ex.message)
         if next:
             return redirect(next)
+        elif request.META['HTTP_REFERER']:
+            return redirect(request.META['HTTP_REFERER'])
         return redirect('dashboard')
 
 

@@ -9,29 +9,9 @@
             <th>Plan</th>
             <th>Rides</th>
             <th>Last ride</th>
-            <th></th>
             <th>Notes</th>
         </thead>
         <tbody>
-            {% for customer in customers %}
-            <tr{% if not customer.ready_to_ride %} class="warning"{% endif %}>
-                <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
-                <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
-                <td>{{ customer.phone_numbers_br|safe }}</td>
-                <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
-                <td>{{ customer.rides|length }}</td>
-                <td>{% if customer.rides %}{{ customer.rides.0.start_date|timesince }} ago{% endif %}</td>
-                <td>{% if customer.rides %}{{ customer.rides.0.start_date|date:"U" }}{% endif %}</td>
-                <td>{% if not customer.ready_to_ride %}
-                    <ul class="list-unstyled small">
-                        {% for missing in customer.missing %}
-                            <li>{{ missing }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
         </tbody>
     </table>
 </div>
@@ -41,16 +21,52 @@
 <script>
     $(function(){
         $('#customer_list').DataTable({
-            'info':false,
-            'paging':false,
-            'columnDefs': [
-                {'orderData':[6], 'targets': [5] },
-                {
-                    'targets': [6],
-                    'visible': false,
-                    'searchable': false
+            ajax: {
+                url: '{% url "customer-list" %}',
+                data: {
+                    active: 'True'
+                }
+            },
+            autowidth: false,
+            columns: [
+                { data: 'last_name',
+                  render: function(data, type, full){
+                    return '<a href="/concierge/customers/' + full.id + '">' + full.full_name + '</a>';
+                  }
                 },
+                { data: 'home',
+                  orderable: false,
+                  render: function(data){
+                    if(data){
+                        return data.city + ', ' + data.state;
+                    }
+                    return '';
+                  }
+                },
+                { data: 'phone_numbers_br',
+                  orderable: false
+                },
+                { data: 'plan',
+                  render: function(data){
+                    if(data){
+                        return '<span class="label plan-label ' +
+                               data.name.toLowerCase() +
+                               '">' +
+                               data.name +
+                               ' Plan</span>';
+                    }
+                    return '<em>None</em>'
+                  }
+                },
+                { data: 'ride_count'},
+                { data: 'last_ride'},
+                { data: 'notes'},
             ],
+            language: {
+                infoFiltered: "",
+                info: "Showing _START_ to _END_ of _TOTAL_ active customers",
+            },
+            serverSide: true,
         });
     })
 </script>

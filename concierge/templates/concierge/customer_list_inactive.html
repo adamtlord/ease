@@ -14,38 +14,7 @@
             <th>Notes</th>
         </thead>
         <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td><a href="{% url 'customer_detail' customer.pk %}">{{ customer }}</a></td>
-                <td class="text-center">
-                    {% if customer.user.is_active %}
-                        <i class="fa fa-check text-success"></i>
-                    {% else %}
-                        <i class="fa fa-remove text-danger"></i>
-                    {% endif %}
-                </td>
-                <td>{{ customer.home.city }}, {{ customer.home.state }}</td>
-                <td>{% if customer.home_phone %}
-                        {% if customer.preferred_phone == 'h' %}<strong>{% endif %}
-                            {{ customer.home_phone }} (H){% if customer.preferred_phone == 'h' %}</strong>{% endif %}<br>
-                    {% endif %}
-                    {% if customer.mobile_phone %}
-                        {% if customer.preferred_phone == 'm' %}<strong>{% endif %}
-                        {{ customer.mobile_phone }} (M){% if customer.preferred_phone == 'm' %}</strong>{% endif %}<br>
-                    {% endif %}
-                </td>
-                <td><span class="label plan-label {{ customer.plan.name|lower|default:'none' }}">{{ customer.plan|default:'No ' }} Plan</span></td>
-                <td>{{ customer.rides|length }}</td>
-                <td>{% if not customer.ready_to_ride %}
-                    <ul class="list-unstyled small">
-                        {% for missing in customer.missing %}
-                            <li>{{ missing }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
+
         </tbody>
     </table>
 </div>
@@ -55,8 +24,60 @@
 <script>
     $(function(){
         $('#customer_list').DataTable({
-            'info':false,
-            'paging':false,
+            ajax: {
+                url: '{% url "customer-list" %}',
+                data: {
+                    active: 'False'
+                }
+            },
+            autowidth: false,
+            language: {
+                infoFiltered: ""
+            },
+            columns: [
+                { data: 'last_name',
+                  render: function(data, type, full){
+                    return '<a href="/concierge/customers/' + full.id + '">' + full.full_name + '</a>';
+                  }
+                },
+                { data: 'user.is_active',
+                  render: function(data){
+                    var iconClass = data ? 'fa-check text-success' : 'fa-remove text-danger';
+                    return '<i class="fa ' + iconClass + '"></i>'
+                  }
+                },
+                { data: 'home',
+                  orderable: false,
+                  render: function(data){
+                    if(data){
+                        return data.city + ', ' + data.state;
+                    }
+                    return '';
+                  }
+                },
+                { data: 'phone_numbers_br',
+                  orderable: false
+                },
+                { data: 'plan',
+                  render: function(data){
+                    if(data){
+                        return '<span class="label plan-label ' +
+                               data.name.toLowerCase() +
+                               '">' +
+                               data.name +
+                               ' Plan</span>';
+                    }
+                    return '<em>None</em>'
+                  }
+                },
+                { data: 'ride_count'},
+                { data: 'notes'},
+            ],
+            serverSide: true,
+            language: {
+              infoFiltered: "",
+              info: "Showing _START_ to _END_ of _TOTAL_ inactive customers",
+            }
         });
     })
 </script>

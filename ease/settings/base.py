@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'compressor',
     'django_common',
+    'rest_framework',
+    'django_filters',
 
     'accounts',
     'billing',
@@ -123,3 +125,12 @@ LOGIN_REDIRECT_URL = '/profile/'
 LOGIN_URL = '/login/'
 
 TERMS_OF_SERVICE_URL = 'http://arriverides.com/terms-of-service/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+}

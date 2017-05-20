@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
-from django.db import models, NotSupportedError
-from django.utils import formats, timezone
+from django.db import models
+from django.utils import timezone
 
 from common.models import Location
 from common.utils import geocode_address, get_timezone
@@ -76,7 +76,7 @@ class Destination(Location):
         if self.name:
             name = self.name
             if name and self.nickname:
-                return '{} ({})'.format(self.nickname, name)
+                return u'{} ({})'.format(self.nickname, name)
             else:
                 return name
         else:
@@ -108,7 +108,7 @@ class Destination(Location):
 
 
 class Ride(models.Model):
-    customer = models.ForeignKey('accounts.Customer')
+    customer = models.ForeignKey('accounts.Customer', related_name='rides')
     rider = models.CharField(max_length=128, blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -144,7 +144,9 @@ class Ride(models.Model):
             return 0
         if self.included_in_plan:
             return 0
-        return self.customer.plan.arrive_fee or 0
+        if self.customer.plan:
+            return self.customer.plan.arrive_fee or 0
+        return 0
 
     @property
     def get_cost(self):
@@ -176,7 +178,8 @@ class Ride(models.Model):
     @property
     def total_fees(self):
         fees = self.fees or 0
-        return fees + self.arrive_fee
+        arrive_fee = self.arrive_fee or 0
+        return fees + arrive_fee
 
     @property
     def total_cost_estimate(self):
