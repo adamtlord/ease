@@ -59,6 +59,7 @@
             ajax: {
                 url: '{% url "ride-list" %}'
             },
+            order: [[ 2, 'desc' ]],
             columns: [
                 { data: 'id' },
                 { data: 'customer.last_name',
