@@ -1,5 +1,8 @@
 @import "../DataTables/datatables.min.css";
 @import "../DataTables/datatables.fa.min.css";
+table.dataTable {
+  width: 100% !important;
+}
 table.dataTable thead th.sorting:after {
   opacity: .8;
   color: #ccc;

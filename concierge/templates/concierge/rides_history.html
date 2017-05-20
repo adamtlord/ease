@@ -54,7 +54,6 @@
                    '</a>';
         }
         $('#rides_history').DataTable({
-            autoWidth: false,
             serverSide: true,
             ajax: {
                 url: '{% url "ride-list" %}'
