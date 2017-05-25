@@ -205,7 +205,7 @@
                     <th>Cost</th>
                 </tr>
             <tbody>
-                {% for ride in customer.rides %}
+                {% for ride in customer.rides.all %}
                 <tr>
                     <td>
                         {% timezone ride.start.timezone %}
