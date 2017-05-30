@@ -898,3 +898,35 @@ def customer_data_export(request):
                         ])
 
     return response
+
+
+def customer_data_export_all(request):
+    customers = Customer.objects.all()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="active_customers_export.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Customer',
+        'Customer Email',
+        'User Email',
+        'Home Phone',
+        'Mobile Phone',
+        'User Phone',
+        'Loved One Phones'
+    ])
+
+    for customer in customers:
+        user_email = customer.user.email if customer.user.email != customer.email else ''
+        writer.writerow([
+                        customer,
+                        customer.email,
+                        user_email,
+                        customer.home_phone,
+                        customer.mobile_phone,
+                        customer.user.profile.phone,
+                        rider_phones(customer)
+                        ])
+
+    return response

@@ -16,6 +16,7 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              customer_activate,
                              concierge_settings,
                              customer_data_export,
+                             customer_data_export_all,
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -57,4 +58,5 @@ urlpatterns = [
     # AJAX
     url(r'^customers/search/$', customer_search_data, name='customer_search_data'),
     url(r'^customers/export/$', customer_data_export, name='customer_data_export'),
+    url(r'^customers/export/all/$', customer_data_export_all, name='customer_data_export_all'),
 ]
