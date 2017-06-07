@@ -84,7 +84,11 @@
                                 {% else %}
                                     --
                                 {% endif %}
-                            <td>${{ ride.total_cost_estimate|default:'0' }}</td>
+                            <td>${{ ride.total_cost_estimate|default:'0' }}
+                                {% if customer.group_membership and customer.group_membership.includes_ride_cost %}
+                                    <br><small>(billed to group)</small>
+                                {% endif %}
+                            </td>
                             <td>{{ ride.company }}</td>
                             <td class="small">
                                 {% if ride.included_in_plan %}(included in plan) {% endif %}

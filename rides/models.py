@@ -150,8 +150,6 @@ class Ride(models.Model):
 
     @property
     def get_cost(self):
-        if self.customer.group_membership and self.customer.group_membership.includes_ride_cost:
-            return 0
         if self.included_in_plan:
             return 0
         return self.cost or 0
