@@ -141,7 +141,7 @@ class Ride(models.Model):
     @property
     def get_arrive_fee(self):
         if self.customer.group_membership and self.customer.group_membership.includes_arrive_fee:
-            return 0
+            return self.customer.group_membership.plan.arrive_fee
         if self.included_in_plan:
             return 0
         if self.customer.plan:
