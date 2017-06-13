@@ -330,6 +330,10 @@ class Customer(Contact):
         phone_string += '</span>'
         return phone_string
 
+    @property
+    def group_bill(self):
+        return self.group_membership and self.group_membership.includes_ride_cost
+
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
