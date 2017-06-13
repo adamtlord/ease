@@ -58,3 +58,44 @@ def sort_rides_by_customer(rides):
                 customers[r.customer] = [r]
         customers = OrderedDict(sorted(customers.items(), key=lambda t: t[0].last_name))
     return customers
+
+
+def sort_rides_by_ride_account(rides):
+    accounts = dict()
+    """
+        {
+            account: {
+                customer: [
+                    ride,
+                    ride
+                ],
+                customer: [
+                    ride,
+                    ride,
+                    ride
+                ]
+            },
+            account: {
+                customer: [
+                    ride
+                ]
+            }
+        }
+    """
+    if rides:
+        for r in rides:
+
+            if r.customer.group_bill:
+                account = r.customer.group_membership.ride_account
+            else:
+                account = r.customer.ride_account
+
+            if account in accounts:
+                if r.customer in accounts[account]:
+                    accounts[account][r.customer].append(r)
+                else:
+                    accounts[account][r.customer] = [r]
+            else:
+                accounts[account] = {r.customer: [r]}
+
+    return accounts

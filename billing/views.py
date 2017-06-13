@@ -16,7 +16,7 @@ from billing.models import GroupMembership
 from billing.utils import invoice_customer_rides
 from common.utils import soon
 from rides.models import Ride
-from rides.helpers import handle_lyft_upload, sort_rides_by_customer
+from rides.helpers import handle_lyft_upload, sort_rides_by_customer, sort_rides_by_ride_account
 
 
 @login_required
@@ -250,7 +250,8 @@ def rides_ready_to_bill(request, template="billing/ready_to_bill.html"):
 
         idlist = request.POST.getlist('ride')
         rides_to_bill = Ride.objects.filter(id__in=idlist)
-        sorted_rides = sort_rides_by_customer(rides_to_bill)
+
+        sorted_rides = sort_rides_by_ride_account(rides_to_bill)
 
         for customer, rides in sorted_rides.items():
             response = invoice_customer_rides(customer, rides)
