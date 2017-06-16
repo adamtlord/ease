@@ -9,7 +9,14 @@
 <div class="page-header customer">
     <div class="row">
         <div class="col-sm-6">
-            <h1>{{ customer }}{% if customer.known_as %} <small>"{{ customer.known_as }}"</small>{% endif %}</h1>
+            <h1>{{ customer }}
+                {% if customer.known_as %}
+                 <small>"{{ customer.known_as }}"</small>
+                {% endif %}
+                {% if not customer.user.is_active %}
+                <small><span class="text-danger"><i class="fa fa-remove"></i> inactive</span></small>
+                {% endif %}
+            </h1>
         </div>
         <div class="col-sm-6">
             <div class="clearfix">
