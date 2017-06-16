@@ -21,6 +21,7 @@
                 {% endif %}
                 <th>Invoiced</th>
                 <th>Distance</th>
+                <th>Company</th>
                 <th></th>
             </tr>
         </thead>
@@ -71,6 +72,9 @@
                     <td>{% if ride.distance %}
                             {{ ride.distance }} mi
                         {% endif %}
+                    </td>
+                    <td>
+                        {{ ride.company|default:'' }}
                     </td>
                     <td>
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>

@@ -22,6 +22,7 @@
                 <th>To</th>
                 <th>Included</th>
                 <th>Distance</th>
+                <th>Company</th>
                 <th></th>
             </tr>
         </thead>
@@ -97,6 +98,7 @@
                     return parseFloat(data).toFixed(2) + ' mi';
                   }
                 },
+                { data: 'company'},
                 { data: null,
                   orderable: false,
                   render: function(data) {

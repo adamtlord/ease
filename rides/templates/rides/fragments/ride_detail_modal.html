@@ -29,6 +29,12 @@
                     {% endif %}
                </td>
             </tr>
+            {% if ride.company %}
+            <tr>
+                <th>Company</th>
+                <td>{{ ride.company }}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>

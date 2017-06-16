@@ -97,6 +97,7 @@
             {% render_form_field form.rider %}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
+            {% render_form_field form.company %}
             <div class="ride-notes">
                 {% if customer.send_updates %}
                     <p class="alert alert-info"><i class="fa fa-fw fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
