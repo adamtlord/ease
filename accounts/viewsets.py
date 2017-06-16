@@ -32,8 +32,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
         # FILTERING
         active_filter = dt.get('active')
-        if active_filter:
-            queryset = queryset.filter(user__is_active=active_filter)
+
+        if active_filter == 'True':
+            queryset = queryset.filter(user__is_active=active_filter).exclude(plan__isnull=True)
+
+        if active_filter == 'False':
+            queryset = queryset.filter(Q(user__is_active=False) | Q(plan__isnull=True))
 
         # SEARCHING
         search_value = dt.get('search[value]', None)
