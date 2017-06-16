@@ -229,7 +229,11 @@
                     {% if customer.user.profile.source %}
                         <tr>
                             <td>Marketing source</td>
-                            <td>{{ customer.user.profile.source }}</td>
+                            <td>{{ customer.user.profile.source }}
+                                {% if customer.user.profile.source_specific %}
+                                    - {{ customer.user.profile.source_specific }}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endif %}
                 </tbody>

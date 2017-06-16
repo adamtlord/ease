@@ -269,6 +269,8 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
             customer.user.profile.relationship = account_holder_form.cleaned_data['relationship']
             customer.user.profile.phone = account_holder_form.cleaned_data['phone']
+            customer.user.profile.source = account_holder_form.cleaned_data['source']
+            customer.user.profile.source_specific = account_holder_form.cleaned_data['source_specific']
             customer.user.profile.save()
 
             if customer_form.cleaned_data['group_membership']:
@@ -296,7 +298,14 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
-        account_holder_form = AccountHolderForm(instance=customer.user, prefix='user', initial={'phone': customer.user.profile.phone, 'relationship': customer.user.profile.relationship})
+        account_holder_form = AccountHolderForm(instance=customer.user,
+            prefix='user',
+            initial={
+                'phone': customer.user.profile.phone,
+                'relationship': customer.user.profile.relationship,
+                'source': customer.user.profile.source,
+                'source_specific': customer.user.profile.source_specific
+            })
         home_form = HomeForm(instance=customer.home, prefix='home')
         rider_formset = RiderFormSet(instance=customer)
 

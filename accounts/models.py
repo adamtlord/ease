@@ -103,6 +103,7 @@ class UserProfile(models.Model):
     relationship = models.CharField(max_length=100, blank=True, null=True)
     receive_updates = models.BooleanField(default=False)
     source = models.CharField(max_length=255, null=True, blank=True)
+    source_specific = models.CharField(max_length=1024, null=True, blank=True)
     phone = PhoneNumberField(blank=True, null=True)
     timezone = models.CharField(max_length=128, blank=True, null=True, default=settings.DEFAULT_TIMEZONE)
 

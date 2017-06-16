@@ -39,6 +39,8 @@
                 {% render_form_field account_holder_form.email %}
                 {% render_form_field account_holder_form.relationship %}
                 {% render_form_field account_holder_form.phone '' 'phone-mask' %}
+                {% render_form_field account_holder_form.source %}
+                {% render_form_field account_holder_form.source_specific %}
             {% else %}
                 {{ account_holder_form.first_name.as_hidden }}
                 {{ account_holder_form.last_name.as_hidden }}

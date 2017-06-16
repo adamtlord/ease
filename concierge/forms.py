@@ -182,14 +182,22 @@ class AccountHolderForm(forms.ModelForm):
         label="Phone number",
         required=False
     )
+    source = forms.CharField(
+        label="Marketing source",
+        required=False
+    )
+    source_specific = forms.CharField(
+        label="Marketing source (specific)",
+        required=False
+    )
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'first_name', 'last_name', 'relationship')
+        fields = ('email', 'first_name', 'last_name', 'relationship', 'source', 'source_specific')
 
     def __init__(self, *args, **kwargs):
         super(AccountHolderForm, self).__init__(*args, **kwargs)
-        for field in ['email', 'first_name', 'last_name', 'relationship', 'phone']:
+        for field in ['email', 'first_name', 'last_name', 'relationship', 'phone', 'source', 'source_specific']:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
