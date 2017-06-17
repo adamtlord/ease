@@ -1,4 +1,6 @@
 {% extends 'rides/ride_base.html' %}
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
 {% load humanize %}
 
 {% block title %}Active Rides{% endblock title %}
@@ -32,7 +34,15 @@
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
                         {% if ride.rider and ride.rider != ride.customer.full_name %}<br><strong>Rider:</strong> {{ ride.rider }}{% endif %}
                     </td>
-                    <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
+                    <td>
+                        {% if ride.start.timezone %}
+                            {% timezone ride.start.timezone %}
+                                {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small>
+                            {% endtimezone %}
+                        {% else %}
+                            {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small>
+                        {% endif %}
+                    </td>
                     <td>
                         {{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small>
                         {% if ride.start.notes %}
