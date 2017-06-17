@@ -1,3 +1,4 @@
+import pytz
 from django.utils import formats
 from rest_framework import serializers
 
@@ -50,7 +51,10 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
         )
 
     def get_start_date(self, obj):
-        return formats.date_format(obj.start_date, "SHORT_DATETIME_FORMAT")
+        # gotta represent the aware datetime as the correct local timezone
+        # in a string, formatted correctly
+        d = obj.start_date.astimezone(pytz.timezone(obj.start.timezone))
+        return formats.date_format(d, "SHORT_DATETIME_FORMAT")
 
     class Meta:
         model = Ride
