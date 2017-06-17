@@ -210,6 +210,7 @@ def invoice(request):
     event = json.loads(request.body)
     event_type = event['type']
     stripe_invoice = event['data']['object']
+    stripe_cust_id = stripe_invoice['customer']
 
     try:
         invoice = get_object_or_404(Invoice, stripe_id=stripe_invoice['id'])
@@ -217,6 +218,7 @@ def invoice(request):
         invoice.attempt_count = stripe_invoice['attempt_count']
         invoice.total = stripe_invoice['total'] / 100
         invoice.paid = stripe_invoice['paid']
+        invoice_type = 'Ride'
 
         if event_type == 'invoice.sent':
             invoice.invoiced_date = timezone.now()
@@ -229,19 +231,30 @@ def invoice(request):
 
         invoice.full_clean()
         invoice.save()
-
-        if invoice.invoiced:
-            new_touch = Touch(
-                customer=invoice.customer,
-                date=timezone.now(),
-                type=Touch.BILLING,
-                notes='{}: ${} [Stripe ID {}]'.format(event_type, stripe_invoice['total'] / 100, stripe_invoice['id'])
-            )
-            new_touch.full_clean()
-            new_touch.save()
+        customer = invoice.customer
 
     except:
-        pass
+        # okay, this isn't an invoice associated with a ride. that means it must be
+        # a customer (a subscription payment), so we need to find the customer
+        stripe_customer = get_object_or_404(StripeCustomer, stripe_id=stripe_cust_id)
+
+        if stripe_customer.subscription_customer.count():
+            customer = stripe_customer.subscription_customer.first()
+        if stripe_customer.subscription_group_plan.count():
+            customer = stripe_customer.subscription_group_plan.first()
+        if stripe_customer.ride_customer.count():
+            customer = stripe_customer.ride_customer.first()
+
+        invoice_type = 'Subscription'
+
+    new_touch = Touch(
+        customer=customer,
+        date=timezone.now(),
+        type=Touch.BILLING,
+        notes='{}: ${} ({} payment) [Stripe ID {}]'.format(event_type, stripe_invoice['total'] / 100, invoice_type, stripe_invoice['id'])
+    )
+    new_touch.full_clean()
+    new_touch.save()
 
     return HttpResponse(status=200)
 
