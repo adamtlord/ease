@@ -57,6 +57,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
             if order_param == 'last_ride':
                 # not a real field, it's an annotation only guaranteed to be on this queryset
                 order_param = 'last_ride_at'
+
+            if order_param == 'user.is_active':
+                order_param = 'user__is_active'
             order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
             order = '{}{}'.format(order_dir, order_param)
 

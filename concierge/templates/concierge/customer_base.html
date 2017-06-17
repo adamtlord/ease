@@ -13,7 +13,7 @@
                 {% if customer.known_as %}
                  <small>"{{ customer.known_as }}"</small>
                 {% endif %}
-                {% if not customer.user.is_active %}
+                {% if not customer.user.is_active or not customer.plan %}
                 <small><span class="text-danger"><i class="fa fa-remove"></i> inactive</span></small>
                 {% endif %}
             </h1>
