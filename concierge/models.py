@@ -6,7 +6,7 @@ from django.utils import formats
 
 
 class Touch(models.Model):
-    customer = models.ForeignKey('accounts.Customer')
+    customer = models.ForeignKey('accounts.Customer', blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
