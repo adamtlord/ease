@@ -1,0 +1,37 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Customer Data Export{% endblock %}
+
+{% block content %}
+    <div class="page-header customer-list">
+        <h1>Export Records</h1>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <form action="" method="POST">{% csrf_token %}
+                <div class="form-group">
+                    <label class="control-label" for="id_cust-status">
+                        Customer status
+                    </label>
+                    <select class="form-control" id="id_cust-status" name="status">
+                        <option value="active">Active only</option>
+                        <option value="inactive">Inactive only</option>
+                        <option value="">Active + Inactive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="id_acct_type">
+                        Account types
+                    </label>
+                    <select class="form-control" id="id_acct_type" name="type">
+                        <option value="customer">Customers</option>
+                        <option value="user">Account holders</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-success" value="Export records" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

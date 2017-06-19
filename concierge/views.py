@@ -785,7 +785,7 @@ def customer_upload(request, template="concierge/customer_upload.html"):
                 results = create_customers_from_upload(upload)
                 request.session['results'] = results
             else:
-                message.error(request, "No file!")
+                messages.error(request, "No file!")
 
             return redirect('customer_upload')
 
@@ -801,6 +801,86 @@ def customer_upload(request, template="concierge/customer_upload.html"):
     }
 
     return render(request, template, d)
+
+
+@staff_member_required
+def customer_data_export(request, template="concierge/customer_export.html"):
+
+    if request.method == 'POST':
+        customers = Customer.objects.all()
+        filters = request.POST
+        filename = 'All'
+
+        if filters['status'] == 'active':
+            customers = customers.filter(user__is_active=True).exclude(plan__isnull=True)
+            filename = 'Active'
+        if filters['status'] == 'inactive':
+            customers = customers.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+            filename = 'Inactive'
+
+        response = HttpResponse(content_type='text/csv')
+
+        writer = csv.writer(response)
+
+        if filters['type'] == 'customer':
+            filename += ' Customers'
+            writer.writerow([
+                'Customer',
+                'Customer Email',
+                'User Email',
+                'Home Phone',
+                'Mobile Phone',
+                'User Phone',
+                'Loved One Phones',
+                'City',
+                'State'
+            ])
+
+            for customer in customers:
+                writer.writerow([
+                                customer,
+                                customer.email,
+                                user_email(customer),
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                customer.user.profile.phone,
+                                rider_phones(customer),
+                                get_city(customer),
+                                get_state(customer)
+                                ])
+
+        if filters['type'] == 'user':
+            filename += ' Account Holders'
+            writer.writerow([
+                'Account Holder',
+                'Account Holder Email',
+                'Account Holder Phone',
+                'Customer Home Phone',
+                'Customer Mobile Phone',
+                'Loved One Phones',
+                'Customer City',
+                'Customer State'
+            ])
+            for customer in customers:
+                writer.writerow([
+                                customer.user,
+                                user_email(customer),
+                                customer.user.profile.phone,
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                rider_phones(customer),
+                                get_city(customer),
+                                get_state(customer)
+                                ])
+
+        response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
+        return response
+
+    else:
+        d = {
+            'export_page': True
+        }
+        return render(request, template, d)
 
 
 # AJAX VIEWS
@@ -877,65 +957,19 @@ def rider_phones(customer):
     return ' '.join(numbers)
 
 
-def customer_data_export(request):
-    customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="active_customers_export.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow([
-        'Customer',
-        'Customer Email',
-        'User Email',
-        'Home Phone',
-        'Mobile Phone',
-        'User Phone',
-        'Loved One Phones'
-    ])
-
-    for customer in customers:
-        user_email = customer.user.email if customer.user.email != customer.email else ''
-        writer.writerow([
-                        customer,
-                        customer.email,
-                        user_email,
-                        customer.home_phone,
-                        customer.mobile_phone,
-                        customer.user.profile.phone,
-                        rider_phones(customer)
-                        ])
-
-    return response
+def user_email(customer):
+    if customer.user.email and customer.user.email != customer.email:
+        return customer.user.email
+    return ''
 
 
-def customer_data_export_all(request):
-    customers = Customer.objects.all()
+def get_city(customer):
+    if customer.home and customer.home.city:
+        return customer.home.city
+    return ''
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="active_customers_export.csv"'
 
-    writer = csv.writer(response)
-    writer.writerow([
-        'Customer',
-        'Customer Email',
-        'User Email',
-        'Home Phone',
-        'Mobile Phone',
-        'User Phone',
-        'Loved One Phones'
-    ])
-
-    for customer in customers:
-        user_email = customer.user.email if customer.user.email != customer.email else ''
-        writer.writerow([
-                        customer,
-                        customer.email,
-                        user_email,
-                        customer.home_phone,
-                        customer.mobile_phone,
-                        customer.user.profile.phone,
-                        rider_phones(customer)
-                        ])
-
-    return response
+def get_state(customer):
+    if customer.home and customer.home.state:
+        return customer.home.state
+    return ''
