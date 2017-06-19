@@ -211,6 +211,7 @@ def invoice(request):
     event_type = event['type']
     stripe_invoice = event['data']['object']
     stripe_cust_id = stripe_invoice['customer']
+    customer = None
 
     try:
         invoice = get_object_or_404(Invoice, stripe_id=stripe_invoice['id'])
