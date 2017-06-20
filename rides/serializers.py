@@ -53,6 +53,7 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
     def get_start_date(self, obj):
         # gotta represent the aware datetime as the correct local timezone
         # in a string, formatted correctly
+        d = obj.start_date
         if obj.start and obj.start.timezone:
             d = obj.start_date.astimezone(pytz.timezone(obj.start.timezone))
         return formats.date_format(d, "SHORT_DATETIME_FORMAT")
