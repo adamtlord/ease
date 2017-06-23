@@ -263,27 +263,34 @@ def invoice(request):
 @require_POST
 @csrf_exempt
 def charge_failed(request):
+
     event = json.loads(request.body)
     stripe_customer = event['data']['object']['customer']
-    stripe_customer = get_object_or_404(StripeCustomer, stripe_id=stripe_customer)
-    customer = stripe_customer.ride_customer.first()
 
-    d = {
-        'customer': customer,
-        'charge': event['data']['object'],
-        'amount': event['data']['object']['amount'] / 100
-    }
+    try:
+        customer = StripeCustomer.objects.filter(stripe_id=stripe_customer).ride_customer.first()
 
-    msg_plain = render_to_string('billing/failed_charge_email.txt', d)
-    msg_html = render_to_string('billing/failed_charge_email.html', d)
+        d = {
+            'customer': customer,
+            'charge': event['data']['object'],
+            'amount': event['data']['object']['amount'] / 100
+        }
 
-    to_email = settings.CUSTOMER_SERVICE_CONTACT
+        msg_plain = render_to_string('billing/failed_charge_email.txt', d)
+        msg_html = render_to_string('billing/failed_charge_email.html', d)
 
-    send_mail(
-        'Arrive: Failed Charge in Stripe',
-        msg_plain,
-        settings.DEFAULT_FROM_EMAIL,
-        [to_email],
-        html_message=msg_html,
-    )
+        to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+        send_mail(
+            'Arrive: Failed Charge in Stripe',
+            msg_plain,
+            settings.DEFAULT_FROM_EMAIL,
+            [to_email],
+            html_message=msg_html,
+        )
+
+    except:
+        pass
+        # probably couldn't find a customer with that stripe ID, signup failed?
+
     return HttpResponse(status=200)

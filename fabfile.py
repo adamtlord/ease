@@ -120,3 +120,6 @@ def r():
 
 runserver = r  # alias
 
+
+def ultrahook():
+    local('ultrahook stripe -k 93cj7UeBxh2yE5K998T5f0kHLra8YBOn 7000')
