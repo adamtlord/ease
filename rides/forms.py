@@ -214,3 +214,12 @@ class RideForm(forms.ModelForm):
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
+
+
+class CancelRideForm(forms.Form):
+    ride_id = forms.IntegerField()
+    next_url = forms.CharField()
+    cancel_reason = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+        label="Why are you cancelling this ride?"
+    )

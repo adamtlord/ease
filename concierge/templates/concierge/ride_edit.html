@@ -127,11 +127,33 @@
     <div class="form-actions">
         <p><input type="submit" class="btn btn-primary btn-block" value="Save Ride" /></p>
         <p class="text-center">
-            <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_detail' customer.id %}" class="text-danger cancel-ride">Cancel Ride</a>
+            <a href="" data-target="#cancelRideModal" data-toggle="modal" class="text-danger cancel-ride">Cancel Ride</a>
         </p>
     </div>
-
 </form>
+
+<div class="modal fade" id="cancelRideModal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="POST" action="{% url 'ride_cancel' %}">{% csrf_token %}
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Are you sure?</h4>
+                    </div>
+                    <div class="modal-body">
+                        {{ cancel_form.ride_id.as_hidden }}
+                        {{ cancel_form.next_url.as_hidden }}
+                        {% render_form_field cancel_form.cancel_reason %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-danger" value="Cancel Ride" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 

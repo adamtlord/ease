@@ -1,15 +1,16 @@
 import pytz
+
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
-from django.db.models import Q
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone, formats
+from django.urls import reverse
+
 from accounts.models import Customer
-from billing.utils import invoice_customer_rides
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm
-from rides.helpers import handle_lyft_upload, sort_rides_by_customer
+from rides.forms import StartRideForm, RideForm, CancelRideForm
 from rides.models import Ride
 
 
@@ -172,6 +173,9 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     errors = {}
     if request.method == 'GET':
         form = RideForm(instance=ride, customer=customer)
+        cancel_form = CancelRideForm(initial={
+            'ride_id': ride_id,
+            'next_url': reverse('customer_detail', args=[customer.id])})
     else:
         form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():
@@ -194,6 +198,7 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
         'customer': customer,
         'ride': ride,
         'form': form,
+        'cancel_form': cancel_form,
         'ride_page': True,
         'errors': errors
     }
@@ -222,6 +227,35 @@ def ride_delete(request, ride_id):
         elif request.META['HTTP_REFERER']:
             return redirect(request.META['HTTP_REFERER'])
         return redirect('dashboard')
+
+
+@staff_member_required
+@require_POST
+def ride_cancel(request):
+
+    cancel_form = CancelRideForm(request.POST)
+
+    if cancel_form.is_valid():
+        next_url = cancel_form.cleaned_data['next_url']
+        ride_id = cancel_form.cleaned_data['ride_id']
+        try:
+            ride = get_object_or_404(Ride, pk=ride_id)
+            ride.cancelled = True
+            ride.cancelled_reason = cancel_form.cleaned_data['cancel_reason']
+            ride.full_clean()
+            ride.save()
+            messages.success(request, "Ride cancelled and archived")
+            if next_url:
+                return redirect(next_url)
+            elif request.META['HTTP_REFERER']:
+                return redirect(request.META['HTTP_REFERER'])
+            return redirect('customer_detail', ride.customer.id)
+
+        except Exception as ex:
+            messages.error(request, ex.message)
+            if request.META['HTTP_REFERER']:
+                return redirect(request.META['HTTP_REFERER'])
+            return redirect('dashboard')
 
 
 @staff_member_required

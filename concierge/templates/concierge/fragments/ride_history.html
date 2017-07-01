@@ -28,7 +28,11 @@
         <tbody>
             {% for ride in rides %}
                 <tr>
-                    <td>{{ ride.id }}</td>
+                    <td>{{ ride.id }}
+                        {% if ride.cancelled %}
+                            <span class="label label-danger">CANCELLED</span>
+                        {% endif %}
+                    </td>
                     <td>{{ ride.start.fullname|default:'--' }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname|default:'--' }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
                     <td>{{ ride.rider|default:'' }}</td>
@@ -79,7 +83,6 @@
                     <td>
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                        <a href="{% url 'ride_delete' ride.id %}?next={% url 'customer_history' customer.id %}" class="btn btn-danger btn-sm cancel-ride">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a>
                     </td>
                 </tr>
             {% endfor %}

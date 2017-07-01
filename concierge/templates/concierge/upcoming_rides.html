@@ -64,7 +64,7 @@
                     <td>
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
-                        <a href="{% url 'ride_delete' ride.id %}" class="btn btn-danger btn-sm cancel-ride">{% if ride.complete %}Delete{% else %}Cancel{% endif %}</a></td>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

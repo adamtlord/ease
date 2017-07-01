@@ -132,6 +132,8 @@ class Ride(models.Model):
     included_in_plan = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, related_name="rides", blank=True, null=True)
     invoiced = models.BooleanField(default=False)
+    cancelled = models.BooleanField(default=False)
+    cancelled_reason = models.CharField(max_length=256, blank=True, null=True)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()

@@ -5,6 +5,14 @@
     <h4 class="modal-title">Ride {{ ride.id }}: {{ ride }}</h4>
 </div>
 <div class="modal-body">
+    {% if ride.cancelled %}
+        <span class="label label-danger">CANCELLED</span>
+        {% if ride.cancelled_reason %}
+            <div class="alert alert-danger">
+                {{ ride.cancelled_reason }}
+            </div>
+        {% endif %}
+    {% endif %}
     <table class="table table-striped">
         <tbody>
             {% if ride.rider and ride.rider != ride.customer.full_name %}
