@@ -12,9 +12,26 @@
                     <th>Rider</th>
                     <td>{{ ride.rider }}</td>
                 </tr>
+            {% else %}
+                <tr>
+                    <th>First</th>
+                    <td>{{ ride.customer.first_name }}</td>
+                </tr>
+                <tr>
+                    <th>Last</th>
+                    <td>{{ ride.customer.last_name }}</td>
+                </tr>
+            {% endif %}
+            {% if ride.customer.send_updates %}
+                <tr>
+                    <th>Send Text Updates To</th>
+                    <td>
+                        {% if ride.customer.mobile_phone %}{{ ride.customer.mobile_phone }}{% else %}<em>no mobile phone entered</em>{% endif %}
+                    </td>
+                </tr>
             {% endif %}
             <tr>
-                <th>Start</th>
+                <th>Pickup</th>
                 <td>{{ ride.start.fullname }}<br><small class="subtext">{{ ride.start.fulladdress }}</small>
                     {% if ride.start.notes %}
                         <p class="destination-notes">{{ ride.start.notes }}</p>
@@ -22,19 +39,13 @@
                 </td>
             </tr>
             <tr>
-                <th>Destination</th>
+                <th>Dropoff</th>
                 <td>{{ ride.destination.fullname }}<br><small class="subtext">{{ ride.destination.fulladdress }}</small>
                     {% if ride.destination.notes %}
                         <p class="destination-notes">{{ ride.destination.notes }}</p>
                     {% endif %}
                </td>
             </tr>
-            {% if ride.company %}
-            <tr>
-                <th>Company</th>
-                <td>{{ ride.company }}</td>
-            </tr>
-            {% endif %}
             <tr>
                 <th>Start Time</th>
                 <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
@@ -47,6 +58,16 @@
                     </tr>
                 {% endtimezone %}
             {% endif %}
+            <tr>
+                <th>Ride ID</th>
+                <td>{{ ride.id }}</td>
+            </tr>
+            {% if ride.company %}
+                <tr>
+                    <th>Company</th>
+                    <td>{{ ride.company }}</td>
+                </tr>
+            {% endif %}
             {% if ride.customer.preferred_service %}
                 <tr>
                     <th>Preferred Service</th>
@@ -57,14 +78,7 @@
                 <th>Phone</th>
                 <td>{{ ride.customer.phone_numbers|safe }}</td>
             </tr>
-            {% if ride.customer.send_updates %}
-                <tr>
-                    <th>Send Text Updates To</th>
-                    <td>
-                        {% if ride.customer.mobile_phone %}{{ ride.customer.mobile_phone }}{% else %}<em>no mobile phone entered</em>{% endif %}
-                    </td>
-                </tr>
-            {% endif %}
+
             {% if ride.customer.special_assistance %}
                 <tr class="warning">
                     <th>Special Assistance</th>
