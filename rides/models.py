@@ -23,6 +23,9 @@ class Destination(Location):
     notes = models.TextField(blank=True, null=True)
     included_in_plan = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ['name']
+
     @property
     def ltlng(self):
         return '{},{}'.format(self.latitude, self.longitude)
