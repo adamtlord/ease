@@ -829,7 +829,8 @@ def customer_data_export(request, template="concierge/customer_export.html"):
         if filters['type'] == 'customer':
             filename += ' Customers'
             writer.writerow([
-                'Customer',
+                'Customer First',
+                'Customer Last',
                 'Customer Email',
                 'User Email',
                 'Home Phone',
@@ -842,7 +843,8 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
             for customer in customers:
                 writer.writerow([
-                                customer,
+                                customer.first_name,
+                                customer.last_name,
                                 customer.email,
                                 user_email(customer),
                                 customer.home_phone,
@@ -856,9 +858,12 @@ def customer_data_export(request, template="concierge/customer_export.html"):
         if filters['type'] == 'user':
             filename += ' Account Holders'
             writer.writerow([
-                'Account Holder',
+                'Account Holder First',
+                'Account Holder Last',
                 'Account Holder Email',
                 'Account Holder Phone',
+                'Customer First',
+                'Customer Last',
                 'Customer Home Phone',
                 'Customer Mobile Phone',
                 'Loved One Phones',
@@ -867,15 +872,39 @@ def customer_data_export(request, template="concierge/customer_export.html"):
             ])
             for customer in customers:
                 writer.writerow([
-                                customer.user,
+                                customer.user.first_name,
+                                customer.user.last_name,
                                 user_email(customer),
                                 customer.user.profile.phone,
+                                customer.first_name,
+                                customer.last_name,
                                 customer.home_phone,
                                 customer.mobile_phone,
                                 rider_phones(customer),
                                 get_city(customer),
                                 get_state(customer)
                                 ])
+
+        if filters['type'] == 'rider':
+            filename += ' Riders'
+            writer.writerow([
+                'Rider First',
+                'Rider Last',
+                'Rider Relationship',
+                'Rider Mobile Phone',
+                'Customer First',
+                'Customer Last'
+            ])
+            for customer in customers:
+                for rider in customer.riders.all():
+                    writer.writerow([
+                                    rider.first_name,
+                                    rider.last_name,
+                                    rider.relationship,
+                                    rider.mobile_phone,
+                                    customer.first_name,
+                                    customer.last_name
+                                    ])
 
         response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
         return response
