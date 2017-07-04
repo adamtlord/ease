@@ -6,6 +6,14 @@
 {% block customer_content %}
 
 <h3>Ride ID: {{ ride.id }}</h3>
+{% if ride.cancelled %}
+    <span class="label label-danger">CANCELLED</span>
+    {% if ride.cancelled_reason %}
+        <div class="alert alert-danger">
+            {{ ride.cancelled_reason }}
+        </div>
+    {% endif %}
+{% endif %}
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     {% if errors %}
         <p class="alert alert-danger">
@@ -126,9 +134,11 @@
 
     <div class="form-actions">
         <p><input type="submit" class="btn btn-primary btn-block" value="Save Ride" /></p>
-        <p class="text-center">
-            <a href="" data-target="#cancelRideModal" data-toggle="modal" class="text-danger cancel-ride">Cancel Ride</a>
-        </p>
+        {% if not ride.cancelled %}
+            <p class="text-center">
+                <a href="" data-target="#cancelRideModal" data-toggle="modal" class="text-danger cancel-ride">Cancel Ride</a>
+            </p>
+        {% endif %}
     </div>
 </form>
 

@@ -47,12 +47,7 @@
                    '" data-toggle="modal" class="btn btn-primary btn-sm">View</a> ' +
                    '<a href="/concierge/ride/' +
                    data.id +
-                   '/edit/" class="btn btn-default btn-sm">Edit</a> ' +
-                   '<a href="/concierge/ride/' +
-                   data.id +
-                   '/delete/" class="btn btn-danger btn-sm cancel-ride">' +
-                   endButtonText +
-                   '</a>';
+                   '/edit/" class="btn btn-default btn-sm">Edit</a> ';
         }
         $('#rides_history').DataTable({
             serverSide: true,
@@ -61,7 +56,12 @@
             },
             order: [[ 2, 'desc' ]],
             columns: [
-                { data: 'id' },
+                { data: 'id',
+                  render: function(data, type, full, meta){
+                    var cancelled_str = full.cancelled ? '<br><div class="label label-danger">cancelled</div>' : '';
+                    return data + cancelled_str;
+                  }
+                },
                 { data: 'customer.last_name',
                   render: function(data, type, full, meta){
                     var rider = full.rider && full.rider !== data ? '<br /><strong>Rider:</strong> ' + full.rider : '';

@@ -61,6 +61,8 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Ride
         fields = (
+            'cancelled',
+            'cancelled_reason',
             'company',
             'complete',
             'cost',
