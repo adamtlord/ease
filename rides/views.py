@@ -170,12 +170,14 @@ def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.h
 def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     ride = get_object_or_404(Ride, pk=ride_id)
     customer = get_object_or_404(Customer, pk=ride.customer.id)
+
+    cancel_form = CancelRideForm(initial={
+        'ride_id': ride_id,
+        'next_url': reverse('customer_detail', args=[customer.id])})
     errors = {}
+
     if request.method == 'GET':
         form = RideForm(instance=ride, customer=customer)
-        cancel_form = CancelRideForm(initial={
-            'ride_id': ride_id,
-            'next_url': reverse('customer_detail', args=[customer.id])})
     else:
         form = RideForm(request.POST, instance=ride, customer=customer)
         if form.is_valid():

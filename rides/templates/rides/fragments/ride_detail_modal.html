@@ -6,7 +6,7 @@
 </div>
 <div class="modal-body">
     {% if ride.cancelled %}
-        <span class="label label-danger">CANCELLED</span>
+        <span class="label label-danger">DELETED</span>
         {% if ride.cancelled_reason %}
             <div class="alert alert-danger">
                 {{ ride.cancelled_reason }}

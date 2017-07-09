@@ -7,7 +7,7 @@
 
 <h3>Ride ID: {{ ride.id }}</h3>
 {% if ride.cancelled %}
-    <span class="label label-danger">CANCELLED</span>
+    <span class="label label-danger">DELETED</span>
     {% if ride.cancelled_reason %}
         <div class="alert alert-danger">
             {{ ride.cancelled_reason }}
@@ -136,7 +136,7 @@
         <p><input type="submit" class="btn btn-primary btn-block" value="Save Ride" /></p>
         {% if not ride.cancelled %}
             <p class="text-center">
-                <a href="" data-target="#cancelRideModal" data-toggle="modal" class="text-danger cancel-ride">Cancel Ride</a>
+                <a href="" data-target="#cancelRideModal" data-toggle="modal" class="text-danger cancel-ride">Delete Ride</a>
             </p>
         {% endif %}
     </div>
@@ -156,8 +156,8 @@
                         {% render_form_field cancel_form.cancel_reason %}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <input type="submit" class="btn btn-danger" value="Cancel Ride" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
+                        <input type="submit" class="btn btn-danger" value="Delete Ride" />
                     </div>
                 </form>
             </div>

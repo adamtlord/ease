@@ -58,7 +58,7 @@
             columns: [
                 { data: 'id',
                   render: function(data, type, full, meta){
-                    var cancelled_str = full.cancelled ? '<br><div class="label label-danger">cancelled</div>' : '';
+                    var cancelled_str = full.cancelled ? '<br><div class="label label-danger">deleted</div>' : '';
                     return data + cancelled_str;
                   }
                 },

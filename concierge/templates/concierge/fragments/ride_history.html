@@ -30,7 +30,7 @@
                 <tr>
                     <td>{{ ride.id }}
                         {% if ride.cancelled %}
-                            <span class="label label-danger">CANCELLED</span>
+                            <span class="label label-danger">DELETED</span>
                         {% endif %}
                     </td>
                     <td>{{ ride.start.fullname|default:'--' }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>

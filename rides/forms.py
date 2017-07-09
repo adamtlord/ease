@@ -221,5 +221,6 @@ class CancelRideForm(forms.Form):
     next_url = forms.CharField()
     cancel_reason = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
-        label="Why are you cancelling this ride?"
+        label="Why are you deleting this ride?",
+        help_text="(Do not delete this ride if you need to charge the customer a cancellation fee)"
     )
