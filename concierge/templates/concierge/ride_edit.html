@@ -56,15 +56,16 @@
                         {% timezone ride.start.timezone %}
                             <span class="help-block">(Local time for starting point)</span>
                             <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+                            {{ form.start_date.as_hidden }}
                         {% endtimezone %}
                     {% else %}
                         <input class="form-control" type="text" value="{{ ride.start_date|date:'m/d/Y g:i A' }}">
+                        {{ form.start_date.as_hidden }}
                     {% endif %}
                     {% if form.start_date.errors %}
                         {{ form.start_date.errors }}
                     {% endif %}
                 </div>
-                {{ form.start_date.as_hidden }}
             {% render_form_field form.customer %}
             {% render_form_field form.cost %}
             {% render_form_field form.fees %}
