@@ -270,27 +270,29 @@ def charge_failed(request):
     try:
         customer = StripeCustomer.objects.filter(stripe_id=stripe_customer).ride_customer.first()
 
-        d = {
-            'customer': customer,
-            'charge': event['data']['object'],
-            'amount': event['data']['object']['amount'] / 100
-        }
-
-        msg_plain = render_to_string('billing/failed_charge_email.txt', d)
-        msg_html = render_to_string('billing/failed_charge_email.html', d)
-
-        to_email = settings.CUSTOMER_SERVICE_CONTACT
-
-        send_mail(
-            'Arrive: Failed Charge in Stripe',
-            msg_plain,
-            settings.DEFAULT_FROM_EMAIL,
-            [to_email],
-            html_message=msg_html,
-        )
-
     except:
         pass
         # probably couldn't find a customer with that stripe ID, signup failed?
+        customer = None
+
+    d = {
+        'customer': customer,
+        'stripe_customer': stripe_customer,
+        'charge': event['data']['object'],
+        'amount': event['data']['object']['amount'] / 100
+    }
+
+    msg_plain = render_to_string('billing/failed_charge_email.txt', d)
+    msg_html = render_to_string('billing/failed_charge_email.html', d)
+
+    to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+    send_mail(
+        'Arrive: Failed Charge in Stripe',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        [to_email],
+        html_message=msg_html,
+    )
 
     return HttpResponse(status=200)

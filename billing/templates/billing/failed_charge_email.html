@@ -2,8 +2,12 @@
 {% block content %}
 <p>
 A charge in Stripe just failed.<br /><br />
-
-<strong>Customer:</strong> <a href="https://app.arriverides.com/concierge/customers/{{ customer.id }}">{{ customer }}</a><br />
+{% if customer %}
+  <strong>Customer:</strong> <a href="https://app.arriverides.com/concierge/customers/{{ customer.id }}">{{ customer }}</a><br />
+{% else %}
+  <strong>We couldn't find a Stripe record for this customer in our database, so we're not sure who it is.</strong>
+  Their Stripe customer id is <a href="https://dashboard.stripe.com/customers/{{ stripe_customer }}">{{ stripe_customer }}</a>.<br /><br />
+{% endif %}
 <strong>Amount:</strong> ${{ amount }}<br />
 <strong>For:</strong> {{ charge.statement_descriptor }}<br />
 <strong>Stripe Charge:</strong> <a href="https://dashboard.stripe.com/charges/{{ charge.id }}">{{ charge.id }}</a><br />

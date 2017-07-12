@@ -4,7 +4,12 @@
 
 A charge in Stripe just failed.
 
+{% if customer %}
 Customer: {{ customer }}
+{% else %}
+* We couldn't find a Stripe record for this customer in our database, so we're not sure who it is.
+  Their Stripe customer id is {{ stripe_customer }}. (https://dashboard.stripe.com/customers/{{ stripe_customer }})
+{% endif %}
 Amount: ${{ amount }}
 For: {{ charge.statement_descriptor }}
 Stripe charge: https://dashboard.stripe.com/charges/{{ charge.id }}
