@@ -268,7 +268,7 @@ def charge_failed(request):
     stripe_customer = event['data']['object']['customer']
 
     try:
-        customer = StripeCustomer.objects.filter(stripe_id=stripe_customer).ride_customer.first()
+        customer = StripeCustomer.objects.filter(stripe_id=stripe_customer).first().ride_customer.first()
 
     except:
         pass
