@@ -61,7 +61,7 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
 
     now = timezone.now()
     week_from_now = now + datetime.timedelta(days=7)
-    rides = Ride.objects.filter(start_date__gte=now).filter(start_date__lt=week_from_now).order_by('start_date')
+    rides = Ride.objects.filter(start_date__gte=now).filter(start_date__lt=week_from_now).exclude(cancelled=True).order_by('start_date')
 
     d = {
         'rides': rides,
