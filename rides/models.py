@@ -57,6 +57,12 @@ class Destination(Location):
                 self.timezone = tz_name
             except:
                 pass
+        else:
+            try:
+                tz_name = get_timezone(self.ltlng)
+                self.timezone = tz_name
+            except:
+                pass
 
     def save(self, *args, **kwargs):
         super(Destination, self).save(*args, **kwargs)
