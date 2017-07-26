@@ -291,7 +291,7 @@ def charge_failed(request):
         'Arrive: Failed Charge in Stripe',
         msg_plain,
         settings.DEFAULT_FROM_EMAIL,
-        [to_email],
+        to_email,
         html_message=msg_html,
     )
 
