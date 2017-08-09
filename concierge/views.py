@@ -118,8 +118,8 @@ def rides_history(request, template='concierge/rides_history.html'):
 
 @staff_member_required
 def customer_list(request, template='concierge/customer_list_active.html'):
-    active_customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
-    inactive_customers = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+    active_customers = Customer.active.all()
+    inactive_customers = Customer.inactive.all()
 
     d = {
         'customers': active_customers,
@@ -133,8 +133,8 @@ def customer_list(request, template='concierge/customer_list_active.html'):
 
 @staff_member_required
 def customer_list_inactive(request, template='concierge/customer_list_inactive.html'):
-    active_customers = Customer.objects.filter(user__is_active=True).exclude(plan__isnull=True)
-    inactive_customers = Customer.objects.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+    active_customers = Customer.active.all()
+    inactive_customers = Customer.inactive.all()
 
     d = {
         'customers': inactive_customers,
@@ -918,7 +918,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
 # AJAX VIEWS
 def customer_search_data(request):
-    customers = Customer.objects.select_related('user').select_related('user__profile').all()
+    customers = Customer.active.select_related('user').select_related('user__profile').all()
     customer_list = list()
     for customer in customers:
 

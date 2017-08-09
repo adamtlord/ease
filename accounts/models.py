@@ -20,6 +20,8 @@ from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
 from billing.models import StripeCustomer, Plan
 from rides.models import Ride
 
+from accounts.managers import ActiveCustomersManager, InactiveCustomersManager
+
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
@@ -185,6 +187,10 @@ class Customer(Contact):
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
     timezone = models.CharField(max_length=128, blank=True, null=True)
     user = models.OneToOneField(CustomUser)
+
+    objects = models.Manager()
+    active = ActiveCustomersManager()
+    inactive = InactiveCustomersManager()
 
     @property
     def full_name(self):

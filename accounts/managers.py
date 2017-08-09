@@ -1,5 +1,8 @@
 from django.contrib.auth.models import BaseUserManager
 
+from django.db import models
+from django.db.models import Q
+
 
 class CustomUserManager(BaseUserManager):
 
@@ -33,3 +36,16 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self._create_user(email, password, **extra_fields)
+
+
+class ActiveCustomersManager(models.Manager):
+    def get_queryset(self):
+        return super(ActiveCustomersManager, self).get_queryset() \
+            .filter(user__is_active=True) \
+            .exclude(plan__isnull=True)
+
+
+class InactiveCustomersManager(models.Manager):
+    def get_queryset(self):
+        return super(InactiveCustomersManager, self).get_queryset() \
+            .filter(Q(user__is_active=False) | Q(plan__isnull=True))
