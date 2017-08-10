@@ -147,7 +147,7 @@ def send_new_customer_email(user):
         'New Arrive Signup',
         msg_plain,
         settings.DEFAULT_FROM_EMAIL,
-        [to_email],
+        to_email,
         html_message=msg_html,
     )
 
