@@ -28,6 +28,8 @@ class Touch(models.Model):
 
     class Meta:
         ordering = ['-date']
+        verbose_name = "Touch"
+        verbose_name_plural = "Touches"
 
     @property
     def start_date(self):
@@ -44,8 +46,4 @@ class Touch(models.Model):
         return super(Touch, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '{} with {} {}'.format(self.type, self.customer.full_name, formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))
-
-    class Meta:
-        verbose_name = "Touch"
-        verbose_name_plural = "Touches"
+        return '{} with {} {}'.format(self.type, self.customer.full_name if self.customer else '(customer not found)', formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))
