@@ -1,3 +1,5 @@
+/* global google */
+
 // This example displays an address form, using the autocomplete feature
 // of the Google Places API to help users fill in the information.
 
@@ -22,11 +24,11 @@ var componentMap = {
 };
 
 function fillInAddress() {
-
-  $('.destination .form-control').val('').removeAttr('disabled');
-
   var place = this.getPlace();
   var prefix = this.prefix;
+
+  $('#' + prefix +'form .form-control').val('').removeAttr('disabled');
+
   for (var i = 0; i < place.address_components.length; i++) {
     var addressType = place.address_components[i].types[0];
     if (componentForm[addressType]) {

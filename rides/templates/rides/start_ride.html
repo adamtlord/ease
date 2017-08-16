@@ -32,7 +32,7 @@
                         <input class="autocomplete form-control" placeholder="Enter a location" type="text" data-prefix='add_start-'></input>
                     </div>
                 </div>
-                <div class="destination">
+                <div id="add_start-form" class="destination">
                     {% render_form_field add_starting_point_form.customer %}
                     {% render_form_field add_starting_point_form.name %}
                     {% render_form_field add_starting_point_form.nickname %}
@@ -64,7 +64,7 @@
                         <input class="autocomplete form-control" placeholder="Enter a location" type="text" data-prefix='add_dest-'></input>
                     </div>
                 </div>
-                <div class="destination">
+                <div id="add_dest-form" class="destination">
                     {% render_form_field add_destination_form.customer %}
                     {% render_form_field add_destination_form.name %}
                     {% render_form_field add_destination_form.nickname %}
