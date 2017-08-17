@@ -280,7 +280,17 @@ def rides_ready_to_bill(request, template="billing/ready_to_bill.html"):
 @staff_member_required
 def rides_incomplete(request, template="billing/incomplete.html"):
 
-    rides = Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)).exclude(cancelled=True).order_by('-start_date')
+    rides = Ride.objects.filter(Q(complete=False) | Q(cost__isnull=True)) \
+                        .exclude(cancelled=True) \
+                        .order_by('-start_date') \
+                        .select_related('destination') \
+                        .select_related('start') \
+                        .prefetch_related('customer') \
+                        .prefetch_related('customer__user') \
+                        .prefetch_related('customer__user__profile') \
+                        .prefetch_related('customer__plan') \
+                        .prefetch_related('customer__group_membership') \
+
     customers = sort_rides_by_customer(rides)
 
     d = {

@@ -11,6 +11,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.functional import cached_property
 from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
@@ -61,7 +62,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_customer(self):
         return self.customer
 
-    @property
+    @cached_property
     def full_name(self):
         return self.get_full_name()
 
@@ -192,35 +193,35 @@ class Customer(Contact):
     active = ActiveCustomersManager()
     inactive = InactiveCustomersManager()
 
-    @property
+    @cached_property
     def full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
-    @property
+    @cached_property
     def age(self):
         return relativedelta(datetime.datetime.now(), self.dob).years
 
-    @property
+    @cached_property
     def home(self):
         return self.destination_set.filter(home=True).first()
 
-    @property
+    @cached_property
     def destinations(self):
         return self.destination_set.exclude(home=True).order_by('name')
 
-    @property
+    @cached_property
     def rider(self):
         return self.riders.first()
 
-    @property
+    @cached_property
     def rides(self):
         return self.ride_set.all().order_by('-start_date')
 
-    @property
+    @cached_property
     def last_ride(self):
         return self.rides.filter(start_date__lt=timezone.now()).first()
 
-    @property
+    @cached_property
     def last_ride_dt(self):
         return self.last_ride.start_date
 
@@ -237,7 +238,7 @@ class Customer(Contact):
                 Ride.objects.none()
         return Ride.objects.none()
 
-    @property
+    @cached_property
     def rides_this_month(self):
         count = self.get_rides_this_month().count()
         if not count:
@@ -247,7 +248,7 @@ class Customer(Contact):
     def get_included_rides_this_month(self):
         return self.get_rides_this_month().filter(included_in_plan=True)
 
-    @property
+    @cached_property
     def included_rides_this_month(self):
         count = self.get_included_rides_this_month().count()
         if not count:
@@ -257,18 +258,18 @@ class Customer(Contact):
     def get_rides_in_progress(self):
         return self.rides.filter(complete=False)
 
-    @property
+    @cached_property
     def rides_in_progress(self):
         count = self.get_rides_in_progress().count()
         if not count:
             count = 0
         return count
 
-    @property
+    @cached_property
     def remaining_rides_this_month(self):
         return self.plan.included_rides_per_month - self.included_rides_this_month
 
-    @property
+    @cached_property
     def ready_to_ride(self):
         if self.ride_account and self.subscription_account and self.plan:
             return True
@@ -282,7 +283,7 @@ class Customer(Contact):
                     return True
             return False
 
-    @property
+    @cached_property
     def missing(self):
         missing_items = []
         if self.group_membership:
@@ -299,11 +300,11 @@ class Customer(Contact):
                 missing_items.append('No plan selected')
         return missing_items
 
-    @property
+    @cached_property
     def rides_ready_to_bill(self):
         return Ride.ready_to_bill.filter(customer=self)
 
-    @property
+    @cached_property
     def phone_numbers(self):
         phone_string = '<span class="phone-numbers">'
         if self.home_phone and self.mobile_phone:
@@ -320,7 +321,7 @@ class Customer(Contact):
         phone_string += '</span>'
         return phone_string
 
-    @property
+    @cached_property
     def phone_numbers_br(self):
         phone_string = '<span class="phone-numbers">'
         if self.home_phone and self.mobile_phone:
@@ -337,7 +338,7 @@ class Customer(Contact):
         phone_string += '</span>'
         return phone_string
 
-    @property
+    @cached_property
     def group_bill(self):
         return self.group_membership and self.group_membership.includes_ride_cost
 
@@ -355,7 +356,7 @@ class Rider(Contact):
         full_name = '%s %s' % (self.first_name, self.last_name)
         return full_name.strip()
 
-    @property
+    @cached_property
     def full_name(self):
         return self.get_full_name()
 

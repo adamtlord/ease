@@ -31,7 +31,7 @@ def customer_rides(request, customer_id, template="concierge/customer_rides.html
 @staff_member_required
 def ride_start(request, customer_id, template="rides/start_ride.html"):
 
-    customer = get_object_or_404(Customer, pk=customer_id)
+    customer = get_object_or_404(Customer.objects.select_related('user').select_related('user__profile').prefetch_related('riders'), pk=customer_id)
     errors = []
     if request.method == 'GET':
         initial_start = None
@@ -176,8 +176,8 @@ def ride_detail(request, customer_id, ride_id, template="concierge/ride_detail.h
 
 @staff_member_required
 def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
-    ride = get_object_or_404(Ride, pk=ride_id)
-    customer = get_object_or_404(Customer, pk=ride.customer.id)
+    ride = get_object_or_404(Ride.objects.select_related('destination').select_related('start'), pk=ride_id)
+    customer = get_object_or_404(Customer.objects.select_related('user').select_related('user__profile'), pk=ride.customer.id)
 
     cancel_form = CancelRideForm(initial={
         'ride_id': ride_id,

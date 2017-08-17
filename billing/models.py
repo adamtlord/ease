@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
-import datetime
+
 from django.db import models
+from django.utils.functional import cached_property
 from localflavor.us.models import USZipCodeField
 
 from common.models import AbstractEnumModel
@@ -39,15 +40,15 @@ class Plan(AbstractEnumModel):
     def is_active(self):
         return self.active
 
-    @property
+    @cached_property
     def is_gift(self):
         return self.id == self.INTRO_GIFT
 
-    @property
+    @cached_property
     def is_default(self):
         return self.id == self.DEFAULT
 
-    @property
+    @cached_property
     def includes_rides(self):
         return self.included_rides_per_month > 0
 
