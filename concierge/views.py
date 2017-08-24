@@ -701,8 +701,8 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
 @staff_member_required
 def customer_deactivate(request, customer_id):
     customer = get_object_or_404(Customer, pk=customer_id)
-    customer.user.is_active = False
-    customer.user.save()
+    customer.is_active = False
+    customer.save()
     messages.add_message(request, messages.SUCCESS, '{} set to inactive'.format(customer.full_name))
     return redirect(reverse('customer_list'))
 
@@ -711,8 +711,8 @@ def customer_deactivate(request, customer_id):
 @staff_member_required
 def customer_activate(request, customer_id):
     customer = get_object_or_404(Customer, pk=customer_id)
-    customer.user.is_active = True
-    customer.user.save()
+    customer.is_active = True
+    customer.save()
     messages.add_message(request, messages.SUCCESS, '{} set to active'.format(customer.full_name))
     return redirect(reverse('customer_list'))
 
