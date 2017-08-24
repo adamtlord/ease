@@ -209,7 +209,9 @@
                 <tr>
                     <td>
                         {% timezone ride.start.timezone %}
+                            {% if ride.cancelled %}<strike>{% endif %}
                             {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}
+                            {% if ride.cancelled %}</strike>{% endif %}
                         {% endtimezone %}
                     </td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
@@ -224,6 +226,9 @@
                             {% if ride.total_cost %}
                                 ${{ ride.total_cost|default:'0' }}
                             {% endif %}
+                        {% endif %}
+                        {% if ride.cancelled %}
+                            <span class="label label-danger">cancelled</span>
                         {% endif %}
                     </td>
                 </tr>
