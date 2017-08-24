@@ -44,3 +44,7 @@ CACHES = {
 
 DEFAULT_FROM_EMAIL = 'no-reply@arriverides.com'
 SERVER_EMAIL = 'no-reply@arriverides.com'
+
+INTERNAL_IPS = [
+    '127.0.0.1'
+]

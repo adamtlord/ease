@@ -4,6 +4,7 @@ import pytz
 import datetime
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from common.models import Location
 from common.utils import geocode_address, get_timezone
@@ -26,7 +27,7 @@ class Destination(Location):
     class Meta:
         ordering = ['name']
 
-    @property
+    @cached_property
     def ltlng(self):
         return '{},{}'.format(self.latitude, self.longitude)
 
@@ -78,7 +79,7 @@ class Destination(Location):
                 pass
         super(Destination, self).save(*args, **kwargs)
 
-    @property
+    @cached_property
     def fullname(self):
         if self.home and not self.name:
             return 'Home'
@@ -94,16 +95,16 @@ class Destination(Location):
             else:
                 return self.street1
 
-    @property
+    @cached_property
     def display_name(self):
         return '{}, {}'.format(self.fullname, self.street1)
 
-    @property
+    @cached_property
     def fulladdress(self):
         street2 = ' {}'.format(self.street2) if self.street2 else ''
         return '{}{} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code)
 
-    @property
+    @cached_property
     def tz(self):
         tz_abbrev = ''
         if self.timezone:
@@ -149,7 +150,7 @@ class Ride(models.Model):
     class Meta:
         ordering = ['-start_date']
 
-    @property
+    @cached_property
     def get_arrive_fee(self):
         if self.customer.group_membership and self.customer.group_membership.includes_arrive_fee:
             return self.customer.group_membership.plan.arrive_fee
@@ -159,17 +160,17 @@ class Ride(models.Model):
             return self.customer.plan.arrive_fee or 0
         return 0
 
-    @property
+    @cached_property
     def get_cost(self):
         if self.included_in_plan:
             return 0
         return self.cost or 0
 
-    @property
+    @cached_property
     def is_complete(self):
         return self.cost or self.complete
 
-    @property
+    @cached_property
     def description(self):
         startstreet = destinationstreet = ''
         if self.start.street1:
@@ -178,28 +179,28 @@ class Ride(models.Model):
             destinationstreet = self.destination.street1
         return '{} to {}'.format(startstreet, destinationstreet)
 
-    @property
+    @cached_property
     def total_fees_estimate(self):
         fees = self.fees or 0
         arrive_fee = self.get_arrive_fee
         return fees + arrive_fee
 
-    @property
+    @cached_property
     def total_fees(self):
         fees = self.fees or 0
         arrive_fee = self.arrive_fee or 0
         return fees + arrive_fee
 
-    @property
+    @cached_property
     def total_cost_estimate(self):
         cost = self.get_cost
         return cost + self.total_fees_estimate
 
-    @property
+    @cached_property
     def is_scheduled(self):
         return self.start_date > timezone.now()
 
-    @property
+    @cached_property
     def cost_to_group(self):
         cost = 0
         group = self.customer.group_membership

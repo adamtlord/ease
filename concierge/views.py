@@ -41,7 +41,14 @@ def dashboard(request, template='concierge/dashboard.html'):
         if customer_id:
             return redirect('customer_detail', customer_id)
 
-    to_contact = Customer.objects.filter(intro_call=False).filter(user__is_active=True).exclude(plan__isnull=True).order_by('user__date_joined')
+    to_contact = Customer.objects \
+                    .filter(intro_call=False) \
+                    .filter(user__is_active=True) \
+                    .exclude(plan__isnull=True) \
+                    .select_related('user') \
+                    .select_related('user__profile') \
+                    .select_related('plan') \
+                    .order_by('user__date_joined')
 
     d = {
         'to_contact': to_contact,
@@ -61,7 +68,15 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
 
     now = timezone.now()
     week_from_now = now + datetime.timedelta(days=7)
-    rides = Ride.objects.filter(start_date__gte=now).filter(start_date__lt=week_from_now).exclude(cancelled=True).order_by('start_date')
+    rides = Ride.objects.filter(start_date__gte=now) \
+                        .filter(start_date__lt=week_from_now) \
+                        .exclude(cancelled=True) \
+                        .order_by('start_date') \
+                        .select_related('destination') \
+                        .select_related('start') \
+                        .prefetch_related('customer') \
+                        .prefetch_related('customer__user') \
+                        .prefetch_related('customer__user__profile') \
 
     d = {
         'rides': rides,
@@ -83,7 +98,11 @@ def active_rides(request, template='concierge/active_rides.html'):
                         .exclude(complete=True) \
                         .exclude(cancelled=True) \
                         .order_by('start_date') \
-                        .prefetch_related('customer')
+                        .select_related('destination') \
+                        .select_related('start') \
+                        .prefetch_related('customer') \
+                        .prefetch_related('customer__user') \
+                        .prefetch_related('customer__user__profile') \
 
     for ride in rides:
         if ride.customer.last_ride.destination == ride.customer.home:
@@ -217,7 +236,7 @@ def customer_create(request, template='concierge/customer_create.html'):
 def customer_detail(request, customer_id, template='concierge/customer_detail.html'):
 
     subscription = None
-    customer = get_object_or_404(Customer, pk=customer_id)
+    customer = get_object_or_404(Customer.objects.select_related('user__profile'), pk=customer_id)
     if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
     rides_in_progress = Ride.in_progress.filter(customer=customer)
@@ -247,7 +266,7 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
 @staff_member_required
 def customer_update(request, customer_id, template='concierge/customer_update.html'):
     errors = []
-    customer = get_object_or_404(Customer, pk=customer_id)
+    customer = get_object_or_404(Customer.objects.select_related('user').select_related('user__profile'), pk=customer_id)
     home = customer.home
     RiderFormSet = inlineformset_factory(Customer,
                                          Rider,
@@ -329,7 +348,7 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 @staff_member_required
 def customer_destinations(request, customer_id, template='concierge/customer_destinations.html'):
 
-    customer = get_object_or_404(Customer, pk=customer_id)
+    customer = get_object_or_404(Customer.objects.select_related('user').select_related('user__profile'), pk=customer_id)
 
     d = {
         'customer': customer,
@@ -700,9 +719,9 @@ def customer_activate(request, customer_id):
 
 @staff_member_required
 def customer_history(request, customer_id, template="concierge/customer_history.html"):
-    customer = get_object_or_404(Customer, pk=customer_id)
-    rides = Ride.objects.filter(customer=customer).order_by('-start_date')
-    touches = Touch.objects.filter(customer=customer).order_by('-date')
+    customer = get_object_or_404(Customer.objects.select_related('plan').select_related('user__profile'), pk=customer_id)
+    rides = Ride.objects.filter(customer=customer).order_by('-start_date').select_related('destination').select_related('start').select_related('customer').select_related('customer__plan')
+    touches = Touch.objects.filter(customer=customer).order_by('-date').select_related('customer')
 
     d = {
         'customer': customer,
