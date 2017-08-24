@@ -52,14 +52,14 @@
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 <script>
     $(function(){
-        // $.fn.dataTableExt.afnFiltering.push(
-        //     function( oSettings, aData, iDataIndex ) {
-        //     var show_finance = $('#show_finance_touches').is(':checked');
-        //     if(show_finance && aData[0] === 'Billing'){
-        //         return true;
-        //     }
-        //     return false;
-        // });
+        $.fn.dataTableExt.afnFiltering.push(
+            function( oSettings, aData, iDataIndex ) {
+            var show_finance = $('#show_finance_touches').is(':checked');
+            if(!show_finance && aData[0] === 'Billing'){
+                return false;
+            }
+            return true;
+        });
         $('#ride_table').DataTable({
             'order': [[ 5, "desc" ]],
             'columnDefs': [
