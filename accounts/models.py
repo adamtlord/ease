@@ -89,6 +89,11 @@ class UserProfile(models.Model):
     AD_ONLINE = 'AD_ONLINE'
     AD_PRINT = 'AD_PRINT'
     MEDIA = 'MEDIA'
+    SEARCH = 'SEARCH'
+    FACEBOOK = 'FACEBOOK'
+    COMMUNITY = 'COMMUNITY'
+    PROVIDER = 'PROVIDER'
+    AMBASSADOR = 'AMBASSADOR'
     OTHER = 'OTHER'
 
     SOURCE_CHOICES = (
@@ -97,6 +102,11 @@ class UserProfile(models.Model):
         (AD_ONLINE, 'Online ad'),
         (AD_PRINT, 'Print ad'),
         (MEDIA, 'Media or news coverage'),
+        (SEARCH, 'Online search'),
+        (FACEBOOK, 'Facebook'),
+        (COMMUNITY, 'Senior residential community'),
+        (PROVIDER, 'Senior service provider'),
+        (AMBASSADOR, 'Arrive Ambassador'),
         (OTHER, 'Other'),
     )
 
