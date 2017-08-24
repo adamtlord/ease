@@ -14,7 +14,10 @@ class RideViewSet(viewsets.ModelViewSet):
     pagination_class = DataTablesPagination
 
     def base_queryset(self):
-        return Ride.objects.all()
+        return Ride.objects.all() \
+            .select_related('customer') \
+            .select_related('start') \
+            .select_related('destination')
 
     def filter_queryset(self, request):
         queryset = self.base_queryset()

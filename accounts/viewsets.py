@@ -16,7 +16,13 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # filter_class = CustomerFilter
 
     def base_queryset(self):
-        return Customer.objects.all().annotate(ride_count=Count('rides')).annotate(last_ride_at=Max('rides__start_date'))
+        return Customer.objects.all() \
+            .select_related('user') \
+            .select_related('user__profile') \
+            .select_related('plan') \
+            .prefetch_related('rides') \
+            .annotate(ride_count=Count('rides')) \
+            .annotate(last_ride_at=Max('rides__start_date'))
 
     def filter_queryset(self, request):
         queryset = self.base_queryset()
