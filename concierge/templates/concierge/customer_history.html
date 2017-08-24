@@ -13,8 +13,15 @@
 {% include 'concierge/fragments/ride_history.html' %}
 
 <h3>Contacts</h3>
+<div class="checkbox">
+    <label>
+        <input type="checkbox" id="show_finance_touches" />
+        Show Finance Touches
+    </label>
+</div>
+
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table id="touch_table" class="table table-striped">
         <thead>
             <tr>
                 <th>Type</th>
@@ -45,6 +52,14 @@
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 <script>
     $(function(){
+        $.fn.dataTableExt.afnFiltering.push(
+            function( oSettings, aData, iDataIndex ) {
+            var show_finance = $('#show_finance_touches').is(':checked');
+            if(show_finance && aData[0] === 'Billing'){
+                return true;
+            }
+            return false;
+        });
         $('#ride_table').DataTable({
             'order': [[ 5, "desc" ]],
             'columnDefs': [
@@ -55,6 +70,10 @@
                     'searchable': false
                 },
             ],
+        });
+        var touch_table = $('#touch_table').DataTable();
+        $('#show_finance_touches').on('change', function(){
+            touch_table.draw();
         });
     })
 </script>
