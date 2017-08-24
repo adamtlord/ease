@@ -188,6 +188,11 @@ class Customer(Contact):
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
     timezone = models.CharField(max_length=128, blank=True, null=True)
     user = models.OneToOneField(CustomUser)
+    is_active = models.BooleanField(
+        verbose_name='active',
+        default=True,
+        help_text='Designates whether this customer should be treated as active.'
+    )
 
     objects = models.Manager()
     active = ActiveCustomersManager()

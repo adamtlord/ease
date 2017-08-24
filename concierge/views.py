@@ -43,7 +43,7 @@ def dashboard(request, template='concierge/dashboard.html'):
 
     to_contact = Customer.objects \
                     .filter(intro_call=False) \
-                    .filter(user__is_active=True) \
+                    .filter(is_active=True) \
                     .exclude(plan__isnull=True) \
                     .select_related('user') \
                     .select_related('user__profile') \
@@ -301,14 +301,14 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
                 customer.save()
 
             if '_activate' in request.POST:
-                customer.user.is_active = True
-                customer.user.save()
+                customer.is_active = True
+                customer.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} activated'.format(customer))
                 return redirect('customer_detail', customer.id)
 
             if '_deactivate' in request.POST:
-                customer.user.is_active = False
-                customer.user.save()
+                customer.is_active = False
+                customer.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} deactivated'.format(customer))
                 return redirect('customer_list')
 
@@ -835,10 +835,10 @@ def customer_data_export(request, template="concierge/customer_export.html"):
         filename = 'All'
 
         if filters['status'] == 'active':
-            customers = customers.filter(user__is_active=True).exclude(plan__isnull=True)
+            customers = customers.filter(is_active=True).exclude(plan__isnull=True)
             filename = 'Active'
         if filters['status'] == 'inactive':
-            customers = customers.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+            customers = customers.filter(Q(is_active=False) | Q(plan__isnull=True))
             filename = 'Inactive'
 
         response = HttpResponse(content_type='text/csv')

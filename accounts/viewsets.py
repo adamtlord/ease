@@ -34,10 +34,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
         active_filter = dt.get('active')
 
         if active_filter == 'True':
-            queryset = queryset.filter(user__is_active=active_filter).exclude(plan__isnull=True)
+            queryset = queryset.filter(is_active=active_filter).exclude(plan__isnull=True)
 
         if active_filter == 'False':
-            queryset = queryset.filter(Q(user__is_active=False) | Q(plan__isnull=True))
+            queryset = queryset.filter(Q(is_active=False) | Q(plan__isnull=True))
 
         # SEARCHING
         search_value = dt.get('search[value]', None)
@@ -58,8 +58,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 # not a real field, it's an annotation only guaranteed to be on this queryset
                 order_param = 'last_ride_at'
 
-            if order_param == 'user.is_active':
-                order_param = 'user__is_active'
+            if order_param == 'is_active':
+                order_param = 'is_active'
             order_dir = '-' if dt.get('order[0][dir]', 'asc') == 'desc' else ''
             order = '{}{}'.format(order_dir, order_param)
 

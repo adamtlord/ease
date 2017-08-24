@@ -74,6 +74,7 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
             'home',
             'home_phone',
             'id',
+            'is_active',
             'known_as',
             'last_ride',
             'mobile_phone',

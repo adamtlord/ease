@@ -41,11 +41,11 @@ class CustomUserManager(BaseUserManager):
 class ActiveCustomersManager(models.Manager):
     def get_queryset(self):
         return super(ActiveCustomersManager, self).get_queryset() \
-            .filter(user__is_active=True) \
+            .filter(is_active=True) \
             .exclude(plan__isnull=True)
 
 
 class InactiveCustomersManager(models.Manager):
     def get_queryset(self):
         return super(InactiveCustomersManager, self).get_queryset() \
-            .filter(Q(user__is_active=False) | Q(plan__isnull=True))
+            .filter(Q(is_active=False) | Q(plan__isnull=True))
