@@ -137,15 +137,16 @@ class CustomUserRegistrationForm(RegistrationForm):
         required=False
     )
 
-    def clean(self):
-        super(RegistrationForm, self).clean()
-        if self.cleaned_data.get('source') == UserProfile.OTHER:
-            self.cleaned_data['source'] = self.cleaned_data['source_other']
+    # def clean(self):
+    #     super(RegistrationForm, self).clean()
+    #     if self.cleaned_data.get('source') == UserProfile.OTHER:
+    #         self.cleaned_data['source'] = self.cleaned_data['source_other']
 
     def save(self, request):
         user = super(RegistrationForm, self).save(request)
         # Store the common profile data.
         user.profile.source = self.cleaned_data['source']
+        user.profile.source_specific = self.cleaned_data['source_other']
         user.profile.phone = self.cleaned_data['phone']
         user.profile.save()
         return user

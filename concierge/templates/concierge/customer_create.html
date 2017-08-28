@@ -86,9 +86,7 @@
             <fieldset>
                 <legend>Marketing Source</legend>
                 {% render_form_field register_form.source %}
-                <div id="source_other" style="display:none;">
-                    {% render_form_field register_form.source_other %}
-                </div>
+                {% render_form_field register_form.source_other %}
             </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary btn-block" value="Create" />

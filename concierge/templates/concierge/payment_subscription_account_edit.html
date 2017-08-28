@@ -98,8 +98,10 @@
                         <a href="" id="cancel_change_card">Cancel</a>
                     </p>
                 </div>
-
-                {% render_form_field payment_form.same_card_for_both %}
+                {% comment always use the same card %}
+                    {% render_form_field payment_form.same_card_for_both %}
+                {% endcomment %}
+                <input type="hidden" name="same_card_for_both" value="1" />
 
                 <div id="coupon_form_group" class="form-group">
                     <label>{{ payment_form.coupon.label }}</label>

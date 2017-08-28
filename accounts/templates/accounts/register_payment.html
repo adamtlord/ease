@@ -101,12 +101,7 @@
                     </div>
                     {% render_form_field payment_form.billing_zip '' 'zip-mask' %}
                 {% endif %}
-                {% if self %}
-                    <input type="hidden" name="same_card_for_both" value="1" />
-                {% endif %}
-                {% if lovedone or gift %}
-                    {% render_form_field payment_form.same_card_for_both %}
-                {% endif %}
+                <input type="hidden" name="same_card_for_both" value="1" />
                 <div id="coupon_form_group" class="form-group">
                     <label>{{ payment_form.coupon.label }}</label>
                     <span class="help-block">Coupon codes are Case-Sensitive</span>
