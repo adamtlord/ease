@@ -192,13 +192,15 @@ def customer_create(request, template='concierge/customer_create.html'):
             # populate and save customer
             new_customer = customer_form.save(commit=False)
             new_customer.user = new_user
-
+            new_customer.registered_by = request.user
             new_customer.save()
+
             # populate and save home address
             home_address = home_form.save(commit=False)
             home_address.name = 'Home'
             home_address.customer = new_customer
             home_address.home = True
+            home_address.added_by = request.user
             home_address.save()
             # populate and save rider info
             rider_data = rider_form.cleaned_data
@@ -743,7 +745,9 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
     if request.method == 'POST':
         activity_form = ActivityForm(request.POST)
         if activity_form.is_valid():
-            activity_form.save()
+            activity = activity_form.save()
+            activity.concierge = request.user
+            activity.save()
             return redirect('customer_detail', customer_id)
         else:
             errors = activity_form.errors
@@ -805,7 +809,7 @@ def customer_upload(request, template="concierge/customer_upload.html"):
         if form.is_valid():
             upload = request.FILES['file_upload']
             if upload:
-                results = create_customers_from_upload(upload)
+                results = create_customers_from_upload(upload, request)
                 request.session['results'] = results
             else:
                 messages.error(request, "No file!")

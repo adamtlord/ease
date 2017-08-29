@@ -254,7 +254,7 @@ def rides_ready_to_bill(request, template="billing/ready_to_bill.html"):
         sorted_rides = sort_rides_by_ride_account(rides_to_bill)
 
         for customer, rides in sorted_rides.items():
-            response = invoice_customer_rides(customer, rides)
+            response = invoice_customer_rides(customer, rides, request)
             success_included += response['success_included']
             success_billed += response['success_billed']
             success_total += response['success_total']

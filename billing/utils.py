@@ -128,7 +128,7 @@ def get_stripe_subscription(customer):
 #         'total': total
 #     }
 
-def invoice_customer_rides(account, customers):
+def invoice_customer_rides(account, customers, request):
 
     from accounts.helpers import send_included_rides_email
 
@@ -168,7 +168,7 @@ def invoice_customer_rides(account, customers):
 
                         success_billed.append(ride.id)
                         success_total += 1
-
+                    ride.invoiced_by = request.user
                     ride.save()
 
                 else:

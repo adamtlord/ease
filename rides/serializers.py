@@ -42,6 +42,7 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
     start = DestinationSerializer()
     destination = DestinationSerializer()
     invoice = InvoiceSerializer()
+    invoiced_by = serializers.SerializerMethodField()
 
     def get_customer(self, obj):
         return dict(
@@ -58,6 +59,12 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
             d = obj.start_date.astimezone(pytz.timezone(obj.start.timezone))
         return formats.date_format(d, "SHORT_DATETIME_FORMAT")
 
+    def get_invoiced_by(self, obj):
+        if obj.invoiced_by:
+            return obj.invoiced_by.full_name
+        else:
+            return None
+
     class Meta:
         model = Ride
         fields = (
@@ -72,6 +79,7 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'included_in_plan',
             'invoice',
+            'invoiced_by',
             'rider',
             'start',
             'start_date',

@@ -26,6 +26,7 @@
             <tr>
                 <th>Type</th>
                 <th>Customer</th>
+                <th>Conciege</th>
                 <th>Date</th>
                 <th>_Date</th>
                 <th width="50%">Notes</th>
@@ -36,6 +37,7 @@
                 <tr>
                     <td>{{ touch.type|title }}</td>
                     <td>{{ touch.customer }}</td>
+                    <td>{{ touch.concierge|default:'' }}</td>
                     <td>{{ touch.date|default:"" }}</td>
                     <td>{{ touch.date|date:"U" }}</td>
                     <td class="small">{{ touch.notes }}</td>

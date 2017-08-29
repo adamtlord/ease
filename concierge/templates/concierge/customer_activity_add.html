@@ -46,6 +46,7 @@
             <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Concierge</th>
                     <th>Type</th>
                     <th>Notes</th>
                 </tr>
@@ -54,6 +55,7 @@
                 {% for touch in touches %}
                     <tr>
                         <td>{{ touch.date|default:"" }}</td>
+                        <td>{{ touch.concierge|default:"" }}</td>
                         <td>{{ touch.type|title }}</td>
                         <td class="small">{{ touch.notes }}</td>
                     </tr>

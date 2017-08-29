@@ -119,6 +119,8 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
                     new_ride.notes = ""
                 new_ride.notes += "({} of {} included rides this cycle)".format(customer.included_rides_this_month + 1, customer.plan.included_rides_per_month)
 
+            new_ride.added_by = request.user
+
             new_ride.save()
 
             if request.POST.get('schedule', None):
@@ -252,6 +254,7 @@ def ride_cancel(request):
             ride = get_object_or_404(Ride, pk=ride_id)
             ride.cancelled = True
             ride.cancelled_reason = cancel_form.cleaned_data['cancel_reason']
+            ride.cancelled_by = request.user
             ride.full_clean()
             ride.save()
             messages.success(request, "Ride cancelled and archived")

@@ -152,7 +152,7 @@ def send_new_customer_email(user):
     )
 
 
-def create_customers_from_upload(uploaded_file):
+def create_customers_from_upload(uploaded_file, request):
     UPLOAD_COLUMNS = (
         ('First'),
         ('Last'),
@@ -226,7 +226,8 @@ def create_customers_from_upload(uploaded_file):
                 residence_type=row[RESIDENCE_COL],
                 plan=plan,
                 group_membership=group,
-                dob=convert_date(row[DOB_COL])
+                dob=convert_date(row[DOB_COL]),
+                registered_by=request.user
             )
 
             customer.full_clean()

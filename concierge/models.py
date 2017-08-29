@@ -4,8 +4,11 @@ from django.db import models
 from django.utils import timezone
 from django.utils import formats
 
+from accounts.models import CustomUser
+
 
 class Touch(models.Model):
+    concierge = models.OneToOneField(CustomUser, blank=True, null=True)
     customer = models.ForeignKey('accounts.Customer', blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     type = models.CharField(max_length=255, null=True, blank=True)

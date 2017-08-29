@@ -23,6 +23,7 @@
                 <th>Fees</th>
                 <th>Total Cost</th>
                 <th>Invoiced On</th>
+                <th>Invoiced By</th>
                 <th>Paid</th>
                 <th>Paid On</th>
                 <th>Company</th>
@@ -93,6 +94,9 @@
                 },
                 { data: 'invoice.invoiced_date',
                   defaultContent: ''
+                },
+                {
+                  data: 'invoiced_by'
                 },
                 { data: 'invoice.paid',
                   render: function(data){

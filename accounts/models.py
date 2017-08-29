@@ -179,30 +179,31 @@ class Customer(Contact):
     )
 
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
-    group_membership = models.ForeignKey('billing.GroupMembership', blank=True, null=True)
     gift_date = models.DateField(blank=True, null=True)
+    group_membership = models.ForeignKey('billing.GroupMembership', blank=True, null=True)
     home_phone = PhoneNumberField(blank=True, null=True)
     intro_call = models.BooleanField(default=False)
+    is_active = models.BooleanField(
+        verbose_name='active',
+        default=True,
+        help_text='Designates whether this customer should be treated as active.'
+    )
     known_as = models.CharField(max_length=50, blank=True, null=True)
     last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
     notes = models.TextField(blank=True, null=True)
     plan = models.ForeignKey(Plan, blank=True, null=True)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
+    preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
+    registered_by = models.OneToOneField(CustomUser, blank=True, null=True, related_name='registered_by')
     residence_instructions = models.TextField(blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')
-    preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
     send_updates = models.BooleanField(default=False)
     special_assistance = models.CharField(max_length=1024, blank=True, null=True)
     spent_to_date = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_customer')
     timezone = models.CharField(max_length=128, blank=True, null=True)
     user = models.OneToOneField(CustomUser)
-    is_active = models.BooleanField(
-        verbose_name='active',
-        default=True,
-        help_text='Designates whether this customer should be treated as active.'
-    )
 
     objects = models.Manager()
     active = ActiveCustomersManager()

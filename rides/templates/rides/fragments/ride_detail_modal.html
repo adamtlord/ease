@@ -7,9 +7,10 @@
 <div class="modal-body">
     {% if ride.cancelled %}
         <span class="label label-danger">DELETED</span>
-        {% if ride.cancelled_reason %}
+        {% if ride.cancelled_reason or ride.cancelled_by %}
             <div class="alert alert-danger">
-                {{ ride.cancelled_reason }}
+                {{ ride.cancelled_by }}: {{ ride.cancelled_reason }}
+
             </div>
         {% endif %}
     {% endif %}
@@ -36,6 +37,12 @@
                     <td>
                         {% if ride.customer.mobile_phone %}{{ ride.customer.mobile_phone }}{% else %}<em>no mobile phone entered</em>{% endif %}
                     </td>
+                </tr>
+            {% endif %}
+            {% if ride.added_by %}
+                <tr>
+                    <th>Scheduled By</th>
+                    <td>{{ ride.added_by }}</td>
                 </tr>
             {% endif %}
             <tr>
@@ -133,6 +140,12 @@
                     <th>Invoice</th>
                     <td><a href="https://dashboard.stripe.com/invoices/{{ ride.invoice.stripe_id }}" target="_blank">{{ ride.invoice.stripe_id }}<a> <i class="fa fa-cc-stripe stripe-brand"></i></td>
                 </tr>
+                {% if ride.invoiced_by %}
+                <tr>
+                    <th>Invoiced By</th>
+                    <td>{{ ride.invoiced_by }}</td>
+                </tr>
+                {% endif %}
                 {% if ride.invoice.invoiced_date %}
                     <tr>
                         <th>Invoice Sent</th>
