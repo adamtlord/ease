@@ -208,11 +208,17 @@
                 {% for ride in customer.rides.all %}
                 <tr>
                     <td>
-                        {% timezone ride.start.timezone %}
+                        {% if ride.start.timezone %}
+                            {% timezone ride.start.timezone %}
+                                {% if ride.cancelled %}<strike>{% endif %}
+                                {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}
+                                {% if ride.cancelled %}</strike>{% endif %}
+                            {% endtimezone %}
+                        {% else %}
                             {% if ride.cancelled %}<strike>{% endif %}
                             {{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}
                             {% if ride.cancelled %}</strike>{% endif %}
-                        {% endtimezone %}
+                        {% endif %}
                     </td>
                     <td>{{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>

@@ -98,7 +98,7 @@
                     </p>
                 </div>
 
-                {% render_form_field payment_form.same_card_for_both %}
+                {{ payment_form.same_card_for_both.as_hidden }}
             </fieldset>
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
