@@ -15,7 +15,7 @@ from billing.models import Invoice
 
 
 class Destination(Location):
-    added_by = models.OneToOneField('accounts.CustomUser', blank=True, null=True)
+    added_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True)
     customer = models.ForeignKey('accounts.Customer')
     home = models.BooleanField(default=False)
     included_in_plan = models.BooleanField(default=False)
@@ -119,10 +119,10 @@ class Destination(Location):
 
 
 class Ride(models.Model):
-    added_by = models.OneToOneField('accounts.CustomUser', blank=True, null=True, related_name='added_by')
+    added_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='added_by')
     arrive_fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
     cancelled = models.BooleanField(default=False)
-    cancelled_by = models.OneToOneField('accounts.CustomUser', blank=True, null=True, related_name='cancelled_by')
+    cancelled_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='cancelled_by')
     cancelled_reason = models.CharField(max_length=256, blank=True, null=True)
     company = models.CharField(max_length=64, blank=True, null=True, choices=COMPANIES)
     complete = models.BooleanField(default=False)
@@ -138,7 +138,7 @@ class Ride(models.Model):
     invoice = models.ForeignKey(Invoice, related_name="rides", blank=True, null=True)
     invoice_item_id = models.CharField(max_length=64, blank=True, null=True)
     invoiced = models.BooleanField(default=False)
-    invoiced_by = models.OneToOneField('accounts.CustomUser', blank=True, null=True, related_name='invoiced_by')
+    invoiced_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='invoiced_by')
     notes = models.TextField(blank=True, null=True)
     request_time = models.DateTimeField(blank=True, null=True)
     rider = models.CharField(max_length=128, blank=True, null=True)

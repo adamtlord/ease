@@ -130,6 +130,9 @@
                     </p>
                 {% endif %}
             </div>
+            {% if ride.added_by %}
+                <p>Started by {{ ride.added_by }}</p>
+            {% endif %}
         </div>
     </div>
 

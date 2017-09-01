@@ -40,7 +40,11 @@
     {% endwith %}
     {% for destination in customer.destinations %}
         <tr>
-            <td>{{ destination.fullname }}</td>
+            <td>{{ destination.fullname }}
+                {% if destination.added_by %}
+                    <br><em class="small">added by {{ destination.added_by }}</em>
+                {% endif %}
+            </td>
             <td>
                 {% if destination.street1 %}
                     {{ destination.street1 }}<br>

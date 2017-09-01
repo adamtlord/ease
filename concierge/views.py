@@ -400,6 +400,7 @@ def customer_destination_add(request, customer_id, template='concierge/destinati
 
             new_destination = destination_form.save(commit=False)
             new_destination.customer = customer
+            new_destination.added_by = request.user
             new_destination.save()
 
             messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))

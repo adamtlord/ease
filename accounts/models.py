@@ -194,7 +194,7 @@ class Customer(Contact):
     plan = models.ForeignKey(Plan, blank=True, null=True)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
     preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
-    registered_by = models.OneToOneField(CustomUser, blank=True, null=True, related_name='registered_by')
+    registered_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name='registered_by')
     residence_instructions = models.TextField(blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=SINGLE_FAMILY_HOME)
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_customer')

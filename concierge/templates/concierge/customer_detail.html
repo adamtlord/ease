@@ -226,6 +226,12 @@
                         <td>Customer Since:</td>
                         <td>{{ customer.user.date_joined|date:"DATE_FORMAT" }}</td>
                     </tr>
+                    {% if customer.registered_by %}
+                        <tr>
+                            <td>Registered By:</td>
+                            <td>{{ customer.registered_by }}</td>
+                        </tr>
+                    {% endif %}
                     {% if customer.user.profile.source %}
                         <tr>
                             <td>Marketing source</td>
