@@ -279,7 +279,7 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
     if request.method == "POST":
         customer_form = CustomerForm(request.POST, prefix='cust', instance=customer)
         account_holder_form = AccountHolderForm(request.POST, prefix='user', instance=customer.user)
-        home_form = HomeForm(request.POST, prefix='home', instance=home)
+        home_form = HomeForm(request.POST, prefix='home', instance=home, customer=customer)
         rider_formset = RiderFormSet(request.POST, instance=customer)
 
         if all([customer_form.is_valid(),
@@ -331,7 +331,7 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
                 'source': customer.user.profile.source,
                 'source_specific': customer.user.profile.source_specific
             })
-        home_form = HomeForm(instance=customer.home, prefix='home')
+        home_form = HomeForm(instance=customer.home, prefix='home', customer=customer)
         rider_formset = RiderFormSet(instance=customer)
 
     d = {
