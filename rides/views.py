@@ -1,5 +1,6 @@
 import pytz
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_POST
@@ -111,6 +112,13 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
                             included = True
 
             new_ride.included_in_plan = included
+
+            # Figure out if this ride is outside regular hours and add a fee
+            tz = pytz.timezone(settings.TIME_ZONE)
+            concierge_start_time = new_ride.start_date.astimezone(tz)
+            if not settings.ARRIVE_BUSINESS_HOURS[0] <= concierge_start_time.hour < settings.ARRIVE_BUSINESS_HOURS[1]:
+                new_ride.fees = new_ride.fees or 0
+                new_ride.fees += settings.ARRIVE_AFTER_HOURS_FEE
 
             if included:
                 if new_ride.notes:
