@@ -4,7 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from accounts.models import Customer
-from rides.models import Destination, Ride
+from rides.models import Destination, Ride, RideConfirmation
 
 HOME_FIELDS = [
     'name',
@@ -224,3 +224,10 @@ class CancelRideForm(forms.Form):
         label="Why are you deleting this ride?",
         help_text="(Do not delete this ride if you need to charge the customer a cancellation fee)"
     )
+
+
+class ConfirmRideForm(forms.ModelForm):
+    class Meta:
+        model = RideConfirmation
+        fields = '__all__'
+

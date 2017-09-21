@@ -6,6 +6,14 @@
 {% block customer_content %}
 
 <h3>Ride ID: {{ ride.id }}</h3>
+{% if ride.confirmation_required %}
+    <div class="alert alert-warning">
+        <p>Please confirm</p>
+        {% for field in confirmation_form %}
+            {% render_form_field field %}
+        {% endfor %}
+    </div>
+{% endif %}
 {% if ride.cancelled %}
     <span class="label label-danger">DELETED</span>
     {% if ride.cancelled_reason %}

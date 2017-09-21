@@ -11,7 +11,7 @@ from django.urls import reverse
 from accounts.models import Customer
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm, CancelRideForm
+from rides.forms import StartRideForm, RideForm, CancelRideForm, ConfirmRideForm
 from rides.models import Ride
 
 
@@ -192,6 +192,12 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     cancel_form = CancelRideForm(initial={
         'ride_id': ride_id,
         'next_url': reverse('customer_detail', args=[customer.id])})
+
+    confirmation_form = ConfirmRideForm(initial={
+        'ride': ride,
+        'confirmed_by': request.user
+    })
+
     errors = {}
 
     if request.method == 'GET':
@@ -219,6 +225,7 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
         'ride': ride,
         'form': form,
         'cancel_form': cancel_form,
+        'confirmation_form': confirmation_form,
         'ride_page': True,
         'errors': errors
     }
