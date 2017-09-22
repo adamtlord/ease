@@ -9,6 +9,7 @@ from django.utils import timezone, formats
 from django.urls import reverse
 
 from accounts.models import Customer
+from billing.models import Plan
 from common.utils import get_distance
 from concierge.forms import DestinationForm
 from rides.forms import StartRideForm, RideForm, CancelRideForm, ConfirmRideForm
@@ -114,11 +115,12 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             new_ride.included_in_plan = included
 
             # Figure out if this ride is outside regular hours and add a fee
-            tz = pytz.timezone(settings.TIME_ZONE)
-            concierge_start_time = new_ride.start_date.astimezone(tz)
-            if not settings.ARRIVE_BUSINESS_HOURS[0] <= concierge_start_time.hour < settings.ARRIVE_BUSINESS_HOURS[1]:
-                new_ride.fees = new_ride.fees or 0
-                new_ride.fees += settings.ARRIVE_AFTER_HOURS_FEE
+            if customer.plan_id is Plan.DEFAULT:
+                tz = pytz.timezone(settings.TIME_ZONE)
+                concierge_start_time = new_ride.start_date.astimezone(tz)
+                if not settings.ARRIVE_BUSINESS_HOURS[0] <= concierge_start_time.hour < settings.ARRIVE_BUSINESS_HOURS[1]:
+                    new_ride.fees = new_ride.fees or 0
+                    new_ride.fees += settings.ARRIVE_AFTER_HOURS_FEE
 
             if included:
                 if new_ride.notes:

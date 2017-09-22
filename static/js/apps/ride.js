@@ -10,6 +10,8 @@ $(function(){
         startView: 2,
         todayHighlight: true,
         weekStart: 0,
+    }).on('changeDate', function(){
+        $('#schedule_ride_modal input[name="schedule"]').removeAttr('disabled');
     });
     $('#id_start, #id_destination').select2({
         theme: 'bootstrap'
