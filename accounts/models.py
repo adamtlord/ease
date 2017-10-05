@@ -241,6 +241,13 @@ class Customer(Contact):
     def last_ride_dt(self):
         return self.last_ride.start_date
 
+    @property
+    def status(self):
+        if self.is_active:
+            return 'active'
+        else:
+            return 'inactive'
+
     def get_rides_this_month(self):
         if self.plan:
             try:

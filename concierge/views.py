@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
+from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
@@ -850,6 +850,41 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
         writer = csv.writer(response)
 
+        if filters['type'] == 'combined':
+            filename += ' Customers (combined)'
+            writer.writerow([
+                'Customer Email',
+                'Customer Full Name',
+                'Account Status',
+                'Date Registered',
+                'Customer Home Phone',
+                'Customer Mobile Phone',
+                'Account Mgr Full Name',
+                'Account Mgr Email',
+                'Account Mgr Phone',
+                'Rider Name',
+                'Rider Phone',
+                'City',
+                'State'
+            ])
+
+            for customer in customers:
+                writer.writerow([
+                                customer.email,
+                                customer.full_name,
+                                customer.status,
+                                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                customer.user.full_name,
+                                user_email(customer),
+                                customer.user.profile.phone,
+                                rider_names(customer),
+                                rider_phones(customer),
+                                get_city(customer),
+                                get_state(customer)
+                                ])
+
         if filters['type'] == 'customer':
             filename += ' Customers'
             writer.writerow([
@@ -1012,6 +1047,14 @@ def rider_phones(customer):
         numbers.append(rider.mobile_phone)
 
     return ' '.join(numbers)
+
+
+def rider_names(customer):
+    names = []
+    riders = customer.riders.all()
+    for rider in riders:
+        names.append(rider.full_name)
+    return ', '.join(names)
 
 
 def user_email(customer):
