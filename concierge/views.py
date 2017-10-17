@@ -854,35 +854,43 @@ def customer_data_export(request, template="concierge/customer_export.html"):
             filename += ' Customers (combined)'
             writer.writerow([
                 'Customer Email',
-                'Customer Full Name',
+                'Customer First Name',
+                'Customer Last Name',
                 'Account Status',
+                'Plan Type',
                 'Date Registered',
                 'Customer Home Phone',
                 'Customer Mobile Phone',
-                'Account Mgr Full Name',
+                'Account Mgr First Name',
+                'Account Mgr Last Name',
                 'Account Mgr Email',
                 'Account Mgr Phone',
                 'Rider Name',
                 'Rider Phone',
                 'City',
-                'State'
+                'State',
+                'Zip'
             ])
 
             for customer in customers:
                 writer.writerow([
                                 customer.email,
-                                customer.full_name,
+                                customer.first_name,
+                                customer.last_name,
                                 customer.status,
+                                customer.plan,
                                 formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
                                 customer.home_phone,
                                 customer.mobile_phone,
-                                customer.user.full_name,
+                                customer.user.first_name,
+                                customer.user.last_name,
                                 user_email(customer),
                                 customer.user.profile.phone,
                                 rider_names(customer),
                                 rider_phones(customer),
                                 get_city(customer),
-                                get_state(customer)
+                                get_state(customer),
+                                get_zip(customer)
                                 ])
 
         if filters['type'] == 'customer':
@@ -1072,4 +1080,10 @@ def get_city(customer):
 def get_state(customer):
     if customer.home and customer.home.state:
         return customer.home.state
+    return ''
+
+
+def get_zip(customer):
+    if customer.home and customer.home.zip_code:
+        return customer.home.zip_code
     return ''
