@@ -54,11 +54,12 @@
                         {% endif %}
                     </td>
                     <td>{% if ride.cost %}${{ ride.cost|default:'0' }}{% endif %}</td>
-                    <td>{% if ride.invoiced or ride.total_cost %}
-                            {% if ride.total_fees %}${{ ride.total_fees|default:'0' }}{% endif %}
+                    <td>{% if ride.total_fees_estimate %}
+                            ${{ ride.total_fees_estimate }}
                         {% else %}
-                            {% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
+                            --
                         {% endif %}
+                    </td>
                     <td>{% if ride.invoiced or ride.total_cost %}
                             ${{ ride.total_cost|default:'0' }}
                         {% else %}
