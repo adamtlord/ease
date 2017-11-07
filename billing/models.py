@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 from localflavor.us.models import USZipCodeField
@@ -63,6 +64,7 @@ class StripeCustomer(models.Model):
     stripe_id = models.CharField(max_length=255)
     last_4_digits = models.CharField(max_length=4)
     billing_zip = USZipCodeField(blank=True, null=True, verbose_name="Billing zip code")
+    balance = models.ForeignKey('billing.Balance', blank=True, null=True)
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
@@ -107,3 +109,11 @@ class GroupMembership(AbstractEnumModel):
 
     def __unicode__(self):
         return self.display_name
+
+
+class Balance(models.Model):
+    user_created = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, related_name='balance_user_created')
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    user_updated = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, null=True, related_name='balance_user_updated')
+    date_updated = models.DateTimeField(auto_now=True, null=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
