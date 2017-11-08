@@ -141,22 +141,13 @@ class StartRideForm(forms.ModelForm):
         model = Ride
         fields = START_RIDE_FIELDS
 
-    def rider_choices(self, customer):
-        choices = [
-            (customer.full_name, customer.full_name),
-        ]
-        for rider in customer.riders.all():
-            choices.append(
-                (rider.full_name, rider.full_name)
-            )
-        return choices
-
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop('customer')
         super(StartRideForm, self).__init__(*args, **kwargs)
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
         self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
+        self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
@@ -192,16 +183,6 @@ class RideForm(forms.ModelForm):
         model = Ride
         fields = EDIT_RIDE_FIELDS + ['complete', 'included_in_plan']
 
-    def rider_choices(self, customer):
-        choices = [
-            (customer.full_name, customer.full_name),
-        ]
-        for rider in customer.riders.all():
-            choices.append(
-                (rider.full_name, rider.full_name)
-            )
-        return choices
-
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop('customer')
         super(RideForm, self).__init__(*args, **kwargs)
@@ -210,6 +191,7 @@ class RideForm(forms.ModelForm):
         self.fields['notes'].widget.attrs['rows'] = 4
         self.fields['rider'].choices = self.rider_choices(customer)
         self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
+        self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         for field in START_RIDE_FIELDS:
