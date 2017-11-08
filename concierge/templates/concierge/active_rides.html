@@ -33,6 +33,9 @@
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
                         {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
+                        <!-- TODO: Remove this after transition -->
+                        {% if ride.rider and ride.rider != ride.customer.full_name %}<br><strong>Rider:</strong> {{ ride.rider }}{% endif %}
+                        <!-- end todo -->
                     </td>
                     <td>
                         {% if ride.start.timezone %}
