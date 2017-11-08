@@ -89,6 +89,7 @@ RIDER_FIELDS = [
     'first_name',
     'last_name',
     'mobile_phone',
+    'notes',
     'customer'
 ]
 
@@ -320,6 +321,7 @@ class RiderForm(forms.ModelForm):
     last_name = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    notes = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
     class Meta:
         model = Rider

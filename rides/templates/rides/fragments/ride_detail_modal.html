@@ -19,7 +19,11 @@
             {% if ride.rider and ride.rider != ride.customer.full_name %}
                 <tr>
                     <th>Rider</th>
-                    <td>{{ ride.rider }}</td>
+                    <td>{{ ride.rider.first_name }}
+                        {% if ride.rider.email %}<br>{{ ride.rider.email }}{% endif %}
+                        {% if ride.rider.mobile_phone %}<br>{{ ride.rider.mobile_phone }}{% endif %}
+                        {% if ride.rider.notes %}<br><small>{{ ride.rider.notes }}</small>{% endif %}
+                    </td>
                 </tr>
             {% else %}
                 <tr>

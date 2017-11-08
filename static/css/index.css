@@ -7875,6 +7875,12 @@ a.phone-numbers i:focus {
 .portal .static-map .error {
   display: none;
 }
+span.highlight {
+  padding: 2px 4px;
+}
+span.highlight.highlight-warning {
+  background-color: #FFFAE7;
+}
 .select2-container--bootstrap {
   display: block;
   /*------------------------------------*\

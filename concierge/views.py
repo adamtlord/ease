@@ -16,7 +16,7 @@ from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload
+from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload, send_new_customer_email
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership
 from billing.forms import StripeCustomerForm, AdminPaymentForm
@@ -80,7 +80,8 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
 
     d = {
         'rides': rides,
-        'upcoming_page': True
+        'upcoming_page': True,
+        'active_count': Ride.active.count()
     }
 
     return render(request, template, d)
@@ -94,15 +95,13 @@ def active_rides(request, template='concierge/active_rides.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.filter(start_date__lte=timezone.now()) \
-                        .exclude(complete=True) \
-                        .exclude(cancelled=True) \
-                        .order_by('start_date') \
-                        .select_related('destination') \
-                        .select_related('start') \
-                        .prefetch_related('customer') \
-                        .prefetch_related('customer__user') \
-                        .prefetch_related('customer__user__profile') \
+    rides = Ride.active \
+                .order_by('start_date') \
+                .select_related('destination') \
+                .select_related('start') \
+                .prefetch_related('customer') \
+                .prefetch_related('customer__user') \
+                .prefetch_related('customer__user__profile') \
 
     for ride in rides:
         if ride.customer.last_ride.destination == ride.customer.home:
@@ -112,7 +111,8 @@ def active_rides(request, template='concierge/active_rides.html'):
 
     d = {
         'rides': rides,
-        'active_page': True
+        'active_page': True,
+        'active_count': rides.count()
     }
 
     return render(request, template, d)
@@ -130,7 +130,8 @@ def rides_history(request, template='concierge/rides_history.html'):
 
     d = {
         'rides': rides,
-        'history_page': True
+        'history_page': True,
+        'active_count': Ride.active.count()
     }
     return render(request, template, d)
 
@@ -215,7 +216,7 @@ def customer_create(request, template='concierge/customer_create.html'):
             new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 
-            send_welcome_email(new_user)
+            send_new_customer_email(new_user)
 
             return redirect('customer_detail', new_customer.id)
 

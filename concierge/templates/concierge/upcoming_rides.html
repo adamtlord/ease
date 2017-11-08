@@ -6,7 +6,7 @@
 {% block page_title %}Upcoming Rides{% endblock page_title %}
 
 {% block rides_content %}
-<p>Showing rides scheduled in the next seven days.</p>
+<p>Showing rides scheduled in the next seven days. <span class="highlight highlight-warning">Rides happening today are highlighted.</span></p>
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -27,7 +27,7 @@
         </thead>
         <tbody>
             {% for ride in rides %}
-                <tr>
+                <tr{% if ride.is_today %} class="warning"{% endif %}>
                     <td>{{ ride.id }}</td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>

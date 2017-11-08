@@ -142,7 +142,10 @@
                             <td>Riders</td>
                             <td>
                                 {% for rider in riders %}
-                                    <a href="#rider_modal_{{ rider.id }}" data-toggle="modal">{{ rider.first_name }} {{ rider.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                                    <p>{{ rider.first_name }} {{ rider.last_name }}
+                                    {% if rider.email %}<br>{{ rider.email }}{% endif %}
+                                    {% if rider.mobile_phone %}<br>{{ rider.mobile_phone }}{% endif %}
+                                    {% if rider.notes %}<br><small>{{ rider.notes }}</small>{% endif %}</p>
                                 {% endfor %}
                             </td>
                         </tr>
@@ -281,24 +284,6 @@
                         {% if lovedone.street1 %}<br>H: {{ lovedone.street1 }}{% endif %}
                         {% if lovedone.street2 %}<br>H: {{ lovedone.street2 }}{% endif %}
                         <br>{% if lovedone.city %}{{ lovedone.city }}, {% endif %}{% if lovedone.state %}{{ lovedone.state }}{% endif %}{% if lovedone.zip_code %}{{ lovedone.zip_code }}{% endif %}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-{% endif %}
-{% if riders %}
-    {% for rider in riders %}
-        <div id="rider_modal_{{ rider.id }}" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {{ rider.first_name }} {{ rider.last_name }}
-                        {% if rider.email %}<br>{{ rider.email }}{% endif %}
-                        {% if rider.mobile_phone %}<br>{{ rider.mobile_phone }}{% endif %}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
