@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 
 class RidesInProgressManager(models.Manager):
@@ -18,4 +19,13 @@ class RidesReadyToBillManager(models.Manager):
 
 class RidesIncompleteManager(models.Manager):
     def get_queryset(self):
-        return super(RidesIncompleteManager, self).get_queryset().filter(Q(cost__isnull=True) | Q(complete=False) | Q(distance__isnull=True))
+        return super(RidesIncompleteManager, self).get_queryset() \
+            .filter(Q(cost__isnull=True) | Q(complete=False) | Q(distance__isnull=True))
+
+
+class ActiveRidesManager(models.Manager):
+    def get_queryset(self):
+        return super(ActiveRidesManager, self).get_queryset() \
+            .filter(start_date__lte=timezone.now()) \
+            .exclude(complete=True) \
+            .exclude(cancelled=True)

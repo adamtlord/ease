@@ -16,10 +16,14 @@
     {% endif %}
     <table class="table table-striped">
         <tbody>
-            {% if ride.rider and ride.rider != ride.customer.full_name %}
+            {% if ride.rider_link %}
                 <tr>
                     <th>Rider</th>
-                    <td>{{ ride.rider }}</td>
+                    <td>{{ ride.rider_link }}
+                        {% if ride.rider_link.email %}<br>{{ ride.rider_link.email }}{% endif %}
+                        {% if ride.rider_link.mobile_phone %}<br>{{ ride.rider_link.mobile_phone }}{% endif %}
+                        {% if ride.rider_link.notes %}<br><small>{{ ride.rider_link.notes }}</small>{% endif %}
+                    </td>
                 </tr>
             {% else %}
                 <tr>

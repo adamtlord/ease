@@ -35,7 +35,7 @@
                     </td>
                     <td>{{ ride.start.fullname|default:'--' }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname|default:'--' }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
-                    <td>{{ ride.rider|default:'' }}</td>
+                    <td>{{ ride.rider_link|default:'' }}</td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                     <td>{{ ride.start_date|date:"U" }}</td>
                     {% if ride.start.timezone %}

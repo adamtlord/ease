@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -9,7 +10,7 @@ from django.utils.functional import cached_property
 from common.models import Location
 from common.utils import geocode_address, get_timezone
 
-from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
+from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager, ActiveRidesManager
 from rides.const import COMPANIES, UBER, LYFT
 from billing.models import Invoice
 
@@ -142,6 +143,7 @@ class Ride(models.Model):
     notes = models.TextField(blank=True, null=True)
     request_time = models.DateTimeField(blank=True, null=True)
     rider = models.CharField(max_length=128, blank=True, null=True)
+    rider_link = models.ForeignKey('accounts.Rider', blank=True, null=True)
     start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point', on_delete=models.SET_NULL, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
@@ -150,6 +152,7 @@ class Ride(models.Model):
     in_progress = RidesInProgressManager()
     ready_to_bill = RidesReadyToBillManager()
     incomplete = RidesIncompleteManager()
+    active = ActiveRidesManager()
 
     class Meta:
         ordering = ['-start_date']
@@ -215,6 +218,13 @@ class Ride(models.Model):
         if group.includes_arrive_fee:
             cost += group.plan.arrive_fee
         return cost
+
+    @property
+    def is_today(self):
+        tz = pytz.timezone(settings.TIME_ZONE)
+        today = timezone.now().astimezone(tz)
+        start_date = self.start_date.astimezone(tz)
+        return start_date.date() == today.date()
 
     def __unicode__(self):
         if self.start:

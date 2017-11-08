@@ -374,6 +374,7 @@ class Rider(Contact):
     customer = models.ForeignKey(Customer, related_name="riders")
     relationship = models.CharField(max_length=100, blank=True, null=True)
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
+    notes = models.TextField(blank=True, null=True)
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
