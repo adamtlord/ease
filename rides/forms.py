@@ -3,7 +3,7 @@ from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 
-from accounts.models import Customer
+from accounts.models import Customer, Rider
 from rides.models import Destination, Ride
 
 HOME_FIELDS = [
@@ -25,7 +25,7 @@ START_RIDE_FIELDS = [
     'start',
     'destination',
     'start_date',
-    'rider'
+    'rider_link'
 ]
 
 EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
@@ -131,9 +131,9 @@ class StartRideForm(forms.ModelForm):
         required=False
     )
     start_date = forms.DateTimeField(required=False)
-    rider = forms.ChoiceField(
+    rider_link = forms.ModelChoiceField(
         label="Who is riding?",
-        choices=[],
+        queryset=Rider.objects.none(),
         required=False
     )
 
@@ -156,7 +156,7 @@ class StartRideForm(forms.ModelForm):
         super(StartRideForm, self).__init__(*args, **kwargs)
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
-        self.fields['rider'].choices = self.rider_choices(customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
@@ -182,9 +182,9 @@ class RideForm(forms.ModelForm):
         label="Additional fees",
         help_text="Use for cancellation fees or surcharges, NOT for the standard Arrive fee!"
     )
-    rider = forms.ChoiceField(
+    rider_link = forms.ModelChoiceField(
         label="Who is riding?",
-        choices=[],
+        queryset=Rider.objects.none(),
         required=False
     )
 
@@ -209,6 +209,7 @@ class RideForm(forms.ModelForm):
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
         self.fields['notes'].widget.attrs['rows'] = 4
         self.fields['rider'].choices = self.rider_choices(customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         for field in START_RIDE_FIELDS:
