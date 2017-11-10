@@ -868,6 +868,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Account Mgr Phone',
                 'Rider Name',
                 'Rider Phone',
+                'Street 1',
+                'Street 2',
+                'Unit',
                 'City',
                 'State',
                 'Zip'
@@ -889,6 +892,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 customer.user.profile.phone,
                                 rider_names(customer),
                                 rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
                                 get_city(customer),
                                 get_state(customer),
                                 get_zip(customer)
@@ -905,6 +911,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Mobile Phone',
                 'User Phone',
                 'Loved One Phones',
+                'Street 1',
+                'Street 2',
+                'Unit',
                 'City',
                 'State'
             ])
@@ -919,6 +928,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 customer.mobile_phone,
                                 customer.user.profile.phone,
                                 rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
                                 get_city(customer),
                                 get_state(customer)
                                 ])
@@ -1069,6 +1081,23 @@ def rider_names(customer):
 def user_email(customer):
     if customer.user.email and customer.user.email != customer.email:
         return customer.user.email
+    return ''
+
+
+def get_street1(customer):
+    if customer.home and customer.home.street1:
+        return customer.home.street1
+    return ''
+
+
+def get_street2(customer):
+    if customer.home and customer.home.street2:
+        return customer.home.street2
+    return ''
+
+def get_unit(customer):
+    if customer.home and customer.home.unit:
+        return customer.home.unit
     return ''
 
 
