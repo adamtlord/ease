@@ -20,7 +20,7 @@ ROOT_URLCONF = 'ease.urls'
 # normal working hours: (start, end)
 ARRIVE_BUSINESS_HOURS = (9, 18)
 # fee for rides outside normal working hours, in dollars
-ARRIVE_AFTER_HOURS_FEE = 7
+ARRIVE_AFTER_HOURS_FEE = 7.00
 
 DEBUG = False
 IS_DEV = False

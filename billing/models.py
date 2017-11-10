@@ -37,6 +37,7 @@ class Plan(AbstractEnumModel):
     signup_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=6, help_text="A one-time fee charged on signup. Not required.")
     arrive_fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=6, help_text="The Arrive surcharge added to rides not included in the plan, in dollars.")
     stripe_id = models.CharField(blank=True, null=True, max_length=128)
+    after_hours_fee = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=6, default=settings.ARRIVE_AFTER_HOURS_FEE, help_text="The surcharge added to rides scheduled outside business hours.")
 
     def is_active(self):
         return self.active
