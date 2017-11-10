@@ -103,7 +103,9 @@
                 </div>
             {% endif %}
             {{ form.end_date.as_hidden }}
-            {% render_form_field form.rider_link %}
+            {% if customer.riders.all %}
+                {% render_form_field form.rider_link %}
+            {% endif %}
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
             {% render_form_field form.company %}
