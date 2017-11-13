@@ -259,6 +259,11 @@
                     Enter Activity
                 </a>
             </p>
+            <p>
+                <a href="{% url 'customer_add_funds' customer.id %}" class="btn btn-secondary btn-block">
+                    Add Funds
+                </a>
+            </p>
             {% if not customer.ready_to_ride %}
                 <p class="alert alert-danger">
                 {% for missing in customer.missing %}

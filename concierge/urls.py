@@ -16,6 +16,7 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              customer_activate,
                              concierge_settings,
                              customer_data_export,
+                             customer_add_funds,
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -51,6 +52,8 @@ urlpatterns = [
 
     url(r'^customers/(?P<customer_id>\d+)/payment/subscription/$', payment_subscription_account_edit, name='payment_subscription_account_edit'),
     url(r'^customers/(?P<customer_id>\d+)/payment/ride/$', payment_ride_account_edit, name='payment_ride_account_edit'),
+
+    url(r'^customers/(?P<customer_id>\d+)/add-funds/$', customer_add_funds, name='customer_add_funds'),
 
 
 

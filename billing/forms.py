@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from billing.models import StripeCustomer, Plan, GroupMembership
+from billing.models import StripeCustomer, Plan, GroupMembership, Gift
 
 
 STRIPE_CUSTOMER_FIELDS = [
@@ -44,9 +44,19 @@ class StripeCustomerForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'email', 'last_4_digits', 'billing_zip']
 
     def __init__(self, *args, **kwargs):
+        unrequire = kwargs.pop('unrequire', False)
+        print 'unrequire?'
+        print unrequire
         super(StripeCustomerForm, self).__init__(*args, **kwargs)
         for field in STRIPE_CUSTOMER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
+        if unrequire:
+            for field in self.Meta.fields:
+                print field
+                self.fields[field].required = False
+                print self.fields[field].required
+                print
+
 
 
 class PaymentForm(StripeCustomerForm):
@@ -113,6 +123,17 @@ class AdminPaymentForm(StripeCustomerForm):
     def __init__(self, *args, **kwargs):
         super(AdminPaymentForm, self).__init__(*args, **kwargs)
         for field in STRIPE_CUSTOMER_FIELDS + ['plan', 'same_card_for_both', 'coupon']:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class GiftForm(forms.ModelForm):
+    class Meta:
+        model = Gift
+        fields = ['first_name', 'last_name', 'relationship', 'gift_date']
+
+    def __init__(self, *args, **kwargs):
+        super(GiftForm, self).__init__(*args, **kwargs)
+        for field in self.Meta.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 

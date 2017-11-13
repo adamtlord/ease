@@ -10613,6 +10613,9 @@ fieldset[disabled] .plan-buttons label.active:focus.focus {
   margin-bottom: 0;
   margin-top: 10px;
 }
+#payment_form .expiry-inline {
+  margin-bottom: 15px;
+}
 #customer_search {
   margin-bottom: 44px;
 }

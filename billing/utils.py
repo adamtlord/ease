@@ -1,11 +1,12 @@
 import datetime
 import pytz
 import stripe
+from itertools import chain
 
 from django.core.cache import cache
 from django.utils import timezone
 
-from billing.models import Invoice
+from billing.models import Invoice, StripeCustomer
 
 
 def datetime_from_timestamp(timestamp):
@@ -38,6 +39,16 @@ def get_stripe_subscription(customer):
         return subscription
     return None
 
+
+def get_customer_stripe_accounts(customer):
+    subscription_account = customer.subscription_account
+    ride_account = customer.ride_account
+    other_accounts = StripeCustomer.objects.filter(customer=customer)
+    all_accounts = list(other_accounts)
+    all_accounts.append(subscription_account)
+    if subscription_account != ride_account:
+        all_accounts.append(ride_account)
+    return all_accounts
 
 # def invoice_customer_rides(customer, rides):
 
