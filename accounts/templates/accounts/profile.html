@@ -68,6 +68,12 @@
     </div>
     <div class="col-sm-6">
         <h3 class="m-t-0">Payment Information</h3>
+        {% if customer.balance %}
+            Account Balance: <strong class="{% if customer.balance.is_low %}text-danger{% endif %}">${{ customer.balance.amount }}</strong><br>
+            <a href="{% url 'profile_add_funds' %}">Add Funds</a>
+        {% else %}
+            <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
+        {% endif %}
         <table class="table table-striped">
             <tbody>
                 {% if not customer.plan.is_default %}

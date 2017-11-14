@@ -16,9 +16,9 @@ from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUs
                             CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm,
                             LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
-from billing.models import Plan, Balance
+from billing.models import Plan, Balance, StripeCustomer
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
-from billing.utils import get_stripe_subscription
+from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
 from concierge.models import Touch
 from rides.models import Destination
@@ -492,7 +492,9 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
         customer_form = CustomerForm(prefix='cust', is_self=False)
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
+
     else:
+
         register_form = CustomUserRegistrationForm(request.POST, prefix='reg')
         customer_form = CustomerForm(request.POST, prefix='cust', is_self=False)
         home_form = HomeForm(request.POST, prefix='home')
@@ -534,10 +536,11 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
             authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
             auth.login(request, authenticated_user)
 
-            if gift:
-                return redirect('register_lovedone_gift_payment')
+            if request.session.get('gift', False):
+                return redirect('register_add_funds')
             else:
                 return redirect('register_lovedone_payment')
+
         else:
             errors = [register_form.errors, customer_form.errors, home_form.errors, rider_form.errors]
             error_count = sum([len(d) for d in errors])
@@ -869,7 +872,7 @@ def profile(request, template='accounts/profile.html'):
 
     if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
-    elif customer.group_membership:
+    elif customer.group_membership or customer.balance:
         subscription = None
     else:
         return redirect('register_payment_redirect')
@@ -942,6 +945,166 @@ def profile_edit(request, template='accounts/profile_edit.html'):
         'rider_form': rider_form,
         'errors': errors
         }
+    return render(request, template, d)
+
+
+@login_required
+def profile_add_funds(request, template='accounts/profile_add_funds.html'):
+    user = request.user
+
+    if user.is_staff:
+        return redirect('dashboard')
+
+    customer = user.get_customer()
+    customer_stripe_accounts = get_customer_stripe_accounts(customer)
+    errors = {}
+    card_errors = None
+
+    if request.method == 'POST':
+        payment_form = StripeCustomerForm(request.POST, unrequire=request.POST['funds_source'] != "new")
+        gift_form = GiftForm(request.POST, prefix="gift")
+
+        if all([
+                payment_form.is_valid(),
+                gift_form.is_valid(),
+                request.POST.get('amount', False)]):
+
+            try:
+                # Add a new credit card/Stripe customer
+                if request.POST['funds_source'] == "new":
+                    # create new stripe customer
+                    create_stripe_customer = stripe.Customer.create(
+                        description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                        email=payment_form.cleaned_data['email'],
+                        source=payment_form.cleaned_data['stripe_token'],
+                        metadata={
+                            'customer': '{} {}'.format(customer.full_name, customer.pk)
+                        },
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                    )
+
+                    if create_stripe_customer:
+                        # new stripe customer created successfully
+                        new_stripe_customer = payment_form.save()
+                        new_stripe_customer.stripe_id = create_stripe_customer.id
+                        new_stripe_customer.customer = customer
+                        new_stripe_customer.save()
+                        # use the newly-created stripe customer id for the charge
+                        stripe_customer = new_stripe_customer
+
+                # charge a card/Stripe customer on file
+                else:
+                    stripe_customer = StripeCustomer.objects.filter(stripe_id=request.POST['funds_source']).first()
+
+                # now create the charge for the new or existing customer
+                create_stripe_charge = stripe.Charge.create(
+                    amount=int(request.POST['amount']) * 100,
+                    currency="usd",
+                    description='Add funds to customer account: {}'.format(customer.full_name),
+                    receipt_email=stripe_customer.email,
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                    customer=stripe_customer.stripe_id
+                )
+
+                # now create the Balance object
+                if create_stripe_charge:
+                    charge_amount = create_stripe_charge['amount']/100
+
+                    try:
+                        customer.balance.amount += charge_amount
+                        customer.balance.user_updated = request.user
+                        customer.balance.save()
+
+                    except Balance.DoesNotExist:
+                        new_balance = Balance(amount=charge_amount, customer=customer, user_created=request.user)
+                        new_balance.save()
+
+                    success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
+
+                    if request.POST.get('is_gift', False):
+                        new_gift = gift_form.save(commit=False)
+                        new_gift.email = stripe_customer.email
+                        new_gift.customer = customer
+                        new_gift.amount = request.POST['amount']
+                        new_gift.save()
+
+                        success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
+
+                        gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
+                        if new_gift.relationship:
+                            gift_note += ' ({})'.format(new_gift.relationship)
+
+                        gift_touch = Touch(
+                            customer=customer,
+                            concierge=request.user,
+                            date=timezone.now(),
+                            type=Touch.GIFT,
+                            notes=gift_note
+                        )
+                        gift_touch.full_clean()
+                        gift_touch.save()
+
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        success_message
+                    )
+                    funds_touch = Touch(
+                        customer=customer,
+                        concierge=request.user,
+                        date=timezone.now(),
+                        type=Touch.FUNDS,
+                        notes='Added ${} to account'.format(charge_amount)
+                    )
+                    funds_touch.full_clean()
+                    funds_touch.save()
+
+                    return redirect('profile')
+
+            # catch Stripe card validation errors
+            except stripe.error.CardError as ex:
+                print 'card errors'
+                print ex
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            # catch any other type of error
+            except Exception as ex:
+                print 'other errors'
+                print ex
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
+
+        else:
+            print 'form errors'
+            print payment_form.errors
+            print gift_form.errors
+            errors = payment_form.errors
+
+    else:
+        payment_form = AddFundsForm(
+            initial={
+                'email':customer.email,
+                'first_name': customer.first_name,
+                'last_name': customer.last_name,
+                'billing_zip': customer.home.zip_code
+            })
+        gift_form = GiftForm(prefix="gift")
+
+
+    d = {
+        'customer': customer,
+        'payment_form': payment_form,
+        'gift_form': gift_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'soon': soon(),
+        'errors': errors,
+        'card_errors': card_errors,
+        'customer_stripe_accounts': customer_stripe_accounts
+    }
+
     return render(request, template, d)
 
 

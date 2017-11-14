@@ -14,6 +14,7 @@ from accounts.views import (register_self,
                             password_validate,
                             profile,
                             profile_edit,
+                            profile_add_funds,
                             destination_edit,
                             destination_add,
                             destination_delete)
@@ -41,6 +42,7 @@ urlpatterns = [
 
     url(r'^profile/$', profile, name='profile'),
     url(r'^profile/edit/$', profile_edit, name='profile_edit'),
+    url(r'^profile/add-funds/$', profile_add_funds, name='profile_add_funds'),
 
 
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
