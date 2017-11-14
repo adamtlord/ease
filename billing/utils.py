@@ -152,7 +152,7 @@ def invoice_customer_rides(account, customers, request):
     billable_rides = []
 
     stripe_id = account.stripe_id
-    if stripe_id:
+    if stripe_id or account.balance:
         for customer, rides in customers.iteritems():
             for ride in rides:
                 if ride.cost or ride.fees:
@@ -167,15 +167,33 @@ def invoice_customer_rides(account, customers, request):
                         success_total += 1
                     else:
                         ride.total_cost = ride.total_cost_estimate
-                        invoiceitem = stripe.InvoiceItem.create(
-                            customer=stripe_id,
-                            amount=int(ride.total_cost * 100),
-                            currency="usd",
-                            description=ride.description,
-                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-                        )
-                        ride.invoice_item_id = invoiceitem.id
-                        billable_rides.append(ride)
+                        cost_to_bill = ride.total_cost
+                        # if customer has an account
+                        if customer.has_funds:
+                            if customer.balance.amount >= ride.total_cost:
+                                # customer balance can cover ride
+                                customer.balance.amount -= ride.total_cost
+                                customer.balance.save()
+                                cost_to_bill = None
+                            else:
+                                # ride cost more than balance
+                                if stripe_id:
+                                    # charge overage to ride account
+                                    cost_to_bill = customer.balance.amount - ride.total_cost
+                                else:
+                                    # ruh roh, they're in the red.
+                                    customer.balance.amount -= ride.total_cost
+
+                        if cost_to_bill:
+                            invoiceitem = stripe.InvoiceItem.create(
+                                customer=stripe_id,
+                                amount=int(ride.total_cost * 100),
+                                currency="usd",
+                                description=ride.description,
+                                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                            )
+                            ride.invoice_item_id = invoiceitem.id
+                            billable_rides.append(ride)
 
                         success_billed.append(ride.id)
                         success_total += 1
@@ -211,7 +229,7 @@ def invoice_customer_rides(account, customers, request):
                 ride.save()
 
     else:
-        errors.append('Customer {} has no Ride Account specified (no credit card to bill)'.format(customer))
+        errors.append('Customer {} has no Ride Account specified (no credit card to bill) and/or no funds in their account.'.format(customer))
         total = 1
 
     if included_rides:

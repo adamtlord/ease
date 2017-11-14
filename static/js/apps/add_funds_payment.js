@@ -13,7 +13,6 @@ $(function() {
             };
 
             Stripe.createToken(card, function(status, response) {
-                console.log(response);
                 if (status === 200) {
                     $("#credit-card-errors").hide();
                     $("#id_last_4_digits").val(response.card.last4);

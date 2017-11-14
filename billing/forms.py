@@ -45,18 +45,33 @@ class StripeCustomerForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         unrequire = kwargs.pop('unrequire', False)
-        print 'unrequire?'
-        print unrequire
         super(StripeCustomerForm, self).__init__(*args, **kwargs)
         for field in STRIPE_CUSTOMER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         if unrequire:
             for field in self.Meta.fields:
-                print field
                 self.fields[field].required = False
-                print self.fields[field].required
-                print
 
+
+class AddFundsForm(StripeCustomerForm):
+    amount = forms.DecimalField(
+        label="Amount",
+        help_text="Must be at least $100",
+        min_value=100.00,
+        max_digits=6,
+        decimal_places=2,
+        required=True,
+        error_messages={'min_value': 'Ensure this value is greater than or equal to $100.'}
+    )
+
+    class Meta(StripeCustomerForm):
+        model = StripeCustomer
+        fields = StripeCustomerForm.Meta.fields + ['amount']
+
+    def __init__(self, *args, **kwargs):
+        super(AddFundsForm, self).__init__(*args, **kwargs)
+        for field in ['amount', 'first_name', 'last_name', 'email', 'last_4_digits', 'billing_zip']:
+            self.fields[field].widget.attrs['class'] = 'form-control'
 
 
 class PaymentForm(StripeCustomerForm):

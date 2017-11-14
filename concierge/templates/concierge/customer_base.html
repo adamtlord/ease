@@ -41,6 +41,9 @@
             {% if customer.subscription_account and customer.plan.included_rides_per_month %}
                 Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
             {% endif %}
+            {% if customer.balance %}
+                &nbsp;Account Balance: <strong class="{% if customer.balance.is_low %}text-danger{% endif %}">${{ customer.balance.amount }}</strong>
+            {% endif %}
         </div>
         <div class="col-sm-6 text-right">
             {% if customer.user.profile.on_behalf %}

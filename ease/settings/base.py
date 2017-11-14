@@ -22,6 +22,9 @@ ARRIVE_BUSINESS_HOURS = (9, 18)
 # fee for rides outside normal working hours, in dollars
 ARRIVE_AFTER_HOURS_FEE = 7.00
 
+# balance below which the user should be alerted
+LOW_BALANCE_ALERT = 40
+
 DEBUG = False
 IS_DEV = False
 IS_STAGING = False

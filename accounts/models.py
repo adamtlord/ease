@@ -15,6 +15,7 @@ from django.utils.functional import cached_property
 from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
+from billing.models import Balance
 from billing.utils import get_stripe_subscription
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
@@ -364,6 +365,13 @@ class Customer(Contact):
     @cached_property
     def group_bill(self):
         return self.group_membership and self.group_membership.includes_ride_cost
+
+    @property
+    def has_funds(self):
+        try:
+            return self.balance.amount > 0
+        except Balance.DoesNotExist:
+            return False
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)

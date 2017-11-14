@@ -122,6 +122,11 @@ class Balance(models.Model):
     date_updated = models.DateTimeField(auto_now=True, null=True)
     customer = models.OneToOneField('accounts.Customer', on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    stripe_customer = models.ForeignKey(StripeCustomer, null=True, blank=True)
+
+    @property
+    def is_low(self):
+        return self.amount < settings.LOW_BALANCE_ALERT
 
     def __unicode__(self):
         return "{}'s balance".format(self.customer)

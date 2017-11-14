@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 from accounts.views import (register_self,
+                            register_add_funds,
                             register_self_payment,
                             register_self_destinations,
                             register_self_complete,
@@ -19,6 +20,7 @@ from accounts.views import (register_self,
 
 urlpatterns = [
     url(r'^register/$', register_self, name='register_self'),
+    url(r'^register/add-funds/$', register_add_funds, name='register_add_funds'),
     url(r'^register/payment/$', register_self_payment, name='register_self_payment'),
     # url(r'^register/preferences/$', register_self_preferences, name='register_self_preferences'),
     url(r'^register/destinations/$', register_self_destinations, name='register_self_destinations'),
