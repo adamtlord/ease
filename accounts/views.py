@@ -881,7 +881,8 @@ def profile(request, template='accounts/profile.html'):
         'customer': customer,
         'subscription': subscription,
         'riders': customer.riders.all(),
-        'lovedone': user.profile.on_behalf
+        'lovedone': user.profile.on_behalf,
+
     }
     return render(request, template, d)
 
@@ -1102,7 +1103,8 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
         'soon': soon(),
         'errors': errors,
         'card_errors': card_errors,
-        'customer_stripe_accounts': customer_stripe_accounts
+        'customer_stripe_accounts': customer_stripe_accounts,
+        'lovedone': user.profile.on_behalf
     }
 
     return render(request, template, d)

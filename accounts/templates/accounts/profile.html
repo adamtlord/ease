@@ -1,6 +1,7 @@
 {% extends 'base_app.html' %}
 {% load tz %}
 {% load custom_tags %}
+{% load humanize %}
 {% load map_tags %}
 {% load billing_tags %}
 
@@ -68,14 +69,22 @@
     </div>
     <div class="col-sm-6">
         <h3 class="m-t-0">Payment Information</h3>
-        {% if customer.balance %}
-            Account Balance: <strong class="{% if customer.balance.is_low %}text-danger{% endif %}">${{ customer.balance.amount }}</strong><br>
-            <a href="{% url 'profile_add_funds' %}">Add Funds</a>
-        {% else %}
-            <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
-        {% endif %}
         <table class="table table-striped">
             <tbody>
+                <tr>
+                {% if customer.balance %}
+                    <th>
+                        Account Balance: <strong class="{% if customer.balance.is_low %}text-danger{% endif %}">${{ customer.balance.amount|intcomma }}</strong><br>
+                    </th>
+                    <td>
+                        <a href="{% url 'profile_add_funds' %}">Add funds</a>
+                    </td>
+                {% else %}
+                    <th colspan="2">
+                        <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
+                    </th>
+                {% endif %}
+                </tr>
                 {% if not customer.plan.is_default %}
                     <tr>
                         <th>Subscription plan</th>

@@ -9,20 +9,25 @@
     </script>
 {% endblock header_includes %}
 
-{% block navbar %}
-    {% include 'fragments/navbar-centered-logo.html' %}
-{% endblock navbar %}
-
 {% block title %}Add Funds for {{ customer }}{% endblock title %}
 
 {% block content %}
-
-<div class="row">
-    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
-        <div class="page-header">
-            <h2 class="text-center">Add funds to your Arrive&nbsp;account</h2>
-        </div>
-        <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
+<div class="page-header">
+    <h2>{{ request.user }}'s Profile
+    {% if lovedone %}
+        <small>On behalf of {{ customer }}</small>
+    {% endif %}
+    </h2>
+</div>
+{% if customer.rides_this_month and customer.subscription_account and customer.plan.included_rides_per_month %}
+    <p class="alert alert-info">
+        Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
+    </p>
+{% endif %}
+<form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="m-t-0">Add funds to your Arrive&nbsp;account</h2>
             {% if errors %}
             <p class="alert alert-danger">
                 {% if errors|length == 1 %}
@@ -81,9 +86,11 @@
                 {% render_form_field payment_form.last_4_digits %}
                 {% render_form_field payment_form.stripe_token %}
                 {% render_form_field payment_form.billing_zip %}
-
             </fieldset>
+        </div>
+        <div class="col-sm-6">
             {% if lovedone %}
+                <h3 class="m-t-0">Gift Info (optional)</h3>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" name="is_gift" id="id_is_gift" data-toggle="collapse" data-target="#gift_fields">
@@ -91,19 +98,18 @@
                     </label>
                 </div>
                 <fieldset id="gift_fields" class="collapse">
-                    <h4>Gift Info (optional)</h3>
                     {% render_form_field gift_form.first_name %}
                     {% render_form_field gift_form.last_name %}
                     {% render_form_field gift_form.relationship %}
                     {% render_form_field gift_form.gift_date '' 'datepicker' %}
                 </fieldset>
             {% endif %}
-            <div class="form-actions">
-                <input type="submit" class="btn btn-primary btn-block" value="Submit" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary btn-block" value="Submit" />
+    </div>
+</form>
 {% endblock %}
 {% block scripts %}
     <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
