@@ -6,6 +6,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -16,6 +17,7 @@ from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUs
                             CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm,
                             LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
+from accounts.models import Customer, UserProfile
 from billing.models import Plan, Balance, StripeCustomer
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
@@ -1084,6 +1086,171 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
         'lovedone': user.profile.on_behalf
     }
 
+    return render(request, template, d)
+
+
+def gift_login(request, template='accounts/gift_login.html'):
+
+    login_form = auth.forms.AuthenticationForm(request)
+    matching_customers = []
+
+    if request.method == 'POST':
+        phone = request.POST['phone_lookup']
+        matching_customers = Customer.objects.filter(
+            Q(mobile_phone=phone) |
+            Q(home_phone=phone) |
+            Q(user__profile__phone=phone)
+        ).distinct()
+
+        if len(matching_customers) == 1:
+            return redirect('gift_purchase', matching_customers[0].id)
+
+    d = {
+        'login_form': login_form,
+        'matching_customers': matching_customers,
+    }
+
+    return render(request, template, d)
+
+
+def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
+
+    customer = get_object_or_404(Customer, pk=customer_id)
+    errors = {}
+    card_errors = None
+
+    if request.method == 'POST':
+        payment_form = StripeCustomerForm(request.POST, unrequire=request.POST['funds_source'] != "new")
+        gift_form = GiftForm(request.POST, prefix="gift")
+
+        if all([
+                payment_form.is_valid(),
+                gift_form.is_valid(),
+                request.POST.get('amount', False)]):
+
+            try:
+                # Add a new credit card/Stripe customer
+
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                    email=payment_form.cleaned_data['email'],
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                )
+
+                if create_stripe_customer:
+                    # new stripe customer created successfully
+                    new_stripe_customer = payment_form.save()
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
+                    new_stripe_customer.customer = customer
+                    new_stripe_customer.save()
+                    # use the newly-created stripe customer id for the charge
+                    stripe_customer = new_stripe_customer
+
+                    # now create the charge for the new or existing customer
+                    create_stripe_charge = stripe.Charge.create(
+                        amount=int(request.POST['amount']) * 100,
+                        currency="usd",
+                        description='Add funds to customer account: {}'.format(customer.full_name),
+                        receipt_email=stripe_customer.email,
+                        metadata={
+                            'customer': '{} {}'.format(customer.full_name, customer.pk)
+                        },
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                        customer=stripe_customer.stripe_id
+                    )
+
+                    # now create the Balance object
+                    if create_stripe_charge:
+                        charge_amount = create_stripe_charge['amount']/100
+
+                        try:
+                            customer.balance.amount += charge_amount
+                            customer.balance.user_updated = request.user
+                            customer.balance.save()
+
+                        except Balance.DoesNotExist:
+                            new_balance = Balance(amount=charge_amount, customer=customer, user_created=request.user)
+                            new_balance.save()
+
+                        success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
+
+                        if request.POST.get('is_gift', False):
+                            new_gift = gift_form.save(commit=False)
+                            new_gift.email = stripe_customer.email
+                            new_gift.customer = customer
+                            new_gift.amount = request.POST['amount']
+                            new_gift.save()
+
+                            success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
+
+                            gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
+                            if new_gift.relationship:
+                                gift_note += ' ({})'.format(new_gift.relationship)
+
+                            gift_touch = Touch(
+                                customer=customer,
+                                concierge=request.user,
+                                date=timezone.now(),
+                                type=Touch.GIFT,
+                                notes=gift_note
+                            )
+                            gift_touch.full_clean()
+                            gift_touch.save()
+
+                        messages.add_message(
+                            request,
+                            messages.SUCCESS,
+                            success_message
+                        )
+                        funds_touch = Touch(
+                            customer=customer,
+                            concierge=request.user,
+                            date=timezone.now(),
+                            type=Touch.FUNDS,
+                            notes='Added ${} to account'.format(charge_amount)
+                        )
+                        funds_touch.full_clean()
+                        funds_touch.save()
+
+                        return redirect('customer_profile', customer.id)
+
+            # catch Stripe card validation errors
+            except stripe.error.CardError as ex:
+                print 'card errors'
+                print ex
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            # catch any other type of error
+            except Exception as ex:
+                print 'other errors'
+                print ex
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
+
+        else:
+            print 'form errors'
+            print payment_form.errors
+            print gift_form.errors
+            errors = payment_form.errors
+
+    else:
+        payment_form = StripeCustomerForm()
+        gift_form = GiftForm(prefix="gift")
+
+
+    d = {
+        'customer': customer,
+        'payment_form': payment_form,
+        'gift_form': gift_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'soon': soon(),
+        'errors': errors,
+        'card_errors': card_errors,
+    }
     return render(request, template, d)
 
 
