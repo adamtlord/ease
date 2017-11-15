@@ -24,92 +24,74 @@
         Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
     </p>
 {% endif %}
-<form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
     <div class="row">
         <div class="col-sm-6">
-            <h3 class="m-t-0">Add funds to your Arrive&nbsp;account</h2>
-            {% if errors %}
-            <p class="alert alert-danger">
-                {% if errors|length == 1 %}
-                    Please correct the error below.
-                {% else %}
-                    Please correct the errors below.
+            <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
+                <h3 class="m-t-0">Add funds to your Arrive&nbsp;account</h2>
+                {% if errors %}
+                <p class="alert alert-danger">
+                    {% if errors|length == 1 %}
+                        Please correct the error below.
+                    {% else %}
+                        Please correct the errors below.
+                    {% endif %}
+                </p>
                 {% endif %}
-            </p>
-            {% endif %}
-            {{ form.non_field_errors }}
-            <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
-                <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
-            </div>
-
-            {% render_form_field payment_form.amount %}
-
-            <div class="form-group">
-                <label for="funds_source">Credit Card<span class="req">*</span></label>
-                <select class="form-control" id="id_funds_source" name="funds_source">
-                    {% for account in customer_stripe_accounts %}
-                        <option value="{{ account.stripe_id }}">{{ account }} ***{{ account.last_4_digits }}</option>
-                    {% endfor %}
-                    <option value="new">Add a new card</option>
-                </select>
-            </div>
-            <fieldset id="add_card" class="collapse">
-                <div class="cc-inline">
-                    <div class="form-group cc-mask">
-                        <label for="credit_card_number">Credit card number<span class="req">*</span></label>
-                        <input class="form-control" id="credit_card_number" type="text">
-                    </div>
-                    <div class="form-group cvv">
-                        <label for="cvv">CVV<span class="req">*</span></label>
-                        <input class="form-control" id="CVV" type="text">
-                    </div>
+                {{ form.non_field_errors }}
+                <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
+                    <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
                 </div>
-                <div class="expiry-inline">
-                    <div class="form-group">
-                        <label for="expiry_date">Expiry date<span class="req">*</span></label>
-                        <select class="form-control" id="expiry_month">
-                        {% for month in months %}
-                            <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+
+                {% render_form_field payment_form.amount %}
+
+                <div class="form-group">
+                    <label for="funds_source">Credit Card<span class="req">*</span></label>
+                    <select class="form-control" id="id_funds_source" name="funds_source">
+                        {% for account in customer_stripe_accounts %}
+                            <option value="{{ account.stripe_id }}">{{ account }} ***{{ account.last_4_digits }}</option>
                         {% endfor %}
-                        </select>
-                        <select class="form-control year" id="expiry_year">
-                        {% for year in years %}
-                            <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
-                        {% endfor %}
-                        </select>
+                        <option value="new">Add a new card</option>
+                    </select>
+                </div>
+                <fieldset id="add_card" class="collapse">
+                    <div class="cc-inline">
+                        <div class="form-group cc-mask">
+                            <label for="credit_card_number">Credit card number<span class="req">*</span></label>
+                            <input class="form-control" id="credit_card_number" type="text">
+                        </div>
+                        <div class="form-group cvv">
+                            <label for="cvv">CVV<span class="req">*</span></label>
+                            <input class="form-control" id="CVV" type="text">
+                        </div>
                     </div>
-                </div>
-
-                {% render_form_field payment_form.first_name %}
-                {% render_form_field payment_form.last_name %}
-                {% render_form_field payment_form.email %}
-                {% render_form_field payment_form.last_4_digits %}
-                {% render_form_field payment_form.stripe_token %}
-                {% render_form_field payment_form.billing_zip %}
-            </fieldset>
-        </div>
-        <div class="col-sm-6">
-            {% if lovedone %}
-                <h3 class="m-t-0">Gift Info (optional)</h3>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="is_gift" id="id_is_gift" data-toggle="collapse" data-target="#gift_fields">
-                        This is a gift
-                    </label>
-                </div>
-                <fieldset id="gift_fields" class="collapse">
-                    {% render_form_field gift_form.first_name %}
-                    {% render_form_field gift_form.last_name %}
-                    {% render_form_field gift_form.relationship %}
-                    {% render_form_field gift_form.gift_date '' 'datepicker' %}
+                    <div class="expiry-inline">
+                        <div class="form-group">
+                            <label for="expiry_date">Expiry date<span class="req">*</span></label>
+                            <select class="form-control" id="expiry_month">
+                            {% for month in months %}
+                                <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                            </select>
+                            <select class="form-control year" id="expiry_year">
+                            {% for year in years %}
+                                <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    {% render_form_field payment_form.first_name %}
+                    {% render_form_field payment_form.last_name %}
+                    {% render_form_field payment_form.email %}
+                    {% render_form_field payment_form.last_4_digits %}
+                    {% render_form_field payment_form.stripe_token %}
+                    {% render_form_field payment_form.billing_zip %}
                 </fieldset>
-            {% endif %}
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary btn-block" value="Submit" />
+                </div>
+            </form>
         </div>
     </div>
-    <div class="form-actions">
-        <input type="submit" class="btn btn-primary btn-block" value="Submit" />
-    </div>
-</form>
 {% endblock %}
 {% block scripts %}
     <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>

@@ -1025,29 +1025,6 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
 
                     success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
 
-                    if request.POST.get('is_gift', False):
-                        new_gift = gift_form.save(commit=False)
-                        new_gift.email = stripe_customer.email
-                        new_gift.customer = customer
-                        new_gift.amount = request.POST['amount']
-                        new_gift.save()
-
-                        success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
-
-                        gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
-                        if new_gift.relationship:
-                            gift_note += ' ({})'.format(new_gift.relationship)
-
-                        gift_touch = Touch(
-                            customer=customer,
-                            concierge=request.user,
-                            date=timezone.now(),
-                            type=Touch.GIFT,
-                            notes=gift_note
-                        )
-                        gift_touch.full_clean()
-                        gift_touch.save()
-
                     messages.add_message(
                         request,
                         messages.SUCCESS,
