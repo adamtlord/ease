@@ -18,7 +18,7 @@ from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUs
                             LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
 from accounts.models import Customer, UserProfile
-from billing.models import Plan, Balance, StripeCustomer
+from billing.models import Plan, Balance, StripeCustomer, Gift
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
@@ -1093,6 +1093,7 @@ def gift_login(request, template='accounts/gift_login.html'):
 
     login_form = auth.forms.AuthenticationForm(request)
     matching_customers = []
+    match = True
 
     if request.method == 'POST':
         phone = request.POST['phone_lookup']
@@ -1103,11 +1104,17 @@ def gift_login(request, template='accounts/gift_login.html'):
         ).distinct()
 
         if len(matching_customers) == 1:
-            return redirect('gift_purchase', matching_customers[0].id)
+            matching_customer = matching_customers[0];
+            messages.success(request, '<strong>Success!</strong> We found {}.'.format(matching_customer))
+            return redirect('gift_purchase', matching_customer.id)
+
+        else:
+            match = False
 
     d = {
         'login_form': login_form,
         'matching_customers': matching_customers,
+        'match': match
     }
 
     return render(request, template, d)
@@ -1120,7 +1127,7 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
     card_errors = None
 
     if request.method == 'POST':
-        payment_form = StripeCustomerForm(request.POST, unrequire=request.POST['funds_source'] != "new")
+        payment_form = StripeCustomerForm(request.POST, unrequire=False)
         gift_form = GiftForm(request.POST, prefix="gift")
 
         if all([
@@ -1169,37 +1176,34 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
 
                         try:
                             customer.balance.amount += charge_amount
-                            customer.balance.user_updated = request.user
                             customer.balance.save()
 
                         except Balance.DoesNotExist:
-                            new_balance = Balance(amount=charge_amount, customer=customer, user_created=request.user)
+                            new_balance = Balance(amount=charge_amount, customer=customer)
                             new_balance.save()
 
                         success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
 
-                        if request.POST.get('is_gift', False):
-                            new_gift = gift_form.save(commit=False)
-                            new_gift.email = stripe_customer.email
-                            new_gift.customer = customer
-                            new_gift.amount = request.POST['amount']
-                            new_gift.save()
+                        new_gift = gift_form.save(commit=False)
+                        new_gift.email = stripe_customer.email
+                        new_gift.customer = customer
+                        new_gift.amount = request.POST['amount']
+                        new_gift.save()
 
-                            success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
+                        success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
 
-                            gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
-                            if new_gift.relationship:
-                                gift_note += ' ({})'.format(new_gift.relationship)
+                        gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
+                        if new_gift.relationship:
+                            gift_note += ' ({})'.format(new_gift.relationship)
 
-                            gift_touch = Touch(
-                                customer=customer,
-                                concierge=request.user,
-                                date=timezone.now(),
-                                type=Touch.GIFT,
-                                notes=gift_note
-                            )
-                            gift_touch.full_clean()
-                            gift_touch.save()
+                        gift_touch = Touch(
+                            customer=customer,
+                            date=timezone.now(),
+                            type=Touch.GIFT,
+                            notes=gift_note
+                        )
+                        gift_touch.full_clean()
+                        gift_touch.save()
 
                         messages.add_message(
                             request,
@@ -1208,7 +1212,6 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         )
                         funds_touch = Touch(
                             customer=customer,
-                            concierge=request.user,
                             date=timezone.now(),
                             type=Touch.FUNDS,
                             notes='Added ${} to account'.format(charge_amount)
@@ -1216,7 +1219,7 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         funds_touch.full_clean()
                         funds_touch.save()
 
-                        return redirect('customer_profile', customer.id)
+                        return redirect('gift_purchase_receipt', customer.id, new_gift.id)
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
@@ -1253,6 +1256,17 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
     }
     return render(request, template, d)
 
+
+def gift_purchase_receipt(request, customer_id, gift_id, template='accounts/gift_purchase_receipt.html'):
+    customer = get_object_or_404(Customer, pk=customer_id)
+    gift = get_object_or_404(Gift, pk=gift_id)
+
+    d = {
+        'customer': customer,
+        'gift': gift
+    }
+
+    return render(request, template, d)
 
 @login_required
 def destination_edit(request, destination_id, template='accounts/destinations_edit.html'):

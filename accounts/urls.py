@@ -13,6 +13,7 @@ from accounts.views import (register_self,
                             register_payment_redirect,
                             gift_login,
                             gift_purchase,
+                            gift_purchase_receipt,
                             password_validate,
                             profile,
                             profile_edit,
@@ -53,6 +54,7 @@ urlpatterns = [
 
     url(r'^gift-login/$', gift_login, name='gift_login'),
     url(r'^gift/(?P<customer_id>\d+)/purchase/$', gift_purchase, name='gift_purchase'),
+    url(r'^gift/(?P<customer_id>\d+)/purchase/(?P<gift_id>\d+)/receipt/$', gift_purchase_receipt, name='gift_purchase_receipt'),
 
     url(r'^password_validate/$', password_validate, name='password_validate'),
     url(r'^password/reset/$',

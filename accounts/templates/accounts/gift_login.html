@@ -2,11 +2,18 @@
 {% load custom_tags %}
 
 {% block title %}Login{% endblock %}
-
+{% block messages %}{% endblock messages %}
 {% block content %}
 <div class="page-header">
     <h2>Arrive Gift Certificates</h2>
 </div>
+{% if not match %}
+    <div class="alert alert-danger">
+        <strong>Sorry!</strong> We couldn't find a member based on that phone number.<br>
+        Please give us a call at <strong class="tel">1-866-626-9879</strong> or write to <a href="mailto:hello@arriverides.com">hello@arriverides.com</a>
+        so we can help you with your gift!
+    </div>
+{% endif %}
 <div class="row">
     <div class="col-sm-6">
         <h3 class="m-t-0">Login</h3>
@@ -18,7 +25,7 @@
             {% for field in login_form %}
                 {% render_form_field field %}
             {% endfor %}
-            <input type="hidden" name="next" value="{% if next %}{{ next }}{% else %}{% url 'profile' %}{% endif %}" />
+            <input type="hidden" name="next" value="{% url 'profile_add_funds' %}" />
             <div class="form-actions">
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
             </div>

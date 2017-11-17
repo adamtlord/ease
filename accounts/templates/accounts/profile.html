@@ -16,7 +16,7 @@
 </div>
 {% if customer.rides_this_month and customer.subscription_account and customer.plan.included_rides_per_month %}
     <p class="alert alert-info">
-            Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
+        Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
     </p>
 {% endif %}
 <div class="row">

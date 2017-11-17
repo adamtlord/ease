@@ -11,17 +11,15 @@
 
 {% block title %}Arrive Gift Certificate{% endblock %}
 
+{% block navbar %}
+    {% include 'fragments/navbar-centered-logo.html' %}
+{% endblock navbar %}
+{% block messages %}{% endblock messages %}
 {% block content %}
-<div class="page-header">
-    <h2>Arrive Gift Certificates</h2>
-</div>
-<p class="alert alert-success">
-    <strong>Success!</strong>
-    We found {{ customer }}.
-</p>
 <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            {% include 'fragments/messages.html' %}
             <h3 class="m-t-0">How much would you like to give {{ customer.first_name }}?</h3>
             {% if errors %}
                 <p class="alert alert-danger">
@@ -74,23 +72,11 @@
                 {% for field in payment_form %}
                     {% render_form_field field %}
                 {% endfor %}
-            </fieldset>
-        </div>
-        <div class="col-sm-6">
-            <h3 class="m-t-0">Gift Info (optional)</h3>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="is_gift" id="id_is_gift" data-toggle="collapse" data-target="#gift_fields">
-                    This is a gift
-                </label>
-            </div>
-            <fieldset id="gift_fields" class="collapse">
-                {% render_form_field gift_form.first_name %}
-                {% render_form_field gift_form.last_name %}
                 {% render_form_field gift_form.relationship %}
                 {% render_form_field gift_form.gift_date '' 'datepicker' %}
             </fieldset>
         </div>
+
     </div>
     <div class="form-actions">
         <input type="submit" class="btn btn-primary btn-block" value="Submit" />
@@ -99,7 +85,8 @@
 {% endblock %}
 {% block scripts %}
     <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
-    <script src="{{ STATIC_URL }}js/apps/add_funds_payment.js?v=1"></script>
+    <script src="{{ STATIC_URL }}js/apps/add_funds_payment.min.js?v=1"></script>
+    <script src="{{ STATIC_URL }}js/apps/gift_purchase.min.js?v=1"></script>
     {% if errors %}
         <script>
             $(function(){
