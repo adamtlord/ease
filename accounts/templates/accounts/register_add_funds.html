@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <div class="page-header">
-            <h2 class="text-center">Add funds to your Arrive&nbsp;account</h2>
+            <h2 class="text-center">Add funds to {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} Arrive&nbsp;account</h2>
         </div>
         <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
             {% if errors %}
@@ -40,6 +40,7 @@
             {% render_form_field payment_form.amount %}
 
             <fieldset id="add_card">
+                <legend>Billing Information</legend>
                 <div class="cc-inline">
                     <div class="form-group cc-mask">
                         <label for="credit_card_number">Credit card number<span class="req">*</span></label>
@@ -65,7 +66,6 @@
                         </select>
                     </div>
                 </div>
-
                 {% render_form_field payment_form.first_name %}
                 {% render_form_field payment_form.last_name %}
                 {% render_form_field payment_form.email %}
@@ -82,9 +82,16 @@
                     </label>
                 </div>
                 <fieldset id="gift_fields" class="collapse">
-                    <h4>Gift Info (optional)</h3>
-                    {% render_form_field gift_form.first_name %}
-                    {% render_form_field gift_form.last_name %}
+                    <legend>Gift Info (optional)</legend>
+                    <label>From:</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% render_form_field gift_form.first_name %}
+                        </div>
+                        <div class="col-md-6">
+                            {% render_form_field gift_form.last_name %}
+                        </div>
+                    </div>
                     {% render_form_field gift_form.relationship %}
                     {% render_form_field gift_form.gift_date '' 'datepicker' %}
                 </fieldset>
@@ -99,4 +106,5 @@
 {% block scripts %}
     <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
     <script src="{{ STATIC_URL }}js/apps/add_funds_payment.min.js"></script>
+    <script src="{{ STATIC_URL }}js/apps/gift_purchase.min.js?v=1"></script>
 {% endblock %}

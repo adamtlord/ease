@@ -149,3 +149,9 @@ class Gift(models.Model):
         return "${} to {} from {} {}".format(self.amount, self.customer, self.first_name, self.last_name)
 
 
+class Subscription(models.Model):
+    customer = models.OneToOneField('accounts.Customer', blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    last_billed_date = models.DateField(blank=True, null=True)
+    next_billed_date = models.DateField(blank=True, null=True)
+    date_created = models.DateField(auto_now_add=True, null=True)

@@ -142,6 +142,15 @@ class AdminPaymentForm(StripeCustomerForm):
 
 
 class GiftForm(forms.ModelForm):
+    relationship = forms.CharField(
+        label="Your relationship to the primary rider",
+        required=False
+    )
+    gift_date = forms.DateField(
+        label="On what date will you present this gift?",
+        help_text="We call every one of our new members, and don't want to ruin the surprise for you!",
+        required=False
+    )
     class Meta:
         model = Gift
         fields = ['first_name', 'last_name', 'relationship', 'gift_date']

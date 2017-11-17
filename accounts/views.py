@@ -1,4 +1,5 @@
 import datetime
+from dateutil.relativedelta import relativedelta
 import pytz
 import stripe
 
@@ -18,7 +19,7 @@ from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUs
                             LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email
 from accounts.models import Customer, UserProfile
-from billing.models import Plan, Balance, StripeCustomer, Gift
+from billing.models import Plan, Balance, StripeCustomer, Gift, Subscription
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
@@ -185,6 +186,14 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                             )
                             new_balance.save()
 
+                            # Create a customer subscription so we can track drawing down their balance monthly
+                            new_subscription = Subscription(
+                                customer=customer,
+                                is_active=True,
+                                next_billed_date=(timezone.now() + relativedelta(months=1)).date()
+                            )
+                            new_subscription.save()
+
                         customer_str = 'your' if is_self else '{}\'s'.format(customer.first_name)
                         success_message = '${} successfully added to {} account'.format(charge_amount, customer_str)
 
@@ -247,12 +256,16 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
     else:
         payment_form = AddFundsForm(
             initial={
-                'email':customer.email,
-                'first_name': customer.first_name,
-                'last_name': customer.last_name,
-                'billing_zip': customer.home.zip_code
+                'email':customer.user.email,
+                'first_name': customer.user.first_name,
+                'last_name': customer.user.last_name,
             })
-        gift_form = GiftForm(prefix="gift")
+        gift_form = GiftForm(prefix="gift",
+            initial={
+                'first_name': customer.user.first_name,
+                'last_name': customer.user.last_name,
+                'relationship': customer.user.profile.relationship
+            })
 
     d = {
         'self': is_self,
