@@ -16,7 +16,7 @@ from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload, send_new_customer_email
+from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload, send_new_customer_email, create_customer_subscription
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership, Balance, StripeCustomer
 from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
@@ -863,22 +863,8 @@ def customer_add_funds(request, customer_id, template="concierge/customer_add_fu
                         gift_touch.full_clean()
                         gift_touch.save()
 
-                     if not hasattr(customer, 'subscription'):
-                        # Create a customer subscription so we can track drawing down their balance monthly
-                        if new_gift and new_gift.gift_date and new_gift.gift_date > timezone.now().date():
-                            start_date = new_gift.gift_date + relativedelta(days=-1)
-                        else:
-                            if timezone.now().date() < datetime.date(2017, 12, 10)
-                                start_date = timezone.now().date() + relativedelta(months=1)
-                            else:
-                                start_date = timezone.now().date()
-
-                        new_subscription = Subscription(
-                            customer=customer,
-                            is_active=True,
-                            next_billed_date=start_date
-                        )
-                        new_subscription.save()
+                    if not hasattr(customer, 'subscription'):
+                        create_customer_subscription(customer)
 
                     messages.add_message(
                         request,

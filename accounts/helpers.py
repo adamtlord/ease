@@ -264,3 +264,21 @@ def create_customers_from_upload(uploaded_file, request):
             results['errors'].append(u'Row {}: {}'.format(idx + 1, ex))
 
     return results
+
+
+def create_customer_subscription(customer):
+    # Create a customer subscription so we can track drawing down their balance monthly
+    if timezone.now().date() < datetime.date(2017, 12, 10):
+        start_date = timezone.now().date() + relativedelta(months=1)
+    else:
+        start_date = timezone.now().date()
+
+    new_subscription = Subscription(
+        customer=customer,
+        is_active=True,
+        next_billed_date=start_date
+    )
+    new_subscription.save()
+
+
+
