@@ -1,0 +1,11 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>
+This customer's available balance was not sufficient to cover their most recent charge, and they don't have a credit card on file.<br>
+The customer now has a negative balance.
+<p>
+<strong>Customer:</strong> {{ customer }}<br>
+<strong>Last Charge:<strong> {{ last_action }}<br>
+<strong>Current Customer Balance:</strong> ${{ current_balance }}
+</p>
+{% endblock %}
