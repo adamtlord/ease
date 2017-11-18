@@ -14,7 +14,7 @@
 {% block content %}
 <div class="page-header">
     <h2>{{ request.user }}'s Profile
-    {% if lovedone %}
+    {% if lovedone and user.full_name != customer.full_name %}
         <small>On behalf of {{ customer }}</small>
     {% endif %}
     </h2>

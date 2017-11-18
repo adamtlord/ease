@@ -146,11 +146,13 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                 )
 
                 if create_stripe_customer:
+
                     # new stripe customer created successfully
                     new_stripe_customer = payment_form.save()
                     new_stripe_customer.stripe_id = create_stripe_customer.id
                     new_stripe_customer.customer = customer
                     new_stripe_customer.save()
+
                     # use the newly-created stripe customer id for the charge
                     stripe_customer = new_stripe_customer
 
@@ -186,17 +188,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                             )
                             new_balance.save()
 
-                            # Create a customer subscription so we can track drawing down their balance monthly
-                            new_subscription = Subscription(
-                                customer=customer,
-                                is_active=True,
-                                next_billed_date=(timezone.now() + relativedelta(months=1)).date()
-                            )
-                            new_subscription.save()
-
-                        customer_str = 'your' if is_self else '{}\'s'.format(customer.first_name)
-                        success_message = '${} successfully added to {} account'.format(charge_amount, customer_str)
-
+                        new_gift = False
                         if request.POST.get('is_gift', False):
                             new_gift = gift_form.save(commit=False)
                             new_gift.email = stripe_customer.email
@@ -217,6 +209,32 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                             )
                             gift_touch.full_clean()
                             gift_touch.save()
+
+                        if not hasattr(customer, 'subscription'):
+                            # Create a customer subscription so we can track drawing down their balance monthly
+                            if new_gift and new_gift.gift_date and new_gift.gift_date > timezone.now().date():
+                                # if it's a gift with a gift date, their subscription will be debited/started the day before
+                                # the gift date.
+                                start_date = new_gift.gift_date + relativedelta(days=-1)
+                            else:
+                                # if it's before December 10th, they get a month free. Their subscription will be
+                                # debited a month from today
+                                if timezone.now().date() < datetime.date(2017, 12, 10)
+                                    start_date = timezone.now().date() + relativedelta(months=1)
+                                else:
+                                    # otherwise, start the subscription today (it will be charged in tonight's
+                                    # cron job)
+                                    start_date = timezone.now().date()
+
+                            new_subscription = Subscription(
+                                customer=customer,
+                                is_active=True,
+                                next_billed_date=start_date
+                            )
+                            new_subscription.save()
+
+                        customer_str = 'your' if is_self else '{}\'s'.format(customer.first_name)
+                        success_message = '${} successfully added to {} account'.format(charge_amount, customer_str)
 
                         messages.add_message(
                             request,
@@ -885,12 +903,10 @@ def profile(request, template='accounts/profile.html'):
 
     customer = user.get_customer()
 
+    subscription = None
+
     if customer.subscription_account and customer.subscription_account.stripe_id:
         subscription = get_stripe_subscription(customer)
-    elif customer.group_membership or customer.balance:
-        subscription = None
-    else:
-        return redirect('register_payment_redirect')
 
     d = {
         'customer': customer,
@@ -1032,11 +1048,36 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
                     try:
                         customer.balance.amount += charge_amount
                         customer.balance.user_updated = request.user
+                        customer.balance.stripe_customer = stripe_customer
                         customer.balance.save()
 
                     except Balance.DoesNotExist:
-                        new_balance = Balance(amount=charge_amount, customer=customer, user_created=request.user)
+                        new_balance = Balance(
+                            amount=charge_amount,
+                            customer=customer,
+                            user_created=request.user,
+                            stripe_customer=stripe_customer
+                        )
                         new_balance.save()
+
+                    # Create a customer subscription so we can track drawing down their balance monthly
+                    if not hasattr(customer, 'subscription'):
+                        # Create a customer subscription so we can track drawing down their balance monthly
+                        if timezone.now().date() < datetime.date(2017, 12, 10)
+                            # if it's before December 10th, they get a month free. Their subscription will be
+                            # debited a month from today
+                            start_date = timezone.now().date() + relativedelta(months=1)
+                        else:
+                            # otherwise, start the subscription today (it will be charged in tonight's
+                            # cron job)
+                            start_date = timezone.now().date()
+
+                        new_subscription = Subscription(
+                            customer=customer,
+                            is_active=True,
+                            next_billed_date=start_date
+                        )
+                        new_subscription.save()
 
                     success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
 
@@ -1217,6 +1258,20 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         )
                         gift_touch.full_clean()
                         gift_touch.save()
+
+                        if not hasattr(customer, 'subscription'):
+                            # Create a customer subscription so we can track drawing down their balance monthly
+                            if new_gift and new_gift.gift_date and new_gift.gift_date > timezone.now().date():
+                                start_date = new_gift.gift_date + relativedelta(days=-1)
+                            else:
+                                start_date = timezone.now().date()
+
+                            new_subscription = Subscription(
+                                customer=customer,
+                                is_active=True,
+                                next_billed_date=start_date
+                            )
+                            new_subscription.save()
 
                         messages.add_message(
                             request,

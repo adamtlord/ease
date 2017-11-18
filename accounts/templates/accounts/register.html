@@ -11,11 +11,7 @@
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <div class="page-header">
-            {% if gift %}
-                <h2 class="text-center">Give the Gift of Spontaneity</h2>
-            {% else %}
-                <h2 class="text-center">Create an Account For {% if self %}Yourself{% else %}a Loved&nbsp;One{% endif %}</h2>
-            {% endif %}
+            <h2 class="text-center">Create an Account For {% if self %}Yourself{% else %}a Loved&nbsp;One{% endif %}</h2>
         </div>
         <form action="" class="form" method="POST" novalidate>{% csrf_token %}
             {% if errors %}
@@ -50,9 +46,6 @@
                 {% render_form_field customer_form.mobile_phone '' 'sub-field phone-mask' %}
                 {% render_form_field customer_form.preferred_phone %}
                 {% render_form_field customer_form.dob  '' 'date-mask' %}
-                {% if lovedone or gift %}
-                    {% render_form_field customer_form.gift_date '' 'datepicker' %}
-                {% endif %}
             </fieldset>
             <fieldset>
                 <legend>Create an Account</legend>

@@ -155,3 +155,6 @@ class Subscription(models.Model):
     last_billed_date = models.DateField(blank=True, null=True)
     next_billed_date = models.DateField(blank=True, null=True)
     date_created = models.DateField(auto_now_add=True, null=True)
+
+    def __unicode__(self):
+        return "{}'s subscription".format(self.customer)
