@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django_common',
     'rest_framework',
     'django_filters',
+    'django_cron',
 
     'accounts',
     'billing',
@@ -145,3 +146,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
+
+CRON_CLASSES = [
+    'billing.cron.SubscriptionCronJob',
+]

@@ -12,6 +12,7 @@ django-common-helpers
 django-registration
 django-filter
 djangorestframework
+django_cron
 
 googlemaps==2.4.4
 uber-rides==0.3.1

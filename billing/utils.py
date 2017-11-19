@@ -164,31 +164,49 @@ def invoice_customer_rides(account, customers, request):
 
 
 def debit_customer_balance(customer):
-    monthly_cost = customer.plan.monthly_cost
-    available_balance = customer.balance.amount
+    # if an inactive customer got in here somehow, skip them
+    if not customer.is_active or not customer.plan:
+        return False
 
-    if available_balance >= monthly_cost:
-        customer.balance.amount -= monthly_cost
-        customer.balance.save()
-        if customer.balance.amount < BALANCE_ALERT_THRESHOLD_1:
-            send_balance_alerts(customer, last_action='Monthly Subscription')
+    try:
 
-    else:
-        deficit = monthly_cost - available_balance
-        if customer.subscription_account:
-            invoiceitem = stripe.InvoiceItem.create(
-                customer=customer.subscription_account.stripe_id,
-                amount=int(deficit * 100),
-                currency="usd",
-                description="Monthly Subscription",
-                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-            )
+        monthly_cost = customer.plan.monthly_cost
+        available_balance = customer.balance.amount
 
-        else:
-            # this will be negative:
+        if available_balance >= monthly_cost:
             customer.balance.amount -= monthly_cost
             customer.balance.save()
-            send_balance_alerts(customer, last_action='Monthly Subscription')
+            if customer.balance.amount < BALANCE_ALERT_THRESHOLD_1:
+                send_balance_alerts(customer, last_action='Monthly Subscription')
+
+        else:
+            deficit = monthly_cost - available_balance
+            if customer.subscription_account:
+                invoiceitem = stripe.InvoiceItem.create(
+                    customer=customer.subscription_account.stripe_id,
+                    amount=int(deficit * 100),
+                    currency="usd",
+                    description="Monthly Subscription",
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                )
+
+            else:
+                # this will be negative:
+                customer.balance.amount -= monthly_cost
+                customer.balance.save()
+                send_balance_alerts(customer, last_action='Monthly Subscription')
+
+        return True
+
+    except Exception as ex:
+        msg_plain = 'Customer {}, Exception: {}'.format(customer, ex.message)
+        send_mail(
+            '[Arrive] Problem with subscription balance ',
+            msg_plain,
+            settings.DEFAULT_FROM_EMAIL,
+            'admin@arriverides.com'
+        )
+        return False
 
 
 def send_balance_alerts(customer, last_action=None):
