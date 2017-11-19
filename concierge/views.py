@@ -306,12 +306,18 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             if '_activate' in request.POST:
                 customer.is_active = True
                 customer.save()
+                if customer.subscription:
+                    customer.subscription.is_active = True
+                    customer.subscription.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} activated'.format(customer))
                 return redirect('customer_detail', customer.id)
 
             if '_deactivate' in request.POST:
                 customer.is_active = False
                 customer.save()
+                if customer.subscription:
+                    customer.subscription.is_active = False
+                    customer.subscription.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} deactivated'.format(customer))
                 return redirect('customer_list')
 

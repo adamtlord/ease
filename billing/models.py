@@ -126,7 +126,7 @@ class Balance(models.Model):
 
     @property
     def is_low(self):
-        return self.amount < settings.LOW_BALANCE_ALERT
+        return self.amount < settings.BALANCE_ALERT_THRESHOLD_1
 
     def __unicode__(self):
         return "{}'s balance".format(self.customer)

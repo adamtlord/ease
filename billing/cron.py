@@ -16,7 +16,7 @@ class SubscriptionCronJob(CronJobBase):
 
     def do(self):
         today = timezone.now().date()
-        subscriptions_due = Subscription.objects.filter(next_billed_date=today).prefetch_related('customer')
+        subscriptions_due = Subscription.objects.filter(is_active=True).filter(next_billed_date=today).prefetch_related('customer')
         for subscription in subscriptions_due:
             success = debit_customer_balance(subscription.customer)
             if success:

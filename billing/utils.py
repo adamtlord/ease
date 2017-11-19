@@ -176,7 +176,7 @@ def debit_customer_balance(customer):
         if available_balance >= monthly_cost:
             customer.balance.amount -= monthly_cost
             customer.balance.save()
-            if customer.balance.amount < BALANCE_ALERT_THRESHOLD_1:
+            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1:
                 send_balance_alerts(customer, last_action='Monthly Subscription')
 
         else:
@@ -204,7 +204,7 @@ def debit_customer_balance(customer):
             '[Arrive] Problem with subscription balance ',
             msg_plain,
             settings.DEFAULT_FROM_EMAIL,
-            'admin@arriverides.com'
+            ['admin@arriverides.com']
         )
         return False
 
@@ -226,13 +226,13 @@ def send_balance_alerts(customer, last_action=None):
         msg_html = render_to_string('billing/negative_customer_balance.html', d)
 
     else:
-        if customer.balance.amount < BALANCE_ALERT_THRESHOLD_2:
-            d['threshold'] = BALANCE_ALERT_THRESHOLD_2
+        if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_2:
+            d['threshold'] = settings.BALANCE_ALERT_THRESHOLD_2
             msg_plain = render_to_string('billing/customer_balance_alert.txt', d)
             msg_html = render_to_string('billing/customer_balance_alert.html', d)
         else:
-            if customer.balance.amount < BALANCE_ALERT_THRESHOLD_1:
-                d['threshold'] = BALANCE_ALERT_THRESHOLD_1
+            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1:
+                d['threshold'] = settings.BALANCE_ALERT_THRESHOLD_1
                 msg_plain = render_to_string('billing/customer_balance_alert.txt', d)
                 msg_html = render_to_string('billing/customer_balance_alert.html', d)
 

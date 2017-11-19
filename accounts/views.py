@@ -203,7 +203,6 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
 
                             gift_touch = Touch(
                                 customer=customer,
-                                concierge=request.user,
                                 date=timezone.now(),
                                 type=Touch.GIFT,
                                 notes=gift_note
@@ -224,7 +223,6 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                         )
                         funds_touch = Touch(
                             customer=customer,
-                            concierge=request.user,
                             date=timezone.now(),
                             type=Touch.FUNDS,
                             notes='Added ${} to account'.format(charge_amount)
@@ -1054,7 +1052,6 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
                     )
                     funds_touch = Touch(
                         customer=customer,
-                        concierge=request.user,
                         date=timezone.now(),
                         type=Touch.FUNDS,
                         notes='Added ${} to account'.format(charge_amount)
