@@ -14,7 +14,7 @@
 {% block navbar %}
     {% include 'fragments/navbar-centered-logo.html' %}
 {% endblock navbar %}
-{% block messages %}{% endblock messages %}
+
 {% block content %}
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
@@ -23,10 +23,10 @@
         </div>
         <h3>Yay!</h3>
         <p>You just gave {{ customer.first_name }} ${{ gift.amount }} to use on rides.</p>
-        {% if gift.gift_date %}
-            <p>We won't display it in {{ customer.first_name}}'s account until {{ gift.gift_date }}.</p>
-        {% endif %}
-        <p>Please look for a receipt for your gift at {{ gift.email }}</p>.
+        <p>Please look for a receipt for your gift at {{ gift.email }}.</p>
+        <p class="text-center"><br>
+            <a href="http://arriverides.com" class="btn btn-primary">Return to Homepage</a>
+        </p>
     </div>
 </div>
 {% endblock %}

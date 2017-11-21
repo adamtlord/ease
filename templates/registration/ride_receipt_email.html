@@ -1,0 +1,18 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>Hi {{ account.first_name }},<br /><br />
+
+Thanks for riding with Arrive Rides!<br /><br />
+
+We have deducted the cost of your ride from your available funds.<br /><br />
+</p>
+<p>
+{{ ride.start_date|date:"DATETIME_FORMAT" }}<br />
+From {{ ride.start.display_name }} to {{ ride.destination.display_name }}<br />
+Total Cost: ${{ ride.total_cost }}
+<br /><br />
+</p>
+<p>
+Available Balance: <strong>${{ customer.balance.amount|floatformat }}</strong><br /><br />
+The Arrive Rides Team</p>
+{% endblock %}

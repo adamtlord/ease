@@ -43,6 +43,9 @@
             {% endif %}
             {% if customer.balance %}
                 &nbsp;Account Balance: <strong class="{% if customer.balance.is_low %}text-danger{% endif %}">${{ customer.balance.amount }}</strong>
+                {% if not customer.has_backup_card %}
+                    &nbsp; <strong class="text-danger">No backup card</strong>
+                {% endif %}
             {% endif %}
         </div>
         <div class="col-sm-6 text-right">

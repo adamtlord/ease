@@ -1,7 +1,6 @@
 import datetime
 import pytz
 import stripe
-from itertools import chain
 
 from django.conf import settings
 from django.core.cache import cache
@@ -9,7 +8,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from accounts.helpers import send_ride_receipt_email
 from billing.models import Invoice, StripeCustomer
+from concierge.models import Touch
 
 
 def datetime_from_timestamp(timestamp):
@@ -67,8 +68,8 @@ def invoice_customer_rides(account, customers, request):
     included_rides = []
     billable_rides = []
 
-    stripe_id = account.stripe_id
-    if stripe_id or account.balance:
+    stripe_id = account.stripe_id if account else None
+    if stripe_id or [customer.balance for customer in customers]:
         for customer, rides in customers.iteritems():
             for ride in rides:
                 if ride.cost or ride.fees:
@@ -85,11 +86,12 @@ def invoice_customer_rides(account, customers, request):
                         ride.total_cost = ride.total_cost_estimate
                         cost_to_bill = ride.total_cost
                         # if customer has an account
-                        if customer.has_funds:
+                        if customer.balance:
                             if customer.balance.amount >= ride.total_cost:
                                 # customer balance can cover ride
-                                customer.balance.amount -= ride.total_cost
-                                customer.balance.save()
+                                ride.invoiced = True
+                                ride.full_clean()
+                                ride.save()
                                 cost_to_bill = None
                             else:
                                 # ride cost more than balance
@@ -98,8 +100,21 @@ def invoice_customer_rides(account, customers, request):
                                     cost_to_bill = customer.balance.amount - ride.total_cost
                                 else:
                                     # ruh roh, they're in the red.
-                                    customer.balance.amount -= ride.total_cost
-                                    customer.balance.save()
+                                    cost_to_bill = None
+                                    ride.invoiced = True
+                                    ride.full_clean()
+                                    ride.save()
+                            customer.balance.amount -= ride.total_cost
+                            customer.balance.save()
+                            send_ride_receipt_email(customer, ride)
+                            new_touch = Touch(
+                                customer=customer,
+                                date=timezone.now(),
+                                type=Touch.BILLING,
+                                notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
+                            )
+                            new_touch.full_clean()
+                            new_touch.save()
                             if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1:
                                 send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
 

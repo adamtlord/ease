@@ -8,6 +8,8 @@ from billing.models import Subscription
 from billing.utils import debit_customer_balance
 
 
+# Try adding this to crontab
+# ~/webapps/django_app/ease/manage.py runcrons
 class SubscriptionCronJob(CronJobBase):
     RUN_AT_TIMES = ['23:50']
 

@@ -7,6 +7,6 @@ The customer now has a negative balance.
 
 Customer: {{ customer }}
 Last Charge: {{ last_action }}
-Current Customer Balance: ${{ current_balance }}
+Current Customer Balance: ${{ current_balance|floatformat }}
 
 {% endblock %}

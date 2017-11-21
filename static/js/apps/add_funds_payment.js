@@ -55,4 +55,6 @@ $(function() {
         }, 500);
     }
 
+    $('#add_card').collapse($('#id_funds_source').val() === 'new' ? 'show' : 'hide');
+
 });

@@ -16,7 +16,7 @@ from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload, send_new_customer_email, create_customer_subscription
+from accounts.helpers import send_welcome_email, send_subscription_receipt_email, create_customers_from_upload, send_new_customer_email, create_customer_subscription
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership, Balance, StripeCustomer
 from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
@@ -515,7 +515,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                         new_stripe_customer.save()
 
                         # everything was successful, so we can send a receipt to the user
-                        send_receipt_email(user)
+                        send_subscription_receipt_email(user)
 
                         messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 

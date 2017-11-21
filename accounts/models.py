@@ -16,7 +16,6 @@ from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
 from billing.models import Balance
-from billing.utils import get_stripe_subscription
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
 from billing.models import StripeCustomer, Plan
@@ -192,7 +191,7 @@ class Customer(Contact):
     known_as = models.CharField(max_length=50, blank=True, null=True)
     last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
     notes = models.TextField(blank=True, null=True)
-    plan = models.ForeignKey(Plan, blank=True, null=True)
+    plan = models.ForeignKey(Plan, blank=True, null=True, default=Plan.DEFAULT)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
     preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
     registered_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name='registered_by')
@@ -250,6 +249,7 @@ class Customer(Contact):
             return 'inactive'
 
     def get_rides_this_month(self):
+        from billing.utils import get_stripe_subscription
         if self.plan:
             try:
                 subscription = get_stripe_subscription(self)
@@ -295,6 +295,8 @@ class Customer(Contact):
 
     @cached_property
     def ready_to_ride(self):
+        if self.has_funds:
+            return True
         if self.ride_account and self.subscription_account and self.plan:
             return True
         else:
@@ -371,6 +373,13 @@ class Customer(Contact):
         try:
             return self.balance.amount > 0
         except Balance.DoesNotExist:
+            return False
+
+    @property
+    def has_backup_card(self):
+        if self.subscription_account or self.ride_account:
+            return True
+        else:
             return False
 
     def __unicode__(self):

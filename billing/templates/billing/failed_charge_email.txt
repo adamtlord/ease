@@ -8,6 +8,6 @@ The customer now has a negative balance.
 Customer: {{ customer }}
 Subscription Cost: ${{ monthly_cost}}
 Available Balance before Subscription: ${{ available_balance }}
-Current Customer Balance: ${{ current_balance }}
+Current Customer Balance: ${{ current_balance|floatformat }}
 
 {% endblock %}

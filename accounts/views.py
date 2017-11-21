@@ -1,6 +1,4 @@
 import datetime
-from dateutil.relativedelta import relativedelta
-import pytz
 import stripe
 
 from django.contrib import messages, auth
@@ -17,7 +15,7 @@ from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUserProfileForm,
                             CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm,
                             LovedOnePreferencesForm)
-from accounts.helpers import send_welcome_email, send_receipt_email, send_new_customer_email, create_customer_subscription
+from accounts.helpers import send_welcome_email, send_subscription_receipt_email, send_new_customer_email, create_customer_subscription
 from accounts.models import Customer, UserProfile
 from billing.models import Plan, Balance, StripeCustomer, Gift, Subscription
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
@@ -366,7 +364,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                     customer.save()
                     new_stripe_customer.save()
 
-                    send_receipt_email(request.user)
+                    send_subscription_receipt_email(request.user)
 
                     send_new_customer_email(request.user)
 
@@ -658,7 +656,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     customer.save()
                     new_stripe_customer.save()
 
-                    send_receipt_email(request.user)
+                    send_subscription_receipt_email(request.user)
 
                     send_new_customer_email(request.user)
 
