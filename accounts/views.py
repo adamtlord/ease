@@ -12,12 +12,12 @@ from django.urls import reverse
 from django.utils import timezone
 
 from common.decorators import anonymous_required
-from accounts.forms import (CustomUserRegistrationForm, CustomUserForm, CustomUserProfileForm,
-                            CustomerForm, RiderForm, CustomerPreferencesForm, LovedOneForm,
+from accounts.forms import (CustomUserRegistrationForm, CustomUserForm,
+                            CustomerForm, RiderForm, LovedOneForm,
                             LovedOnePreferencesForm)
 from accounts.helpers import send_welcome_email, send_subscription_receipt_email, send_new_customer_email, create_customer_subscription
-from accounts.models import Customer, UserProfile
-from billing.models import Plan, Balance, StripeCustomer, Gift, Subscription
+from accounts.models import Customer
+from billing.models import Plan, Balance, StripeCustomer, Gift
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
@@ -372,6 +372,11 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
                     request.session['payment_complete'] = True
 
+                    if request.session.get('next'):
+                        next_url = request.session.get('next')
+                        del request.session['next']
+                        return redirect(next_url)
+
                     return redirect('register_self_destinations')
 
             # catch Stripe card validation errors
@@ -668,6 +673,11 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
                     request.session['payment_complete'] = True
 
+                    if request.session.get('next'):
+                        next_url = request.session.get('next')
+                        del request.session['next']
+                        return redirect(next_url)
+
                     return redirect('register_lovedone_destinations')
 
             # catch Stripe card validation errors
@@ -862,6 +872,10 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
 def register_payment_redirect(request):
     user = request.user
     customer = user.get_customer()
+    next_param = request.GET.get('next')
+    if next_param:
+        request.session['next'] = next_param
+
     if customer.subscription_account:
         return redirect('customer_subscription_account_edit')
     else:
@@ -970,7 +984,7 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
     card_errors = None
 
     if request.method == 'POST':
-        payment_form = StripeCustomerForm(request.POST, unrequire=request.POST['funds_source'] != "new")
+        payment_form = AddFundsForm(request.POST, unrequire=request.POST['funds_source'] != "new")
         gift_form = GiftForm(request.POST, prefix="gift")
 
         if all([
@@ -1080,13 +1094,13 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
     else:
         payment_form = AddFundsForm(
             initial={
-                'email':customer.email,
+                'email': user.email if customer.user.profile.on_behalf else customer.email,
                 'first_name': customer.first_name,
                 'last_name': customer.last_name,
                 'billing_zip': customer.home.zip_code
-            })
+            }
+        )
         gift_form = GiftForm(prefix="gift")
-
 
     d = {
         'customer': customer,

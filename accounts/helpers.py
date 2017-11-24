@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 
 from accounts.models import CustomUser, Customer
 from rides.models import Destination
-from billing.models import Plan, GroupMembership
+from billing.models import Plan, GroupMembership, Subscription
 
 from concierge.models import Touch
 

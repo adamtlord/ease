@@ -2,7 +2,7 @@
 {% load humanize %}
 {% block content %}
 
-Customer: {{ customer }}
+Customer: {{ customer }} [{% url 'customer_detail' customer.id %}]
 
 This customer's available balance has dropped below ${{ threshold }}.
 Their current balance is ${{ current_balance }}.

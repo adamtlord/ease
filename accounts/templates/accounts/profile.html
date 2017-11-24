@@ -108,12 +108,16 @@
                 {% if customer.has_backup_card %}
                     {% if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account %}
                         <tr>
-                            <th>Credit card on file</th>
+                            <th>Credit card on file {% if customer.balance %}(backup){% endif %}</th>
                             <td><i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
                         </tr>
                         <tr>
                             <td colspan="2" class="small">
-                                This credit card is used to pay for your monthly subscription and the rides you take through Arrive. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                                {% if customer.balance %}
+                                    This credit card will only be used to pay for your monthly subscription or the rides you take if your Account Balance has been depleted. <a href="{% url 'customer_subscription_account_edit' %}">Change your backup card.</a>
+                                {% else %}
+                                    This credit card is used to pay for your monthly subscription and the rides you take through Arrive. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% else %}
@@ -124,7 +128,7 @@
                                 <td>{% if customer.subscription_account %}
                                         <i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}
                                     {% else %}
-                                        <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                                        <a href="{% url 'register_payment_redirect' %}?next={% url 'profile' %}">Add payment method</a>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -144,7 +148,7 @@
                                     {% if customer.ride_account %}
                                         <i class="fa fa-credit-card"></i> {{ customer.ride_account.last_4_digits|cc_display }}
                                     {% else %}
-                                        <a href="{% url 'register_payment_redirect' %}">Add payment method</a>
+                                        <a href="{% url 'register_payment_redirect' %}?next={% url 'profile' %}">Add payment method</a>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -161,7 +165,7 @@
                     {# customer has no card on file, they probably have a balance #}
                     <tr>
                         <th>No credit card on file</th>
-                        <td><a href="{% url 'register_payment_redirect' %}">Add payment method</a></td>
+                        <td><a href="{% url 'register_payment_redirect' %}?next={% url 'profile' %}">Add {% if customer.balance %}backup {% endif %}payment method</a></td>
                     </tr>
                 {% endif %}
             </tbody>

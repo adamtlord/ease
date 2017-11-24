@@ -27,7 +27,14 @@
     <div class="row">
         <div class="col-sm-6">
             <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
-                <h3 class="m-t-0">Add funds to your Arrive&nbsp;account</h2>
+                <h3 class="m-t-0">Add funds to {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} Arrive&nbsp;account</h3>
+                {% if customer_stripe_accounts %}
+                    <p>Instead of charging the credit card on file for each ride, you can add funds to your Arrive balance by making one-time payments.
+                        We'll draw from the balance when you take rides and to renew your monthly subscription, and only charge the credit card on file
+                        when this balance has been depleted.
+                    </p>
+                {% endif %}
+                <p>
                 {% if errors %}
                 <p class="alert alert-danger">
                     {% if errors|length == 1 %}

@@ -70,8 +70,12 @@ def invoice_customer_rides(account, customers, request):
 
     stripe_id = account.stripe_id if account else None
     if stripe_id or [customer.balance for customer in customers]:
+        print '*' * 80
+        print 'bill'
         for customer, rides in customers.iteritems():
+            print customer
             for ride in rides:
+                print ride
                 if ride.cost or ride.fees:
                     # the ride cost something
                     if ride.total_cost_estimate == 0:
@@ -86,27 +90,37 @@ def invoice_customer_rides(account, customers, request):
                         ride.total_cost = ride.total_cost_estimate
                         cost_to_bill = ride.total_cost
                         # if customer has an account
-                        if customer.balance:
+                        if hasattr(customer, 'balance'):
+                            print 'balance'
                             if customer.balance.amount >= ride.total_cost:
+                                print 'covered'
                                 # customer balance can cover ride
                                 ride.invoiced = True
                                 ride.full_clean()
                                 ride.save()
                                 cost_to_bill = None
+                                customer.balance.amount -= ride.total_cost
                             else:
                                 # ride cost more than balance
                                 if stripe_id:
+                                    print 'overage'
                                     # charge overage to ride account
                                     cost_to_bill = customer.balance.amount - ride.total_cost
+                                    customer.balance.amount = 0
+                                    if cost_to_bill < 0:
+                                        cost_to_bill = -cost_to_bill
                                 else:
+                                    print 'overdrawn'
                                     # ruh roh, they're in the red.
                                     cost_to_bill = None
                                     ride.invoiced = True
                                     ride.full_clean()
                                     ride.save()
-                            customer.balance.amount -= ride.total_cost
+                                    customer.balance.amount -= ride.total_cost
                             customer.balance.save()
+                            print 'receipt'
                             send_ride_receipt_email(customer, ride)
+                            print 'touch'
                             new_touch = Touch(
                                 customer=customer,
                                 date=timezone.now(),
@@ -119,6 +133,7 @@ def invoice_customer_rides(account, customers, request):
                                 send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
 
                         if cost_to_bill:
+                            print 'invoice {}'.format(cost_to_bill)
                             invoiceitem = stripe.InvoiceItem.create(
                                 customer=stripe_id,
                                 amount=int(ride.total_cost * 100),
@@ -140,11 +155,15 @@ def invoice_customer_rides(account, customers, request):
             total += 1
 
         if billable_rides:
+            print 'billable rides'
+            print billable_rides
             # step out of loop to create one invoice for whole account
             stripe_invoice = stripe.Invoice.create(customer=stripe_id)
 
             # get back in loop to generate invoices per-customer
             for customer in customers:
+                print 'customer'
+                print customer
                 new_invoice = Invoice(
                     stripe_id=stripe_invoice.id,
                     customer=customer,
@@ -157,10 +176,14 @@ def invoice_customer_rides(account, customers, request):
                 new_invoice.save()
 
             for ride in billable_rides:
+                print 'ride'
+                print ride
                 ride.invoice = new_invoice
                 ride.invoiced = True
                 ride.full_clean()
                 ride.save()
+        print '-' * 80
+        print
 
     else:
         errors.append('Customer {} has no Ride Account specified (no credit card to bill) and/or no funds in their account.'.format(customer))
@@ -230,13 +253,13 @@ def send_balance_alerts(customer, last_action=None):
 
     d = {
         'customer': customer,
-        'current_balance': round(customer.balance.amount,2),
+        'current_balance': customer.balance.amount,
         'threshhold': None,
         'last_action': last_action,
         'subscription_account': customer.subscription_account or None
     }
 
-    if customer.balance.amount < 0:
+    if customer.balance.amount <= 0:
         msg_plain = render_to_string('billing/negative_customer_balance.txt', d)
         msg_html = render_to_string('billing/negative_customer_balance.html', d)
 

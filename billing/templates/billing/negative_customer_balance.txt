@@ -2,11 +2,11 @@
 {% load humanize %}
 {% block content %}
 
-This customer's available balance was not sufficient to cover their most recent charge, and they don't have a credit card on file.
-The customer now has a negative balance.
+This customer's available balance was not sufficient to cover their most recent charge{% if subscription_account %}. The overage (if any) was billed to their backup credit card on file.{% else %} and they don't have a credit card on file.{% endif %}
+The customer now has a {% if current_balance < 0 %}negative{% else %}zero{% endif %} balance.
 
-Customer: {{ customer }}
+Customer: {{ customer }} [{% url 'customer_detail' customer.id %}]
 Last Charge: {{ last_action }}
-Current Customer Balance: ${{ current_balance|floatformat }}
+Current Customer Balance: ${{ current_balance|floatformat:2 }}
 
 {% endblock %}
