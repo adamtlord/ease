@@ -71,6 +71,7 @@
         <h3 class="m-t-0">Payment Information</h3>
         <table class="table table-striped">
             <tbody>
+        {% comment hold for gift card launch %}
                 <tr>
                 {% if customer.balance %}
                     <th>
@@ -84,6 +85,7 @@
                         <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
                     </th>
                 {% endif %}
+        {% endcomment %}
                 </tr>
                 {% if not customer.plan.is_default %}
                     <tr>
@@ -112,13 +114,21 @@
                             <td><i class="fa fa-credit-card"></i> {{ customer.subscription_account.last_4_digits|cc_display }}</td>
                         </tr>
                         <tr>
-                            <td colspan="2" class="small">
-                                {% if customer.balance %}
-                                    This credit card will only be used to pay for your monthly subscription or the rides you take if your Account Balance has been depleted. <a href="{% url 'customer_subscription_account_edit' %}">Change your backup card.</a>
-                                {% else %}
-                                    This credit card is used to pay for your monthly subscription and the rides you take through Arrive. <a href="{% url 'customer_subscription_account_edit' %}">Change your payment information.</a>
-                                {% endif %}
-                            </td>
+                            {% if customer.balance %}
+                                <td class="small">
+                                    This credit card will only be used to pay for your monthly subscription or the rides you take if your Account Balance has been depleted.
+                                </td>
+                                <td>
+                                    <a href="{% url 'customer_subscription_account_edit' %}" class="btn btn-danger btn-sm">Change your backup card</a>
+                                </td>
+                            {% else %}
+                                <td class="small">
+                                    This credit card is used to pay for your monthly subscription and the rides you take through Arrive.
+                                </td>
+                                <td>
+                                    <a href="{% url 'customer_subscription_account_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% else %}
                         {% if customer.group_membership and customer.group_membership.includes_subscription %}
