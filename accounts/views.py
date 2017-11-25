@@ -1217,6 +1217,8 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         new_gift.email = stripe_customer.email
                         new_gift.customer = customer
                         new_gift.amount = request.POST['amount']
+                        new_gift.first_name = stripe_customer.first_name
+                        new_gift.last_name = stripe_customer.last_name
                         new_gift.save()
 
                         success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
