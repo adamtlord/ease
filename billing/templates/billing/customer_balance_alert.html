@@ -1,0 +1,16 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>
+<strong>Customer:</strong> <a href="{% url 'customer_detail' customer.id %}">{{ customer }}</a>
+</p>
+<p>
+This customer's available balance has dropped below ${{ threshold }}.<br>
+Their current balance is <strong>${{ current_balance }}</strong>.</p>
+<p>{% if subscription_account %}
+The customer does have a subscription credit card on file:
+<strong>Subscription Account:</strong> {{ subscription_account }} {{ subscription_account.email }}
+{% else %}
+The customer <strong style="color:#FF6A5C">does not</strong> have a credit card on file.
+{% endif %}
+</p>
+{% endblock %}

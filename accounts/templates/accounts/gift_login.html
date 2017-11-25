@@ -1,0 +1,60 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block title %}Login{% endblock %}
+{% block messages %}{% endblock messages %}
+{% block content %}
+<div class="page-header">
+    <h2>Arrive Gift Certificates</h2>
+</div>
+{% if not match %}
+    <div class="alert alert-danger">
+        <strong>Sorry!</strong> We couldn't find a member based on that phone number.<br>
+        Please give us a call at <strong class="tel">1-866-626-9879</strong> or write to <a href="mailto:hello@arriverides.com">hello@arriverides.com</a>
+        so we can help you with your gift!
+    </div>
+{% endif %}
+<div class="row">
+    <div class="col-sm-6">
+        <h3 class="m-t-0">Login</h3>
+        <form method="post" action="{% url 'auth_login' %}" class="form-login add-control">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <p class="alert alert-danger"><i class="fa fa-warning"></i> Oops! Looks like your username/password combination is wrong</p>
+            {% endif %}
+            {% for field in login_form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <input type="hidden" name="next" value="{% url 'profile_add_funds' %}" />
+            <div class="form-actions">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </div>
+        </form>
+        <p><a href="{% url 'auth_password_reset' %}">Forgot your password?</a></p>
+    </div>
+    <div class="col-sm-6">
+        <div class="well">
+            <h3 class="m-t-0">Don't know your login?</h3>
+            <form method="post" action="" class="">
+                {% csrf_token %}
+                <div class="form-group phone-mask">
+                    <label class="control-label" for="id_member_phone">
+                        Enter member's phone number<span class="req">*</span>
+                    </label>
+                    <input type="text" id="id_member_phone" name="phone_lookup" class="form-control" required />
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-lg btn-success btn-block" type="submit">Look up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('.phone-mask input').mask('000-000-0000');
+    });
+</script>
+{% endblock %}

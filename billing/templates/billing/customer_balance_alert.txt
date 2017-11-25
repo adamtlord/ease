@@ -1,0 +1,16 @@
+{% extends 'base_email_txt.html' %}
+{% load humanize %}
+{% block content %}
+
+Customer: {{ customer }} [{% url 'customer_detail' customer.id %}]
+
+This customer's available balance has dropped below ${{ threshold }}.
+Their current balance is ${{ current_balance }}.
+{% if subscription_account %}
+The customer does have a subscription credit card on file:
+Subscription Account: {{ subscription_account }} {{ subscription_account.email}}
+{% else %}
+The customer does not have a credit card on file.
+{% endif %}
+
+{% endblock %}

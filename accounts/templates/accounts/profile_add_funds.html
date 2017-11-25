@@ -1,0 +1,106 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% block header_includes %}
+    {{ block.super }}
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+        Stripe.setPublishableKey('{{ STRIPE_PUBLISHABLE_KEY}}');
+    </script>
+{% endblock header_includes %}
+
+{% block title %}Add Funds for {{ customer }}{% endblock title %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ request.user }}'s Profile
+    {% if lovedone and user.full_name != customer.full_name %}
+        <small>On behalf of {{ customer }}</small>
+    {% endif %}
+    </h2>
+</div>
+{% if customer.rides_this_month and customer.subscription_account and customer.plan.included_rides_per_month %}
+    <p class="alert alert-info">
+        Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}
+    </p>
+{% endif %}
+    <div class="row">
+        <div class="col-sm-6">
+            <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
+                <h3 class="m-t-0">Add funds to {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} Arrive&nbsp;account</h3>
+                {% if customer_stripe_accounts %}
+                    <p>Instead of charging the credit card on file for each ride, you can add funds to your Arrive balance by making one-time payments.
+                        We'll draw from the balance when you take rides and to renew your monthly subscription, and only charge the credit card on file
+                        when this balance has been depleted.
+                    </p>
+                {% endif %}
+                <p>
+                {% if errors %}
+                <p class="alert alert-danger">
+                    {% if errors|length == 1 %}
+                        Please correct the error below.
+                    {% else %}
+                        Please correct the errors below.
+                    {% endif %}
+                </p>
+                {% endif %}
+                {{ form.non_field_errors }}
+                <div id="credit-card-errors"{% if not card_errors %} style="display:none"{% endif %}>
+                    <div class="alert alert-danger" id="stripe-error-message">{% if card_errors %}{{ card_errors }}{% endif %}</div>
+                </div>
+
+                {% render_form_field payment_form.amount %}
+
+                <div class="form-group">
+                    <label for="funds_source">Credit Card<span class="req">*</span></label>
+                    <select class="form-control" id="id_funds_source" name="funds_source">
+                        {% for account in customer_stripe_accounts %}
+                            <option value="{{ account.stripe_id }}">{{ account }} ***{{ account.last_4_digits }}</option>
+                        {% endfor %}
+                        <option value="new">Add a new card</option>
+                    </select>
+                </div>
+                <fieldset id="add_card" class="collapse">
+                    <div class="cc-inline">
+                        <div class="form-group cc-mask">
+                            <label for="credit_card_number">Credit card number<span class="req">*</span></label>
+                            <input class="form-control" id="credit_card_number" type="text">
+                        </div>
+                        <div class="form-group cvv">
+                            <label for="cvv">CVV<span class="req">*</span></label>
+                            <input class="form-control" id="CVV" type="text">
+                        </div>
+                    </div>
+                    <div class="expiry-inline">
+                        <div class="form-group">
+                            <label for="expiry_date">Expiry date<span class="req">*</span></label>
+                            <select class="form-control" id="expiry_month">
+                            {% for month in months %}
+                                <option value="{{ month }}"{% if soon.month == month %} selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                            </select>
+                            <select class="form-control year" id="expiry_year">
+                            {% for year in years %}
+                                <option value="{{ year }}"{% if soon.year == year %} selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    {% render_form_field payment_form.first_name %}
+                    {% render_form_field payment_form.last_name %}
+                    {% render_form_field payment_form.email %}
+                    {% render_form_field payment_form.last_4_digits %}
+                    {% render_form_field payment_form.stripe_token %}
+                    {% render_form_field payment_form.billing_zip %}
+                </fieldset>
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary btn-block" value="Submit" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+    <script src="{{ STATIC_URL }}js/apps/add_funds_payment.min.js"></script>
+{% endblock %}

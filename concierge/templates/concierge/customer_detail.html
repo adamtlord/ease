@@ -13,6 +13,12 @@
             {% if not customer.intro_call %}
                 <p class="alert alert-warning">
                     <strong>Intro call needed</strong>
+                    {% for gift in customer.gift_set.all %}
+                        | <i class="fa fa-gift" data-toggle="popover" data-placement="top" data-content="${{ gift.amount }} to {{ customer }} from {{ gift.first_name }} {{ gift.last_name }} ({{ gift.relationship }})"></i> {{ gift.gift_date|date:'SHORT_DATE_FORMAT' }}{% if gift.gift_date == today %} <strong>Today!</strong>{% endif %}
+                    {% endfor %}
+                    {% if customer.gift_date %}
+                        | <i class="fa fa-gift"></i> {{ customer.gift_date|date:'SHORT_DATE_FORMAT' }}{% if customer.gift_date == today %} <span class="label label-success">Today!</span>{% endif %}
+                    {% endif %}
                 </p>
             {% endif %}
             <table class="table">
@@ -259,6 +265,11 @@
                     Enter Activity
                 </a>
             </p>
+            <p>
+                <a href="{% url 'customer_add_funds' customer.id %}" class="btn btn-secondary btn-block">
+                    Add Funds
+                </a>
+            </p>
             {% if not customer.ready_to_ride %}
                 <p class="alert alert-danger">
                 {% for missing in customer.missing %}
@@ -293,5 +304,11 @@
         </div>
     {% endfor %}
 {% endif %}
-
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
 {% endblock %}

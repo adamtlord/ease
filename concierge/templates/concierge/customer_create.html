@@ -22,6 +22,7 @@
             {{ home_form.non_field_errors }}
             {{ rider_form.non_field_errors }}
             <fieldset>
+                {% render_form_field customer_form.plan %}
                 <legend>Primary Rider's Information</legend>
                     {% render_form_field customer_form.first_name %}
                     {% render_form_field customer_form.last_name %}

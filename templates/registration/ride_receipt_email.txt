@@ -1,0 +1,20 @@
+{% extends 'base_email_txt.html' %}
+{% block content %}
+Hi{% if customer.first_name%} {{ customer.first_name }}{% endif %},
+
+Thanks for riding with Arrive Rides!
+
+We have deducted the cost of your ride from your available funds.
+
+____________________________________________
+
+{{ ride.start_date|date:"DATETIME_FORMAT" }}: From {{ ride.start.display_name }} to {{ ride.destination.display_name }}
+Total Cost: ${{ ride.total_cost }}
+
+____________________________________________
+
+Available Balance: ${{ customer.balance.amount }}
+
+
+The Arrive Rides Team
+{% endblock %}

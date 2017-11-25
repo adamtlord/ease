@@ -2,17 +2,12 @@
 {% load humanize %}
 {% block content %}
 
-A charge in Stripe just failed.
+This customer's available balance was not sufficient to cover their monthly subscription, and they don't have a credit card on file.
+The customer now has a negative balance.
 
-{% if customer %}
 Customer: {{ customer }}
-{% else %}
-* We couldn't find a Stripe record for this customer in our database, so we're not sure who it is.
-  Their Stripe customer id is {{ stripe_customer }}. (https://dashboard.stripe.com/customers/{{ stripe_customer }})
-{% endif %}
-Amount: ${{ amount }}
-For: {{ charge.statement_descriptor }}
-Stripe charge: https://dashboard.stripe.com/charges/{{ charge.id }}
-Stripe invoice: https://dashboard.stripe.com/invoices/{{ charge.invoice }}
+Subscription Cost: ${{ monthly_cost}}
+Available Balance before Subscription: ${{ available_balance }}
+Current Customer Balance: ${{ current_balance|floatformat }}
 
 {% endblock %}

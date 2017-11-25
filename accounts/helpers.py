@@ -1,4 +1,5 @@
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import csv
 import string
 import random
@@ -10,8 +11,8 @@ from django.template.loader import render_to_string
 
 from accounts.models import CustomUser, Customer
 from rides.models import Destination
-from billing.models import Plan, GroupMembership
-from billing.utils import get_stripe_subscription
+from billing.models import Plan, GroupMembership, Subscription
+
 from concierge.models import Touch
 
 
@@ -56,8 +57,8 @@ def send_welcome_email(user):
     new_touch.save()
 
 
-def send_receipt_email(user):
-
+def send_subscription_receipt_email(user):
+    from billing.utils import get_stripe_subscription
     customer = user.get_customer()
     account = customer.subscription_account
     plan = customer.plan
@@ -71,8 +72,8 @@ def send_receipt_email(user):
         'next_bill_date': next_bill_date
     }
 
-    msg_plain = render_to_string('registration/receipt_email.txt', d)
-    msg_html = render_to_string('registration/receipt_email.html', d)
+    msg_plain = render_to_string('registration/subscription_receipt_email.txt', d)
+    msg_html = render_to_string('registration/subscription_receipt_email.html', d)
 
     to_email = account.email if account.email else user.email
 
@@ -89,6 +90,37 @@ def send_receipt_email(user):
         date=timezone.now(),
         type=Touch.EMAIL,
         notes='Sent receipt email after payment'
+    )
+    new_touch.full_clean()
+    new_touch.save()
+
+
+def send_ride_receipt_email(customer, ride):
+    user = customer.user
+    account = customer.ride_account
+    to_email = customer.email if customer.email else account.email if account.email else user.email
+
+    d = {
+        'ride': ride,
+        'customer': customer
+    }
+
+    msg_plain = render_to_string('registration/ride_receipt_email.txt', d)
+    msg_html = render_to_string('registration/ride_receipt_email.html', d)
+
+    send_mail(
+        'Thanks for riding with Arrive!',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        [to_email],
+        html_message=msg_html,
+    )
+
+    new_touch = Touch(
+        customer=customer,
+        date=timezone.now(),
+        type=Touch.EMAIL,
+        notes='Sent ride receipt email (from balance)'
     )
     new_touch.full_clean()
     new_touch.save()
@@ -264,3 +296,18 @@ def create_customers_from_upload(uploaded_file, request):
             results['errors'].append(u'Row {}: {}'.format(idx + 1, ex))
 
     return results
+
+
+def create_customer_subscription(customer):
+    # Create a customer subscription so we can track drawing down their balance monthly
+    if timezone.now().date() < datetime(2017, 12, 10).date():
+        start_date = timezone.now().date() + relativedelta(months=1)
+    else:
+        start_date = timezone.now().date()
+
+    new_subscription = Subscription(
+        customer=customer,
+        is_active=True,
+        next_billed_date=start_date
+    )
+    new_subscription.save()

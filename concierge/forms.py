@@ -229,11 +229,11 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS + ['send_updates']
+        fields = CUSTOMER_FIELDS + ['send_updates', 'plan']
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
-        for field in CUSTOMER_FIELDS:
+        for field in self.Meta.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 

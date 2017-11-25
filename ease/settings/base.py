@@ -20,7 +20,11 @@ ROOT_URLCONF = 'ease.urls'
 # normal working hours: (start, end)
 ARRIVE_BUSINESS_HOURS = (9, 18)
 # fee for rides outside normal working hours, in dollars
-ARRIVE_AFTER_HOURS_FEE = 7
+ARRIVE_AFTER_HOURS_FEE = 7.00
+
+# balance below which the user should be alerted
+BALANCE_ALERT_THRESHOLD_1 = 40.00
+BALANCE_ALERT_THRESHOLD_2 = 30.00
 
 DEBUG = False
 IS_DEV = False
@@ -52,6 +56,7 @@ INSTALLED_APPS = [
     'django_common',
     'rest_framework',
     'django_filters',
+    'django_cron',
 
     'accounts',
     'billing',
@@ -141,3 +146,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
+
+CRON_CLASSES = [
+    'billing.cron.SubscriptionCronJob',
+]

@@ -120,7 +120,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
                 concierge_start_time = new_ride.start_date.astimezone(tz)
                 if not settings.ARRIVE_BUSINESS_HOURS[0] <= concierge_start_time.hour < settings.ARRIVE_BUSINESS_HOURS[1]:
                     new_ride.fees = new_ride.fees or 0
-                    new_ride.fees += settings.ARRIVE_AFTER_HOURS_FEE
+                    new_ride.fees += customer.plan.after_hours_fee
 
             if included:
                 if new_ride.notes:
