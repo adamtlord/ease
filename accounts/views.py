@@ -1239,11 +1239,6 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         if not hasattr(customer, 'subscription'):
                             create_customer_subscription(customer)
 
-                        messages.add_message(
-                            request,
-                            messages.SUCCESS,
-                            success_message
-                        )
                         funds_touch = Touch(
                             customer=customer,
                             date=timezone.now(),
