@@ -32,7 +32,7 @@
         {% block header_includes %}{% endblock header_includes %}
     </head>
 
-    <body class="{% if request.user.is_staff %}admin{% else %}portal{% endif %}">
+    <body class="{% if request.user.is_staff %}admin{% else %}portal{% endif %} {% block body_class %}{% endblock %}">
         {% block navbar %}
             {% include 'fragments/navbar.html' %}
         {% endblock navbar %}
