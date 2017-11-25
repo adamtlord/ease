@@ -184,6 +184,22 @@ def send_new_customer_email(user):
     )
 
 
+def send_test_email():
+
+    msg_plain = render_to_string('registration/test_email.txt')
+    msg_html = render_to_string('registration/test_email.html')
+
+    to_email = ['admin@arriverides.com']
+
+    send_mail(
+        'Cron Test',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        to_email,
+        html_message=msg_html,
+    )
+
+
 def create_customers_from_upload(uploaded_file, request):
     UPLOAD_COLUMNS = (
         ('First'),

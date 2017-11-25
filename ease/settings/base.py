@@ -149,4 +149,5 @@ REST_FRAMEWORK = {
 
 CRON_CLASSES = [
     'billing.cron.SubscriptionCronJob',
+    'accounts.cron.TestCronJob',
 ]
