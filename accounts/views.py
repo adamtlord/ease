@@ -126,6 +126,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
     card_errors = None
     is_self = request.session.get('self', False)
     lovedone = request.session.get('lovedone', True)
+    gift_flow = request.session.get('gift', False)
 
     if request.method == 'POST':
         payment_form = AddFundsForm(request.POST)
@@ -251,11 +252,12 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
     else:
         payment_form = AddFundsForm(
             initial={
-                'email':customer.user.email,
+                'email': customer.user.email,
                 'first_name': customer.user.first_name,
                 'last_name': customer.user.last_name,
             })
-        gift_form = GiftForm(prefix="gift",
+        gift_form = GiftForm(
+            prefix="gift",
             initial={
                 'first_name': customer.user.first_name,
                 'last_name': customer.user.last_name,
@@ -273,6 +275,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
         'soon': soon(),
         'errors': errors,
         'card_errors': card_errors,
+        'gift': gift_flow
     }
 
     return render(request, template, d)
@@ -490,13 +493,14 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
     errors = []
     error_count = []
 
+    gift_flow = request.GET.get('gift', None)
+
     if request.method == 'GET':
 
         plan_selection = request.GET.get('plan', None)
         if plan_selection:
             request.session['plan'] = plan_selection
 
-        gift_flow = request.GET.get('gift', None)
         if gift_flow:
             request.session['gift'] = True
 
@@ -569,7 +573,7 @@ def register_lovedone(request, gift=False, template='accounts/register.html'):
         'rider_form': rider_form,
         'errors': errors,
         'error_count': error_count,
-        'gift': gift
+        'gift': gift_flow
     }
 
     return render(request, template, d)
