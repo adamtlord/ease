@@ -7,7 +7,7 @@
 This customer's available balance has dropped below ${{ threshold }}.<br>
 Their current balance is <strong>${{ current_balance }}</strong>.</p>
 <p>{% if subscription_account %}
-The customer does have a subscription credit card on file:
+The customer does have a subscription credit card on file:<br>
 <strong>Subscription Account:</strong> {{ subscription_account }} {{ subscription_account.email }}
 {% else %}
 The customer <strong style="color:#FF6A5C">does not</strong> have a credit card on file.
