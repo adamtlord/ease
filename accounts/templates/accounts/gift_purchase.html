@@ -1,6 +1,7 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
 
+{% block body_class %}gift{% endblock %}
 {% block header_includes %}
     {{ block.super }}
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -18,9 +19,9 @@
 {% block content %}
 <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
     <div class="row">
-        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 form-content">
             {% include 'fragments/messages.html' %}
-            <h3 class="m-t-0">How much would you like to give {{ customer.first_name }}?</h3>
+            <h3>How much would you like to give {{ customer.first_name }}?</h3>
             {% if errors %}
                 <p class="alert alert-danger">
                     {% if errors|length == 1 %}

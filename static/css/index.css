@@ -10776,9 +10776,17 @@ body.gift nav.navbar .navbar-brand .logo .letter {
 }
 body.gift .form-content {
   background: white;
+  padding: 15px 25px;
 }
 body.gift footer {
   background-color: #820c0c;
+}
+body.gift.gift-login:before {
+  width: 200px;
+  height: 200px;
+}
+body.gift.gift-login > .container {
+  background: white;
 }
 #customer_search {
   margin-bottom: 44px;
