@@ -16,16 +16,20 @@ class Plan(AbstractEnumModel):
     INTRO_GIFT = 4
     COPPER = 5
     TERRACES = 6
+    BROOKDALE_SP = 7
+    STANDARD_2018 = 8
 
-    DEFAULT = COPPER
+    DEFAULT = STANDARD_2018
 
     CHOICES = (
+        (STANDARD_2018, 'Standard (2018)'),
         (BRONZE, 'Bronze Membership'),
         (SILVER, 'Silver Membership'),
         (GOLD, 'Gold Membership'),
         (INTRO_GIFT, 'Unlimited Gift Certificate'),
         (COPPER, 'Copper (standard)'),
         (TERRACES, 'Terraces'),
+        (BROOKDALE_SP, 'Brookdale San Pablo'),
     )
 
     active = models.BooleanField(default=True)
