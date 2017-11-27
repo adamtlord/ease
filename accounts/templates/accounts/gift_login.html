@@ -11,7 +11,7 @@
 
 {% block content %}
 <div class="page-header text-center">
-    <h2>Arrive Gift Certificates</h2>
+    <h2>Arrive Gift Certificates<br><small>Give a Gift to a Current Member</small></h2>
 </div>
 {% if not match %}
     <div class="alert alert-danger">
@@ -22,7 +22,7 @@
 {% endif %}
 <div class="row">
     <div class="col-sm-6">
-        <h3 class="m-t-0">Login</h3>
+        <h3 class="m-t-0">Member Login</h3>
         <form method="post" action="{% url 'auth_login' %}" class="form-login add-control">
             {% csrf_token %}
             {% if form.non_field_errors %}
@@ -45,7 +45,7 @@
                 {% csrf_token %}
                 <div class="form-group phone-mask">
                     <label class="control-label" for="id_member_phone">
-                        Enter member's phone number<span class="req">*</span>
+                        Enter the member's phone number<span class="req">*</span>
                     </label>
                     <input type="text" id="id_member_phone" name="phone_lookup" class="form-control" required />
                 </div>
