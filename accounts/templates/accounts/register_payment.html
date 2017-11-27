@@ -1,6 +1,7 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
 
+{% block body_class %}gift{% endblock %}
 {% block navbar %}
     {% include 'fragments/navbar-centered-logo.html' %}
 {% endblock navbar %}
@@ -18,7 +19,7 @@
 {% block messages %}{% endblock messages %}
 {% block content %}
 <div class="row">
-    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 form-content">
         {% include 'fragments/messages.html' %}
         <div class="page-header">
             {% if is_gift %}
@@ -125,7 +126,7 @@
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
                 {% if is_gift %}
-                    <a class="btn btn-secondary btn-block" href="{% url 'register_self_destinations' %}">Skip</a>
+                    <a class="btn btn-secondary btn-block" href="{% url 'register_lovedone_destinations' %}">Skip</a>
                 {% endif %}
             </div>
         </form>

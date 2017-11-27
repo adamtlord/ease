@@ -588,6 +588,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
     customer = request.user.get_customer()
     errors = {}
     card_errors = None
+    gift_flow = request.session.get('gift', False)
 
     if request.method == 'POST':
 
@@ -725,7 +726,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'gift': gift,
         'gift_plan': Plan.objects.get(name="INTRO_GIFT"),
         'errors': errors,
-        'card_errors': card_errors
+        'card_errors': card_errors,
+        'gift': gift_flow
     }
 
     return render(request, template, d)
