@@ -295,7 +295,7 @@ class Customer(Contact):
 
     @cached_property
     def ready_to_ride(self):
-        if self.has_funds:
+        if self.has_funds and self.plan:
             return True
         if self.ride_account and self.subscription_account and self.plan:
             return True

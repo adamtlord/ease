@@ -189,6 +189,8 @@ def send_new_account_emails():
     today = timezone.now().date()
 
     todays_customers = Customer.objects.filter(user__date_joined__date=today)
+    # todays_customers = [customer for customer in todays_customers if customer.ready_to_ride]
+
     if todays_customers:
 
         d = {

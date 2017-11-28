@@ -50,6 +50,8 @@ def dashboard(request, template='concierge/dashboard.html'):
                     .select_related('plan') \
                     .order_by('user__date_joined')
 
+    to_contact = [customer for customer in to_contact if customer.ready_to_ride]
+
     d = {
         'to_contact': to_contact,
         'today': datetime.date.today()

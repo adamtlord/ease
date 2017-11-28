@@ -284,8 +284,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
     errors = {}
     card_errors = None
 
-    is_gift = request.session.get('gift', False)
-
     if request.method == 'POST':
         if 'skip' in request.POST:
             messages.success(request, 'Yay! You now have ${} in rides.'.format(customer.balance.amount))
@@ -404,7 +402,6 @@ def register_self_payment(request, template='accounts/register_payment.html'):
     d = {
         'self': True,
         'lovedone': False,
-        'is_gift': is_gift,
         'customer': customer,
         'payment_form': payment_form,
         'months': range(1, 13),
@@ -716,7 +713,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
         'stripe_customer': customer.subscription_account,
         'soon': soon(),
         'errors': errors,
-        'gift': gift,
         'gift_plan': Plan.objects.get(name="INTRO_GIFT"),
         'errors': errors,
         'card_errors': card_errors,
