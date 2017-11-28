@@ -513,6 +513,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                         new_stripe_customer.stripe_id = create_stripe_customer.id
 
                         # save everything
+                        customer.is_active = True
                         customer.save()
                         new_stripe_customer.save()
 
@@ -648,6 +649,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
                         stripe_customer.stripe_id = create_stripe_customer.id
 
                         # save everything
+                        customer.is_active = True
                         customer.save()
                         stripe_customer.save()
 
