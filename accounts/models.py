@@ -185,7 +185,7 @@ class Customer(Contact):
     intro_call = models.BooleanField(default=False)
     is_active = models.BooleanField(
         verbose_name='active',
-        default=True,
+        default=False,
         help_text='Designates whether this customer should be treated as active.'
     )
     known_as = models.CharField(max_length=50, blank=True, null=True)

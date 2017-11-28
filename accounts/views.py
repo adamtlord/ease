@@ -212,6 +212,10 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                         if not hasattr(customer, 'subscription'):
                             create_customer_subscription(customer)
 
+                        # Customer has a balance, consider active
+                        customer.is_active = True
+                        customer.save()
+
                         customer_str = 'your' if is_self else '{}\'s'.format(customer.first_name)
                         success_message = '${} successfully added to {} account'.format(charge_amount, customer_str)
 
@@ -229,7 +233,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                         funds_touch.full_clean()
                         funds_touch.save()
 
-                        return redirect('register_self_payment')
+                        return redirect('register_lovedone_payment')
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
@@ -354,7 +358,8 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                     )
                     # store the customer's stripe id in their record
                     new_stripe_customer.stripe_id = create_stripe_customer.id
-                    # save everything
+                    # activate customer, save everything
+                    customer.is_active = True
                     customer.save()
                     new_stripe_customer.save()
 
@@ -652,7 +657,8 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
                     # store the customer's stripe id in their record
                     new_stripe_customer.stripe_id = create_stripe_customer.id
-                    # save everything
+                    # activate customer, save everything
+                    customer.is_active = True
                     customer.save()
                     new_stripe_customer.save()
 
@@ -1055,6 +1061,10 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
                     if not hasattr(customer, 'subscription'):
                         create_customer_subscription(customer)
 
+                    # make sure customer is marked active
+                    customer.is_active = True
+                    customer.save()
+
                     success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
 
                     messages.add_message(
@@ -1075,14 +1085,10 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
-                print 'card errors'
-                print ex
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
             # catch any other type of error
             except Exception as ex:
-                print 'other errors'
-                print ex
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
@@ -1217,6 +1223,11 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         new_gift.first_name = stripe_customer.first_name
                         new_gift.last_name = stripe_customer.last_name
                         new_gift.save()
+
+
+                        # make sure customer is active
+                        customer.is_active = True
+                        customer.save()
 
                         success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
 
@@ -1377,69 +1388,3 @@ def password_validate(request):
             response = JsonResponse({'valid': False, 'errors': [str(error) for error in errors]})
             return response
     return JsonResponse({'valid': False})
-
-
-# @login_required
-# def register_self_preferences(request, template='accounts/register_preferences.html'):
-
-#     if request.user.is_staff:
-#         redirect('dashboard')
-
-#     customer = request.user.get_customer()
-
-#     if request.method == 'POST':
-#         preferences_form = CustomerPreferencesForm(request.POST, instance=customer)
-#         lovedone_form = LovedOneForm(request.POST)
-
-#         if preferences_form.is_valid() and lovedone_form.is_valid():
-#             preferences_form.save()
-#             lovedone = lovedone_form.save(commit=False)
-#             lovedone.customer = customer
-#             lovedone.save()
-
-#             return redirect('register_self_destinations')
-#     else:
-#         preferences_form = CustomerPreferencesForm(instance=customer)
-#         lovedone_form = LovedOneForm()
-
-#     d = {
-#         'self': True,
-#         'lovedone': False,
-#         'preferences_form': preferences_form,
-#         'lovedone_form': lovedone_form
-#     }
-#     return render(request, template, d)
-
-# @login_required
-# def register_lovedone_preferences(request, template='accounts/register_preferences.html'):
-
-#     if request.user.is_staff:
-#         redirect('dashboard')
-
-#     user = request.user
-#     customer = request.user.get_customer()
-
-#     if request.method == 'GET':
-#         lovedone_form = LovedOnePreferencesForm(prefix='reg')
-#     else:
-#         lovedone_form = LovedOnePreferencesForm(request.POST, prefix='reg')
-
-#         if lovedone_form.is_valid():
-#             new_loved_one = lovedone_form.save(commit=False)
-#             new_loved_one.customer = customer
-#             new_loved_one.first_name = user.first_name
-#             new_loved_one.last_name = user.last_name
-#             new_loved_one.email = user.email
-#             new_loved_one.save()
-
-#             user.profile.receive_updates = new_loved_one.receive_updates
-#             user.profile.save()
-
-#             return redirect('register_lovedone_destinations')
-
-#     d = {
-#         'self': False,
-#         'lovedone': True,
-#         'lovedone_form': lovedone_form,
-#     }
-#     return render(request, template, d)
