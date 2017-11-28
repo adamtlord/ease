@@ -876,6 +876,9 @@ def customer_add_funds(request, customer_id, template="concierge/customer_add_fu
                     if not hasattr(customer, 'subscription'):
                         create_customer_subscription(customer)
 
+                    customer.is_active = True
+                    customer.save()
+
                     messages.add_message(
                         request,
                         messages.SUCCESS,
