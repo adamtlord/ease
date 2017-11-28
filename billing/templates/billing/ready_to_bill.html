@@ -71,8 +71,8 @@
                             <td></td>
                             <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
                             <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
-                            <td>{{ ride.start.fullname }}</td>
-                            <td>{{ ride.destination.fullname }}</td>
+                            <td>{% if ride.start %}{{ ride.start.fullname }}{% else %}<span class="label label-danger">No starting point!</span>{% endif %}</td>
+                            <td>{% if ride.destination %}{{ ride.destination.fullname }}{% else %}<span class="label label-danger">No destination</span>{% endif %}</td>
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{% if ride.distance %}
                                     {{ ride.distance }} mi

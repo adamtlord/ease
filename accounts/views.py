@@ -233,20 +233,13 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
-                print 'card errors'
-                print ex
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
             # catch any other type of error
             except Exception as ex:
-                print 'other errors'
-                print ex
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
-            print 'form errors'
-            print payment_form.errors
-            print gift_form.errors
             errors = payment_form.errors
 
     else:
@@ -369,7 +362,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
 
                     send_subscription_receipt_email(request.user)
 
-                    send_new_customer_email(request.user)
+                    # send_new_customer_email(request.user)
 
                     messages.add_message(request, messages.SUCCESS, 'Congratulations! Plan selected, billing info securely saved.')
 
@@ -668,7 +661,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
 
                     send_subscription_receipt_email(request.user)
 
-                    send_new_customer_email(request.user)
+                    # send_new_customer_email(request.user)
 
                     messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
@@ -780,6 +773,8 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
 def register_lovedone_complete(request, template='accounts/register_complete.html'):
 
     customer = request.user.get_customer()
+    if 'gift' in request.session:
+        del request.session['gift']
 
     d = {
         'self': False,
@@ -892,6 +887,9 @@ def register_payment_redirect(request):
 
 @login_required
 def profile(request, template='accounts/profile.html'):
+
+    if 'gift' in request.session:
+        del request.session['gift']
 
     user = request.user
 
@@ -1092,9 +1090,6 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
-            print 'form errors'
-            print payment_form.errors
-            print gift_form.errors
             errors = payment_form.errors
 
     else:
@@ -1258,26 +1253,18 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
-                print 'card errors'
-                print ex
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
             # catch any other type of error
             except Exception as ex:
-                print 'other errors'
-                print ex
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
-            print 'form errors'
-            print payment_form.errors
-            print gift_form.errors
             errors = payment_form.errors
 
     else:
         payment_form = StripeCustomerForm()
         gift_form = GiftForm(prefix="gift")
-
 
     d = {
         'customer': customer,

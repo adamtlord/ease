@@ -147,10 +147,11 @@ class GiftForm(forms.ModelForm):
         required=False
     )
     gift_date = forms.DateField(
-        label="On what date will you present this gift?",
+        label="On what date will you present this gift? (optional)",
         help_text="We call every one of our new members, and don't want to ruin the surprise for you!",
         required=False
     )
+
     class Meta:
         model = Gift
         fields = ['first_name', 'last_name', 'relationship', 'gift_date']

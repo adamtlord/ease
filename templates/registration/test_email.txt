@@ -1,6 +1,0 @@
-{% extends 'base_email_txt.html' %}
-{% block content %}
-
-The cron ran successfully!
-
-{% endblock %}

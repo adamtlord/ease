@@ -216,7 +216,7 @@ def customer_create(request, template='concierge/customer_create.html'):
             new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 
-            send_new_customer_email(new_user)
+            # send_new_customer_email(new_user)
 
             return redirect('customer_detail', new_customer.id)
 

@@ -1,0 +1,38 @@
+{% extends 'base_email.html' %}
+{% block content %}
+<p>
+Today's new customers:
+</p>
+<table class="body-wrap">
+    <tr>
+        <td class="container">
+            <table class="table-striped">
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td style="padding:15px;">
+                            <p><strong>Customer</strong>:
+                            {{ customer.first_name }} {{ customer.last_name }},
+                            {{ customer.home.city }}, {{ customer.home.state }}
+                            <br>
+                            <strong>Account Holder</strong>:
+                            {{ customer.user.first_name }} {{ customer.user.last_name }}
+                            {% if customer.user.profile.on_behalf %}
+                             ({{ customer.user.profile.relationship }})
+                            {% endif %}
+                            <br><strong>Plan</strong>:
+                                {% if customer.plan %}
+                                    {{ customer.plan.name }}
+                                {% else %}
+                                    <em>No plan selected yet</em>
+                                {% endif %}
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

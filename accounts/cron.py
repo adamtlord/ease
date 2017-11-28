@@ -1,12 +1,12 @@
 from django_cron import CronJobBase, Schedule
-from accounts.helpers import send_test_email
+from accounts.helpers import send_new_account_emails
 
 
-class TestCronJob(CronJobBase):
-    RUN_EVERY_MINS = 20
+class NewAccountsCronJob(CronJobBase):
+    RUN_AT_TIMES = ['23:55']
 
-    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
-    code = 'accounts.test_cron_job'
+    schedule = Schedule(run_every_mins=RUN_AT_TIMES)
+    code = 'accounts.new_accounts_cron_job'
 
     def do(self):
-        send_test_email()
+        send_new_account_emails()

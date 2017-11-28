@@ -1,0 +1,19 @@
+{% extends 'base_email_txt.html' %}
+{% block content %}
+
+Today's new customers:
+{% for customer in customers %}
+____________________________________________
+Customer
+{{ customer.first_name }} {{ customer.last_name }}
+{{ customer.home.city }}, {{ customer.home.state }}
+
+Account Holder
+{{ user.first_name }} {{ user.last_name }}{% if profile.on_behalf %} ({{ profile.relationship }}){% endif %}
+
+Plan
+{{ plan.name }}
+
+{% endfor %}
+
+{% endblock %}

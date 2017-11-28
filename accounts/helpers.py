@@ -72,8 +72,8 @@ def send_subscription_receipt_email(user):
         'next_bill_date': next_bill_date
     }
 
-    msg_plain = render_to_string('registration/subscription_receipt_email.txt', d)
-    msg_html = render_to_string('registration/subscription_receipt_email.html', d)
+    msg_plain = render_to_string('registration/email/subscription_receipt_email.txt', d)
+    msg_html = render_to_string('registration/email/subscription_receipt_email.html', d)
 
     to_email = account.email if account.email else user.email
 
@@ -105,8 +105,8 @@ def send_ride_receipt_email(customer, ride):
         'customer': customer
     }
 
-    msg_plain = render_to_string('registration/ride_receipt_email.txt', d)
-    msg_html = render_to_string('registration/ride_receipt_email.html', d)
+    msg_plain = render_to_string('billing/email/ride_receipt_email.txt', d)
+    msg_html = render_to_string('billing/email/ride_receipt_email.html', d)
 
     send_mail(
         'Thanks for riding with Arrive!',
@@ -138,8 +138,8 @@ def send_included_rides_email(customer, rides):
         'customer': customer
     }
 
-    msg_plain = render_to_string('registration/included_rides_email.txt', d)
-    msg_html = render_to_string('registration/included_rides_email.html', d)
+    msg_plain = render_to_string('billing/email/included_rides_email.txt', d)
+    msg_html = render_to_string('billing/email/included_rides_email.html', d)
 
     send_mail(
         'Thanks for riding with Arrive!',
@@ -170,8 +170,8 @@ def send_new_customer_email(user):
         'profile': profile
     }
 
-    msg_plain = render_to_string('registration/new_customer_email.txt', d)
-    msg_html = render_to_string('registration/new_customer_email.html', d)
+    msg_plain = render_to_string('accounts/email/new_customer_email.txt', d)
+    msg_html = render_to_string('accounts/email/new_customer_email.html', d)
 
     to_email = settings.CUSTOMER_SERVICE_CONTACT
 
@@ -184,20 +184,29 @@ def send_new_customer_email(user):
     )
 
 
-def send_test_email():
+def send_new_account_emails():
 
-    msg_plain = render_to_string('registration/test_email.txt')
-    msg_html = render_to_string('registration/test_email.html')
+    today = timezone.now().date()
 
-    to_email = ['admin@arriverides.com']
+    todays_customers = Customer.objects.filter(user__date_joined__date=today)
+    if todays_customers:
 
-    send_mail(
-        'Cron Test',
-        msg_plain,
-        settings.DEFAULT_FROM_EMAIL,
-        to_email,
-        html_message=msg_html,
-    )
+        d = {
+            'customers': todays_customers
+        }
+
+        msg_plain = render_to_string('accounts/email/todays_new_accounts.txt', d)
+        msg_html = render_to_string('accounts/email/todays_new_accounts.html', d)
+
+        to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+        send_mail(
+            'New Accounts {}'.format(today.strftime('%m/%d/%Y')),
+            msg_plain,
+            settings.DEFAULT_FROM_EMAIL,
+            to_email,
+            html_message=msg_html,
+        )
 
 
 def create_customers_from_upload(uploaded_file, request):
