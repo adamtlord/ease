@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import csv
@@ -186,7 +187,8 @@ def send_new_customer_email(user):
 
 def send_new_account_emails():
 
-    today = timezone.now().date()
+    pac = pytz.timezone(settings.TIME_ZONE)
+    today = datetime.now(pac)
 
     todays_customers = Customer.objects.filter(user__date_joined__date=today)
     todays_customers = [customer for customer in todays_customers if customer.ready_to_ride]
