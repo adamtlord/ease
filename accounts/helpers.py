@@ -191,6 +191,9 @@ def send_new_account_emails():
     todays_customers = Customer.objects.filter(user__date_joined__date=today)
     todays_customers = [customer for customer in todays_customers if customer.ready_to_ride]
 
+    customers = len(todays_customers)
+    emails_sent = 0
+
     if todays_customers:
 
         d = {
@@ -202,13 +205,15 @@ def send_new_account_emails():
 
         to_email = settings.CUSTOMER_SERVICE_CONTACT
 
-        send_mail(
+        emails_sent = send_mail(
             'New Accounts {}'.format(today.strftime('%m/%d/%Y')),
             msg_plain,
             settings.DEFAULT_FROM_EMAIL,
             to_email,
             html_message=msg_html,
         )
+
+    return '{} customers registered today; {} emails sent'.format(customers, emails_sent)
 
 
 def create_customers_from_upload(uploaded_file, request):

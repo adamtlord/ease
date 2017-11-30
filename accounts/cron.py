@@ -9,4 +9,4 @@ class NewAccountsCronJob(CronJobBase):
     code = 'accounts.new_accounts_cron_job'
 
     def do(self):
-        send_new_account_emails()
+        return send_new_account_emails()
