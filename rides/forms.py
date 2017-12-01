@@ -41,6 +41,15 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'rider'
 ]
 
+RIDER_FIELDS = [
+    'first_name',
+    'last_name',
+    'mobile_phone',
+    'relationship',
+    'customer',
+    'notes'
+]
+
 
 class DestinationChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -206,3 +215,18 @@ class CancelRideForm(forms.Form):
         label="Why are you deleting this ride?",
         help_text="(Do not delete this ride if you need to charge the customer a cancellation fee)"
     )
+
+
+class AddRiderForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = Rider
+        fields = RIDER_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(AddRiderForm, self).__init__(*args, **kwargs)
+        for field in RIDER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+        self.fields['notes'].widget.attrs['rows'] = 2
+

@@ -8,13 +8,54 @@
     </p>
 {% endif %}
 <form id="start_ride_form" action="" class="form" method="POST" novalidate>{% csrf_token %}
-    {% if customer.riders.all %}
-        <div class="row">
-            <div class="col-sm-6">
+    <div class="row">
+        <div class="col-sm-6">
+            {% if customer.riders.all %}
+            <div class="form-inline add-rider">
                 {% render_form_field start_ride_form.rider_link %}
+                 <div class="form-group m-t-label">
+                    <label class="control-label weight-normal">
+                        &nbsp;or&nbsp;
+                    </label>
+                    <span data-toggle="buttons">
+                        <label class="btn btn-default">
+                            <input rel="rider_link" class="fieldset-toggle" name="add-rider" type="checkbox" autocomplete="off" value="true"> Add a New Rider
+                        </label>
+                    </span>
+                </div>
             </div>
+            {% else %}
+                <p data-toggle="buttons">
+                    <label class="btn btn-default btn-sm">
+                        <input rel="rider_link" class="fieldset-toggle" name="add-rider" type="checkbox" autocomplete="off" value="true"> Add a Rider
+                    </label>
+                </p>
+            {% endif %}
+            <fieldset class="add-rider" {% if 'rider_link' not in errors %}style="display:none;"{% endif %}>
+                {% render_form_field add_rider_form.customer %}
+                <div class="well well-sm">
+                    <h4>Add a New Rider</h4>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% render_form_field add_rider_form.first_name %}
+                        </div>
+                        <div class="col-sm-6">
+                            {% render_form_field add_rider_form.last_name %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            {% render_form_field add_rider_form.mobile_phone '' 'phone-mask' %}
+                        </div>
+                        <div class="col-sm-6">
+                            {% render_form_field add_rider_form.relationship %}
+                        </div>
+                    </div>
+                    {% render_form_field add_rider_form.notes %}
+                </div>
+            </fieldset>
         </div>
-    {% endif %}
+    </div>
     <div class="row">
         <div class="col-sm-6">
             {% render_form_field start_ride_form.start %}
@@ -127,7 +168,7 @@
         {% if geolocate %}
             geolocate({{ geolocate.latitude }}, {{ geolocate.longitude }});
         {% else %}
-            return False;
+            return false;
         {% endif %}
     };
 </script>

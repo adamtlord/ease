@@ -12,7 +12,7 @@ from accounts.models import Customer
 from billing.models import Plan
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm, CancelRideForm
+from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm
 from rides.models import Ride
 
 
@@ -57,20 +57,24 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
         )
         add_starting_point_form = DestinationForm(prefix='add_start', initial={'customer': customer})
         add_destination_form = DestinationForm(prefix='add_dest', initial={'customer': customer})
+        add_rider_form = AddRiderForm(prefix='add_rider', initial={'customer': customer})
 
     else:
         initial_start = None
         start_ride_form = StartRideForm(request.POST, customer=customer)
         add_starting_point_form = DestinationForm(request.POST, prefix='add_start')
         add_destination_form = DestinationForm(request.POST, prefix='add_dest')
+        add_rider_form = AddRiderForm(request.POST, prefix='add_rider')
 
         adding_start = request.POST.get('add-starting-point', False)
         adding_destination = request.POST.get('add-destination', False)
+        adding_rider = request.POST.get('add-rider', False)
 
         valid_add_start = add_starting_point_form.is_valid() if adding_start else True
         valid_add_destination = add_destination_form.is_valid() if adding_destination else True
+        valid_add_rider = add_rider_form.is_valid() if adding_rider else True
 
-        if start_ride_form.is_valid() and valid_add_start and valid_add_destination:
+        if start_ride_form.is_valid() and valid_add_start and valid_add_destination and valid_add_rider:
             new_ride = start_ride_form.save(commit=False)
             new_ride.customer = customer
             if adding_start:
@@ -79,6 +83,9 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if adding_destination:
                 destination = add_destination_form.save()
                 new_ride.destination = destination
+            if adding_rider:
+                rider_link = add_rider_form.save()
+                new_ride.rider_link = rider_link
 
             if not start_ride_form.cleaned_data['start_date']:
                 new_ride.start_date = timezone.now()
@@ -146,11 +153,15 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
                 errors.append('start')
             if not valid_add_destination:
                 errors.append('destination')
+            if not valid_add_rider:
+                errors.append('rider_link')
+
     d = {
         'customer': customer,
         'start_ride_form': start_ride_form,
         'add_starting_point_form': add_starting_point_form,
         'add_destination_form': add_destination_form,
+        'add_rider_form': add_rider_form,
         'ride_page': True,
         'geolocate': initial_start,
         'errors': errors

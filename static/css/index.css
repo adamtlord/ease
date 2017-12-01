@@ -7814,6 +7814,12 @@ textarea.form-controller input[type="color"] {
 .p-b-0 {
   padding-bottom: 0;
 }
+.m-t-label {
+  margin-top: 27px;
+}
+.weight-normal {
+  font-weight: 400;
+}
 .iconic {
   display: inline-block;
   font-family: FontAwesome;
@@ -10807,6 +10813,15 @@ th .static-map {
 }
 #start_ride_form fieldset {
   padding-top: 22px;
+}
+#start_ride_form fieldset.add-rider {
+  padding-top: 0;
+}
+#start_ride_form .form-inline.add-rider {
+  margin-bottom: 15px;
+}
+#start_ride_form .form-inline.add-rider .control-label {
+  margin-bottom: 5px;
 }
 .rides-in-progress {
   padding: 15px;

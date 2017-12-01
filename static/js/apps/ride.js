@@ -25,5 +25,8 @@ $(function(){
             $('select[name="' + $(this).attr('rel') + '"]').removeAttr('disabled');
         }
     });
-
+    $('#id_rider_link').on('change', function(){
+        $('#new_rider_fields').toggleClass('in', $(this).val() === 'new');
+    });
+    $('.phone-mask input').mask('000-000-0000');
 });
