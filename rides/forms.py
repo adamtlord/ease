@@ -45,7 +45,6 @@ RIDER_FIELDS = [
     'first_name',
     'last_name',
     'mobile_phone',
-    'relationship',
     'customer',
     'notes'
 ]
