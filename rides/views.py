@@ -122,7 +122,7 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             new_ride.included_in_plan = included
 
             # Figure out if this ride is outside regular hours and add a fee
-            if customer.plan_id is Plan.DEFAULT:
+            if customer.plan.after_hours_fee:
                 tz = pytz.timezone(settings.TIME_ZONE)
                 concierge_start_time = new_ride.start_date.astimezone(tz)
                 if not settings.ARRIVE_BUSINESS_HOURS[0] <= concierge_start_time.hour < settings.ARRIVE_BUSINESS_HOURS[1]:
