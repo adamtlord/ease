@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django_common',
     'rest_framework',
     'django_filters',
+    'crispy_forms',
     'django_cron',
 
     'accounts',
