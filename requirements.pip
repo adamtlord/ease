@@ -11,6 +11,7 @@ django-localflavor
 django-common-helpers
 django-registration
 django-filter
+django-crispy-forms
 djangorestframework
 django_cron
 
