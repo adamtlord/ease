@@ -31,9 +31,6 @@
                     <td>{{ ride.id }}</td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
-                        <!-- todo: remove after transition -->
-                        {% if ride.rider and ride.rider != ride.customer.full_name %}<br><strong>Rider:</strong> {{ ride.rider }}{% endif %}
-                        <!-- end todo -->
                         {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
                     </td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}<small class="subtext">{{ ride.start_date|naturaltime }}</small></td>
