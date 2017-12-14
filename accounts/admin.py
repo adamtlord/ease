@@ -114,3 +114,4 @@ class CustomerAdmin(admin.ModelAdmin):
 
 admin.site.register(CustomUser, UserAdmin)
 admin.site.register(Customer, CustomerAdmin)
+admin.site.register(Rider)

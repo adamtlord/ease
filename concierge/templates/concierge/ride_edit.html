@@ -110,6 +110,17 @@
             {% render_form_field form.fare_estimate %}
             {% render_form_field form.company %}
             <div class="ride-notes">
+                {% if ride.rider_link %}
+                    <p class="alert alert-info">
+                        <i class="fa fa-fw fa-user"></i>
+                        Rider: <strong>{{ ride.rider_link }}</strong>
+                        {{ ride.rider_link.mobile_phone }}
+                        {% if ride.rider_link.notes %}
+                            <br><i class="fa fa-fw fa-sticky-note-o"></i>
+                            <small>{{ ride.rider_link.notes }}</small>
+                        {% endif %}
+                    </p>
+                {% endif %}
                 {% if customer.send_updates %}
                     <p class="alert alert-info"><i class="fa fa-fw fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
                 {% endif %}
