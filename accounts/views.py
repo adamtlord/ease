@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.encoding import smart_str
 
 from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomUserForm,
@@ -442,7 +443,7 @@ def register_self_destinations(request, template='accounts/register_destinations
             new_destination.customer = customer
             new_destination.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(smart_str(new_destination.name)))
 
             if 'save_done' in destination_form.data:
                 return redirect('register_self_complete')
@@ -746,7 +747,7 @@ def register_lovedone_destinations(request, template='accounts/register_destinat
             new_destination.customer = customer
             new_destination.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(smart_str(new_destination.name)))
 
             if 'save_done' in destination_form.data:
                 return redirect('register_lovedone_complete')
@@ -1224,7 +1225,6 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
                         new_gift.last_name = stripe_customer.last_name
                         new_gift.save()
 
-
                         # make sure customer is active
                         customer.is_active = True
                         customer.save()
@@ -1297,6 +1297,7 @@ def gift_purchase_receipt(request, customer_id, gift_id, template='accounts/gift
 
     return render(request, template, d)
 
+
 @login_required
 def destination_edit(request, destination_id, template='accounts/destinations_edit.html'):
 
@@ -1315,7 +1316,7 @@ def destination_edit(request, destination_id, template='accounts/destinations_ed
 
             destination_form.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully updated!'.format(customer, destination.name))
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully updated!'.format(smart_str(customer), smart_str(destination.name)))
             return redirect('profile')
 
     else:
@@ -1347,7 +1348,7 @@ def destination_add(request, template='accounts/destination_add.html'):
             new_destination.customer = customer
             new_destination.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(new_destination.name))
+            messages.add_message(request, messages.SUCCESS, 'Destination {} successfully added!'.format(smart_str(new_destination.name)))
             return redirect('profile')
 
     else:
