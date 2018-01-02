@@ -108,13 +108,13 @@
             {% endif %}
             <tr>
                 <th>Cost</th>
-                <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+                <td>{% if ride.cost %}${{ ride.cost|floatformat:'2' }}{% endif %}</td>
             </tr>
             {% if ride.total_fees_estimate %}
                 <tr>
                     <th>Fees</th>
                     <td>{% if ride.total_fees_estimate %}
-                            ${{ ride.total_fees_estimate }}
+                            ${{ ride.total_fees_estimate|floatformat:'2' }}
                         {% else %}
                             --
                         {% endif %}
@@ -124,13 +124,13 @@
             {% if ride.total_cost_estimate %}
                 <tr>
                     <th>Total{% if ride.customer.group_membership %} to customer{% endif %}</th>
-                    <td>${{ ride.total_cost_estimate|default:'0' }} {% if ride.included_in_plan %}(included){% endif %}</td>
+                    <td>${{ ride.total_cost_estimate|floatformat:'2'|default:'0' }} {% if ride.included_in_plan %}(included){% endif %}</td>
                 </tr>
             {% endif %}
             {% if ride.customer.group_membership %}
                 <tr>
                     <th>Total to Group</th>
-                    <td>${{ ride.cost_to_group|default:'0' }}</td>
+                    <td>${{ ride.cost_to_group|floatformat:'2'|default:'0' }}</td>
                 </tr>
             {% endif %}
             {% if ride.notes %}

@@ -20,7 +20,7 @@ from rides.models import Ride
 def customer_rides(request, customer_id, template="concierge/customer_rides.html"):
 
     customer = get_object_or_404(Customer, pk=customer_id)
-    rides = Ride.objects.filter(customer=customer)
+    rides = Ride.objects.filter(customer=customer).prefetch_related('customer').prefetch_related('customer__plan')
 
     d = {
         'customer': customer,

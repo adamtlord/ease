@@ -80,7 +80,7 @@
                             </td>
                             <td>${{ ride.cost|default:'0' }}</td>
                             <td>{% if ride.total_fees_estimate %}
-                                    ${{ ride.total_fees_estimate }}
+                                    ${{ ride.total_fees_estimate|floatformat:'2' }}
                                 {% else %}
                                     --
                                 {% endif %}

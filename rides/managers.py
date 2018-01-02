@@ -14,7 +14,8 @@ class RidesReadyToBillManager(models.Manager):
             .filter(complete=True) \
             .exclude(invoiced=True) \
             .exclude(cost__isnull=True) \
-            .exclude(invoice_id__isnull=False)
+            .exclude(invoice_id__isnull=False) \
+            .prefetch_related('customer')
 
 
 class RidesIncompleteManager(models.Manager):
@@ -28,4 +29,5 @@ class ActiveRidesManager(models.Manager):
         return super(ActiveRidesManager, self).get_queryset() \
             .filter(start_date__lte=timezone.now()) \
             .exclude(complete=True) \
-            .exclude(cancelled=True)
+            .exclude(cancelled=True) \
+            .prefetch_related('customer')

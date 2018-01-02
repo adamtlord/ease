@@ -128,7 +128,7 @@ def rides_history(request, template='concierge/rides_history.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.filter(complete=True).order_by('-start_date')
+    rides = Ride.objects.filter(complete=True).order_by('-start_date').prefetch_related('customer')
 
     d = {
         'rides': rides,
