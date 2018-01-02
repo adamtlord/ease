@@ -164,7 +164,8 @@ class Ride(models.Model):
         if self.included_in_plan:
             return 0
         if self.customer.plan:
-            if self.customer.plan.id == Plan.COPPER and self.start_date.year < 2018:
+            # for accurate records, if the plan's arrive_fee was increased on 1/1/2018, show the old fee
+            if self.customer.plan.id in [Plan.COPPER, Plan.BRONZE, Plan.GOLD, Plan.SILVER] and self.start_date.year < 2018:
                 return 3.0
             return self.customer.plan.arrive_fee or 0
         return 0
