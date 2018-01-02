@@ -154,7 +154,7 @@ class StartRideForm(forms.ModelForm):
         super(StartRideForm, self).__init__(*args, **kwargs)
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
-        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer).order_by('last_name', 'first_name')
         self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
@@ -197,7 +197,7 @@ class RideForm(forms.ModelForm):
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
         self.fields['notes'].widget.attrs['rows'] = 4
-        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer).order_by('last_name', 'first_name')
         self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
