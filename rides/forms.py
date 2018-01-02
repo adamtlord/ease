@@ -14,7 +14,8 @@ HOME_FIELDS = [
     'city',
     'state',
     'zip_code',
-    'notes'
+    'notes',
+    'address_for_gps',
 ]
 
 DESTINATION_FIELDS = HOME_FIELDS + [

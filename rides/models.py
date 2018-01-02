@@ -25,6 +25,7 @@ class Destination(Location):
     nickname = models.CharField(max_length=50, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     timezone = models.CharField(max_length=128, blank=True, null=True)
+    address_for_gps = models.CharField(max_length=512, blank=True, null=True, verbose_name='Alternative address for GPS', help_text='If a different address drops a better pin, use it instead')
 
     class Meta:
         ordering = ['name']

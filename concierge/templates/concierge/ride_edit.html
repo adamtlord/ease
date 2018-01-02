@@ -41,6 +41,19 @@
                     {{ form.start.errors }}
                 {% endif %}
             </div>
+            {% if ride.start.address_for_gps %}
+                <div class="form-group">
+                    <label class="text-success">Alternative address for GPS</label>
+                    <div class="input-group">
+                        <input id="starting_point_gps" readonly class="form-control monospace" value="{{ ride.start.address_for_gps }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point_gps">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {% if ride.start.notes %}
                 <div class="form-group">
                     <label>Starting point notes</label>
@@ -89,6 +102,19 @@
                     {{ form.destination.errors }}
                 {% endif %}
             </div>
+            {% if ride.destination.address_for_gps %}
+                <div class="form-group">
+                    <label class="text-success">Alternative address for GPS</label>
+                    <div class="input-group">
+                        <input id="destination_gps" readonly class="form-control monospace" value="{{ ride.destination.address_for_gps }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination_gps">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {% if ride.destination.notes %}
                 <div class="form-group has-info">
                     <label>Destination notes</label>
@@ -106,9 +132,6 @@
             {% if customer.riders.all %}
                 {% render_form_field form.rider_link %}
             {% endif %}
-            {% render_form_field form.distance %}
-            {% render_form_field form.fare_estimate %}
-            {% render_form_field form.company %}
             <div class="ride-notes">
                 {% if ride.rider_link %}
                     <p class="alert alert-info">
@@ -143,6 +166,9 @@
                     </p>
                 {% endif %}
             </div>
+            {% render_form_field form.distance %}
+            {% render_form_field form.fare_estimate %}
+            {% render_form_field form.company %}
             {% if ride.added_by %}
                 <p>Started by {{ ride.added_by }}</p>
             {% endif %}

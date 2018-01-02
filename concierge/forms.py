@@ -69,6 +69,7 @@ UPDATE_HOME_FIELDS = [
     'city',
     'state',
     'zip_code',
+    'address_for_gps',
 ]
 
 CREATE_HOME_FIELDS = UPDATE_HOME_FIELDS + [
