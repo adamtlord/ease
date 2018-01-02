@@ -61,15 +61,15 @@
                     </td>
                     <td>{% if ride.cost %}${{ ride.cost|default:'0' }}{% endif %}</td>
                     <td>{% if ride.total_fees_estimate %}
-                            ${{ ride.total_fees_estimate }}
+                            ${{ ride.total_fees_estimate|floatformat:'2' }}
                         {% else %}
                             --
                         {% endif %}
                     </td>
                     <td>{% if ride.invoiced or ride.total_cost %}
-                            ${{ ride.total_cost|default:'0' }}
+                            ${{ ride.total_cost|floatformat:'2'|default:'0' }}
                         {% else %}
-                            ${{ ride.total_cost_estimate|default:'0' }}
+                            ${{ ride.total_cost_estimate|floatformat:'2'|default:'0' }}
                         {% endif %}
                     </td>
                     {% if customer.plan.includes_rides %}
