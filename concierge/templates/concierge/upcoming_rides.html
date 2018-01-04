@@ -41,12 +41,18 @@
                     </td>
                     <td>
                         {{ ride.start.fullname }}<small class="subtext">{{ ride.start.fulladdress }}</small>
+                        {% if ride.start.address_for_gps %}
+                            <p class="destination-notes"><i class="fa fa-map-pin text-success"></i> {{ ride.start.address_for_gps }}</p>
+                        {% endif %}
                         {% if ride.start.notes %}
                             <p class="destination-notes">{{ ride.start.notes }}</p>
                         {% endif %}
                     </td>
                     <td>
                         {{ ride.destination.name }}<small class="subtext">{{ ride.destination.fulladdress }}</small>
+                        {% if ride.destination.address_for_gps %}
+                            <p class="destination-notes"><i class="fa fa-map-pin text-success"></i> {{ ride.destination.address_for_gps }}</p>
+                        {% endif %}
                         {% if ride.destination.notes %}
                             <p class="destination-notes">{{ ride.destination.notes }}</p>
                         {% endif %}
