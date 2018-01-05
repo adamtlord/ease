@@ -1,13 +1,13 @@
 {% extends 'concierge/customer_list_base.html' %}
 {% block customer_list_content %}
 <div class="table-responsive">
-    <table id="customer_list" class="table">
+    <table id="customer_list" class="table" style="width:100%">
         <thead>
             <th>Name</th>
             <th>Home</th>
             <th>Phone</th>
             <th>Plan</th>
-            <th>Rides</th>
+            <th class="text-center">Rides</th>
             <th>Last ride</th>
             <th>Notes</th>
         </thead>
@@ -27,12 +27,14 @@
                     active: 'True'
                 }
             },
+            autoWidth: false,
             order: [[0, 'asc']],
             columns: [
                 { data: 'last_name',
                   render: function(data, type, full){
                     return '<a href="/concierge/customers/' + full.id + '">' + full.full_name + '</a>';
-                  }
+                  },
+                  width:'15%'
                 },
                 { data: 'home',
                   orderable: false,
@@ -41,10 +43,12 @@
                         return data.city + ', ' + data.state;
                     }
                     return '';
-                  }
+                  },
+                  width:'12%'
                 },
                 { data: 'phone_numbers_br',
-                  orderable: false
+                  orderable: false,
+                  width:'12%'
                 },
                 { data: 'plan',
                   render: function(data){
@@ -56,11 +60,23 @@
                                ' Plan</span>';
                     }
                     return '<em>None</em>'
-                  }
+                  },
+                  width:'5%'
                 },
-                { data: 'ride_count'},
-                { data: 'last_ride'},
-                { data: 'notes'},
+                {
+                    data: 'ride_count',
+                    width:'5%',
+                    className: 'text-center'
+                },
+                {
+                    data: 'last_ride',
+                    width:'15%'
+                },
+                {
+                    data: 'notes',
+                    className: 'small',
+                    width: '20%'
+                },
             ],
             language: {
                 infoFiltered: "",

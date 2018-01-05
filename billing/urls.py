@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
 from billing.views import (customer_subscription_account_edit,
                            customer_ride_account_edit, rides_ready_to_bill,
                            rides_incomplete, rides_upload, rides_invoiced, retrieve_coupon,

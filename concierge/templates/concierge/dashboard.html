@@ -10,10 +10,10 @@
 <div class="page-header">
     <h1>Concierge Dashboard</h1>
 </div>
-<form id="customer_search" action="" method="POST">{% csrf_token %}
-    <input type="hidden" id="customer_id" name="customer_id" value=""/>
+<form id="customer_search" action="" method="GET" autocomplete="off">
+    <input type="hidden" id="object_url" name="object_url"/>
     <div class="input-group input-group-lg">
-        <input id="customer_id" class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone" autofocus>
+        <input id="search_input" class="typeahead form-control input-lg" type="text" placeholder="Search by Name or Phone" autofocus>
         <span class="input-group-btn">
             <input class="btn btn-primary" type="submit" value="GO" />
         </span>

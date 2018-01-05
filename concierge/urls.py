@@ -17,6 +17,8 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              concierge_settings,
                              customer_data_export,
                              customer_add_funds,
+                             group_membership_list,
+                             group_membership_detail,
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -55,7 +57,8 @@ urlpatterns = [
 
     url(r'^customers/(?P<customer_id>\d+)/add-funds/$', customer_add_funds, name='customer_add_funds'),
 
-
+    url(r'^group-memberships/$', group_membership_list, name='group_membership_list'),
+    url(r'^group-memberships/(?P<group_id>\d+)/$', group_membership_detail, name='group_membership_detail'),
 
     # AJAX
     url(r'^customers/search/$', customer_search_data, name='customer_search_data'),

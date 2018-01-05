@@ -1,0 +1,67 @@
+{% extends 'base_app.html' %}
+{% load billing_tags %}
+{% block title %}{{ group.display_name }} Group Memberships{% endblock %}
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'group_membership_list' %}">Groups</a></li>
+        <li class="active">{{ group.display_name }}</li>
+    </ol>
+    <div class="page-header">
+        <h1>{{ group.display_name }}</h1>
+    </div>
+    <div class="table-responsive">
+    <table id="customer_list" class="table" style="width:100%;">
+        <thead>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Rides</th>
+            <th>Last ride</th>
+            <th>Notes</th>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td><a href="{% url 'customer_detail' customer.id %}">{{ customer.full_name }}</a></td>
+                <td>{{ customer.phone_numbers_br|safe }}</td>
+                <td>{{ customer.ride_count }}</td>
+                <td>{{ customer.last_ride }}</td>
+                <td class="small">{{ customer.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            "autoWidth": false,
+            "columns": [
+                {
+                    width: "15%"
+                },{
+                    width: "15%",
+                    searchable: false
+                 },{
+                    width: "10%",
+                    searchable: false
+                 },{
+                    width: "30%",
+                    searchable: false
+                 },{
+                    width: "30%",
+                    searchable: false
+                 },
+            ]
+        });
+    });
+</script>
+{% endblock %}

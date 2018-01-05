@@ -33,10 +33,14 @@
     <div class="row">
         <div class="col-sm-6">
             <div class="customer-phone-numbers">{{ customer.phone_numbers|safe }}</div>
-            {% if customer.plan %}
-                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+            {% if customer.group_membership %}
+                <span class="label plan-label {{ customer.plan.name|lower }}">Group: {{ customer.group_membership.display_name }}</span>
             {% else %}
-                <span class="label label-danger">No Plan Selected</span>
+                {% if customer.plan %}
+                    <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                {% else %}
+                    <span class="label label-danger">No Plan Selected</span>
+                {% endif %}
             {% endif %}
             {% if customer.subscription_account and customer.plan.included_rides_per_month %}
                 Included rides taken this cycle: {{ customer.included_rides_this_month|default:'0' }} of {{ customer.plan.included_rides_per_month }}

@@ -26,7 +26,7 @@
                     {% if customer.group_membership %}
                         <tr>
                             <td>Group Membership</td>
-                            <td>{{ customer.group_membership }}</td>
+                            <td><a href="{% url 'group_membership_detail' customer.group_membership.id %}">{{ customer.group_membership }}</a></td>
                         </tr>
                     {% endif %}
                     {% if customer.known_as %}

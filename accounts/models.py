@@ -241,6 +241,10 @@ class Customer(Contact):
     def last_ride_dt(self):
         return self.last_ride.start_date
 
+    @cached_property
+    def ride_count(self):
+        return self.rides.count()
+
     @property
     def status(self):
         if self.is_active:

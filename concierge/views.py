@@ -1164,6 +1164,30 @@ def customer_data_export(request, template="concierge/customer_export.html"):
         return render(request, template, d)
 
 
+@staff_member_required
+def group_membership_list(request, template="concierge/group_membership_list.html"):
+    groups = GroupMembership.objects.filter(active=True)
+
+    d = {
+        'groups': groups,
+        'group_membership_page': True
+    }
+
+    return render(request, template, d)
+
+
+@staff_member_required
+def group_membership_detail(request, group_id, template="concierge/group_membership_detail.html"):
+    group = get_object_or_404(GroupMembership, pk=group_id)
+    customers = Customer.active.filter(group_membership=group)
+
+    d = {
+        'group': group,
+        'customers': customers
+    }
+    return render(request, template, d)
+
+
 # AJAX VIEWS
 def customer_search_data(request):
     customers = Customer.active.select_related('user').select_related('user__profile').all()
@@ -1175,7 +1199,8 @@ def customer_search_data(request):
             'home_phone': customer.home_phone,
             'mobile_phone': customer.mobile_phone,
             'id': customer.id,
-            'display': '{}'.format(customer.full_name)
+            'display': '{}'.format(customer.full_name),
+            'url': reverse('customer_detail', args=[customer.id])
         }
 
         tokens = [
@@ -1262,6 +1287,7 @@ def get_street2(customer):
     if customer.home and customer.home.street2:
         return customer.home.street2
     return ''
+
 
 def get_unit(customer):
     if customer.home and customer.home.unit:

@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.utils import formats
 from rest_framework import serializers
 
@@ -13,22 +14,26 @@ class PlanSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GroupMembershipSerializer(serializers.HyperlinkedModelSerializer):
-    plan = serializers.HyperlinkedIdentityField(view_name='plan-detail')
-    plan_id = serializers.IntegerField(source='id')
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return reverse('group_membership_detail', args=[obj.id])
 
     class Meta:
         model = GroupMembership
         fields = (
             'name',
             'display_name',
+            'id',
+            # 'plan',
             'plan_id',
-            'plan',
             'active',
             'expiration_date',
             'includes_ride_cost',
             'includes_arrive_fee',
             'includes_subscription',
             'bill_online',
+            'url'
         )
 
 
