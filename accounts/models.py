@@ -15,6 +15,8 @@ from django.utils.functional import cached_property
 from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
+from accounts.const import PREFERRED_PHONE_CHOICES, PREFERRED_SERVICE_CHOICES, \
+    RESIDENCE_TYPE_CHOICES, HOME_PHONE, SINGLE_FAMILY_HOME
 from billing.models import Balance
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
@@ -140,44 +142,6 @@ class Contact(models.Model):
 
 class Customer(Contact):
     """ Represents a primary user of the service """
-    APARTMENT = 'AP'
-    ASSISTED_LIVING = 'AL'
-    RETIREMENT_COMMUNITY = 'RT'
-    SINGLE_FAMILY_HOME = 'SF'
-    SKILLED_NURSING = 'SN'
-
-    RESIDENCE_TYPE_CHOICES = (
-        (None, ''),
-        (APARTMENT, 'Apartment'),
-        (ASSISTED_LIVING, 'Assisted Living Facility'),
-        (RETIREMENT_COMMUNITY, 'Retirement Community'),
-        (SINGLE_FAMILY_HOME, 'Single Family Home'),
-        (SKILLED_NURSING, 'Skilled Nursing Facility'),
-    )
-
-    HOME_PHONE = 'h'
-    MOBILE_PHONE = 'm'
-
-    PREFERRED_PHONE_CHOICES = (
-        (HOME_PHONE, 'Home'),
-        (MOBILE_PHONE, 'Mobile'),
-    )
-
-    UBER = 'Uber'
-    LYFT = 'Lyft'
-    UBERX = 'UberX'
-    UBERXL = 'UberXL'
-    UBERASSIST = 'UberASSIST'
-    OTHER = 'Other'
-
-    PREFERRED_SERVICE_CHOICES = (
-        (LYFT, 'Lyft'),
-        (UBERX, 'UberX'),
-        (UBERXL, 'UberXL'),
-        (UBERASSIST, 'UberASSIST'),
-        (OTHER, 'Other')
-    )
-
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
     gift_date = models.DateField(blank=True, null=True)
     group_membership = models.ForeignKey('billing.GroupMembership', blank=True, null=True)

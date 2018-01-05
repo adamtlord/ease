@@ -118,30 +118,37 @@
                     </tr>
                     {% endif %}
                     {% if customer.user.profile.on_behalf %}
-                    <tr>
-                        <td>Account managed by</td>
-                        <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
-                            <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
-                            {% if customer.user.profile.phone %}
-                                <br>{{ customer.user.profile.phone }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                        {% if customer.email %}
+                        {% if customer.group_membership %}
                             <tr>
-                                <td>Customer email</td>
-                                <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></td>
+                                <td>Group manager</td>
+                                <td><a href="mailto:{{ customer.group_membership.user.email }}">{{ customer.group_membership.user.email }}</a></td>
                             </tr>
-                        {% endif %}
-                    {% else %}
+                        {% else %}
                         <tr>
-                            <td>
-                                Email
-                            </td>
-                            <td>
-                                <a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                            <td>Account managed by</td>
+                            <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
+                                <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                                {% if customer.user.profile.phone %}
+                                    <br>{{ customer.user.profile.phone }}
+                                {% endif %}
                             </td>
                         </tr>
+                            {% if customer.email %}
+                                <tr>
+                                    <td>Customer email</td>
+                                    <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>
+                                        Email
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
                     {% endif %}
                     {% if riders %}
                         <tr>
