@@ -55,8 +55,12 @@ $(function() {
     name: 'group-memberships',
     source: bloodhound_sources.group_memberships,
     limit: 10,
-    display: function(obj) {
-      return obj.display_name;
+    display: 'display_name',
+    templates: {
+      suggestion: function(value) {
+        console.log(value.display_name);
+        return '<div><i class="fa fa-group"></i> ' + value.display_name + '</div>';
+      }
     },
   }).on('typeahead:select', function(e, suggestion) {
     window.location = suggestion.url;
