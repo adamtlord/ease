@@ -1,0 +1,50 @@
+{% extends 'concierge/customer_list_base.html' %}
+{% load custom_tags %}
+{% block title %}Add Customer to {{ group}}{% endblock title %}
+<h1>{% block pagetitle %}Add Customer to {{ group}}{% endblock %}</h1>
+{% block customer_list_content %}
+<form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {% if errors %}
+        <p class="alert alert-danger">
+            Please correct the error(s) below.
+        </p>
+    {% endif %}
+    {% if not group.user %}
+        <p class="alert alert-warning">
+            You must associate this group membership with a User before adding customers to it!
+        </p>
+    {% endif %}
+    {% if not group.address %}
+        <p class="alert alert-warning">
+            This group membership doesn't have a home address.
+        </p>
+    {% endif %}
+    {{ customer_form.non_field_errors }}
+    <div class="row">
+        <div class="col-sm-6">
+            <fieldset>
+                {% render_form_field customer_form.first_name %}
+                {% render_form_field customer_form.last_name %}
+                {% render_form_field customer_form.known_as %}
+                {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
+            </fieldset>
+        </div>
+        <div class="col-sm-6">
+            <fieldset>
+                {% render_form_field customer_form.special_assistance %}
+                {% render_form_field customer_form.notes %}
+                <input id="id_preferred_phone" name="preferred_phone" type="hidden" value="m">
+                <input id="id_residence_type" name="residence_type" type="hidden" value="{{ group.residence_type }}">
+            </fieldset>
+        </div>
+    </div>
+    <div class="form-actions">
+        <input type="submit" class="btn btn-primary btn-block" value="Create" />
+    </div>
+</form>
+{% endblock %}
+{% block scripts %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
+<script src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
+{% endblock %}

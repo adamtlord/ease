@@ -1,8 +1,6 @@
-from datetime import datetime
-
 from django import forms
-from django.core.exceptions import ValidationError
 
+from accounts.const import RESIDENCE_TYPE_CHOICES, SINGLE_FAMILY_HOME
 from accounts.models import Customer, Rider
 from rides.models import Destination, Ride
 
@@ -88,8 +86,8 @@ class DestinationForm(forms.ModelForm):
 class HomeForm(forms.ModelForm):
     street1 = forms.CharField(label="Address")
     residence_type = forms.ChoiceField(
-        choices=Customer.RESIDENCE_TYPE_CHOICES,
-        initial=Customer.SINGLE_FAMILY_HOME,
+        choices=RESIDENCE_TYPE_CHOICES,
+        initial=SINGLE_FAMILY_HOME,
         required=False
     )
     notes = forms.CharField(

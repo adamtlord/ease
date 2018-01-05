@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from localflavor.us.models import USZipCodeField
 
+from accounts.const import RESIDENCE_TYPE_CHOICES, RETIREMENT_COMMUNITY
 from common.models import AbstractEnumModel
 
 
@@ -93,6 +94,7 @@ class Invoice(models.Model):
 
 
 class GroupMembership(AbstractEnumModel):
+    from rides.models import Destination
 
     TERRACES = 1
 
@@ -111,6 +113,9 @@ class GroupMembership(AbstractEnumModel):
     bill_online = models.BooleanField(default=False)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_group_plan')
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_group_plan')
+    address = models.ForeignKey(Destination, blank=True, null=True)
+    residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=RETIREMENT_COMMUNITY)
+    user = models.OneToOneField('accounts.CustomUser', blank=True, null=True)
 
     def __unicode__(self):
         return self.display_name

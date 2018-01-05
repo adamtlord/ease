@@ -7,7 +7,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import JsonResponse, HttpResponse
@@ -16,13 +15,14 @@ from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_subscription_receipt_email, create_customers_from_upload, send_new_customer_email, create_customer_subscription
+from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, create_customer_subscription
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership, Balance, StripeCustomer
 from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm, CustomerUploadForm
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, \
+    AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -1185,6 +1185,60 @@ def group_membership_detail(request, group_id, template="concierge/group_members
         'group': group,
         'customers': customers
     }
+    return render(request, template, d)
+
+
+@staff_member_required
+def group_membership_add_customer(request, group_id, template="concierge/group_membership_customer_create.html"):
+    group = get_object_or_404(GroupMembership, pk=group_id)
+    errors = []
+    error_count = []
+    if request.method == 'GET':
+        customer_form = CustomerForm()
+    else:
+        customer_form = CustomerForm(request.POST)
+
+        if customer_form.is_valid():
+            cd = customer_form.cleaned_data
+            # create user for customer based on group's user
+            new_user = group.user
+            new_user.pk = None
+            # This is... uh... fake. It won't be used because the account is managed by the group
+            new_user.email = '{}_{}@arriverides.com'.format(cd['first_name'], cd['last_name'])
+            new_user.save()
+
+            # populate and save customer
+            new_customer = customer_form.save(commit=False)
+            new_customer.user = new_user
+            new_customer.registered_by = request.user
+            new_customer.intro_call = True
+            new_customer.is_active = True
+            new_customer.group_membership = group
+            new_customer.ride_account = group.ride_account
+            new_customer.subscription_account = group.subscription_account
+            new_customer.save()
+
+            # copy the group's home address to use as the customer's home address
+            customer_home = group.address
+            customer_home.pk = None
+            customer_home.customer = new_customer
+            customer_home.home = True
+            customer_home.save()
+
+            return redirect('customer_detail', new_customer.id)
+
+        else:
+            errors = customer_form.errors
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'group': group,
+        'customer_form': customer_form,
+        'errors': errors,
+        'error_count': error_count,
+        'group_membership_page': True
+    }
+
     return render(request, template, d)
 
 

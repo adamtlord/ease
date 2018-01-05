@@ -1,9 +1,7 @@
 from django import forms
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.safestring import mark_safe
-
 from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
+
 from billing.models import GroupMembership
 from concierge.models import Touch
 from rides.models import Destination
@@ -217,7 +215,8 @@ class CustomerForm(forms.ModelForm):
     dob = forms.DateField(
         label="Date of birth",
         help_text="Please use the format MM/DD/YYYY",
-        widget=forms.DateInput(format=('%m/%d/%Y'))
+        widget=forms.DateInput(format=('%m/%d/%Y')),
+        required=False
     )
     send_updates = forms.TypedChoiceField(
         coerce=lambda x: x == 'True',
@@ -387,3 +386,4 @@ class CustomerUploadForm(forms.Form):
             raise ValidationError(
                 'Not a csv file?!',
                 code='invalid')
+

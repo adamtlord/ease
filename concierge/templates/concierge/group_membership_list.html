@@ -14,6 +14,7 @@
                 <th>Bill Method</th>
                 <th>Subscription Account</th>
                 <th>Ride Account</th>
+                <th></th>
             </thead>
             <tbody>
                 {% for group in groups %}
@@ -47,6 +48,9 @@
                         {% else %}
                             --
                         {% endif %}</td>
+                        <td>
+                            <a href="{% url 'group_membership_add_customer' group.id %}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Group Member</a>
+                        </td>
                     </tr>
                 {% empty %}
                 {% endfor %}

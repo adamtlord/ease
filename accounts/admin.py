@@ -110,6 +110,7 @@ class CustomerAdmin(admin.ModelAdmin):
         RiderInline,
         DestinationInline,
     ]
+    raw_id_fields = ("subscription_account", "ride_account",)
 
 
 admin.site.register(CustomUser, UserAdmin)
