@@ -1262,6 +1262,9 @@ def customer_search_data(request):
             customer.last_name
         ]
 
+        if customer.group_membership:
+            customer_obj['display'] += ' [{}]'.format(customer.group_membership)
+
         if customer.home_phone:
             tokens.append(customer.home_phone)
             # tokens.extend(customer.home_phone.split('-'))

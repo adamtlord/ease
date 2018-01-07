@@ -58,7 +58,6 @@ $(function() {
     display: 'display_name',
     templates: {
       suggestion: function(value) {
-        console.log(value.display_name);
         return '<div><i class="fa fa-group"></i> ' + value.display_name + '</div>';
       }
     },
