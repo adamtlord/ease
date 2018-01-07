@@ -111,6 +111,7 @@ class CustomerAdmin(admin.ModelAdmin):
         DestinationInline,
     ]
     raw_id_fields = ("subscription_account", "ride_account",)
+    search_fields = ('first_name', 'last_name'
 
 
 admin.site.register(CustomUser, UserAdmin)
