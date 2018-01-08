@@ -67,7 +67,9 @@
                                     <span class="label label-danger">No Plan Selected</span>
                                 {% endif %}
                             {% endif %}
-                            <small>ID {{ customer.id }}</small>
+                            <small>ID {{ customer.id }}
+                            {% if customer.group_membership %} | <i class="fa fa-group"></i> {{ customer.group_membership }}{% endif %}
+                            </small>
                         </th>
                     </tr>
                     {% for ride in rides %}
