@@ -7802,6 +7802,9 @@ textarea.form-controller input[type="color"] {
 .copper-bg {
   background: #ad6f69;
 }
+.group-bg {
+  background: #540571;
+}
 .m-t-0 {
   margin-top: 0;
 }
@@ -10919,6 +10922,9 @@ a.ride-preferences ul > li > i:focus {
 .label.plan-label {
   vertical-align: .125em;
   background: #056571;
+}
+.label.plan-label.group-plan-label {
+  background: #540571;
 }
 .label.plan-label.bronze {
   background: #c19e67;

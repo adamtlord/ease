@@ -34,7 +34,7 @@
         <div class="col-sm-6">
             <div class="customer-phone-numbers">{{ customer.phone_numbers|safe }}</div>
             {% if customer.group_membership %}
-                <span class="label plan-label {{ customer.plan.name|lower }}">Group: {{ customer.group_membership.display_name }}</span>
+                <span class="label plan-label group-plan-label {{ customer.plan.name|lower }}">Group: {{ customer.group_membership.display_name }}</span>
             {% else %}
                 {% if customer.plan %}
                     <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
