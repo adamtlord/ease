@@ -327,7 +327,7 @@ class Customer(Contact):
                 phone_string += '<i></i>'
         elif self.mobile_phone:
             phone_string += '{} <span>(M)</span>'.format(self.mobile_phone)
-        else:
+        elif self.home_phone:
             phone_string += '{} <span>(H)</span>'.format(self.home_phone)
         phone_string += '</span>'
         return phone_string
