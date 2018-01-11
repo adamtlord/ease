@@ -160,6 +160,8 @@ class Ride(models.Model):
 
     @cached_property
     def get_arrive_fee(self):
+        if self.arrive_fee:
+            return self.arrive_fee
         if self.customer.group_membership and self.customer.group_membership.includes_arrive_fee:
             return self.customer.group_membership.plan.arrive_fee
         if self.included_in_plan:
@@ -194,12 +196,6 @@ class Ride(models.Model):
     def total_fees_estimate(self):
         fees = self.fees or 0
         arrive_fee = self.get_arrive_fee
-        return fees + arrive_fee
-
-    @cached_property
-    def total_fees(self):
-        fees = self.fees or 0
-        arrive_fee = self.arrive_fee or 0
         return fees + arrive_fee
 
     @cached_property
