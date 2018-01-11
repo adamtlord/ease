@@ -73,74 +73,71 @@ def invoice_customer_rides(account, customers, request):
         for customer, rides in customers.iteritems():
             for ride in rides:
                 try:
-                    if ride.cost or ride.fees:
-                        # the ride cost something
-                        if ride.total_cost_estimate == 0:
-                            # including, no fees: no billing
-                            ride.total_cost = 0
-                            ride.complete = True
-                            ride.invoiced = True
-                            included_rides.append(ride)
-                            success_included.append(ride.id)
-                            success_total += 1
-                        else:
-                            ride.total_cost = ride.total_cost_estimate
-                            cost_to_bill = ride.total_cost
-                            # if customer has an account
-                            if hasattr(customer, 'balance'):
-                                if customer.balance.amount >= ride.total_cost:
-                                    # customer balance can cover ride
+                    # the ride cost something
+                    if ride.total_cost_estimate == 0:
+                        # including, no fees: no billing
+                        ride.total_cost = 0
+                        ride.complete = True
+                        ride.invoiced = True
+                        included_rides.append(ride)
+                        success_included.append(ride.id)
+                        success_total += 1
+                    else:
+                        ride.total_cost = ride.total_cost_estimate
+                        cost_to_bill = ride.total_cost
+                        # if customer has an account
+                        if hasattr(customer, 'balance'):
+                            if customer.balance.amount >= ride.total_cost:
+                                # customer balance can cover ride
+                                ride.invoiced = True
+                                ride.full_clean()
+                                ride.save()
+                                cost_to_bill = None
+                                customer.balance.amount -= ride.total_cost
+                            else:
+                                # ride cost more than balance
+                                if stripe_id:
+                                    # charge overage to ride account
+                                    cost_to_bill = customer.balance.amount - ride.total_cost
+                                    customer.balance.amount = 0
+                                    if cost_to_bill < 0:
+                                        cost_to_bill = -cost_to_bill
+                                else:
+                                    # ruh roh, they're in the red.
+                                    cost_to_bill = None
                                     ride.invoiced = True
                                     ride.full_clean()
                                     ride.save()
-                                    cost_to_bill = None
                                     customer.balance.amount -= ride.total_cost
-                                else:
-                                    # ride cost more than balance
-                                    if stripe_id:
-                                        # charge overage to ride account
-                                        cost_to_bill = customer.balance.amount - ride.total_cost
-                                        customer.balance.amount = 0
-                                        if cost_to_bill < 0:
-                                            cost_to_bill = -cost_to_bill
-                                    else:
-                                        # ruh roh, they're in the red.
-                                        cost_to_bill = None
-                                        ride.invoiced = True
-                                        ride.full_clean()
-                                        ride.save()
-                                        customer.balance.amount -= ride.total_cost
-                                customer.balance.save()
-                                send_ride_receipt_email(customer, ride)
-                                new_touch = Touch(
-                                    customer=customer,
-                                    date=timezone.now(),
-                                    type=Touch.BILLING,
-                                    notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
-                                )
-                                new_touch.full_clean()
-                                new_touch.save()
-                                if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
-                                    send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
+                            customer.balance.save()
+                            send_ride_receipt_email(customer, ride)
+                            new_touch = Touch(
+                                customer=customer,
+                                date=timezone.now(),
+                                type=Touch.BILLING,
+                                notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
+                            )
+                            new_touch.full_clean()
+                            new_touch.save()
+                            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
+                                send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
 
-                            if cost_to_bill:
-                                invoiceitem = stripe.InvoiceItem.create(
-                                    customer=stripe_id,
-                                    amount=int(ride.total_cost * 100),
-                                    currency="usd",
-                                    description=ride.description,
-                                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-                                )
-                                ride.invoice_item_id = invoiceitem.id
-                                billable_rides.append(ride)
+                        if cost_to_bill:
+                            invoiceitem = stripe.InvoiceItem.create(
+                                customer=stripe_id,
+                                amount=int(ride.total_cost * 100),
+                                currency="usd",
+                                description=ride.description,
+                                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                            )
+                            ride.invoice_item_id = invoiceitem.id
+                            billable_rides.append(ride)
 
-                            success_billed.append(ride.id)
-                            success_total += 1
-                        ride.invoiced_by = request.user
-                        ride.save()
+                        success_billed.append(ride.id)
+                        success_total += 1
+                    ride.invoiced_by = request.user
+                    ride.save()
 
-                    else:
-                        errors.append('Ride {} has a blank cost field'.format(ride.id))
                 except Exception as ex:
                     errors.append('Ride {}: {}'.format(ride.id, ex.message))
                     continue
