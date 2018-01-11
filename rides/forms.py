@@ -36,6 +36,7 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'company',
     'external_id',
     'fees',
+    'arrive_fee',
     'notes',
     'rider'
 ]
@@ -178,7 +179,11 @@ class RideForm(forms.ModelForm):
     fees = forms.DecimalField(
         required=False,
         label="Additional fees",
-        help_text="Use for cancellation fees or surcharges, NOT for the standard Arrive fee!"
+        help_text="Use for cancellation fees or surcharges"
+    )
+    arrive_fee = forms.DecimalField(
+        required=False,
+        label="Dispatch fee"
     )
     rider_link = forms.ModelChoiceField(
         label="Who is riding?",
