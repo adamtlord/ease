@@ -35,7 +35,13 @@
                     </td>
                     <td>{{ ride.start.fullname|default:'--' }}<small class="subtext">{{ ride.start.fulladdress }}</small></td>
                     <td>{{ ride.destination.fullname|default:'--' }}<small class="subtext">{{ ride.destination.fulladdress }}</small></td>
-                    <td>{{ ride.rider|default:'' }}</td>
+                    <td>
+                        {% if ride.rider_link %}
+                            {{ ride.rider_link|default:'' }}
+                        {% else %}
+                            {{ ride.customer }}
+                        {% endif %}
+                    </td>
                     <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                     <td>{{ ride.start_date|date:"U" }}</td>
                     {% if ride.start.timezone %}
@@ -54,15 +60,16 @@
                         {% endif %}
                     </td>
                     <td>{% if ride.cost %}${{ ride.cost|default:'0' }}{% endif %}</td>
-                    <td>{% if ride.invoiced or ride.total_cost %}
-                            {% if ride.total_fees %}${{ ride.total_fees|default:'0' }}{% endif %}
+                    <td>{% if ride.total_fees_estimate %}
+                            ${{ ride.total_fees_estimate|floatformat:'2' }}
                         {% else %}
-                            {% if ride.total_fees_estimate %}${{ ride.total_fees_estimate }}{% endif %}
+                            --
                         {% endif %}
+                    </td>
                     <td>{% if ride.invoiced or ride.total_cost %}
-                            ${{ ride.total_cost|default:'0' }}
+                            ${{ ride.total_cost|floatformat:'2'|default:'0' }}
                         {% else %}
-                            ${{ ride.total_cost_estimate|default:'0' }}
+                            ${{ ride.total_cost_estimate|floatformat:'2'|default:'0' }}
                         {% endif %}
                     </td>
                     {% if customer.plan.includes_rides %}

@@ -2,10 +2,15 @@ import datetime
 import pytz
 import stripe
 
+from django.conf import settings
 from django.core.cache import cache
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.utils import timezone
 
-from billing.models import Invoice
+from accounts.helpers import send_ride_receipt_email
+from billing.models import Invoice, StripeCustomer
+from concierge.models import Touch
 
 
 def datetime_from_timestamp(timestamp):
@@ -39,94 +44,17 @@ def get_stripe_subscription(customer):
     return None
 
 
-# def invoice_customer_rides(customer, rides):
+def get_customer_stripe_accounts(customer):
+    subscription_account = customer.subscription_account
+    ride_account = customer.ride_account
+    other_accounts = StripeCustomer.objects.filter(customer=customer)
+    all_accounts = list(other_accounts)
+    if subscription_account:
+        all_accounts.append(subscription_account)
+    if ride_account and subscription_account != ride_account:
+        all_accounts.append(ride_account)
+    return all_accounts
 
-#     from accounts.helpers import send_included_rides_email
-
-#     success_included = []
-#     success_billed = []
-#     success_total = 0
-#     errors = []
-#     total = 0
-#     included_rides = []
-#     billable_rides = []
-
-#     if customer.ride_account and customer.ride_account.stripe_id:
-#         stripe_id = customer.ride_account.stripe_id
-
-#     if customer.group_membership and customer.group_membership.includes_ride_cost:
-#         stripe_id = customer.group_membership.ride_account.stripe_id
-
-#     if stripe_id:
-
-#         for ride in rides:
-#             if ride.cost or ride.fees:
-#                 # the ride cost something
-#                 if ride.total_cost_estimate == 0:
-#                     # including, no fees: no billing
-#                     ride.total_cost = 0
-#                     ride.complete = True
-#                     ride.invoiced = True
-#                     included_rides.append(ride)
-#                     success_included.append(ride.id)
-#                     success_total += 1
-#                 else:
-#                     ride.total_cost = ride.total_cost_estimate
-
-#                     invoiceitem = stripe.InvoiceItem.create(
-#                         customer=stripe_id,
-#                         amount=int(ride.total_cost * 100),
-#                         currency="usd",
-#                         description=ride.description,
-#                         idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-#                     )
-#                     ride.invoice_item_id = invoiceitem.id
-#                     billable_rides.append(ride)
-
-#                     success_billed.append(ride.id)
-#                     success_total += 1
-
-#                 ride.save()
-
-#             else:
-#                 errors.append('Ride {} has a blank cost field'.format(ride.id))
-
-#         total += 1
-
-#         if billable_rides:
-#             stripe_invoice = stripe.Invoice.create(customer=stripe_id)
-
-#             new_invoice = Invoice(
-#                 stripe_id=stripe_invoice.id,
-#                 customer=customer,
-#                 created_date=timezone.now(),
-#                 period_start=datetime_from_timestamp(stripe_invoice.period_start),
-#                 period_end=datetime_from_timestamp(stripe_invoice.period_end),
-#             )
-
-#             new_invoice.full_clean()
-#             new_invoice.save()
-
-#             for ride in billable_rides:
-#                 ride.invoice = new_invoice
-#                 ride.invoiced = True
-#                 ride.full_clean()
-#                 ride.save()
-
-#     else:
-#         errors.append('Customer {} has no Ride Account specified (no credit card to bill)'.format(customer))
-#         total = 1
-
-#     if included_rides:
-#         send_included_rides_email(customer, included_rides)
-
-#     return {
-#         'success_included': success_included,
-#         'success_billed': success_billed,
-#         'success_total': success_total,
-#         'errors': errors,
-#         'total': total
-#     }
 
 def invoice_customer_rides(account, customers, request):
 
@@ -140,11 +68,11 @@ def invoice_customer_rides(account, customers, request):
     included_rides = []
     billable_rides = []
 
-    stripe_id = account.stripe_id
-    if stripe_id:
+    stripe_id = account.stripe_id if account else None
+    if stripe_id or [customer.balance for customer in customers]:
         for customer, rides in customers.iteritems():
             for ride in rides:
-                if ride.cost or ride.fees:
+                try:
                     # the ride cost something
                     if ride.total_cost_estimate == 0:
                         # including, no fees: no billing
@@ -156,24 +84,63 @@ def invoice_customer_rides(account, customers, request):
                         success_total += 1
                     else:
                         ride.total_cost = ride.total_cost_estimate
-                        invoiceitem = stripe.InvoiceItem.create(
-                            customer=stripe_id,
-                            amount=int(ride.total_cost * 100),
-                            currency="usd",
-                            description=ride.description,
-                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
-                        )
-                        ride.invoice_item_id = invoiceitem.id
-                        billable_rides.append(ride)
+                        cost_to_bill = ride.total_cost
+                        # if customer has an account
+                        if hasattr(customer, 'balance'):
+                            if customer.balance.amount >= ride.total_cost:
+                                # customer balance can cover ride
+                                ride.invoiced = True
+                                ride.full_clean()
+                                ride.save()
+                                cost_to_bill = None
+                                customer.balance.amount -= ride.total_cost
+                            else:
+                                # ride cost more than balance
+                                if stripe_id:
+                                    # charge overage to ride account
+                                    cost_to_bill = customer.balance.amount - ride.total_cost
+                                    customer.balance.amount = 0
+                                    if cost_to_bill < 0:
+                                        cost_to_bill = -cost_to_bill
+                                else:
+                                    # ruh roh, they're in the red.
+                                    cost_to_bill = None
+                                    ride.invoiced = True
+                                    ride.full_clean()
+                                    ride.save()
+                                    customer.balance.amount -= ride.total_cost
+                            customer.balance.save()
+                            send_ride_receipt_email(customer, ride)
+                            new_touch = Touch(
+                                customer=customer,
+                                date=timezone.now(),
+                                type=Touch.BILLING,
+                                notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
+                            )
+                            new_touch.full_clean()
+                            new_touch.save()
+                            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
+                                send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
+
+                        if cost_to_bill:
+                            invoiceitem = stripe.InvoiceItem.create(
+                                customer=stripe_id,
+                                amount=int(ride.total_cost * 100),
+                                currency="usd",
+                                description=ride.description,
+                                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                            )
+                            ride.invoice_item_id = invoiceitem.id
+                            billable_rides.append(ride)
 
                         success_billed.append(ride.id)
                         success_total += 1
                     ride.invoiced_by = request.user
                     ride.save()
 
-                else:
-                    errors.append('Ride {} has a blank cost field'.format(ride.id))
-
+                except Exception as ex:
+                    errors.append('Ride {}: {}'.format(ride.id, ex.message))
+                    continue
             total += 1
 
         if billable_rides:
@@ -182,25 +149,32 @@ def invoice_customer_rides(account, customers, request):
 
             # get back in loop to generate invoices per-customer
             for customer in customers:
-                new_invoice = Invoice(
-                    stripe_id=stripe_invoice.id,
-                    customer=customer,
-                    created_date=timezone.now(),
-                    period_start=datetime_from_timestamp(stripe_invoice.period_start),
-                    period_end=datetime_from_timestamp(stripe_invoice.period_end),
-                )
+                try:
+                    new_invoice = Invoice(
+                        stripe_id=stripe_invoice.id,
+                        customer=customer,
+                        created_date=timezone.now(),
+                        period_start=datetime_from_timestamp(stripe_invoice.period_start),
+                        period_end=datetime_from_timestamp(stripe_invoice.period_end),
+                    )
 
-                new_invoice.full_clean()
-                new_invoice.save()
+                    new_invoice.full_clean()
+                    new_invoice.save()
+                except Exception as ex:
+                    errors.append('Customer {}: {}'.format(customer.id, ex.message))
+                    continue
 
             for ride in billable_rides:
-                ride.invoice = new_invoice
-                ride.invoiced = True
-                ride.full_clean()
-                ride.save()
+                try:
+                    ride.invoice = new_invoice
+                    ride.invoiced = True
+                    ride.full_clean()
+                    ride.save()
+                except Exception as ex:
+                    errors.append('Ride {}: {}'.format(ride.id, ex.message))
 
     else:
-        errors.append('Customer {} has no Ride Account specified (no credit card to bill)'.format(customer))
+        errors.append('Customer {} has no Ride Account specified (no credit card to bill) and/or no funds in their account.'.format(customer))
         total = 1
 
     if included_rides:
@@ -213,3 +187,86 @@ def invoice_customer_rides(account, customers, request):
         'errors': errors,
         'total': total
     }
+
+
+def debit_customer_balance(customer):
+    # if an inactive customer got in here somehow, skip them
+    if not customer.is_active or not customer.plan:
+        return False
+
+    try:
+
+        monthly_cost = customer.plan.monthly_cost
+        available_balance = customer.balance.amount
+
+        if available_balance >= monthly_cost:
+            customer.balance.amount -= monthly_cost
+            customer.balance.save()
+            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
+                send_balance_alerts(customer, last_action='Monthly Subscription')
+
+        else:
+            deficit = monthly_cost - available_balance
+            if customer.subscription_account:
+                invoiceitem = stripe.InvoiceItem.create(
+                    customer=customer.subscription_account.stripe_id,
+                    amount=int(deficit * 100),
+                    currency="usd",
+                    description="Monthly Subscription",
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                )
+
+            else:
+                # this will be negative:
+                customer.balance.amount -= monthly_cost
+                customer.balance.save()
+                send_balance_alerts(customer, last_action='Monthly Subscription')
+
+        return True
+
+    except Exception as ex:
+        msg_plain = 'Customer {}, Exception: {}'.format(customer, ex.message)
+        send_mail(
+            '[Arrive] Problem with subscription balance ',
+            msg_plain,
+            settings.DEFAULT_FROM_EMAIL,
+            ['admin@arriverides.com']
+        )
+        return False
+
+
+def send_balance_alerts(customer, last_action=None):
+
+    to_email = settings.CUSTOMER_SERVICE_CONTACT
+
+    d = {
+        'customer': customer,
+        'current_balance': customer.balance.amount,
+        'threshhold': None,
+        'last_action': last_action,
+        'subscription_account': customer.subscription_account or None
+    }
+
+    if customer.balance.amount <= 0:
+        msg_plain = render_to_string('billing/negative_customer_balance.txt', d)
+        msg_html = render_to_string('billing/negative_customer_balance.html', d)
+
+    else:
+        if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_2:
+            d['threshold'] = settings.BALANCE_ALERT_THRESHOLD_2
+            msg_plain = render_to_string('billing/customer_balance_alert.txt', d)
+            msg_html = render_to_string('billing/customer_balance_alert.html', d)
+        else:
+            if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1:
+                d['threshold'] = settings.BALANCE_ALERT_THRESHOLD_1
+                msg_plain = render_to_string('billing/customer_balance_alert.txt', d)
+                msg_html = render_to_string('billing/customer_balance_alert.html', d)
+
+    send_mail(
+        'Arrive Customer Balance Alert',
+        msg_plain,
+        settings.DEFAULT_FROM_EMAIL,
+        to_email,
+        html_message=msg_html,
+    )
+

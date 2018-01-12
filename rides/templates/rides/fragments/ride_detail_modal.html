@@ -1,4 +1,6 @@
 {% load tz %}
+{% load billing_tags %}
+
 {% get_current_timezone as TIME_ZONE %}
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -16,10 +18,14 @@
     {% endif %}
     <table class="table table-striped">
         <tbody>
-            {% if ride.rider and ride.rider != ride.customer.full_name %}
+            {% if ride.rider_link %}
                 <tr>
                     <th>Rider</th>
-                    <td>{{ ride.rider }}</td>
+                    <td>{{ ride.rider_link }}
+                        {% if ride.rider_link.email %}<br>{{ ride.rider_link.email }}{% endif %}
+                        {% if ride.rider_link.mobile_phone %}<br>{{ ride.rider_link.mobile_phone }}{% endif %}
+                        {% if ride.rider_link.notes %}<br><small>{{ ride.rider_link.notes }}</small>{% endif %}
+                    </td>
                 </tr>
             {% else %}
                 <tr>
@@ -103,30 +109,27 @@
                 </tr>
             {% endif %}
             <tr>
-                <th>Cost</th>
-                <td>{% if ride.cost %}${{ ride.cost }}{% endif %}</td>
+                <th>Ride Cost</th>
+                <td>{% if ride.cost %}{{ ride.cost|currency|default:'0' }}{% endif %}</td>
             </tr>
-            {% if ride.total_fees_estimate %}
-                <tr>
-                    <th>Fees</th>
-                    <td>{% if ride.total_fees_estimate %}
-                            ${{ ride.total_fees_estimate }}
-                        {% else %}
-                            --
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endif %}
+            <tr>
+                <th>Dispatch Fee</th>
+                <td>{{ ride.arrive_fee|currency }}
+            </tr>
+            <tr>
+                <th>Additional Fees</th>
+                <td>{{ ride.fees|currency }}</td>
+            </tr>
             {% if ride.total_cost_estimate %}
                 <tr>
                     <th>Total{% if ride.customer.group_membership %} to customer{% endif %}</th>
-                    <td>${{ ride.total_cost_estimate|default:'0' }} {% if ride.included_in_plan %}(included){% endif %}</td>
+                    <td>{{ ride.total_cost_estimate|currency }} {% if ride.included_in_plan %}(included){% endif %}</td>
                 </tr>
             {% endif %}
             {% if ride.customer.group_membership %}
                 <tr>
                     <th>Total to Group</th>
-                    <td>${{ ride.cost_to_group|default:'0' }}</td>
+                    <td>{{ ride.cost_to_group|currency }}</td>
                 </tr>
             {% endif %}
             {% if ride.notes %}

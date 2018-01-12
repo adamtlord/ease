@@ -1,0 +1,42 @@
+body.gift {
+    background: @gift-red;
+    &:before {
+        content:'';
+        position: fixed;
+        top:0;
+        left:0;
+        background-image: url("/static/img/gift-ribbon.png");
+        width: 300px;
+        height: 300px;
+        background-size: contain;
+        z-index: 1040;
+        background-repeat: no-repeat;
+    }
+    nav.navbar {
+        background:transparent;
+        .navbar-brand {
+            h4 {
+                color:white;
+            }
+            .logo .letter {
+                fill:white;
+            }
+        }
+    }
+    .form-content {
+        background:white;
+        padding:15px 25px;
+    }
+    footer {
+        background-color:darken(@gift-red, 8%);
+    }
+    &.gift-login {
+        &:before {
+            width:200px;
+            height:200px;
+        }
+        > .container {
+            background:white;
+        }
+    }
+}

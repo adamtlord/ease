@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -9,9 +10,9 @@ from django.utils.functional import cached_property
 from common.models import Location
 from common.utils import geocode_address, get_timezone
 
-from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager
+from rides.managers import RidesInProgressManager, RidesReadyToBillManager, RidesIncompleteManager, ActiveRidesManager
 from rides.const import COMPANIES, UBER, LYFT
-from billing.models import Invoice
+from billing.models import Invoice, Plan
 
 
 class Destination(Location):
@@ -24,6 +25,7 @@ class Destination(Location):
     nickname = models.CharField(max_length=50, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     timezone = models.CharField(max_length=128, blank=True, null=True)
+    address_for_gps = models.CharField(max_length=512, blank=True, null=True, verbose_name='Alternative address for GPS', help_text='If a different address drops a better pin, use it instead')
 
     class Meta:
         ordering = ['name']
@@ -142,6 +144,7 @@ class Ride(models.Model):
     notes = models.TextField(blank=True, null=True)
     request_time = models.DateTimeField(blank=True, null=True)
     rider = models.CharField(max_length=128, blank=True, null=True)
+    rider_link = models.ForeignKey('accounts.Rider', blank=True, null=True)
     start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point', on_delete=models.SET_NULL, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
@@ -151,17 +154,23 @@ class Ride(models.Model):
     in_progress = RidesInProgressManager()
     ready_to_bill = RidesReadyToBillManager()
     incomplete = RidesIncompleteManager()
+    active = ActiveRidesManager()
 
     class Meta:
         ordering = ['-start_date']
 
     @cached_property
     def get_arrive_fee(self):
+        if self.arrive_fee:
+            return self.arrive_fee
         if self.customer.group_membership and self.customer.group_membership.includes_arrive_fee:
             return self.customer.group_membership.plan.arrive_fee
         if self.included_in_plan:
             return 0
         if self.customer.plan:
+            # for accurate records, if the plan's arrive_fee was increased on 1/1/2018, show the old fee
+            if self.customer.plan.id in [Plan.COPPER, Plan.BRONZE, Plan.GOLD, Plan.SILVER] and self.start_date.year < 2018:
+                return 3.0
             return self.customer.plan.arrive_fee or 0
         return 0
 
@@ -188,12 +197,6 @@ class Ride(models.Model):
     def total_fees_estimate(self):
         fees = self.fees or 0
         arrive_fee = self.get_arrive_fee
-        return fees + arrive_fee
-
-    @cached_property
-    def total_fees(self):
-        fees = self.fees or 0
-        arrive_fee = self.arrive_fee or 0
         return fees + arrive_fee
 
     @cached_property
@@ -227,6 +230,13 @@ class Ride(models.Model):
     @property
     def is_confirmed(self):
         return self.confirmation.count() > 0
+
+    @property
+    def is_today(self):
+        tz = pytz.timezone(settings.TIME_ZONE)
+        today = timezone.now().astimezone(tz)
+        start_date = self.start_date.astimezone(tz)
+        return start_date.date() == today.date()
 
     def __unicode__(self):
         if self.start:

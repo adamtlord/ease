@@ -19,6 +19,7 @@
                     {% render_form_field destination_form.state '' 'state' %}
                     {% render_form_field destination_form.zip_code '' 'zip' %}
                 </div>
+                {% render_form_field destination_form.address_for_gps %}
                 {% for hidden in destination_form.hidden_fields %}
                     {{ hidden }}
                 {% endfor %}

@@ -32,7 +32,7 @@
                     <td>{% if ride.at_home %}<i class="fa fa-lg text-success fa-home"></i>{% endif %}</td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
-                        {% if ride.rider and ride.rider != ride.customer.full_name %}<br><strong>Rider:</strong> {{ ride.rider }}{% endif %}
+                        {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
                     </td>
                     <td>
                         {% if ride.start.timezone %}

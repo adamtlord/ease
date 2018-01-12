@@ -101,6 +101,10 @@
     background: #ad6f69;
 }
 
+.group-bg {
+    background: #540571;
+}
+
 .m-t-0 {
     margin-top:0;
 }
@@ -112,6 +116,13 @@
 }
 .p-b-0 {
     padding-bottom:0;
+}
+.m-t-label {
+    margin-top:@line-height-computed + 5px;
+}
+
+.weight-normal {
+    font-weight:400;
 }
 
 .iconic {
@@ -241,5 +252,10 @@
         display:none;
     }
 }
-
+span.highlight {
+    padding:2px 4px;
+    &.highlight-warning {
+        background-color:@state-warning-bg;
+    }
+}
 

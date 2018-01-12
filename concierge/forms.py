@@ -1,9 +1,7 @@
 from django import forms
-from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.safestring import mark_safe
-
 from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
+
 from billing.models import GroupMembership
 from concierge.models import Touch
 from rides.models import Destination
@@ -69,6 +67,7 @@ UPDATE_HOME_FIELDS = [
     'city',
     'state',
     'zip_code',
+    'address_for_gps',
 ]
 
 CREATE_HOME_FIELDS = UPDATE_HOME_FIELDS + [
@@ -89,6 +88,7 @@ RIDER_FIELDS = [
     'first_name',
     'last_name',
     'mobile_phone',
+    'notes',
     'customer'
 ]
 
@@ -215,7 +215,8 @@ class CustomerForm(forms.ModelForm):
     dob = forms.DateField(
         label="Date of birth",
         help_text="Please use the format MM/DD/YYYY",
-        widget=forms.DateInput(format=('%m/%d/%Y'))
+        widget=forms.DateInput(format=('%m/%d/%Y')),
+        required=False
     )
     send_updates = forms.TypedChoiceField(
         coerce=lambda x: x == 'True',
@@ -228,11 +229,11 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = CUSTOMER_FIELDS + ['send_updates']
+        fields = CUSTOMER_FIELDS + ['send_updates', 'plan']
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
-        for field in CUSTOMER_FIELDS:
+        for field in self.Meta.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
 
@@ -320,6 +321,7 @@ class RiderForm(forms.ModelForm):
     last_name = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+    notes = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
     class Meta:
         model = Rider
@@ -384,3 +386,4 @@ class CustomerUploadForm(forms.Form):
             raise ValidationError(
                 'Not a csv file?!',
                 code='invalid')
+

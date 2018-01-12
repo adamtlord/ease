@@ -1,0 +1,61 @@
+{% extends 'concierge/customer_list_base.html' %}
+{% load billing_tags %}
+{% block title %}Group Memberships{% endblock %}
+{% block pagetitle %}Group Memberships{% endblock %}
+{% block customer_list_content %}
+    <div class="table-responsive">
+        <table id="group_membership_list" class="table">
+            <thead>
+                <th>Name</th>
+                <th>Plan</th>
+                <th class="text-center">Includes Subscription</th>
+                <th class="text-center">Includes Rides</th>
+                <th class="text-center">Includes Arrive Fee</th>
+                <th>Bill Method</th>
+                <th>Subscription Account</th>
+                <th>Ride Account</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                    <tr>
+                        <td><a href="{% url 'group_membership_detail' group.id %}">{{ group.display_name }}</a></td>
+                        <td><span class="label plan-label {{ group.plan.name|lower }}">{{ group.plan }}</span></td>
+                        <td class="text-center">{% if group.includes_subscription %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                        <td class="text-center">{% if group.includes_ride_cost %}<i class="fa fa-check text-success"></i>{% endif %}</td></td>
+                        <td class="text-center">{% if group.includes_arrive_fee %}<i class="fa fa-check text-success"></i>{% endif %}</td>
+                        <td>{% if group.bill_online %}online{% else %}manual{% endif %}</td>
+                        <td>{% if group.subscription_account %}
+                            <i class="fa fa-credit-card"></i> {{ group.subscription_account.last_4_digits|cc_display }}
+                            {% if group.subscription_account.stripe_id %}
+                                <br>
+                                <i class="fa fa-cc-stripe stripe-brand"></i>
+                                <a href="https://dashboard.stripe.com/customers/{{ group.subscription_account.stripe_id }}" target="_blank">{{ group.subscription_account.stripe_id }}</a>
+                                <i class="fa fa-sm text-muted fa-external-link"></i>
+                            {% endif %}
+                        {% else %}
+                            --
+                        {% endif %}
+                        </td>
+                        <td>{% if group.ride_account %}
+                            <i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}
+                            {% if group.ride_account.stripe_id %}
+                                <br>
+                                <i class="fa fa-cc-stripe stripe-brand"></i>
+                                <a href="https://dashboard.stripe.com/customers/{{ group.ride_account.stripe_id }}" target="_blank">{{ group.ride_account.stripe_id }}</a>
+                                <i class="fa fa-sm text-muted fa-external-link"></i>
+                            {% endif %}
+                        {% else %}
+                            --
+                        {% endif %}</td>
+                        <td>
+                            <a href="{% url 'group_membership_add_customer' group.id %}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Group Member</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock customer_list_content %}

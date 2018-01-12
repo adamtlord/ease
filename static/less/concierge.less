@@ -19,6 +19,15 @@ td, th {
 #start_ride_form {
     fieldset {
         padding-top:@line-height-computed;
+        &.add-rider {
+            padding-top:0;
+        }
+    }
+    .form-inline.add-rider {
+        margin-bottom: @form-group-margin-bottom;
+        .control-label {
+            margin-bottom:5px;
+        }
     }
 }
 .rides-in-progress {
@@ -52,6 +61,9 @@ td, th {
 .label.plan-label {
     vertical-align:.125em;
     background:@brand-secondary;
+    &.group-plan-label {
+        .group-bg;
+    }
     &.bronze {
         .bronze-bg;
     }

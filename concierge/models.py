@@ -19,6 +19,8 @@ class Touch(models.Model):
     INTRO = 'INTRO'
     PHONE = 'PHONE'
     BILLING = 'BILLING'
+    FUNDS = 'FUNDS'
+    GIFT = 'GIFT'
     OTHER = 'OTHER'
 
     TYPE_CHOICES = (

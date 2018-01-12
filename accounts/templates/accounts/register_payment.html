@@ -1,11 +1,12 @@
 {% extends 'base_app.html' %}
 {% load custom_tags %}
 
+{% block body_class %}{% if gift %}gift{% endif %}{% endblock %}
 {% block navbar %}
     {% include 'fragments/navbar-centered-logo.html' %}
 {% endblock navbar %}
 
-{% block title %}Choose a Plan{% endblock title %}
+{% block title %}Add Funds for {{ customer }}{% endblock title %}
 
 {% block header_includes %}
     {{ block.super }}
@@ -15,13 +16,20 @@
     </script>
 {% endblock header_includes %}
 
+{% block messages %}{% endblock messages %}
 {% block content %}
-
 <div class="row">
-    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 form-content">
+        {% include 'fragments/messages.html' %}
         <div class="page-header">
-            <h2 class="text-center">Sign up to become an Arrive&nbsp;member</h2>
+            {% if gift %}
+                <h2 class="text-center">Add a backup credit card <small>(optional)</small></h2>
+                <p class="text-center">This is the card that will be charged when the gift balance is depleted.</p>
+            {% else %}
+                <h2 class="text-center">Sign up to become an Arrive&nbsp;member</h2>
+            {% endif %}
         </div>
+        {% if not gift %}
         <div class="alert alert-info">
             <table class="cost-table">
                 <tbody>
@@ -44,6 +52,7 @@
                 </tbody>
             </table>
         </div>
+        {% endif %}
         <form action="" id="user_form" method="post" novalidate>{% csrf_token %}
             {% if errors %}
                 <p class="alert alert-danger">
@@ -116,6 +125,9 @@
             </fieldset>
             <div class="form-actions">
                 <input class="btn btn-primary btn-block" id="user_submit" name="commit" type="submit" value="Submit">
+                {% if gift %}
+                    <a class="btn btn-secondary btn-block" href="{% url 'register_lovedone_destinations' %}">Skip</a>
+                {% endif %}
             </div>
         </form>
     </div>

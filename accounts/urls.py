@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 from accounts.views import (register_self,
+                            register_add_funds,
                             register_self_payment,
                             register_self_destinations,
                             register_self_complete,
@@ -10,15 +11,20 @@ from accounts.views import (register_self,
                             register_lovedone_complete,
                             register_payment_ride_account,
                             register_payment_redirect,
+                            gift_login,
+                            gift_purchase,
+                            gift_purchase_receipt,
                             password_validate,
                             profile,
                             profile_edit,
+                            profile_add_funds,
                             destination_edit,
                             destination_add,
                             destination_delete)
 
 urlpatterns = [
     url(r'^register/$', register_self, name='register_self'),
+    url(r'^register/add-funds/$', register_add_funds, name='register_add_funds'),
     url(r'^register/payment/$', register_self_payment, name='register_self_payment'),
     # url(r'^register/preferences/$', register_self_preferences, name='register_self_preferences'),
     url(r'^register/destinations/$', register_self_destinations, name='register_self_destinations'),
@@ -39,11 +45,17 @@ urlpatterns = [
 
     url(r'^profile/$', profile, name='profile'),
     url(r'^profile/edit/$', profile_edit, name='profile_edit'),
+    url(r'^profile/add-funds/$', profile_add_funds, name='profile_add_funds'),
 
 
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
     url(r'^destinations/add/$', destination_add, name='destination_add'),
+
+    url(r'^gift-login/$', gift_login, name='gift_login'),
+    url(r'^gift/(?P<customer_id>\d+)/purchase/$', gift_purchase, name='gift_purchase'),
+    url(r'^gift/(?P<customer_id>\d+)/purchase/(?P<gift_id>\d+)/receipt/$', gift_purchase_receipt, name='gift_purchase_receipt'),
+
     url(r'^password_validate/$', password_validate, name='password_validate'),
     url(r'^password/reset/$',
         auth_views.password_reset,

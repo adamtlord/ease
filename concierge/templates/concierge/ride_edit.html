@@ -49,6 +49,19 @@
                     {{ form.start.errors }}
                 {% endif %}
             </div>
+            {% if ride.start.address_for_gps %}
+                <div class="form-group">
+                    <label class="text-success">Alternative address for GPS</label>
+                    <div class="input-group">
+                        <input id="starting_point_gps" readonly class="form-control monospace" value="{{ ride.start.address_for_gps }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point_gps">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {% if ride.start.notes %}
                 <div class="form-group">
                     <label>Starting point notes</label>
@@ -76,6 +89,7 @@
                 </div>
             {% render_form_field form.customer %}
             {% render_form_field form.cost %}
+            {% render_form_field form.arrive_fee %}
             {% render_form_field form.fees %}
             {% render_form_field form.notes %}
             {% render_form_field form.complete %}
@@ -97,6 +111,19 @@
                     {{ form.destination.errors }}
                 {% endif %}
             </div>
+            {% if ride.destination.address_for_gps %}
+                <div class="form-group">
+                    <label class="text-success">Alternative address for GPS</label>
+                    <div class="input-group">
+                        <input id="destination_gps" readonly class="form-control monospace" value="{{ ride.destination.address_for_gps }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination_gps">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
             {% if ride.destination.notes %}
                 <div class="form-group has-info">
                     <label>Destination notes</label>
@@ -111,11 +138,21 @@
                 </div>
             {% endif %}
             {{ form.end_date.as_hidden }}
-            {% render_form_field form.rider %}
-            {% render_form_field form.distance %}
-            {% render_form_field form.fare_estimate %}
-            {% render_form_field form.company %}
+            {% if customer.riders.all %}
+                {% render_form_field form.rider_link %}
+            {% endif %}
             <div class="ride-notes">
+                {% if ride.rider_link %}
+                    <p class="alert alert-info">
+                        <i class="fa fa-fw fa-user"></i>
+                        Rider: <strong>{{ ride.rider_link }}</strong>
+                        {{ ride.rider_link.mobile_phone }}
+                        {% if ride.rider_link.notes %}
+                            <br><i class="fa fa-fw fa-sticky-note-o"></i>
+                            <small>{{ ride.rider_link.notes }}</small>
+                        {% endif %}
+                    </p>
+                {% endif %}
                 {% if customer.send_updates %}
                     <p class="alert alert-info"><i class="fa fa-fw fa-commenting"></i> Please send text updates to {% if customer.mobile_phone %}<strong>{{ customer.mobile_phone }}</strong>{% else %}[<em>no mobile phone entered!</em>]{% endif %}</p>
                 {% endif %}
@@ -138,6 +175,9 @@
                     </p>
                 {% endif %}
             </div>
+            {% render_form_field form.distance %}
+            {% render_form_field form.fare_estimate %}
+            {% render_form_field form.company %}
             {% if ride.added_by %}
                 <p>Started by {{ ride.added_by }}</p>
             {% endif %}

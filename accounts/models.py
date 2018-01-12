@@ -15,7 +15,9 @@ from django.utils.functional import cached_property
 from localflavor.us.models import PhoneNumberField
 
 from common.models import Location
-from billing.utils import get_stripe_subscription
+from accounts.const import PREFERRED_PHONE_CHOICES, PREFERRED_SERVICE_CHOICES, \
+    RESIDENCE_TYPE_CHOICES, HOME_PHONE, SINGLE_FAMILY_HOME
+from billing.models import Balance
 from accounts.managers import CustomUserManager
 from accounts.const import TEXT_UPDATE_CHOICES, TEXT_UPDATES_NEVER
 from billing.models import StripeCustomer, Plan
@@ -140,44 +142,6 @@ class Contact(models.Model):
 
 class Customer(Contact):
     """ Represents a primary user of the service """
-    APARTMENT = 'AP'
-    ASSISTED_LIVING = 'AL'
-    RETIREMENT_COMMUNITY = 'RT'
-    SINGLE_FAMILY_HOME = 'SF'
-    SKILLED_NURSING = 'SN'
-
-    RESIDENCE_TYPE_CHOICES = (
-        (None, ''),
-        (APARTMENT, 'Apartment'),
-        (ASSISTED_LIVING, 'Assisted Living Facility'),
-        (RETIREMENT_COMMUNITY, 'Retirement Community'),
-        (SINGLE_FAMILY_HOME, 'Single Family Home'),
-        (SKILLED_NURSING, 'Skilled Nursing Facility'),
-    )
-
-    HOME_PHONE = 'h'
-    MOBILE_PHONE = 'm'
-
-    PREFERRED_PHONE_CHOICES = (
-        (HOME_PHONE, 'Home'),
-        (MOBILE_PHONE, 'Mobile'),
-    )
-
-    UBER = 'Uber'
-    LYFT = 'Lyft'
-    UBERX = 'UberX'
-    UBERXL = 'UberXL'
-    UBERASSIST = 'UberASSIST'
-    OTHER = 'Other'
-
-    PREFERRED_SERVICE_CHOICES = (
-        (LYFT, 'Lyft'),
-        (UBERX, 'UberX'),
-        (UBERXL, 'UberXL'),
-        (UBERASSIST, 'UberASSIST'),
-        (OTHER, 'Other')
-    )
-
     dob = models.DateField(blank=True, null=True, verbose_name="Date of birth")
     gift_date = models.DateField(blank=True, null=True)
     group_membership = models.ForeignKey('billing.GroupMembership', blank=True, null=True)
@@ -185,13 +149,13 @@ class Customer(Contact):
     intro_call = models.BooleanField(default=False)
     is_active = models.BooleanField(
         verbose_name='active',
-        default=True,
+        default=False,
         help_text='Designates whether this customer should be treated as active.'
     )
     known_as = models.CharField(max_length=50, blank=True, null=True)
     last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
     notes = models.TextField(blank=True, null=True)
-    plan = models.ForeignKey(Plan, blank=True, null=True)
+    plan = models.ForeignKey(Plan, blank=True, null=True, default=Plan.DEFAULT)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
     preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
     registered_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name='registered_by')
@@ -241,7 +205,19 @@ class Customer(Contact):
     def last_ride_dt(self):
         return self.last_ride.start_date
 
+    @cached_property
+    def ride_count(self):
+        return self.rides.count()
+
+    @property
+    def status(self):
+        if self.is_active:
+            return 'active'
+        else:
+            return 'inactive'
+
     def get_rides_this_month(self):
+        from billing.utils import get_stripe_subscription
         if self.plan:
             try:
                 subscription = get_stripe_subscription(self)
@@ -287,6 +263,8 @@ class Customer(Contact):
 
     @cached_property
     def ready_to_ride(self):
+        if self.has_funds and self.plan:
+            return True
         if self.ride_account and self.subscription_account and self.plan:
             return True
         else:
@@ -332,7 +310,7 @@ class Customer(Contact):
                 phone_string += '<i></i>'
         elif self.mobile_phone:
             phone_string += '{} <span>(M)</span>'.format(self.mobile_phone)
-        else:
+        elif self.home_phone:
             phone_string += '{} <span>(H)</span>'.format(self.home_phone)
         phone_string += '</span>'
         return phone_string
@@ -349,7 +327,7 @@ class Customer(Contact):
                 phone_string += '<i></i>'
         elif self.mobile_phone:
             phone_string += '{} <span>(M)</span>'.format(self.mobile_phone)
-        else:
+        elif self.home_phone:
             phone_string += '{} <span>(H)</span>'.format(self.home_phone)
         phone_string += '</span>'
         return phone_string
@@ -357,6 +335,20 @@ class Customer(Contact):
     @cached_property
     def group_bill(self):
         return self.group_membership and self.group_membership.includes_ride_cost
+
+    @property
+    def has_funds(self):
+        try:
+            return self.balance.amount > 0
+        except Balance.DoesNotExist:
+            return False
+
+    @property
+    def has_backup_card(self):
+        if self.subscription_account or self.ride_account:
+            return True
+        else:
+            return False
 
     def __unicode__(self):
         return '{} {}'.format(self.first_name, self.last_name)
@@ -367,6 +359,7 @@ class Rider(Contact):
     customer = models.ForeignKey(Customer, related_name="riders")
     relationship = models.CharField(max_length=100, blank=True, null=True)
     send_updates = models.PositiveSmallIntegerField(choices=TEXT_UPDATE_CHOICES, default=TEXT_UPDATES_NEVER)
+    notes = models.TextField(blank=True, null=True)
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)

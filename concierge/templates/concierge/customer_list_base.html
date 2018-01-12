@@ -11,14 +11,15 @@
 {% block content %}
     <div class="page-header customer-list">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <h1>{% block pagetitle %}Customers{% endblock %}</h1>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-7">
                 <div class="clearfix">
                     <ul class="nav nav-pills">
                         <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'customer_list' %}">Active <span class="badge">{{ active_count }}</span></a></li>
                         <li role="presentation" class="{% if inactive_page %}active{% endif %}"><a href="{% url 'customer_list_inactive' %}">Inactive <span class="badge">{{ inactive_count }}</span></a></li>
+                        <li role="presentation" class="{% if group_membership_page %}active{% endif %}"><a href="{% url 'group_membership_list' %}">Groups</a></li>
                         <li role="presentation" class="{% if register_page %}active{% endif %}"><a href="{% url 'customer_create' %}">Register a New Customer</a></li>
                         <li role="presentation"><a href="{% url 'customer_data_export' %}">Export Data</a></li>
                     </ul>

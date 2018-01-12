@@ -58,12 +58,18 @@
                         <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
                         <th colspan="12">
                             <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
-                            {% if customer.plan %}
-                                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                            {% if customer.group_membership and customer.group_membership.includes_ride_cost %}
+                                <span class="label plan-label group-plan-label {{ customer.group_membership.plan.name|lower }}">{{ customer.group_membership.plan }} Plan</span>
                             {% else %}
-                                <span class="label label-danger">No Plan Selected</span>
+                                {% if customer.plan %}
+                                    <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                                {% else %}
+                                    <span class="label label-danger">No Plan Selected</span>
+                                {% endif %}
                             {% endif %}
-                            <small>ID {{ customer.id }}</small>
+                            <small>ID {{ customer.id }}
+                            {% if customer.group_membership %} | <i class="fa fa-group"></i> {{ customer.group_membership }}{% endif %}
+                            </small>
                         </th>
                     </tr>
                     {% for ride in rides %}
@@ -71,8 +77,8 @@
                             <td></td>
                             <td><input class="customer_{{ ride.customer.id }}" name="ride" data-parent="{{ customer.id }}" value="{{ ride.id }}" type="checkbox"></td>
                             <td><a href="{% url 'ride_edit' ride.id %}">{{ ride.id }}</a></td>
-                            <td>{{ ride.start.fullname }}</td>
-                            <td>{{ ride.destination.fullname }}</td>
+                            <td>{% if ride.start %}{{ ride.start.fullname }}{% else %}<span class="label label-danger">No starting point!</span>{% endif %}</td>
+                            <td>{% if ride.destination %}{{ ride.destination.fullname }}{% else %}<span class="label label-danger">No destination</span>{% endif %}</td>
                             <td>{{ ride.start_date|date:"SHORT_DATETIME_FORMAT" }}</td>
                             <td>{% if ride.distance %}
                                     {{ ride.distance }} mi
@@ -80,7 +86,7 @@
                             </td>
                             <td>${{ ride.cost|default:'0' }}</td>
                             <td>{% if ride.total_fees_estimate %}
-                                    ${{ ride.total_fees_estimate }}
+                                    ${{ ride.total_fees_estimate|floatformat:'2' }}
                                 {% else %}
                                     --
                                 {% endif %}

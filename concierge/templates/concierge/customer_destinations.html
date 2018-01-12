@@ -28,8 +28,12 @@
                 {{ destination.city }},
                 {{ destination.state }}
                 {{ destination.zip_code }}
+
             </td>
-            <td><em class="small">{{ destination.notes }}</em></td>
+            <td>{% if destination.address_for_gps %}<small>
+                <i class="fa fa-map-pin"></i> {{ destination.address_for_gps }}</small><br>
+                {% endif %}
+                <em class="small">{{ destination.notes }}</em></td>
             <td>
                 {% static_map destination %}
             </td>
@@ -59,7 +63,9 @@
                     ({{ destination.tz }})
                 {% endif %}
             </td>
-            <td>
+            <td>{% if destination.address_for_gps %}<small>
+                <i class="fa fa-map-pin"></i> {{ destination.address_for_gps }}</small><br>
+                {% endif %}
                 {% if destination.included_in_plan %}
                     <span class="label label-success">Always Included</span>
                 {% endif %}

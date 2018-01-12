@@ -47,7 +47,7 @@
         {% if geolocate %}
             geolocate({{ geolocate.latitude }}, {{ geolocate.longitude }});
         {% else %}
-            return False;
+            return false;
         {% endif %}
     };
 </script>

@@ -7,22 +7,22 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
+from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm
-from accounts.helpers import send_welcome_email, send_receipt_email, create_customers_from_upload
+from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, create_customer_subscription
 from accounts.models import Customer, Rider
-from billing.models import Plan, GroupMembership
-from billing.forms import StripeCustomerForm, AdminPaymentForm
-from billing.utils import get_stripe_subscription
+from billing.models import Plan, GroupMembership, Balance, StripeCustomer
+from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
+from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, AccountHolderForm, CustomerUploadForm
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, \
+    AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
 from rides.forms import HomeForm
 from rides.models import Destination, Ride
@@ -49,6 +49,8 @@ def dashboard(request, template='concierge/dashboard.html'):
                     .select_related('user__profile') \
                     .select_related('plan') \
                     .order_by('user__date_joined')
+
+    to_contact = [customer for customer in to_contact if customer.ready_to_ride]
 
     d = {
         'to_contact': to_contact,
@@ -80,7 +82,8 @@ def upcoming_rides(request, template='concierge/upcoming_rides.html'):
 
     d = {
         'rides': rides,
-        'upcoming_page': True
+        'upcoming_page': True,
+        'active_count': Ride.active.count()
     }
 
     return render(request, template, d)
@@ -94,15 +97,13 @@ def active_rides(request, template='concierge/active_rides.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.filter(start_date__lte=timezone.now()) \
-                        .exclude(complete=True) \
-                        .exclude(cancelled=True) \
-                        .order_by('start_date') \
-                        .select_related('destination') \
-                        .select_related('start') \
-                        .prefetch_related('customer') \
-                        .prefetch_related('customer__user') \
-                        .prefetch_related('customer__user__profile') \
+    rides = Ride.active \
+                .order_by('start_date') \
+                .select_related('destination') \
+                .select_related('start') \
+                .prefetch_related('customer') \
+                .prefetch_related('customer__user') \
+                .prefetch_related('customer__user__profile') \
 
     for ride in rides:
         if ride.customer.last_ride.destination == ride.customer.home:
@@ -112,7 +113,8 @@ def active_rides(request, template='concierge/active_rides.html'):
 
     d = {
         'rides': rides,
-        'active_page': True
+        'active_page': True,
+        'active_count': rides.count()
     }
 
     return render(request, template, d)
@@ -126,11 +128,12 @@ def rides_history(request, template='concierge/rides_history.html'):
         messages.add_message(request, messages.WARNING, 'Sorry, you\'re not allowed to go to the Concierge portal! Here\'s your profile:')
         return redirect('profile')
 
-    rides = Ride.objects.filter(complete=True).order_by('-start_date')
+    rides = Ride.objects.filter(complete=True).order_by('-start_date').prefetch_related('customer')
 
     d = {
         'rides': rides,
-        'history_page': True
+        'history_page': True,
+        'active_count': Ride.active.count()
     }
     return render(request, template, d)
 
@@ -215,7 +218,7 @@ def customer_create(request, template='concierge/customer_create.html'):
             new_user.profile.relationship = register_form.cleaned_data['relationship']
             new_user.profile.save()
 
-            send_welcome_email(new_user)
+            # send_new_customer_email(new_user)
 
             return redirect('customer_detail', new_customer.id)
 
@@ -305,12 +308,18 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             if '_activate' in request.POST:
                 customer.is_active = True
                 customer.save()
+                if hasattr(customer, 'subscription'):
+                    customer.subscription.is_active = True
+                    customer.subscription.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} activated'.format(customer))
                 return redirect('customer_detail', customer.id)
 
             if '_deactivate' in request.POST:
                 customer.is_active = False
                 customer.save()
+                if hasattr(customer, 'subscription'):
+                    customer.subscription.is_active = False
+                    customer.subscription.save()
                 messages.add_message(request, messages.SUCCESS, 'Customer {} deactivated'.format(customer))
                 return redirect('customer_list')
 
@@ -504,11 +513,12 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
                         new_stripe_customer.stripe_id = create_stripe_customer.id
 
                         # save everything
+                        customer.is_active = True
                         customer.save()
                         new_stripe_customer.save()
 
                         # everything was successful, so we can send a receipt to the user
-                        send_receipt_email(user)
+                        send_subscription_receipt_email(user)
 
                         messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
@@ -639,6 +649,7 @@ def payment_ride_account_edit(request, customer_id, template="concierge/payment_
                         stripe_customer.stripe_id = create_stripe_customer.id
 
                         # save everything
+                        customer.is_active = True
                         customer.save()
                         stripe_customer.save()
 
@@ -765,6 +776,164 @@ def customer_activity_add(request, customer_id, template="concierge/customer_act
     return render(request, template, d)
 
 
+@staff_member_required
+def customer_add_funds(request, customer_id, template="concierge/customer_add_funds.html"):
+
+    customer = get_object_or_404(Customer, pk=customer_id)
+    customer_stripe_accounts = get_customer_stripe_accounts(customer)
+    errors = {}
+    card_errors = None
+
+    if request.method == 'POST':
+
+        payment_form = StripeCustomerForm(request.POST, unrequire=request.POST['funds_source'] != "new")
+        gift_form = GiftForm(request.POST, prefix="gift")
+
+        if all([
+                payment_form.is_valid(),
+                gift_form.is_valid(),
+                request.POST.get('amount', False)]):
+
+            try:
+                # Add a new credit card/Stripe customer
+                if request.POST['funds_source'] == "new":
+                    # create new stripe customer
+                    create_stripe_customer = stripe.Customer.create(
+                        description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                        email=payment_form.cleaned_data['email'],
+                        source=payment_form.cleaned_data['stripe_token'],
+                        metadata={
+                            'customer': '{} {}'.format(customer.full_name, customer.pk)
+                        },
+                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
+                    )
+
+                    if create_stripe_customer:
+                        # new stripe customer created successfully
+                        new_stripe_customer = payment_form.save()
+                        new_stripe_customer.stripe_id = create_stripe_customer.id
+                        new_stripe_customer.customer = customer
+                        new_stripe_customer.save()
+                        # use the newly-created stripe customer id for the charge
+                        stripe_customer = new_stripe_customer
+
+                # charge a card/Stripe customer on file
+                else:
+                    stripe_customer = StripeCustomer.objects.filter(stripe_id=request.POST['funds_source']).first()
+
+                # now create the charge for the new or existing customer
+                create_stripe_charge = stripe.Charge.create(
+                    amount=int(request.POST['amount']) * 100,
+                    currency="usd",
+                    description='Add funds to customer account: {}'.format(customer.full_name),
+                    receipt_email=stripe_customer.email,
+                    metadata={
+                        'customer': '{} {}'.format(customer.full_name, customer.pk)
+                    },
+                    idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                    customer=stripe_customer.stripe_id
+                )
+
+                # now create the Balance object
+                if create_stripe_charge:
+                    charge_amount = create_stripe_charge['amount']/100
+
+                    try:
+                        customer.balance.amount += charge_amount
+                        customer.balance.user_updated = request.user
+                        customer.balance.stripe_customer = stripe_customer
+                        customer.balance.save()
+
+                    except Balance.DoesNotExist:
+                        new_balance = Balance(amount=charge_amount, customer=customer, user_created=request.user)
+                        new_balance.save()
+
+                    success_message = '${} successfully added to {}\'s account'.format(charge_amount, customer)
+
+                    if request.POST.get('is_gift', False):
+                        new_gift = gift_form.save(commit=False)
+                        new_gift.email = stripe_customer.email
+                        new_gift.customer = customer
+                        new_gift.amount = request.POST['amount']
+                        new_gift.save()
+
+                        success_message += ' as a gift from {} {}'.format(new_gift.first_name, new_gift.last_name)
+
+                        gift_note = 'Received a gift of ${} from {}'.format(charge_amount, new_gift.first_name, new_gift.last_name)
+                        if new_gift.relationship:
+                            gift_note += ' ({})'.format(new_gift.relationship)
+
+                        gift_touch = Touch(
+                            customer=customer,
+                            concierge=request.user,
+                            date=timezone.now(),
+                            type=Touch.GIFT,
+                            notes=gift_note
+                        )
+                        gift_touch.full_clean()
+                        gift_touch.save()
+
+                    if not hasattr(customer, 'subscription'):
+                        create_customer_subscription(customer)
+
+                    customer.is_active = True
+                    customer.save()
+
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        success_message
+                    )
+                    funds_touch = Touch(
+                        customer=customer,
+                        concierge=request.user,
+                        date=timezone.now(),
+                        type=Touch.FUNDS,
+                        notes='Added ${} to account'.format(charge_amount)
+                    )
+                    funds_touch.full_clean()
+                    funds_touch.save()
+
+                    return redirect('customer_detail', customer.id)
+
+            # catch Stripe card validation errors
+            except stripe.error.CardError as ex:
+                print 'card errors'
+                print ex
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            # catch any other type of error
+            except Exception as ex:
+                print 'other errors'
+                print ex
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
+
+        else:
+            print 'form errors'
+            print payment_form.errors
+            print gift_form.errors
+            errors = payment_form.errors
+
+    else:
+        payment_form = StripeCustomerForm()
+        gift_form = GiftForm(prefix="gift")
+
+
+    d = {
+        'customer': customer,
+        'payment_form': payment_form,
+        'gift_form': gift_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'soon': soon(),
+        'errors': errors,
+        'card_errors': card_errors,
+        'customer_stripe_accounts': customer_stripe_accounts
+    }
+
+    return render(request, template, d)
+
+
 @login_required
 def concierge_settings(request, template='accounts/settings.html'):
     user = request.user
@@ -850,6 +1019,55 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
         writer = csv.writer(response)
 
+        if filters['type'] == 'combined':
+            filename += ' Customers (combined)'
+            writer.writerow([
+                'Customer Email',
+                'Customer First Name',
+                'Customer Last Name',
+                'Account Status',
+                'Plan Type',
+                'Date Registered',
+                'Customer Home Phone',
+                'Customer Mobile Phone',
+                'Account Mgr First Name',
+                'Account Mgr Last Name',
+                'Account Mgr Email',
+                'Account Mgr Phone',
+                'Rider Name',
+                'Rider Phone',
+                'Street 1',
+                'Street 2',
+                'Unit',
+                'City',
+                'State',
+                'Zip'
+            ])
+
+            for customer in customers:
+                writer.writerow([
+                                customer.email,
+                                customer.first_name,
+                                customer.last_name,
+                                customer.status,
+                                customer.plan,
+                                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                customer.user.first_name,
+                                customer.user.last_name,
+                                user_email(customer),
+                                customer.user.profile.phone,
+                                rider_names(customer),
+                                rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
+                                get_city(customer),
+                                get_state(customer),
+                                get_zip(customer)
+                                ])
+
         if filters['type'] == 'customer':
             filename += ' Customers'
             writer.writerow([
@@ -861,6 +1079,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Mobile Phone',
                 'User Phone',
                 'Loved One Phones',
+                'Street 1',
+                'Street 2',
+                'Unit',
                 'City',
                 'State'
             ])
@@ -875,6 +1096,9 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 customer.mobile_phone,
                                 customer.user.profile.phone,
                                 rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
                                 get_city(customer),
                                 get_state(customer)
                                 ])
@@ -940,6 +1164,84 @@ def customer_data_export(request, template="concierge/customer_export.html"):
         return render(request, template, d)
 
 
+@staff_member_required
+def group_membership_list(request, template="concierge/group_membership_list.html"):
+    groups = GroupMembership.objects.filter(active=True)
+
+    d = {
+        'groups': groups,
+        'group_membership_page': True
+    }
+
+    return render(request, template, d)
+
+
+@staff_member_required
+def group_membership_detail(request, group_id, template="concierge/group_membership_detail.html"):
+    group = get_object_or_404(GroupMembership, pk=group_id)
+    customers = Customer.active.filter(group_membership=group)
+
+    d = {
+        'group': group,
+        'customers': customers
+    }
+    return render(request, template, d)
+
+
+@staff_member_required
+def group_membership_add_customer(request, group_id, template="concierge/group_membership_customer_create.html"):
+    group = get_object_or_404(GroupMembership, pk=group_id)
+    errors = []
+    error_count = []
+    if request.method == 'GET':
+        customer_form = CustomerForm()
+    else:
+        customer_form = CustomerForm(request.POST)
+
+        if customer_form.is_valid():
+            cd = customer_form.cleaned_data
+            # create user for customer based on group's user
+            new_user = group.user
+            new_user.pk = None
+            # This is... uh... fake. It won't be used because the account is managed by the group
+            new_user.email = '{}_{}@arriverides.com'.format(cd['first_name'], cd['last_name'])
+            new_user.save()
+
+            # populate and save customer
+            new_customer = customer_form.save(commit=False)
+            new_customer.user = new_user
+            new_customer.registered_by = request.user
+            new_customer.intro_call = True
+            new_customer.is_active = True
+            new_customer.group_membership = group
+            new_customer.ride_account = group.ride_account
+            new_customer.subscription_account = group.subscription_account
+            new_customer.save()
+
+            # copy the group's home address to use as the customer's home address
+            customer_home = group.address
+            customer_home.pk = None
+            customer_home.customer = new_customer
+            customer_home.home = True
+            customer_home.save()
+
+            return redirect('customer_detail', new_customer.id)
+
+        else:
+            errors = customer_form.errors
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'group': group,
+        'customer_form': customer_form,
+        'errors': errors,
+        'error_count': error_count,
+        'group_membership_page': True
+    }
+
+    return render(request, template, d)
+
+
 # AJAX VIEWS
 def customer_search_data(request):
     customers = Customer.active.select_related('user').select_related('user__profile').all()
@@ -951,13 +1253,17 @@ def customer_search_data(request):
             'home_phone': customer.home_phone,
             'mobile_phone': customer.mobile_phone,
             'id': customer.id,
-            'display': '{}'.format(customer.full_name)
+            'display': '{}'.format(customer.full_name),
+            'url': reverse('customer_detail', args=[customer.id])
         }
 
         tokens = [
             customer.first_name,
             customer.last_name
         ]
+
+        if customer.group_membership:
+            customer_obj['display'] += ' [{}]'.format(customer.group_membership)
 
         if customer.home_phone:
             tokens.append(customer.home_phone)
@@ -1014,9 +1320,35 @@ def rider_phones(customer):
     return ' '.join(numbers)
 
 
+def rider_names(customer):
+    names = []
+    riders = customer.riders.all()
+    for rider in riders:
+        names.append(rider.full_name)
+    return ', '.join(names)
+
+
 def user_email(customer):
     if customer.user.email and customer.user.email != customer.email:
         return customer.user.email
+    return ''
+
+
+def get_street1(customer):
+    if customer.home and customer.home.street1:
+        return customer.home.street1
+    return ''
+
+
+def get_street2(customer):
+    if customer.home and customer.home.street2:
+        return customer.home.street2
+    return ''
+
+
+def get_unit(customer):
+    if customer.home and customer.home.unit:
+        return customer.home.unit
     return ''
 
 
@@ -1029,4 +1361,10 @@ def get_city(customer):
 def get_state(customer):
     if customer.home and customer.home.state:
         return customer.home.state
+    return ''
+
+
+def get_zip(customer):
+    if customer.home and customer.home.zip_code:
+        return customer.home.zip_code
     return ''

@@ -1,6 +1,6 @@
 {% extends 'base_email_txt.html' %}
 {% block content %}
-Hi {{ account.first_name }},
+Hi {{ customer.first_name }},
 
 Thanks for becoming an Arrive Rides member! You now have unlimited access to our concierge service that will order or schedule a ride for you at your convenience.
 

@@ -13,6 +13,12 @@
             {% if not customer.intro_call %}
                 <p class="alert alert-warning">
                     <strong>Intro call needed</strong>
+                    {% for gift in customer.gift_set.all %}
+                        | <i class="fa fa-gift" data-toggle="popover" data-placement="top" data-content="${{ gift.amount }} to {{ customer }} from {{ gift.first_name }} {{ gift.last_name }} ({{ gift.relationship }})"></i> {{ gift.gift_date|date:'SHORT_DATE_FORMAT' }}{% if gift.gift_date == today %} <strong>Today!</strong>{% endif %}
+                    {% endfor %}
+                    {% if customer.gift_date %}
+                        | <i class="fa fa-gift"></i> {{ customer.gift_date|date:'SHORT_DATE_FORMAT' }}{% if customer.gift_date == today %} <span class="label label-success">Today!</span>{% endif %}
+                    {% endif %}
                 </p>
             {% endif %}
             <table class="table">
@@ -20,7 +26,7 @@
                     {% if customer.group_membership %}
                         <tr>
                             <td>Group Membership</td>
-                            <td>{{ customer.group_membership }}</td>
+                            <td><a href="{% url 'group_membership_detail' customer.group_membership.id %}">{{ customer.group_membership }}</a></td>
                         </tr>
                     {% endif %}
                     {% if customer.known_as %}
@@ -112,37 +118,47 @@
                     </tr>
                     {% endif %}
                     {% if customer.user.profile.on_behalf %}
-                    <tr>
-                        <td>Account managed by</td>
-                        <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
-                            <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
-                            {% if customer.user.profile.phone %}
-                                <br>{{ customer.user.profile.phone }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                        {% if customer.email %}
+                        {% if customer.group_membership %}
                             <tr>
-                                <td>Customer email</td>
-                                <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></td>
+                                <td>Group manager</td>
+                                <td><a href="mailto:{{ customer.group_membership.user.email }}">{{ customer.group_membership.user.email }}</a></td>
                             </tr>
-                        {% endif %}
-                    {% else %}
+                        {% else %}
                         <tr>
-                            <td>
-                                Email
-                            </td>
-                            <td>
-                                <a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                            <td>Account managed by</td>
+                            <td>{{ customer.user }} {% if customer.user.profile.relationship %}({{ customer.user.profile.relationship }}){% endif %}
+                                <br><a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                                {% if customer.user.profile.phone %}
+                                    <br>{{ customer.user.profile.phone }}
+                                {% endif %}
                             </td>
                         </tr>
+                            {% if customer.email %}
+                                <tr>
+                                    <td>Customer email</td>
+                                    <td><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>
+                                        Email
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ customer.user.email }}">{{ customer.user.email }}</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
                     {% endif %}
                     {% if riders %}
                         <tr>
                             <td>Riders</td>
                             <td>
                                 {% for rider in riders %}
-                                    <a href="#rider_modal_{{ rider.id }}" data-toggle="modal">{{ rider.first_name }} {{ rider.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                                    <p>{{ rider.first_name }} {{ rider.last_name }}
+                                    {% if rider.email %}<br>{{ rider.email }}{% endif %}
+                                    {% if rider.mobile_phone %}<br>{{ rider.mobile_phone }}{% endif %}
+                                    {% if rider.notes %}<br><small>{{ rider.notes }}</small>{% endif %}</p>
                                 {% endfor %}
                             </td>
                         </tr>
@@ -256,6 +272,11 @@
                     Enter Activity
                 </a>
             </p>
+            <p>
+                <a href="{% url 'customer_add_funds' customer.id %}" class="btn btn-secondary btn-block">
+                    Add Funds
+                </a>
+            </p>
             {% if not customer.ready_to_ride %}
                 <p class="alert alert-danger">
                 {% for missing in customer.missing %}
@@ -290,23 +311,11 @@
         </div>
     {% endfor %}
 {% endif %}
-{% if riders %}
-    {% for rider in riders %}
-        <div id="rider_modal_{{ rider.id }}" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-sm" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        {{ rider.first_name }} {{ rider.last_name }}
-                        {% if rider.email %}<br>{{ rider.email }}{% endif %}
-                        {% if rider.mobile_phone %}<br>{{ rider.mobile_phone }}{% endif %}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-{% endif %}
-
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
 {% endblock %}

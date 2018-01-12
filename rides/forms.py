@@ -1,10 +1,9 @@
-from datetime import datetime
-
 from django import forms
-from django.core.exceptions import ValidationError
 
-from accounts.models import Customer
+from accounts.const import RESIDENCE_TYPE_CHOICES, SINGLE_FAMILY_HOME
+from accounts.models import Customer, Rider
 from rides.models import Destination, Ride, RideConfirmation
+
 
 HOME_FIELDS = [
     'name',
@@ -14,7 +13,8 @@ HOME_FIELDS = [
     'city',
     'state',
     'zip_code',
-    'notes'
+    'notes',
+    'address_for_gps',
 ]
 
 DESTINATION_FIELDS = HOME_FIELDS + [
@@ -25,7 +25,7 @@ START_RIDE_FIELDS = [
     'start',
     'destination',
     'start_date',
-    'rider'
+    'rider_link'
 ]
 
 EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
@@ -37,8 +37,17 @@ EDIT_RIDE_FIELDS = START_RIDE_FIELDS + [
     'company',
     'external_id',
     'fees',
+    'arrive_fee',
     'notes',
     'rider'
+]
+
+RIDER_FIELDS = [
+    'first_name',
+    'last_name',
+    'mobile_phone',
+    'customer',
+    'notes'
 ]
 
 
@@ -79,8 +88,8 @@ class DestinationForm(forms.ModelForm):
 class HomeForm(forms.ModelForm):
     street1 = forms.CharField(label="Address")
     residence_type = forms.ChoiceField(
-        choices=Customer.RESIDENCE_TYPE_CHOICES,
-        initial=Customer.SINGLE_FAMILY_HOME,
+        choices=RESIDENCE_TYPE_CHOICES,
+        initial=SINGLE_FAMILY_HOME,
         required=False
     )
     notes = forms.CharField(
@@ -131,9 +140,9 @@ class StartRideForm(forms.ModelForm):
         required=False
     )
     start_date = forms.DateTimeField(required=False)
-    rider = forms.ChoiceField(
+    rider_link = forms.ModelChoiceField(
         label="Who is riding?",
-        choices=[],
+        queryset=Rider.objects.none(),
         required=False
     )
 
@@ -141,22 +150,13 @@ class StartRideForm(forms.ModelForm):
         model = Ride
         fields = START_RIDE_FIELDS
 
-    def rider_choices(self, customer):
-        choices = [
-            (customer.full_name, customer.full_name),
-        ]
-        for rider in customer.riders.all():
-            choices.append(
-                (rider.full_name, rider.full_name)
-            )
-        return choices
-
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop('customer')
         super(StartRideForm, self).__init__(*args, **kwargs)
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
-        self.fields['rider'].choices = self.rider_choices(customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer).order_by('last_name', 'first_name')
+        self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in START_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
             self.fields[field].widget.attrs['style'] = 'width:100%;'
@@ -180,11 +180,15 @@ class RideForm(forms.ModelForm):
     fees = forms.DecimalField(
         required=False,
         label="Additional fees",
-        help_text="Use for cancellation fees or surcharges, NOT for the standard Arrive fee!"
+        help_text="Use for cancellation fees or surcharges"
     )
-    rider = forms.ChoiceField(
+    arrive_fee = forms.DecimalField(
+        required=False,
+        label="Dispatch fee"
+    )
+    rider_link = forms.ModelChoiceField(
         label="Who is riding?",
-        choices=[],
+        queryset=Rider.objects.none(),
         required=False
     )
 
@@ -192,23 +196,14 @@ class RideForm(forms.ModelForm):
         model = Ride
         fields = EDIT_RIDE_FIELDS + ['complete', 'included_in_plan']
 
-    def rider_choices(self, customer):
-        choices = [
-            (customer.full_name, customer.full_name),
-        ]
-        for rider in customer.riders.all():
-            choices.append(
-                (rider.full_name, rider.full_name)
-            )
-        return choices
-
     def __init__(self, *args, **kwargs):
         customer = kwargs.pop('customer')
         super(RideForm, self).__init__(*args, **kwargs)
         self.fields['start'].queryset = Destination.objects.filter(customer=customer).order_by('-home')
         self.fields['destination'].queryset = Destination.objects.filter(customer=customer)
         self.fields['notes'].widget.attrs['rows'] = 4
-        self.fields['rider'].choices = self.rider_choices(customer)
+        self.fields['rider_link'].queryset = Rider.objects.filter(customer=customer).order_by('last_name', 'first_name')
+        self.fields['rider_link'].empty_label = "{} (self)".format(customer.full_name)
         for field in EDIT_RIDE_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         for field in START_RIDE_FIELDS:
@@ -231,3 +226,16 @@ class ConfirmRideForm(forms.ModelForm):
         model = RideConfirmation
         fields = '__all__'
 
+
+class AddRiderForm(forms.ModelForm):
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = Rider
+        fields = RIDER_FIELDS
+
+    def __init__(self, *args, **kwargs):
+        super(AddRiderForm, self).__init__(*args, **kwargs)
+        for field in RIDER_FIELDS:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+        self.fields['notes'].widget.attrs['rows'] = 2

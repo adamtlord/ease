@@ -60,6 +60,7 @@
                     {% render_form_field home_form.zip_code '' 'zip zip-mask' %}
                 </div>
                 {% render_form_field customer_form.residence_type %}
+                {% render_form_field home_form.address_for_gps %}
                 {% render_form_field home_form.notes %}
             </fieldset>
 
@@ -100,6 +101,7 @@
                     {% render_form_field form.first_name %}
                     {% render_form_field form.last_name %}
                     {% render_form_field form.mobile_phone '' 'phone-mask' %}
+                    {% render_form_field form.notes %}
                     {% render_form_field form.DELETE %}
 
                 </fieldset>
