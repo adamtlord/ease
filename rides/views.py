@@ -208,19 +208,23 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
 
     cancel_form = CancelRideForm(initial={
         'ride_id': ride_id,
-        'next_url': reverse('customer_detail', args=[customer.id])})
-
-    confirmation_form = ConfirmRideForm(initial={
-        'ride': ride,
-        'confirmed_by': request.user
-    })
+        'next_url': reverse('customer_detail', args=[customer.id])
+        }
+    )
 
     errors = {}
 
     if request.method == 'GET':
         form = RideForm(instance=ride, customer=customer)
+        confirmation_form = ConfirmRideForm(initial={
+            'ride': ride,
+            'confirmed_by': request.user,
+            },
+            prefix='conf'
+        )
     else:
         form = RideForm(request.POST, instance=ride, customer=customer)
+        confirmation_form = ConfirmRideForm(request.POST, prefix='conf')
         if form.is_valid():
             ride = form.save(commit=False)
             if ride.start.timezone:
@@ -233,6 +237,9 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
                 # set start_date to re-localized datetime
                 ride.start_date = localized_start_date
             ride.save()
+            if 'is_confirmed' in request.POST and confirmation_form.is_valid():
+                confirmation_form.save()
+                messages.success(request, "Ride confirmed")
             messages.success(request, "Ride saved successfully")
         else:
             errors = form.errors

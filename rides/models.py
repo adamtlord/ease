@@ -222,10 +222,12 @@ class Ride(models.Model):
 
     @cached_property
     def confirmation_required(self):
-        if self.is_confirmed:
-            return False
         # the ride was scheduled for at least a day out and the date of the ride is in the future
         return self.start_date.date() > self.date_created.date() and self.start_date > timezone.now()
+
+    @cached_property
+    def confirmation(self):
+        return self.confirmation.first()
 
     @property
     def is_confirmed(self):

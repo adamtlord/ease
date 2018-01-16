@@ -5,14 +5,28 @@
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
 
+<form action="" class="form" method="POST" novalidate>{% csrf_token %}
 <h3>Ride ID: {{ ride.id }}</h3>
-{% if ride.confirmation_required %}
-    <div class="alert alert-warning">
-        <p>Please confirm</p>
-        {% for field in confirmation_form %}
-            {% render_form_field field %}
-        {% endfor %}
+{% if ride.confirmation_required and not ride.is_confirmed %}
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="alert alert-warning">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="is_confirmed" />
+                        <strong>Ride is confirmed</strong>
+                    </label>
+                </div>
+                {% render_form_field confirmation_form.notes '' 'sub-field' %}
+                {{ confirmation_form.ride.as_hidden }}
+                {{ confirmation_form.confirmed_by.as_hidden }}
+                <p>Ride was scheduled {{ ride.date_created }} by {{ ride.added_by }}</p>
+            </div>
+        </div>
     </div>
+{% endif %}
+{% if ride.is_confirmed %}
+    <p class="alert alert-info">CONFIRMED: on {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
 {% endif %}
 {% if ride.cancelled %}
     <span class="label label-danger">DELETED</span>
@@ -22,7 +36,6 @@
         </div>
     {% endif %}
 {% endif %}
-<form action="" class="form" method="POST" novalidate>{% csrf_token %}
     {% if errors %}
         <p class="alert alert-danger">
             {% if error_count == 1 %}

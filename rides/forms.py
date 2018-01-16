@@ -222,9 +222,19 @@ class CancelRideForm(forms.Form):
 
 
 class ConfirmRideForm(forms.ModelForm):
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 2}),
+        required=False,
+        label="Confirmation notes",
+    )
+
     class Meta:
         model = RideConfirmation
-        fields = '__all__'
+        fields = ('ride', 'confirmed_by', 'notes',)
+
+    def __init__(self, *args, **kwargs):
+        super(ConfirmRideForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].widget.attrs['class'] = 'form-control'
 
 
 class AddRiderForm(forms.ModelForm):

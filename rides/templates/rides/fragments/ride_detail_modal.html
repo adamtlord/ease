@@ -16,6 +16,13 @@
             </div>
         {% endif %}
     {% endif %}
+    {% if ride.is_confirmed %}
+        <p>Confirmed: {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+    {% else %}
+        {% if ride.confirmation_required %}
+            <p class="alert alert-warning">Please confirm</p>
+        {% endif %}
+    {% endif %}
     <table class="table table-striped">
         <tbody>
             {% if ride.rider_link %}

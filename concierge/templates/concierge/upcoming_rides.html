@@ -28,7 +28,7 @@
         <tbody>
             {% for ride in rides %}
                 <tr{% if ride.is_today %} class="warning"{% endif %}>
-                    <td>{{ ride.id }}</td>
+                    <td>{{ ride.id }} {% if ride.confirmation_required and not ride.is_confirmed %}confirm me {% endif %}</td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
                         {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
