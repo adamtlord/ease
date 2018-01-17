@@ -38,7 +38,7 @@
                     <td>{{ touch.type|title }}</td>
                     <td>{{ touch.customer }}</td>
                     <td>{{ touch.concierge|default:'' }}</td>
-                    <td>{{ touch.date|default:"" }}</td>
+                    <td>{{ touch.date|date:"SHORT_DATETIME_FORMAT"|default:"" }}</td>
                     <td>{{ touch.date|date:"U" }}</td>
                     <td class="small">{{ touch.notes }}</td>
                 </tr>
