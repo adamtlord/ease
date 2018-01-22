@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import pytz
 import datetime
+import decimal
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -196,11 +197,15 @@ class Ride(models.Model):
     def total_fees_estimate(self):
         fees = self.fees or 0
         arrive_fee = self.get_arrive_fee
-        return float(fees) + float(arrive_fee)
+        return decimal.Decimal(fees) + decimal.Decimal(arrive_fee)
 
     @cached_property
     def total_cost_estimate(self):
+        print '-'
         cost = self.get_cost
+        print cost
+        print self.total_fees_estimate
+        print cost + self.total_fees_estimate
         return cost + self.total_fees_estimate
 
     @cached_property
