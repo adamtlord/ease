@@ -196,7 +196,7 @@ class Ride(models.Model):
     def total_fees_estimate(self):
         fees = self.fees or 0
         arrive_fee = self.get_arrive_fee
-        return fees + arrive_fee
+        return float(fees) + float(arrive_fee)
 
     @cached_property
     def total_cost_estimate(self):
