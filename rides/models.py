@@ -201,11 +201,7 @@ class Ride(models.Model):
 
     @cached_property
     def total_cost_estimate(self):
-        print '-'
         cost = self.get_cost
-        print cost
-        print self.total_fees_estimate
-        print cost + self.total_fees_estimate
         return cost + self.total_fees_estimate
 
     @cached_property
