@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
-from localflavor.us.models import USZipCodeField
+from localflavor.us.models import USZipCodeField, PhoneNumberField
 
 from accounts.const import RESIDENCE_TYPE_CHOICES, RETIREMENT_COMMUNITY
 from common.models import AbstractEnumModel
@@ -116,6 +116,7 @@ class GroupMembership(AbstractEnumModel):
     address = models.ForeignKey(Destination, blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=RETIREMENT_COMMUNITY)
     user = models.OneToOneField('accounts.CustomUser', blank=True, null=True)
+    phone = PhoneNumberField(blank=True, null=True)
 
     def __unicode__(self):
         return self.display_name
