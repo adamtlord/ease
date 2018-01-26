@@ -648,13 +648,17 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     if not valid_coupon:
                         coupon_code = None
 
-                    # now attach the customer to a plan
-                    stripe.Subscription.create(
-                        customer=create_stripe_customer.id,
-                        plan=customer.plan.stripe_id,
-                        idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
-                        coupon=coupon_code
-                    )
+                    # if the customer already has a gift balance, let the gift balance take care of the
+                    # subscription fees. No need to add a Stripe subscription here.
+                    if not customer.has_funds:
+                        # now attach the customer to a plan
+                        stripe.Subscription.create(
+                            customer=create_stripe_customer.id,
+                            plan=customer.plan.stripe_id,
+                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                            coupon=coupon_code
+                        )
+                        send_subscription_receipt_email(request.user)
 
                     # store the customer's stripe id in their record
                     new_stripe_customer.stripe_id = create_stripe_customer.id
@@ -663,7 +667,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     customer.save()
                     new_stripe_customer.save()
 
-                    send_subscription_receipt_email(request.user)
 
                     # send_new_customer_email(request.user)
 
