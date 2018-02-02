@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from registration.forms import RegistrationForm
 from accounts.const import TEXT_UPDATE_CHOICES
 from accounts.models import CustomUser, UserProfile, Customer, Rider, LovedOne
+from billing.models import GroupMembership
 
 
 CUSTOM_USER_FIELDS = [
@@ -143,6 +144,7 @@ class CustomUserForm(forms.ModelForm):
     email = forms.EmailField(
         required=False
     )
+
     class Meta:
         model = CustomUser
         fields = ('email', 'first_name', 'last_name')
@@ -290,3 +292,30 @@ class LovedOnePreferencesForm(forms.ModelForm):
         super(LovedOnePreferencesForm, self).__init__(*args, **kwargs)
         for field in ['relationship', 'mobile_phone']:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class GroupRegistrationForm(forms.ModelForm):
+    name = forms.CharField(label="Group Name")
+    phone = forms.CharField(label="Group Phone Number")
+    default_user_address = forms.BooleanField(label="Should this address be the default home address for all riders?", required=False, initial=True)
+
+    class Meta:
+        model = GroupMembership
+        fields = ('name', 'phone', 'default_user_address')
+
+    def __init__(self, *args, **kwargs):
+        super(GroupRegistrationForm, self).__init__(*args, **kwargs)
+        for field in ['name', 'phone']:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class GroupContactRegistrationForm(CustomUserRegistrationForm):
+    phone = forms.CharField(
+        required=False,
+        label="Primary Contact Phone Number"
+    )
+    email = forms.EmailField(
+        label='Primary Group Contact Email',
+        help_text='Receipts will be sent here',
+        required=True
+    )

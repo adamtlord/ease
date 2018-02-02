@@ -14,9 +14,9 @@ from django.utils.encoding import smart_str
 
 from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomUserForm,
-                            CustomerForm, RiderForm, LovedOneForm,
-                            LovedOnePreferencesForm)
-from accounts.helpers import send_welcome_email, send_subscription_receipt_email, send_new_customer_email, create_customer_subscription
+                            CustomerForm, RiderForm, GroupRegistrationForm,
+                            GroupContactRegistrationForm)
+from accounts.helpers import send_welcome_email, send_subscription_receipt_email, create_customer_subscription
 from accounts.models import Customer
 from billing.models import Plan, Balance, StripeCustomer, Gift
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
@@ -24,7 +24,7 @@ from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
 from concierge.models import Touch
 from rides.models import Destination
-from rides.forms import DestinationForm, HomeForm
+from rides.forms import DestinationForm, HomeForm, GroupAddressForm
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -870,6 +870,72 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
         'soon': soon(),
         'errors': errors,
         'card_errors': card_errors
+    }
+
+    return render(request, template, d)
+
+
+@anonymous_required
+def register_group(request, template='accounts/register_group.html'):
+
+    errors = []
+    error_count = []
+
+    if request.method == 'GET':
+        register_form = GroupContactRegistrationForm(prefix='reg')
+        group_form = GroupRegistrationForm(prefix='group')
+        address_form = GroupAddressForm(prefix='home')
+    else:
+        register_form = GroupContactRegistrationForm(request.POST, prefix='reg')
+        group_form = GroupRegistrationForm(request.POST, prefix='group')
+        address_form = GroupAddressForm(request.POST, prefix='home')
+
+        if all([
+            register_form.is_valid(),
+            group_form.is_valid(),
+            address_form.is_valid()
+        ]):
+            # save user
+            new_user = register_form.save(request)
+            # save group
+            new_group = group_form.save()
+            new_group.user = new_user
+            new_group.display_name = new_group.name
+            new_group.save()
+            # create dummy customer for group
+            new_customer = Customer.objects.create(
+                first_name=new_group.name,
+                last_name="Group",
+                is_active=True,
+                user=new_user
+            )
+            # populate and save home address
+            group_address = address_form.save(commit=False)
+            group_address.customer = new_customer
+            group_address.home = True
+            group_address.save()
+            # populate user profile
+            new_user.profile.registration_complete = True
+            new_user.profile.on_behalf = True
+            new_user.profile.phone = register_form.cleaned_data['phone']
+            new_user.profile.save()
+            # log in new user
+            authenticated_user = auth.authenticate(username=new_user.get_username(), password=register_form.cleaned_data['password1'])
+            authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            auth.login(request, authenticated_user)
+
+            send_welcome_email(new_user)
+
+        else:
+            errors = [register_form.errors, group_form.errors, address_form.errors]
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'register_form': register_form,
+        'group_form': group_form,
+        'address_form': address_form,
+        'errors': errors,
+        'error_count': error_count,
     }
 
     return render(request, template, d)

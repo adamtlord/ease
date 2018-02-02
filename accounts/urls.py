@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
-from accounts.views import (register_self,
+from accounts.views import (register_group,
+                            register_self,
                             register_add_funds,
                             register_self_payment,
                             register_self_destinations,
@@ -38,6 +39,8 @@ urlpatterns = [
 
     url(r'^register-lovedone/gift/$', register_lovedone, {'gift': True}, name='register_lovedone_gift'),
     url(r'^register-lovedone/gift/payment/$', register_lovedone_payment, {'gift': True}, name='register_lovedone_gift_payment'),
+
+    url(r'^register/group/$', register_group, name='register_group'),
 
     url(r'^register/payment/rides/$', register_payment_ride_account, name='register_payment_ride_account'),
 
