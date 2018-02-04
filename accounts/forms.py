@@ -319,3 +319,27 @@ class GroupContactRegistrationForm(CustomUserRegistrationForm):
         help_text='Receipts will be sent here',
         required=True
     )
+
+
+class GroupCustomerForm(forms.ModelForm):
+    known_as = forms.CharField(required=False, help_text="Does this person go by something other than his or her first name?")
+    notes = forms.CharField(
+        help_text="Does this customer have any special requirements or preferences we should know about?",
+        widget=forms.Textarea(attrs={'rows': 3}),
+        required=False
+    )
+
+    class Meta:
+        model = Customer
+        fields = ('first_name',
+                  'last_name',
+                  'known_as',
+                  'mobile_phone',
+                  'special_assistance',
+                  'notes')
+
+    def __init__(self, *args, **kwargs):
+        super(GroupCustomerForm, self).__init__(*args, **kwargs)
+        for field in self.Meta.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+

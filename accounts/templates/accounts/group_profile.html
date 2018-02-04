@@ -1,0 +1,97 @@
+{% extends 'base_app.html' %}
+{% load tz %}
+{% load custom_tags %}
+{% load humanize %}
+{% load map_tags %}
+{% load billing_tags %}
+
+{% block title %}Group Profile{% endblock title %}
+{% block content %}
+<div class="page-header">
+    <h2>{{ group }}
+        <small>Administrator: {{ request.user }}</small>
+    </h2>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <h3 class="pull-left m-t-0">Group Information</h3>
+        <!-- <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a> -->
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th width="30%">Address:</th>
+                    <td width="70%">{{ group.address.street1 }}<br>
+                        {% if group.address.street2 %}
+                            {{ group.address.street2 }}<br>
+                        {% endif %}
+                        {{ group.address.city }},
+                        {{ group.address.state }}
+                        {{ group.address.zip_code }}
+                    </td>
+                </tr>
+                {% if group.address.notes %}
+                    <th>About your location:</th>
+                    <td>{{ group.address.notes }}</td>
+                {% endif %}
+                <tr>
+                    <th>Phone:</th>
+                    <td>{{ group.phone }}</td>
+                </tr>
+                <tr>
+                    <th>Customer Since:</th>
+                    <td>{{ request.user.date_joined|date:"DATE_FORMAT" }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Contact Information</h3>
+        <table class="table table-striped">
+             <tr>
+                <th width="30%">Email:</th>
+                <td width="70%">{{ request.user.email }}</td>
+            </tr>
+            <tr>
+                <th>Phone:</th>
+                <td>{{ request.user.profile.phone }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-sm-6">
+        <h3 class="m-t-0">Payment Information</h3>
+        <table class="table table-striped">
+            <tbody>
+                {% if group.ride_account %}
+                    <tr>
+                        <th width="50%">Credit card on file</th>
+                        <td width="50%"><i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="small">
+                            This credit card is used to pay for the rides your members take through Arrive.
+                        </td>
+                        <td>
+                        {% comment %}
+                            <a href="{% url 'group_payment_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
+                        {% endcomment %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>No credit card on file</th>
+                        {% comment %}
+                            <td><a href="{% url 'register_group_payment' %}">Add payment method</a></td>
+                        {% endcomment %}
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% if customers %}
+            <h3>Customers</h3>
+            <ul>
+                {% for customer in customers %}
+                <li>{{ customer }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
