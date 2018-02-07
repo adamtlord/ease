@@ -648,6 +648,13 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     if not valid_coupon:
                         coupon_code = None
 
+                    # store the customer's stripe id in their record
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
+                    # activate customer, save everything
+                    customer.is_active = True
+                    customer.save()
+                    new_stripe_customer.save()
+
                     # if the customer already has a gift balance, let the gift balance take care of the
                     # subscription fees. No need to add a Stripe subscription here.
                     if not customer.has_funds:
@@ -659,13 +666,6 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                             coupon=coupon_code
                         )
                         send_subscription_receipt_email(request.user)
-
-                    # store the customer's stripe id in their record
-                    new_stripe_customer.stripe_id = create_stripe_customer.id
-                    # activate customer, save everything
-                    customer.is_active = True
-                    customer.save()
-                    new_stripe_customer.save()
 
 
                     # send_new_customer_email(request.user)
