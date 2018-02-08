@@ -26,7 +26,7 @@
             {% endif %}
             {% if request.user.is_authenticated %}
                 {% if not request.user.is_staff %}
-                    <li><a href="{% url 'profile' %}">{% if request.user.first_name %}{{ request.user.first_name }}'s {% endif %}Profile</a></li>
+                    <li><a href="{% url 'profile' %}">{% if request.user.is_group_admin %}{{ request.user.groupmembership }} {% else %}{% if request.user.first_name %}{{ request.user.first_name }}'s {% endif %}{% endif %}Profile</a></li>
                 {% endif %}
                 <li><a href="{% url 'auth_logout' %}">Log out<i class="fa fa-sign-out"></i></a></li>
             {% endif %}

@@ -35,6 +35,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(verbose_name='first name', max_length=30, blank=True)
     last_name = models.CharField(verbose_name='last name', max_length=30, blank=True)
     is_admin = models.BooleanField(default=False)
+    is_group_admin = models.BooleanField(
+        default=False,
+        help_text='Designates whether the user is the administrator of a Group Membership.',
+    )
     is_staff = models.BooleanField(
         verbose_name='staff status',
         default=False,

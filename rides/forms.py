@@ -125,6 +125,16 @@ class HomeForm(forms.ModelForm):
         return home
 
 
+class GroupAddressForm(HomeForm):
+    street1 = forms.CharField(label="Physical Group Address")
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 4}),
+        required=False,
+        label="Anything we should know about your location?",
+        help_text="For instance, is there a steep driveway and we should send the driver to the end of it? Is there a gate code?"
+    )
+
+
 class StartRideForm(forms.ModelForm):
     start = DestinationChoiceField(
         queryset=Destination.objects.none(),

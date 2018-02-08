@@ -1,0 +1,90 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+{% block body_class %}{% endblock %}
+{% block title %}Create a Group Membership{% endblock title %}
+
+{% block navbar %}
+    {% include 'fragments/navbar-centered-logo.html' %}
+{% endblock navbar %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 form-content">
+        <div class="page-header">
+            <h2 class="text-center">
+                Create an Arrive Group Membership
+            </h2>
+        </div>
+        <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+            {% if errors %}
+            <p class="alert alert-danger">
+                {% if error|length == 1 %}
+                    Please correct the error below.
+                {% else %}
+                    Please correct the errors below.
+                {% endif %}
+                <br />You may need to enter your password again, too.
+            </p>
+            {% endif %}
+            {{ form.non_field_errors }}
+            {{ register_form.non_field_errors }}
+            {{ group_form.non_field_errors }}
+            {{ address_form.non_field_errors }}
+            <fieldset>
+                <legend>Group Information</legend>
+                {% render_form_field group_form.name %}
+                {% render_form_field group_form.phone '' 'phone-mask' %}
+                {% render_form_field address_form.street1 %}
+                {% render_form_field address_form.street2 '' 'no-label' %}
+                <div class="address-inline">
+                    {% render_form_field address_form.city %}
+                    {% render_form_field address_form.state '' 'state' %}
+                    {% render_form_field address_form.zip_code '' 'zip zip-mask' %}
+                </div>
+                {% render_form_field address_form.notes %}
+                {% render_form_field group_form.default_user_address %}
+            </fieldset>
+            <fieldset>
+                <legend>Primary Group Contact Person</legend>
+                {% render_form_field register_form.first_name %}
+                {% render_form_field register_form.last_name %}
+                {% render_form_field register_form.phone '' 'phone-mask' %}
+                {% render_form_field register_form.email %}
+
+                <div id="id_reg-password1_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
+                    <label class="control-label" for="id_reg-password1">
+                        Create a password<span class="req">*</span>
+                    </label>
+                    <div class="validation-messages help-block">Passwords must be
+                        <span id="pswd_length">at least 8 characters long</span>
+                        <div id="pswd_dynamic"></div>
+                    </div>
+                    <input class="form-control" data-remote="{% url 'password_validate' %}" id="id_reg-password1" name="reg-password1" type="password" required="">
+                    <i class="feedback-icon"></i>
+                </div>
+                <div id="id_reg-password2_container" class="form-group has-feedback-icon{% if errors %} has-error{% endif %}">
+                    <label class="control-label" for="id_reg-password2">
+                        Please enter the password again<span class="req">*</span>
+                    </label>
+                    <input class="form-control" data-match="#id_reg-password1" id="id_reg-password2" name="reg-password2" type="password" required="">
+                    <i class="feedback-icon"></i>
+                    <div id="pswd_match_error"></div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>One More Question</legend>
+                {% render_form_field register_form.source %}
+                {% render_form_field register_form.source_other %}
+            </fieldset>
+
+            <div class="form-actions">
+                {% render_form_field register_form.accept_tos %}
+                <input type="submit" class="btn btn-primary btn-block" value="Create" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/registration.min.js"></script>
+{% endblock %}

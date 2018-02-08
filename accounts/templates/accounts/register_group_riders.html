@@ -1,0 +1,73 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+
+{% if payment_complete and not DEBUG %}
+    {% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='AddPaymentInfo' only %}{% endblock %}
+{% endif %}
+
+{% block title %}Add Customers to {{ group}}{% endblock title %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Add Customers to {{ group }}</h2>
+</div>
+<form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {% if errors %}
+        <p class="alert alert-danger">
+            {% if errors|length == 1 %}
+                Please correct the error below.
+            {% else %}
+                Please correct the errors below.
+            {% endif %}
+        </p>
+    {% endif %}
+    <div class="row">
+        <div class="col-sm-6">
+            <fieldset>
+                {% render_form_field customer_form.first_name %}
+                {% render_form_field customer_form.last_name %}
+                {% render_form_field customer_form.known_as %}
+                {% render_form_field customer_form.mobile_phone '' 'phone-mask' %}
+                {% render_form_field customer_form.special_assistance %}
+                {% render_form_field customer_form.notes %}
+                <input id="id_preferred_phone" name="preferred_phone" type="hidden" value="m">
+                <input id="id_residence_type" name="residence_type" type="hidden" value="{{ group.residence_type }}">
+            </fieldset>
+        </div>
+        <div class="col-sm-4 col-sm-offset-2">
+            <div class="well">
+                <h3 class="m-t-0">Customers</h3>
+                {% if group.customer_set.all %}
+                    <ul class="list-group">
+                    {% for customer in group.customer_set.all %}
+                        <li class="list-group-item">
+                            {{ customer }}<br>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <p><em>No customers added yet</em></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="form-actions">
+        <div class="row">
+            <div class="col-xs-6">
+                <input type="submit" name="save_add" class="btn btn-success btn-block" value="Save Customer and Add Another" />
+            </div>
+            <div class="col-xs-6">
+                <input type="submit" name="save_done" class="btn btn-primary btn-block" value="Save Customer and Move On" />
+            </div>
+        </div>
+    </div>
+    <p class="text-center"><a class="btn btn-default" href="{{ done_url }}">Done Adding Customers</a><br><em>(You can always add more or change them later)</em></p>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('.phone-mask input').mask('000-000-0000');
+    });
+</script>
+{% endblock %}

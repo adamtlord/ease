@@ -14,17 +14,17 @@ from django.utils.encoding import smart_str
 
 from common.decorators import anonymous_required
 from accounts.forms import (CustomUserRegistrationForm, CustomUserForm,
-                            CustomerForm, RiderForm, LovedOneForm,
-                            LovedOnePreferencesForm)
-from accounts.helpers import send_welcome_email, send_subscription_receipt_email, send_new_customer_email, create_customer_subscription
+                            CustomerForm, RiderForm, GroupRegistrationForm,
+                            GroupContactRegistrationForm, GroupCustomerForm)
+from accounts.helpers import send_welcome_email, send_subscription_receipt_email, create_customer_subscription
 from accounts.models import Customer
-from billing.models import Plan, Balance, StripeCustomer, Gift
+from billing.models import Plan, Balance, StripeCustomer, Gift, GroupMembership
 from billing.forms import PaymentForm, StripeCustomerForm, GiftForm, AddFundsForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
 from concierge.models import Touch
 from rides.models import Destination
-from rides.forms import DestinationForm, HomeForm
+from rides.forms import DestinationForm, HomeForm, GroupAddressForm
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -875,6 +875,254 @@ def register_payment_ride_account(request, template='accounts/register_payment_r
     return render(request, template, d)
 
 
+@anonymous_required
+def register_group(request, template='accounts/register_group.html'):
+
+    errors = []
+    error_count = []
+
+    if request.method == 'GET':
+        register_form = GroupContactRegistrationForm(prefix='reg')
+        group_form = GroupRegistrationForm(prefix='group')
+        address_form = GroupAddressForm(prefix='home')
+    else:
+        register_form = GroupContactRegistrationForm(request.POST, prefix='reg')
+        group_form = GroupRegistrationForm(request.POST, prefix='group')
+        address_form = GroupAddressForm(request.POST, prefix='home')
+
+        if all([
+            register_form.is_valid(),
+            group_form.is_valid(),
+            address_form.is_valid()
+        ]):
+            # save user
+            new_user = register_form.save(request)
+            new_user.is_group_admin = True
+            new_user.save()
+            # save group
+            new_group = group_form.save()
+            new_group.user = new_user
+            new_group.display_name = new_group.name
+            new_group.save()
+            # create dummy customer for group
+            new_customer = Customer.objects.create(
+                first_name=new_group.name,
+                last_name="Group",
+                is_active=True,
+                user=new_user
+            )
+            # populate and save home address
+            group_address = address_form.save(commit=False)
+            group_address.customer = new_customer
+            group_address.home = True
+            group_address.save()
+            # attach address to group membership
+            new_group.address = group_address
+            new_group.save()
+            # populate user profile
+            new_user.profile.registration_complete = True
+            new_user.profile.on_behalf = True
+            new_user.profile.phone = register_form.cleaned_data['phone']
+            new_user.profile.save()
+            # log in new user
+            authenticated_user = auth.authenticate(username=new_user.get_username(), password=register_form.cleaned_data['password1'])
+            authenticated_user.backend = settings.AUTHENTICATION_BACKENDS[0]
+            auth.login(request, authenticated_user)
+
+            # TODO
+            # send_welcome_group_email(new_user)
+
+            return redirect('register_group_payment')
+
+        else:
+            errors = [register_form.errors, group_form.errors, address_form.errors]
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'register_form': register_form,
+        'group_form': group_form,
+        'address_form': address_form,
+        'errors': errors,
+        'error_count': error_count,
+    }
+
+    return render(request, template, d)
+
+
+@login_required
+def register_group_payment(request, gift=False, template='accounts/register_group_payment.html'):
+
+    try:
+        group = request.user.groupmembership
+    except GroupMembership.DoesNotExist:
+        messages.error(request, 'You must be the administrator of a Group Membership to view that page.')
+        return redirect('profile')
+
+    errors = {}
+    card_errors = None
+
+    if request.method == 'POST':
+
+        payment_form = PaymentForm(request.POST)
+
+        if payment_form.is_valid():
+            try:
+                # create new stripe customer
+                create_stripe_customer = stripe.Customer.create(
+                    description='{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name']),
+                    email=payment_form.cleaned_data['email'],
+                    source=payment_form.cleaned_data['stripe_token'],
+                    metadata={
+                        'group membership': '{} {}'.format(group, group.pk)
+                    }
+                )
+
+                if create_stripe_customer:
+                    # create our stripe customer
+                    new_stripe_customer = payment_form.save()
+
+                    # set our customer's plan
+                    group.ride_account = new_stripe_customer
+
+                    coupon_code = payment_form.cleaned_data['coupon']
+                    valid_coupon = False
+                    if coupon_code:
+                        try:
+                            stripe.Coupon.retrieve(coupon_code)
+                            valid_coupon = True
+                        except:
+                            pass
+                    if not valid_coupon:
+                        coupon_code = None
+
+                    # store the customer's stripe id in their record
+                    new_stripe_customer.stripe_id = create_stripe_customer.id
+                    group.save()
+                    new_stripe_customer.save()
+
+                    messages.add_message(request, messages.SUCCESS, 'Group billing info saved')
+
+                    request.session['payment_complete'] = True
+
+                    return redirect('register_group_riders')
+
+            # catch Stripe card validation errors
+            except stripe.error.CardError as ex:
+                card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
+
+            # catch any other type of error
+            except Exception as ex:
+                card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
+
+        # form is invalid
+        else:
+            errors = payment_form.errors
+
+    # GET
+    else:
+        # set defaults and initials
+        if group.ride_account:
+            payment_form = PaymentForm(instance=group.ride_account, initial={
+                'plan': group.plan.id
+            })
+
+        else:
+            payment_form = PaymentForm(initial={
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+            })
+    d = {
+        'group': group,
+        'payment_form': payment_form,
+        'months': range(1, 13),
+        'years': range(datetime.datetime.now().year, datetime.datetime.now().year + 15),
+        'stripe_customer': group.ride_account,
+        'soon': soon(),
+        'errors': errors,
+        'card_errors': card_errors,
+    }
+
+    return render(request, template, d)
+
+
+@login_required
+def register_group_riders(request, template='accounts/register_group_riders.html'):
+
+    try:
+        group = request.user.groupmembership
+    except GroupMembership.DoesNotExist:
+        messages.error(request, 'You must be the administrator of a Group Membership to view that page.')
+        return redirect('profile')
+
+    errors = []
+    error_count = []
+    if request.method == 'POST':
+        customer_form = GroupCustomerForm(request.POST)
+        if customer_form.is_valid():
+            cd = customer_form.cleaned_data
+            # create user for customer based on group's user
+            new_user = group.user
+            new_user.pk = None
+            # This is... uh... fake. It won't be used because the account is managed by the group
+            new_user.email = '{}_{}_group{}@arriverides.com'.format(cd['first_name'], cd['last_name'], group.id)
+            new_user.save()
+
+            # populate and save customer
+            new_customer = customer_form.save(commit=False)
+            new_customer.user = new_user
+            new_customer.registered_by = request.user
+            new_customer.intro_call = True
+            new_customer.is_active = True
+            new_customer.group_membership = group
+            new_customer.ride_account = group.ride_account
+            new_customer.subscription_account = group.subscription_account
+            new_customer.save()
+
+            # copy the group's home address to use as the customer's home address
+            if group.address and group.default_user_address:
+                customer_home = group.address
+                customer_home.pk = None
+                customer_home.customer = new_customer
+                customer_home.home = True
+                customer_home.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Customer {} successfully added!'.format(new_customer))
+            if 'save_done' in customer_form.data:
+                return redirect('register_group_complete')
+            return redirect('register_group_riders')
+
+        else:
+            errors = customer_form.errors
+            error_count = sum([len(d) for d in errors])
+    else:
+        customer_form = GroupCustomerForm()
+
+    d = {
+        'group': group,
+        'customer_form': customer_form,
+        'errors': errors,
+        'error_count': error_count,
+        'done_url': reverse('register_group_complete'),
+    }
+    return render(request, template, d)
+
+
+@login_required
+def register_group_complete(request, template='accounts/register_group_complete.html'):
+
+    try:
+        group = request.user.groupmembership
+    except GroupMembership.DoesNotExist:
+        messages.error(request, 'You must be the administrator of a Group Membership to view that page.')
+        return redirect('profile')
+
+    d = {
+        'group': group
+    }
+    return render(request, template, d)
+
+
 @login_required
 def register_payment_redirect(request):
     user = request.user
@@ -898,11 +1146,18 @@ def profile(request, template='accounts/profile.html'):
         del request.session['gift']
 
     user = request.user
+    if user.is_group_admin:
+        return redirect('group_profile')
 
     if user.is_staff:
         return redirect('dashboard')
 
-    customer = user.get_customer()
+    try:
+        customer = user.get_customer()
+    except Customer.DoesNotExist:
+        messages.error(request, "That username is not associated with a customer.")
+        auth.logout(request)
+        return redirect('auth_login')
 
     subscription = None
 
@@ -916,6 +1171,23 @@ def profile(request, template='accounts/profile.html'):
         'lovedone': user.profile.on_behalf,
 
     }
+    return render(request, template, d)
+
+
+@login_required
+def group_profile(request, template='accounts/group_profile.html'):
+
+    try:
+        group = request.user.groupmembership
+    except GroupMembership.DoesNotExist:
+        messages.error(request, 'You must be the administrator of a Group Membership to view that page.')
+        return redirect('profile')
+
+    d = {
+        'group': group,
+        'customers': group.customer_set.all()
+    }
+
     return render(request, template, d)
 
 
