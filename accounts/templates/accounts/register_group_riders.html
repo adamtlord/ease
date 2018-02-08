@@ -5,11 +5,11 @@
     {% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='AddPaymentInfo' only %}{% endblock %}
 {% endif %}
 
-{% block title %}Add Customers to {{ group}}{% endblock title %}
+{% block title %}Add Riders to {{ group}}{% endblock title %}
 {% block content %}
 
 <div class="page-header">
-    <h2>Add Customers to {{ group }}</h2>
+    <h2>Add Riders to {{ group }}</h2>
 </div>
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
     {% if errors %}
@@ -36,7 +36,7 @@
         </div>
         <div class="col-sm-4 col-sm-offset-2">
             <div class="well">
-                <h3 class="m-t-0">Customers</h3>
+                <h3 class="m-t-0">Riders</h3>
                 {% if group.customer_set.all %}
                     <ul class="list-group">
                     {% for customer in group.customer_set.all %}
@@ -46,7 +46,7 @@
                     {% endfor %}
                     </ul>
                 {% else %}
-                    <p><em>No customers added yet</em></p>
+                    <p><em>No riders added yet</em></p>
                 {% endif %}
             </div>
         </div>
@@ -54,14 +54,14 @@
     <div class="form-actions">
         <div class="row">
             <div class="col-xs-6">
-                <input type="submit" name="save_add" class="btn btn-success btn-block" value="Save Customer and Add Another" />
+                <input type="submit" name="save_add" class="btn btn-success btn-block" value="Save Rider and Add Another" />
             </div>
             <div class="col-xs-6">
-                <input type="submit" name="save_done" class="btn btn-primary btn-block" value="Save Customer and Move On" />
+                <input type="submit" name="save_done" class="btn btn-primary btn-block" value="Save Rider and Move On" />
             </div>
         </div>
     </div>
-    <p class="text-center"><a class="btn btn-default" href="{{ done_url }}">Done Adding Customers</a><br><em>(You can always add more or change them later)</em></p>
+    <p class="text-center"><a class="btn btn-default" href="{{ done_url }}">Done Adding Riders</a><br><em>(You can always add more or change them later)</em></p>
 </form>
 {% endblock %}
 {% block scripts %}
