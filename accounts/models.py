@@ -242,7 +242,7 @@ class Customer(Contact):
         return count
 
     def get_included_rides_this_month(self):
-        return self.get_rides_this_month().filter(included_in_plan=True)
+        return self.get_rides_this_month().exclude(cancelled=True).filter(included_in_plan=True)
 
     @cached_property
     def included_rides_this_month(self):
