@@ -22,6 +22,102 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h3 class="pull-left m-t-0">Group Information</h3>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th width="30%">Address:</th>
+                        <td width="70%">{{ group.address.street1 }}<br>
+                            {% if group.address.street2 %}
+                                {{ group.address.street2 }}<br>
+                            {% endif %}
+                            {{ group.address.city }},
+                            {{ group.address.state }}
+                            {{ group.address.zip_code }}
+                        </td>
+                    </tr>
+                    {% if group.address.notes %}
+                        <th>Location Notes:</th>
+                        <td>{{ group.address.notes }}</td>
+                    {% endif %}
+                    <tr>
+                        <th>Location Phone:</th>
+                        <td>{{ group.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Customer Since:</th>
+                        <td>{{ group.user.date_joined|date:"DATE_FORMAT" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <h3 class="m-t-0">Contact Information</h3>
+            <table class="table table-striped">
+                <tr>
+                    <th width="30%">Admin:</th>
+                    <td width="70%">{{ group.user }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ group.user.email }}</td>
+                </tr>
+                <tr>
+                    <th>Phone:</th>
+                    <td>{{ group.user.profile.phone }}</td>
+                </tr>
+            </table>
+            <h3>Payment Information</h3>
+            <table class="table table-striped">
+                <tbody>
+                    {% if group.subscription_account %}
+                        <tr>
+                            <th>Subscription billed to</th>
+                            <td>
+                                {{ group.subscription_account }}<br>
+                                <i class="fa fa-credit-card"></i> {{ group.subscription_account.last_4_digits|cc_display }}
+                                <!--  <a href="{% url 'payment_subscription_account_edit' group.id %}">Edit</a> -->
+                                {% if group.subscription_account.stripe_id %}
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ group.subscription_account.stripe_id }}" target="_blank">{{ group.subscription_account.stripe_id }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% if subscription %}
+                        <tr>
+                            <td>Subscription renews on</td>
+                            <td>
+                                {{ subscription.current_period_end|from_timestamp|date:"DATE_FORMAT" }}</td>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    {% if group.ride_account %}
+                        <tr>
+                            <th>Rides billed to</th>
+                            <td>
+                                {{ group.ride_account }}<br>
+                                <i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}
+                                <!-- <a href="{% url 'payment_ride_account_edit' group.id %}">Edit</a> -->
+                                {% if group.ride_account.stripe_id %}
+                                    <br>
+                                    <i class="fa fa-cc-stripe stripe-brand"></i>
+                                    <a href="https://dashboard.stripe.com/customers/{{ group.ride_account.stripe_id }}" target="_blank">{{ group.ride_account.stripe_id }}</a>
+                                    <i class="fa fa-sm text-muted fa-external-link"></i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2>Riders</h2>
     <div class="table-responsive">
     <table id="customer_list" class="table" style="width:100%;">
         <thead>

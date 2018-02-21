@@ -1180,10 +1180,15 @@ def group_membership_list(request, template="concierge/group_membership_list.htm
 def group_membership_detail(request, group_id, template="concierge/group_membership_detail.html"):
     group = get_object_or_404(GroupMembership, pk=group_id)
     customers = Customer.active.filter(group_membership=group)
+    subscription = None
+
+    if group.subscription_account and group.subscription_account.stripe_id:
+        subscription = get_stripe_subscription(group)
 
     d = {
         'group': group,
-        'customers': customers
+        'customers': customers,
+        'subscription': subscription
     }
     return render(request, template, d)
 
