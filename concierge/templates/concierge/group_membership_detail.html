@@ -17,8 +17,9 @@
             <div class="col-sm-8">
                 <h1>{{ group.display_name }}</h1>
             </div>
-            <div class="col-sm-4 text-right">
-                <a href="{% url 'group_membership_add_customer' group.id %}" class="btn btn-primary" style="margin-top:22px"><i class="fa fa-plus"></i> Add Group Member</a>
+            <div class="col-sm-4 text-right" style="padding-top:22px;">
+                <a href="{% url 'group_membership_edit' group.id %}" class="btn btn-default"><i class="fa fa-edit"></i> Edit Group</a>
+                <a href="{% url 'group_membership_add_customer' group.id %}" class="btn btn-primary"><i class="fa fa-plus"></i> Add Group Member</a>
             </div>
         </div>
     </div>
@@ -78,7 +79,7 @@
                             <td>
                                 {{ group.subscription_account }}<br>
                                 <i class="fa fa-credit-card"></i> {{ group.subscription_account.last_4_digits|cc_display }}
-                                <!--  <a href="{% url 'payment_subscription_account_edit' group.id %}">Edit</a> -->
+                                 <a href="{% url 'group_payment_subscription_account_edit' group.id %}">Edit</a>
                                 {% if group.subscription_account.stripe_id %}
                                     <br>
                                     <i class="fa fa-cc-stripe stripe-brand"></i>
@@ -103,7 +104,7 @@
                             <td>
                                 {{ group.ride_account }}<br>
                                 <i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}
-                                <!-- <a href="{% url 'payment_ride_account_edit' group.id %}">Edit</a> -->
+                                <a href="{% url 'group_payment_ride_account_edit' group.id %}">Edit</a>
                                 {% if group.ride_account.stripe_id %}
                                     <br>
                                     <i class="fa fa-cc-stripe stripe-brand"></i>

@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
 
-from accounts.forms import CustomUserForm, CustomUserProfileForm
+from accounts.forms import CustomUserForm, CustomUserProfileForm, GroupRegistrationForm
 from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, create_customer_subscription
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership, Balance, StripeCustomer
@@ -24,7 +24,7 @@ from common.utils import soon
 from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, \
     AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
-from rides.forms import HomeForm
+from rides.forms import HomeForm, GroupAddressForm
 from rides.models import Destination, Ride
 
 
@@ -439,9 +439,13 @@ def customer_destination_delete(request, customer_id, destination_id):
 
 
 @staff_member_required
-def payment_subscription_account_edit(request, customer_id, template="concierge/payment_subscription_account_edit.html"):
+def payment_subscription_account_edit(request, customer_id, group_as_customer=False, template="concierge/payment_subscription_account_edit.html"):
 
-    customer = get_object_or_404(Customer, pk=customer_id)
+    if group_as_customer:
+        customer = get_object_or_404(GroupMembership, pk=customer_id)
+    else:
+        customer = get_object_or_404(Customer, pk=customer_id)
+
     user = customer.user
     errors = {}
     card_errors = None
@@ -575,7 +579,10 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
     else:
         # set defaults and initials
         same_card_for_both = 0
-        default_plan = Plan.objects.get(name='BRONZE')
+        if group_as_customer:
+            default_plan = Plan.objects.get(pk=Plan.COMMUNITY_2017)
+        else:
+            default_plan = Plan.objects.get(pk=Plan.BRONZE)
 
         if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account:
             same_card_for_both = 1
@@ -588,6 +595,7 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
         else:
             payment_form = AdminPaymentForm(initial={
+                'plan': default_plan.id,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'email': user.email,
@@ -610,9 +618,13 @@ def payment_subscription_account_edit(request, customer_id, template="concierge/
 
 
 @staff_member_required
-def payment_ride_account_edit(request, customer_id, template="concierge/payment_ride_account_edit.html"):
+def payment_ride_account_edit(request, customer_id, group_as_customer=False, template="concierge/payment_ride_account_edit.html"):
 
-    customer = get_object_or_404(Customer, pk=customer_id)
+    if group_as_customer:
+        customer = get_object_or_404(GroupMembership, pk=customer_id)
+    else:
+        customer = get_object_or_404(Customer, pk=customer_id)
+
     errors = {}
     card_errors = None
 
@@ -1189,6 +1201,49 @@ def group_membership_detail(request, group_id, template="concierge/group_members
         'group': group,
         'customers': customers,
         'subscription': subscription
+    }
+    return render(request, template, d)
+
+
+@staff_member_required
+def group_membership_edit(request, group_id, template="concierge/group_membership_edit.html"):
+    group = get_object_or_404(GroupMembership, pk=group_id)
+    errors = []
+    error_count = []
+
+    if request.method == 'GET':
+        register_form = AccountHolderForm(prefix='reg', instance=group.user)
+        group_form = GroupRegistrationForm(prefix='group', instance=group)
+        address_form = GroupAddressForm(prefix='home', instance=group.address)
+
+    else:
+        register_form = AccountHolderForm(request.POST, instance=group.user, prefix='reg')
+        group_form = GroupRegistrationForm(request.POST, instance=group, prefix='group')
+        address_form = GroupAddressForm(request.POST, instance=group.address, prefix='home')
+
+        if all([
+            register_form.is_valid(),
+            group_form.is_valid(),
+            address_form.is_valid()
+        ]):
+            register_form.save()
+            group_form.save()
+            address_form.save()
+
+            messages.success(request, 'Group membership saved')
+
+            return redirect('group_membership_detail', group_id)
+        else:
+            errors = [register_form.errors, group_form.errors, address_form.errors]
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'group': group,
+        'register_form': register_form,
+        'group_form': group_form,
+        'address_form': address_form,
+        'errors': errors,
+        'error_count': error_count,
     }
     return render(request, template, d)
 
