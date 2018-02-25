@@ -110,7 +110,7 @@ class CustomerAdmin(admin.ModelAdmin):
         RiderInline,
         DestinationInline,
     ]
-    raw_id_fields = ("subscription_account", "ride_account",)
+    raw_id_fields = ("subscription_account", "ride_account", "user")
     search_fields = ("first_name", "last_name",)
 
 
