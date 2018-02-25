@@ -1285,7 +1285,7 @@ def group_membership_add_customer(request, group_id, template="concierge/group_m
             customer_home.home = True
             customer_home.save()
 
-            return redirect('customer_detail', new_customer.id)
+            return redirect('group_membership_detail', group.id)
 
         else:
             errors = customer_form.errors
