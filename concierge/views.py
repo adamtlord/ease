@@ -1193,6 +1193,7 @@ def group_membership_detail(request, group_id, template="concierge/group_members
     group = get_object_or_404(GroupMembership, pk=group_id)
     customers = Customer.active.filter(group_membership=group)
     subscription = None
+    touches = Touch.objects.filter(customer=group.customer).order_by('-date').select_related('customer')
 
     if group.subscription_account and group.subscription_account.stripe_id:
         subscription = get_stripe_subscription(group)
@@ -1200,7 +1201,8 @@ def group_membership_detail(request, group_id, template="concierge/group_members
     d = {
         'group': group,
         'customers': customers,
-        'subscription': subscription
+        'subscription': subscription,
+        'touches': touches
     }
     return render(request, template, d)
 
