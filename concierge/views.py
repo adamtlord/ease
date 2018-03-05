@@ -582,7 +582,7 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
         if group_as_customer:
             default_plan = Plan.objects.get(pk=Plan.COMMUNITY_2017)
         else:
-            default_plan = Plan.objects.get(pk=Plan.BRONZE)
+            default_plan = Plan.objects.get(pk=Plan.DEFAULT)
 
         if customer.subscription_account and customer.ride_account and customer.subscription_account == customer.ride_account:
             same_card_for_both = 1
