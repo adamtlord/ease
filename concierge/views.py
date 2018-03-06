@@ -382,7 +382,7 @@ def customer_destination_edit(request, customer_id, destination_id, template='co
 
             destination_form.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Customer {}\'s Destination {} successfully updated!'.format(customer, destination.name))
+            messages.add_message(request, messages.SUCCESS, 'Customer {}\'s Destination {} successfully updated!'.format(customer, destination.name.encode('utf-8')))
             return redirect('customer_destinations', customer.id)
 
     else:
