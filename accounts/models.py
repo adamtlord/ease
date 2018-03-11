@@ -182,6 +182,10 @@ class Customer(Contact):
         return '{} {}'.format(self.first_name, self.last_name)
 
     @cached_property
+    def name(self):
+        return self.full_name
+
+    @cached_property
     def age(self):
         return relativedelta(datetime.datetime.now(), self.dob).years
 

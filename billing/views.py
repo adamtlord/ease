@@ -138,9 +138,16 @@ def customer_subscription_account_edit(request, template="billing/customer_subsc
 
 
 @login_required
-def customer_ride_account_edit(request, template="billing/customer_ride_account_edit.html"):
+def customer_ride_account_edit(request, group_as_customer=False, template="billing/customer_ride_account_edit.html"):
 
-    customer = request.user.get_customer()
+    if group_as_customer:
+        try:
+            customer = request.user.groupmembership
+        except GroupMembership.DoesNotExist:
+            pass
+    else:
+        customer = request.user.get_customer()
+
     errors = {}
     card_errors = None
 
@@ -163,7 +170,7 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
                         email=payment_form.cleaned_data['email'],
                         source=payment_form.cleaned_data['stripe_token'],
                         metadata={
-                            'customer': '{} [{}]'.format(customer.full_name, customer.pk),
+                            'customer': '{} [{}]'.format(customer.name, customer.pk),
                         },
                         idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                     )
@@ -181,7 +188,10 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
 
                         messages.add_message(request, messages.SUCCESS, 'Billing info saved')
 
-                        return redirect('profile')
+                        if group_as_customer:
+                            return redirect('group_profile')
+                        else:
+                            return redirect('profile')
 
                 # catch Stripe card validation errors
                 except stripe.error.CardError as ex:
@@ -196,13 +206,16 @@ def customer_ride_account_edit(request, template="billing/customer_ride_account_
                 stripe_cust.description = '{} {}'.format(payment_form.cleaned_data['first_name'], payment_form.cleaned_data['last_name'])
                 stripe_cust.email = payment_form.cleaned_data['email']
                 stripe_cust.source = payment_form.cleaned_data['stripe_token']
-                stripe_cust.metadata = {'customer': '{} [{}]'.format(customer.full_name, customer.pk)}
+                stripe_cust.metadata = {'customer': '{} [{}]'.format(customer.name, customer.pk)}
                 try:
                     stripe_cust.save()
                     payment_form.save()
                     messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
-                    return redirect('profile')
+                    if group_as_customer:
+                        return redirect('group_profile')
+                    else:
+                        return redirect('profile')
 
                 # catch Stripe card validation errors
                 except stripe.error.CardError as ex:

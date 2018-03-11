@@ -76,17 +76,17 @@
                         <td width="50%"><i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}</td>
                     </tr>
                     <tr>
-                        <td colspan="2" class="small">
+                        <td class="small">
                             This credit card is used to pay for the rides your members take through Arrive.
                         </td>
                         <td>
-                            <a href="{% url 'group_payment_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
+                            <a href="{% url 'group_ride_account_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
                         <th>No credit card on file</th>
-                        <td><a href="{% url 'register_group_payment' %}">Add payment method</a></td>
+                        <td><a href="{% url 'group_ride_account_edit' %}">Add payment method</a></td>
                     </tr>
                 {% endif %}
             </tbody>
