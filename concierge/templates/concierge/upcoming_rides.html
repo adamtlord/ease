@@ -28,7 +28,7 @@
         <tbody>
             {% for ride in rides %}
                 <tr{% if ride.is_today %} class="warning"{% endif %}>
-                    <td>{{ ride.id }} {% if ride.confirmation_required and not ride.is_confirmed %}confirm me {% endif %}</td>
+                    <td>{{ ride.id }}{% if ride.confirmation_required and not ride.is_confirmed %}<i class="fa fa-warning text-danger"></i>{% endif %}</td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
                         {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
@@ -70,6 +70,9 @@
                     <td>
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
+                        {% if ride.confirmation_required and not ride.is_confirmed %}
+                            <a href="#confirmRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-success btn-sm">Confirm</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -77,6 +80,11 @@
     </table>
 </div>
 <div class="modal fade" id="viewRideModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<div class="modal fade" id="confirmRideModal" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content"></div>
     </div>
