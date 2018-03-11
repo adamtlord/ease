@@ -77,7 +77,6 @@
         <h3 class="m-t-0">Payment Information</h3>
         <table class="table table-striped">
             <tbody>
-        {% comment hold for gift card launch %}
                 <tr>
                 {% if customer.balance %}
                     <th>
@@ -91,7 +90,6 @@
                         <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
                     </th>
                 {% endif %}
-        {% endcomment %}
                 </tr>
                 {% if not customer.plan.is_default %}
                     <tr>

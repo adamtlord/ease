@@ -1192,7 +1192,7 @@ def group_profile(request, template='accounts/group_profile.html'):
 
 
 @login_required
-def profile_edit(request, template='accounts/profile_edit.html'):
+def profile_edit(request, group_as_customer=False, template='accounts/profile_edit.html'):
 
     user = request.user
     errors = []
@@ -1249,7 +1249,60 @@ def profile_edit(request, template='accounts/profile_edit.html'):
         'home_form': home_form,
         'rider_form': rider_form,
         'errors': errors
-        }
+    }
+    return render(request, template, d)
+
+
+@login_required
+def group_profile_edit(request, group_as_customer=False, template='accounts/group_profile_edit.html'):
+
+    try:
+        group = request.user.groupmembership
+    except GroupMembership.DoesNotExist:
+        messages.error(request, 'You must be the administrator of a Group Membership to view that page.')
+        return redirect('profile')
+
+    errors = []
+    error_count = []
+
+    if request.method == 'GET':
+        register_form = CustomUserForm(prefix='reg', instance=group.user)
+        group_form = GroupRegistrationForm(prefix='group', instance=group)
+        address_form = GroupAddressForm(prefix='home', instance=group.address)
+
+    else:
+        register_form = CustomUserForm(request.POST, instance=group.user, prefix='reg')
+        group_form = GroupRegistrationForm(request.POST, instance=group, prefix='group')
+        address_form = GroupAddressForm(request.POST, instance=group.address, prefix='home')
+
+        if all([
+            register_form.is_valid(),
+            group_form.is_valid(),
+            address_form.is_valid()
+        ]):
+            user = register_form.save()
+            group = group_form.save()
+            address = address_form.save()
+
+            if register_form.cleaned_data['phone']:
+                user.profile.phone = register_form.cleaned_data['phone']
+                user.profile.save()
+
+            messages.success(request, 'Group membership saved')
+
+            return redirect('group_profile')
+        else:
+            errors = [register_form.errors, group_form.errors, address_form.errors]
+            error_count = sum([len(d) for d in errors])
+
+    d = {
+        'group': group,
+        'register_form': register_form,
+        'group_form': group_form,
+        'address_form': address_form,
+        'errors': errors,
+        'error_count': error_count,
+    }
     return render(request, template, d)
 
 

@@ -12,6 +12,7 @@ CUSTOM_USER_FIELDS = [
     'email',
     'first_name',
     'last_name',
+    'phone',
 ]
 
 CUSTOM_USER_REGISTRATION_FIELDS = CUSTOM_USER_FIELDS + [
@@ -144,10 +145,14 @@ class CustomUserForm(forms.ModelForm):
     email = forms.EmailField(
         required=False
     )
+    phone = forms.CharField(
+        label="Phone number",
+        required=False
+    )
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'first_name', 'last_name')
+        fields = ('email', 'first_name', 'last_name', 'phone')
 
     def __init__(self, *args, **kwargs):
         super(CustomUserForm, self).__init__(*args, **kwargs)

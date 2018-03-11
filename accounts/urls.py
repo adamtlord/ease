@@ -19,6 +19,7 @@ from accounts.views import (register_group,
                             gift_purchase,
                             gift_purchase_receipt,
                             group_profile,
+                            group_profile_edit,
                             password_validate,
                             profile,
                             profile_edit,
@@ -58,6 +59,7 @@ urlpatterns = [
     url(r'^profile/add-funds/$', profile_add_funds, name='profile_add_funds'),
 
     url(r'^group-profile/$', group_profile, name='group_profile'),
+    url(r'^group-profile/edit/$', group_profile_edit, name='group_profile_edit'),
 
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),

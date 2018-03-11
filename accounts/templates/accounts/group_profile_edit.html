@@ -1,0 +1,73 @@
+{% extends 'base_app.html' %}
+{% load billing_tags %}
+{% load custom_tags %}
+
+{% block title %}{{ group.display_name }} Profile{% endblock %}
+
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h2>Edit Group Profile</h2>
+    </div>
+    <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+        {% if errors %}
+            <p class="alert alert-danger">
+                {% if error|length == 1 %}
+                    Please correct the error below.
+                {% else %}
+                    Please correct the errors below.
+                {% endif %}
+            </p>
+        {% endif %}
+        {{ form.non_field_errors }}
+        {{ register_form.non_field_errors }}
+        {{ group_form.non_field_errors }}
+        {{ address_form.non_field_errors }}
+        <div class="row">
+            <div class="col-sm-6">
+                <fieldset>
+                    <legend>Group Information</legend>
+                    {% render_form_field group_form.name %}
+                    {% render_form_field group_form.phone '' 'phone-mask' %}
+                    {% render_form_field address_form.street1 %}
+                    {% render_form_field address_form.street2 '' 'no-label' %}
+                    <div class="address-inline">
+                        {% render_form_field address_form.city %}
+                        {% render_form_field address_form.state '' 'state' %}
+                        {% render_form_field address_form.zip_code '' 'zip zip-mask' %}
+                    </div>
+                    {% render_form_field address_form.notes %}
+                    {% render_form_field group_form.default_user_address %}
+                </fieldset>
+            </div>
+            <div class="col-sm-6">
+                <fieldset>
+                    <legend>Contact Information</legend>
+                    {% render_form_field register_form.first_name %}
+                    {% render_form_field register_form.last_name %}
+                    {% render_form_field register_form.phone '' 'phone-mask' %}
+                    {% render_form_field register_form.email %}
+                </fieldset>
+            </div>
+        </div>
+        <div class="form-actions">
+            <input type="submit" class="btn btn-primary btn-block" value="Save" />
+            <p class="text-center" style="padding-top:1rem;"><a href="{% url 'group_profile' %}" class="text-danger">Cancel</a></p>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('.phone-mask input').mask('000-000-0000');
+        $('.zip-mask input').mask('00000-0000');
+    });
+</script>
+{% endblock %}
+

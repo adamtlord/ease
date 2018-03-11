@@ -4,6 +4,11 @@
 {% load humanize %}
 {% load map_tags %}
 {% load billing_tags %}
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
 
 {% block title %}Group Profile{% endblock title %}
 {% block content %}
@@ -12,10 +17,11 @@
         <small>Administrator: {{ request.user }}</small>
     </h2>
 </div>
+
 <div class="row">
     <div class="col-sm-6">
         <h3 class="pull-left m-t-0">Group Information</h3>
-        <!-- <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a> -->
+        <a href="{% url 'group_profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
         <table class="table table-striped">
             <tbody>
                 <tr>
@@ -27,11 +33,16 @@
                         {{ group.address.city }},
                         {{ group.address.state }}
                         {{ group.address.zip_code }}
+                        {% if group.default_user_address %}
+                            <br><em>This is the default address for group members</em>
+                        {% endif %}
                     </td>
                 </tr>
                 {% if group.address.notes %}
-                    <th>About your location:</th>
-                    <td>{{ group.address.notes }}</td>
+                    <tr>
+                        <th>About your location:</th>
+                        <td>{{ group.address.notes }}</td>
+                    </tr>
                 {% endif %}
                 <tr>
                     <th>Phone:</th>
@@ -69,29 +80,62 @@
                             This credit card is used to pay for the rides your members take through Arrive.
                         </td>
                         <td>
-                        {% comment %}
                             <a href="{% url 'group_payment_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
-                        {% endcomment %}
                         </td>
                     </tr>
                 {% else %}
                     <tr>
                         <th>No credit card on file</th>
-                        {% comment %}
-                            <td><a href="{% url 'register_group_payment' %}">Add payment method</a></td>
-                        {% endcomment %}
+                        <td><a href="{% url 'register_group_payment' %}">Add payment method</a></td>
                     </tr>
                 {% endif %}
             </tbody>
         </table>
-        {% if customers %}
-            <h3>Riders</h3>
-            <ul>
-                {% for customer in customers %}
-                <li>{{ customer }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
 </div>
+<h2>Riders</h2>
+<div class="table-responsive">
+    <table id="customer_list" class="table" style="width:100%;">
+        <thead>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Rides</th>
+            <th>Last ride</th>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.full_name }}</td>
+                    <td>{{ customer.phone_numbers_br|safe }}</td>
+                    <td>{{ customer.ride_count }}</td>
+                    <td>{{ customer.last_ride.start_date|default:'' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            "autoWidth": false,
+            "pageLength": 10,
+            "columns": [
+                {
+                    width: "15%"
+                },{
+                    width: "15%",
+                    searchable: false
+                 },{
+                    width: "10%",
+                    searchable: false
+                 },{
+                    width: "30%",
+                    searchable: false
+                 }
+            ]
+        });
+    });
+</script>
 {% endblock %}
