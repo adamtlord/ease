@@ -1,0 +1,141 @@
+{% extends 'base_app.html' %}
+{% load tz %}
+{% load custom_tags %}
+{% load humanize %}
+{% load map_tags %}
+{% load billing_tags %}
+{% block header_includes %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/datatables-imports.css"/>
+    <script type="text/javascript" src="{{ STATIC_URL }}DataTables/datatables.min.js"></script>
+{% endblock %}
+
+{% block title %}Group Profile{% endblock title %}
+{% block content %}
+<div class="page-header">
+    <h2>{{ group }}
+        <small>Administrator: {{ request.user }}</small>
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-sm-6">
+        <h3 class="pull-left m-t-0">Group Information</h3>
+        <a href="{% url 'group_profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th width="30%">Address:</th>
+                    <td width="70%">{{ group.address.street1 }}<br>
+                        {% if group.address.street2 %}
+                            {{ group.address.street2 }}<br>
+                        {% endif %}
+                        {{ group.address.city }},
+                        {{ group.address.state }}
+                        {{ group.address.zip_code }}
+                        {% if group.default_user_address %}
+                            <br><em>This is the default address for group members</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% if group.address.notes %}
+                    <tr>
+                        <th>About your location:</th>
+                        <td>{{ group.address.notes }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <th>Phone:</th>
+                    <td>{{ group.phone }}</td>
+                </tr>
+                <tr>
+                    <th>Customer Since:</th>
+                    <td>{{ request.user.date_joined|date:"DATE_FORMAT" }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Contact Information</h3>
+        <table class="table table-striped">
+             <tr>
+                <th width="30%">Email:</th>
+                <td width="70%">{{ request.user.email }}</td>
+            </tr>
+            <tr>
+                <th>Phone:</th>
+                <td>{{ request.user.profile.phone }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-sm-6">
+        <h3 class="m-t-0">Payment Information</h3>
+        <table class="table table-striped">
+            <tbody>
+                {% if group.ride_account %}
+                    <tr>
+                        <th width="50%">Credit card on file</th>
+                        <td width="50%"><i class="fa fa-credit-card"></i> {{ group.ride_account.last_4_digits|cc_display }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="small">
+                            This credit card is used to pay for the rides your members take through Arrive.
+                        </td>
+                        <td>
+                            <a href="{% url 'group_payment_edit' %}" class="btn btn-danger btn-sm">Change your payment information</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <th>No credit card on file</th>
+                        <td><a href="{% url 'register_group_payment' %}">Add payment method</a></td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<h2>Riders</h2>
+<div class="table-responsive">
+    <table id="customer_list" class="table" style="width:100%;">
+        <thead>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Rides</th>
+            <th>Last ride</th>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+                <tr>
+                    <td>{{ customer.full_name }}</td>
+                    <td>{{ customer.phone_numbers_br|safe }}</td>
+                    <td>{{ customer.ride_count }}</td>
+                    <td>{{ customer.last_ride.start_date|default:'' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    $(function(){
+        $('#customer_list').DataTable({
+            "autoWidth": false,
+            "pageLength": 10,
+            "columns": [
+                {
+                    width: "15%"
+                },{
+                    width: "15%",
+                    searchable: false
+                 },{
+                    width: "10%",
+                    searchable: false
+                 },{
+                    width: "30%",
+                    searchable: false
+                 }
+            ]
+        });
+    });
+</script>
+{% endblock %}

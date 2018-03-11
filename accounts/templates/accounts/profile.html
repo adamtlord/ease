@@ -8,11 +8,17 @@
 {% block title %}Create an Account{% endblock title %}
 {% block content %}
 <div class="page-header">
-    <h2>{{ request.user }}'s Profile
-    {% if lovedone and user.full_name != customer.full_name %}
-        <small>On behalf of {{ customer }}</small>
+    {% if request.user.is_group_admin %}
+        <h2>{{ request.user.groupmembership }}
+            <small>Administrator: {{ request.user }}</small>
+        </h2>
+        {% else %}
+        <h2>{{ request.user }}'s Profile
+        {% if lovedone and user.full_name != customer.full_name %}
+            <small>On behalf of {{ customer }}</small>
+        {% endif %}
+        </h2>
     {% endif %}
-    </h2>
 </div>
 {% if customer.rides_this_month and customer.subscription_account and customer.plan.included_rides_per_month %}
     <p class="alert alert-info">
@@ -21,7 +27,7 @@
 {% endif %}
 <div class="row">
     <div class="col-sm-6">
-        <h3 class="pull-left m-t-0">{% if lovedone %}Customer Information{% else %}About You{% endif %}</h3> <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
+        <h3 class="pull-left m-t-0">{% if request.user.is_group_admin %}Group Information{% else %}{% if lovedone %}Customer Information{% else %}About You{% endif %}{% endif %}</h3> <a href="{% url 'profile_edit' %}" class="btn btn-sm btn-primary pull-right">Edit</a>
         <table class="table table-striped">
             <tbody>
                 <tr>
@@ -71,7 +77,6 @@
         <h3 class="m-t-0">Payment Information</h3>
         <table class="table table-striped">
             <tbody>
-        {% comment hold for gift card launch %}
                 <tr>
                 {% if customer.balance %}
                     <th>
@@ -85,7 +90,6 @@
                         <a href="{% url 'profile_add_funds' %}" class="btn btn-primary">Pre-Pay For Rides</a>
                     </th>
                 {% endif %}
-        {% endcomment %}
                 </tr>
                 {% if not customer.plan.is_default %}
                     <tr>

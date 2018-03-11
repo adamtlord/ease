@@ -98,10 +98,8 @@ def invoice_customer_rides(account, customers, request):
                                 # ride cost more than balance
                                 if stripe_id:
                                     # charge overage to ride account
-                                    cost_to_bill = customer.balance.amount - ride.total_cost
+                                    cost_to_bill = ride.total_cost - customer.balance.amount
                                     customer.balance.amount = 0
-                                    if cost_to_bill < 0:
-                                        cost_to_bill = -cost_to_bill
                                 else:
                                     # ruh roh, they're in the red.
                                     cost_to_bill = None
@@ -125,7 +123,7 @@ def invoice_customer_rides(account, customers, request):
                         if cost_to_bill:
                             invoiceitem = stripe.InvoiceItem.create(
                                 customer=stripe_id,
-                                amount=int(ride.total_cost * 100),
+                                amount=int(cost_to_bill * 100),
                                 currency="usd",
                                 description=ride.description,
                                 idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())

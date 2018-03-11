@@ -8,7 +8,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 
 class GroupMembershipAdmin(admin.ModelAdmin):
-    raw_id_fields = ("address", "user",)
+    raw_id_fields = ("address", "user", "ride_account", "subscription_account")
 
 
 admin.site.register(Plan)

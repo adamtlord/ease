@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
-from localflavor.us.models import USZipCodeField
+from localflavor.us.models import USZipCodeField, PhoneNumberField
 
 from accounts.const import RESIDENCE_TYPE_CHOICES, RETIREMENT_COMMUNITY
 from common.models import AbstractEnumModel
@@ -19,6 +19,7 @@ class Plan(AbstractEnumModel):
     TERRACES = 6
     BROOKDALE_SP = 7
     STANDARD_2018 = 8
+    COMMUNITY_2017 = 9
 
     DEFAULT = STANDARD_2018
 
@@ -31,6 +32,7 @@ class Plan(AbstractEnumModel):
         (COPPER, 'Copper (standard)'),
         (TERRACES, 'Terraces'),
         (BROOKDALE_SP, 'Brookdale San Pablo'),
+        (COMMUNITY_2017, 'Community 2017')
     )
 
     active = models.BooleanField(default=True)
@@ -103,19 +105,21 @@ class GroupMembership(AbstractEnumModel):
     CHOICES = (
         (TERRACES, 'The Terraces of Los Gatos'),
     )
-
+    id = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
     expiration_date = models.DateField(blank=True, null=True)
-    includes_ride_cost = models.BooleanField(default=False)
-    includes_arrive_fee = models.BooleanField(default=False)
-    includes_subscription = models.BooleanField(default=False)
-    plan = models.ForeignKey(Plan, related_name="group_membership")
-    bill_online = models.BooleanField(default=False)
+    includes_ride_cost = models.BooleanField(default=True)
+    includes_arrive_fee = models.BooleanField(default=True)
+    includes_subscription = models.BooleanField(default=True)
+    plan = models.ForeignKey(Plan, related_name="group_membership", default=Plan.COMMUNITY_2017)
+    bill_online = models.BooleanField(default=True)
     subscription_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='subscription_group_plan')
     ride_account = models.ForeignKey(StripeCustomer, blank=True, null=True, related_name='ride_group_plan')
     address = models.ForeignKey(Destination, blank=True, null=True)
     residence_type = models.CharField(max_length=2, choices=RESIDENCE_TYPE_CHOICES, default=RETIREMENT_COMMUNITY)
     user = models.OneToOneField('accounts.CustomUser', blank=True, null=True)
+    phone = PhoneNumberField(blank=True, null=True)
+    default_user_address = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.display_name

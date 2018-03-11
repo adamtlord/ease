@@ -84,5 +84,5 @@ class RideSerializer(serializers.HyperlinkedModelSerializer):
             'start',
             'start_date',
             'total_cost',
-            'total_fees',
+            'total_fees_estimate',
         )

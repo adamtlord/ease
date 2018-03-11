@@ -5,11 +5,13 @@ from django.utils import timezone
 from django.utils import formats
 
 from accounts.models import CustomUser
+from billing.models import GroupMembership
 
 
 class Touch(models.Model):
     concierge = models.ForeignKey(CustomUser, blank=True, null=True)
     customer = models.ForeignKey('accounts.Customer', blank=True, null=True)
+    group = models.ForeignKey(GroupMembership, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
@@ -51,4 +53,9 @@ class Touch(models.Model):
         return super(Touch, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '{} with {} {}'.format(self.type, self.customer.full_name if self.customer else '(customer not found)', formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))
+        if self.customer:
+            customer = self.customer
+        else:
+            if self.group:
+                customer = self.group
+        return '{} with {} {}'.format(self.type, customer, formats.date_format(self.date, "SHORT_DATETIME_FORMAT"))

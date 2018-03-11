@@ -15,7 +15,7 @@ $(function() {
       },
       prefetch: {
         url: '/concierge/customers/search',
-        ttl: 30000,
+        cache: false,
         transform: function(response) {
           return response.customers;
         },
@@ -32,7 +32,7 @@ $(function() {
       },
       prefetch: {
         url: '/api/group-memberships/?active=true',
-        ttl: 30000,
+        cache: false,
         transform: function(response) {
           return response.results;
         },

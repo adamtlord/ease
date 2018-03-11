@@ -1,0 +1,26 @@
+{% extends 'base_app.html' %}
+{% load custom_tags %}
+{% load map_tags %}
+
+{% block fb_tracking %}{% include 'fragments/facebook_pixel_code.html' with event='CompleteRegistration' only %}{% endblock %}
+{% block title %}Create a Group Membership{% endblock title %}
+{% block content %}
+
+<div class="page-header">
+    <h2>Welcome!</h2>
+</div>
+
+<p>Thanks for signing {{ group }} up for Arrive! We’ll take good care of your customers.</p>
+
+
+<p>We make sure to talk to each of our new members individually, to make sure we have
+    complete profile information for you and your group, and to answer any questions you have.
+    We’ll be in touch with you within the next business day to have that conversation.
+    If your members are ready to start riding now, though, have at it! Here’s the members’-only concierge line:
+</p>
+
+<h3>1-866-277-4838</h3>
+
+<p>To view and manage your account, <a href="{% url 'profile' %}">go here</a>.</p>
+
+{% endblock %}

@@ -106,7 +106,12 @@
                 <th>Phone</th>
                 <td>{{ ride.customer.phone_numbers|safe }}</td>
             </tr>
-
+            {% if ride.customer.group_membership and ride.customer.group_membership.phone %}
+            <tr>
+                <th>Group Phone</th>
+                <td>{{ ride.customer.group_membership.phone }}</td>
+            </tr>
+            {% endif %}
             {% if ride.customer.special_assistance %}
                 <tr class="warning">
                     <th>Special Assistance</th>

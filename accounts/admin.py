@@ -73,7 +73,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_group_admin', 'is_superuser')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
@@ -110,7 +110,7 @@ class CustomerAdmin(admin.ModelAdmin):
         RiderInline,
         DestinationInline,
     ]
-    raw_id_fields = ("subscription_account", "ride_account",)
+    raw_id_fields = ("subscription_account", "ride_account", "user")
     search_fields = ("first_name", "last_name",)
 
 

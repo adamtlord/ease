@@ -1,6 +1,10 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
-from accounts.views import (register_self,
+from accounts.views import (register_group,
+                            register_group_payment,
+                            register_group_riders,
+                            register_group_complete,
+                            register_self,
                             register_add_funds,
                             register_self_payment,
                             register_self_destinations,
@@ -14,6 +18,8 @@ from accounts.views import (register_self,
                             gift_login,
                             gift_purchase,
                             gift_purchase_receipt,
+                            group_profile,
+                            group_profile_edit,
                             password_validate,
                             profile,
                             profile_edit,
@@ -39,6 +45,11 @@ urlpatterns = [
     url(r'^register-lovedone/gift/$', register_lovedone, {'gift': True}, name='register_lovedone_gift'),
     url(r'^register-lovedone/gift/payment/$', register_lovedone_payment, {'gift': True}, name='register_lovedone_gift_payment'),
 
+    url(r'^register/group/$', register_group, name='register_group'),
+    url(r'^register/group/payment/$', register_group_payment, name='register_group_payment'),
+    url(r'^register/group/riders/$', register_group_riders, name='register_group_riders'),
+    url(r'^register/group/complete/$', register_group_complete, name='register_group_complete'),
+
     url(r'^register/payment/rides/$', register_payment_ride_account, name='register_payment_ride_account'),
 
     url(r'^register/payment/redirect/$', register_payment_redirect, name='register_payment_redirect'),
@@ -47,6 +58,8 @@ urlpatterns = [
     url(r'^profile/edit/$', profile_edit, name='profile_edit'),
     url(r'^profile/add-funds/$', profile_add_funds, name='profile_add_funds'),
 
+    url(r'^group-profile/$', group_profile, name='group_profile'),
+    url(r'^group-profile/edit/$', group_profile_edit, name='group_profile_edit'),
 
     url(r'^destinations/(?P<destination_id>\d+)/edit/$', destination_edit, name='destination_edit'),
     url(r'^destinations/(?P<destination_id>\d+)/delete/$', destination_delete, name='destination_delete'),
