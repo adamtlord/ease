@@ -905,10 +905,11 @@ def register_group(request, template='accounts/register_group.html'):
             new_group.display_name = new_group.name
             new_group.save()
             # create dummy customer for group
+            # set active to False so it doesn't clutter search results
             new_customer = Customer.objects.create(
                 first_name=new_group.name,
                 last_name="Group",
-                is_active=True,
+                is_active=False,
                 user=new_user
             )
             # populate and save home address

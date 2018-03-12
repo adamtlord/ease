@@ -93,9 +93,16 @@
         </table>
     </div>
 </div>
-<h2>Riders</h2>
+<div class="row">
+    <div class="col-sm-6">
+        <h2>Riders</h2>
+    </div>
+    <div class="col-sm-6 text-right">
+        <a href="{% url 'register_group_riders' %}" class="btn btn-primary" style="margin-top:22px;">Add Riders</a>
+    </div>
+</div>
 <div class="table-responsive">
-    <table id="customer_list" class="table" style="width:100%;">
+    <table class="table">
         <thead>
             <th>Name</th>
             <th>Phone</th>
@@ -114,28 +121,4 @@
         </tbody>
     </table>
 </div>
-{% endblock %}
-{% block scripts %}
-<script>
-    $(function(){
-        $('#customer_list').DataTable({
-            "autoWidth": false,
-            "pageLength": 10,
-            "columns": [
-                {
-                    width: "15%"
-                },{
-                    width: "15%",
-                    searchable: false
-                 },{
-                    width: "10%",
-                    searchable: false
-                 },{
-                    width: "30%",
-                    searchable: false
-                 }
-            ]
-        });
-    });
-</script>
 {% endblock %}
