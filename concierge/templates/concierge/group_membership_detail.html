@@ -89,6 +89,13 @@
 
                             </td>
                         </tr>
+                    {% else %}
+                        <tr>
+                            <th>Subscription billed to</th>
+                            <td>
+                                 <a href="{% url 'group_payment_subscription_account_edit' group.id %}">Add</a>
+                            </td>
+                        </tr>
                     {% endif %}
                     {% if subscription %}
                         <tr>
@@ -111,6 +118,13 @@
                                     <a href="https://dashboard.stripe.com/customers/{{ group.ride_account.stripe_id }}" target="_blank">{{ group.ride_account.stripe_id }}</a>
                                     <i class="fa fa-sm text-muted fa-external-link"></i>
                                 {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th>Rides billed to</th>
+                            <td>
+                                <a href="{% url 'group_payment_ride_account_edit' group.id %}">Add</a>
                             </td>
                         </tr>
                     {% endif %}
