@@ -1,7 +1,7 @@
 from django import forms
 
 from accounts.const import RESIDENCE_TYPE_CHOICES, SINGLE_FAMILY_HOME
-from accounts.models import Customer, Rider
+from accounts.models import Customer, Rider, CustomUser
 from rides.models import Destination, Ride, RideConfirmation
 
 
@@ -237,6 +237,7 @@ class ConfirmRideForm(forms.ModelForm):
         required=False,
         label="Confirmation notes",
     )
+    confirmed_by = forms.ModelChoiceField(queryset=CustomUser.objects.filter(is_staff=True, is_active=True))
 
     class Meta:
         model = RideConfirmation
@@ -245,6 +246,7 @@ class ConfirmRideForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ConfirmRideForm, self).__init__(*args, **kwargs)
         self.fields['notes'].widget.attrs['class'] = 'form-control'
+        self.fields['confirmed_by'].widget.attrs['class'] = 'form-control'
 
 
 class AddRiderForm(forms.ModelForm):

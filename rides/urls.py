@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from rides.views import (ride_end, ride_edit, ride_delete, ride_cancel,
-                         ride_detail, ride_detail_modal)
+                         ride_detail, ride_detail_modal, ride_confirm_modal)
 
 urlpatterns = [
     url(r'^(?P<ride_id>\d+)/$', ride_detail, name='ride_detail'),
@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^cancel/$', ride_cancel, name='ride_cancel'),
 
     url(r'^(?P<ride_id>\d+)/detail-modal/$', ride_detail_modal, name='ride_detail_modal'),
+    url(r'^(?P<ride_id>\d+)/confirm-modal/$', ride_confirm_modal, name='ride_confirm_modal'),
 ]

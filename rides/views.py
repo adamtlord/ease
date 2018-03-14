@@ -209,16 +209,16 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
     cancel_form = CancelRideForm(initial={
         'ride_id': ride_id,
         'next_url': reverse('customer_detail', args=[customer.id])
-        }
-    )
+    })
 
     errors = {}
 
     if request.method == 'GET':
         form = RideForm(instance=ride, customer=customer)
-        confirmation_form = ConfirmRideForm(initial={
-            'ride': ride,
-            'confirmed_by': request.user,
+        confirmation_form = ConfirmRideForm(
+            initial={
+                'ride': ride,
+                'confirmed_by': request.user,
             },
             prefix='conf'
         )
@@ -316,4 +316,30 @@ def ride_detail_modal(request, ride_id, template="rides/fragments/ride_detail_mo
     d = {
         'ride': ride
     }
+    return render(request, template, d)
+
+
+@staff_member_required
+def ride_confirm_modal(request, ride_id, template="rides/fragments/ride_confirm_modal.html"):
+
+    ride = get_object_or_404(Ride, pk=ride_id)
+
+    if request.method == 'GET':
+        form = ConfirmRideForm(
+            initial={
+                'ride': ride,
+                'confirmed_by': request.user,
+            },
+        )
+
+    else:
+        form = ConfirmRideForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('upcoming_rides')
+    d = {
+        'ride': ride,
+        'form': form
+    }
+
     return render(request, template, d)

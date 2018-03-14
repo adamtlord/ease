@@ -7,26 +7,8 @@
 
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
 <h3>Ride ID: {{ ride.id }}</h3>
-{% if ride.confirmation_required and not ride.is_confirmed %}
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="alert alert-warning">
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="is_confirmed" />
-                        <strong>Ride is confirmed</strong>
-                    </label>
-                </div>
-                {% render_form_field confirmation_form.notes '' 'sub-field' %}
-                {{ confirmation_form.ride.as_hidden }}
-                {{ confirmation_form.confirmed_by.as_hidden }}
-                <p>Ride was scheduled {{ ride.date_created }} by {{ ride.added_by }}</p>
-            </div>
-        </div>
-    </div>
-{% endif %}
 {% if ride.is_confirmed %}
-    <p class="alert alert-info">CONFIRMED: on {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+    <p class="alert alert-success"><strong>CONFIRMED:</strong> {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
 {% endif %}
 {% if ride.cancelled %}
     <span class="label label-danger">DELETED</span>
@@ -192,7 +174,22 @@
             {% render_form_field form.fare_estimate %}
             {% render_form_field form.company %}
             {% if ride.added_by %}
-                <p>Started by {{ ride.added_by }}</p>
+                <p>Entered by {{ ride.added_by }}</p>
+            {% endif %}
+            {% if ride.confirmation_required %}
+                <label class="control-label">{% if ride.is_confirmed %}Re-{% endif %}Confirm</label>
+                <div class="alert alert-warning">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="is_confirmed" />
+                            <strong>Ride is {% if ride.is_confirmed %}re-{% endif %}confirmed</strong>
+                        </label>
+                    </div>
+                    {% render_form_field confirmation_form.notes '' 'sub-field' %}
+                    {{ confirmation_form.ride.as_hidden }}
+                    {{ confirmation_form.confirmed_by.as_hidden }}
+                    <p>Ride was scheduled {{ ride.date_created }} by {{ ride.added_by }}</p>
+                </div>
             {% endif %}
         </div>
     </div>

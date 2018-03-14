@@ -1,0 +1,20 @@
+{% load custom_tags %}
+<form action="{% url 'ride_confirm_modal' ride.id %}" method="POST">{% csrf_token %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Confirm Ride {{ ride.id }}</h4>
+        <h5>{{ ride }}<br>{{ ride.start_date }}</h5>
+    </div>
+    <div class="modal-body">
+        {% if ride.is_confirmed %}
+            <p class="alert alert-success">Confirmed: {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+        {% endif %}
+        {{ form.ride.as_hidden }}
+        {% render_form_field form.confirmed_by %}
+        {% render_form_field form.notes %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Confirm</a>
+    </div>
+</form>
