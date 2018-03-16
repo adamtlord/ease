@@ -1161,8 +1161,11 @@ def profile(request, template='accounts/profile.html'):
 
     subscription = None
 
-    # if customer.subscription_account and customer.subscription_account.stripe_id:
-    #     subscription = get_stripe_subscription(customer)
+    if customer.subscription_account and customer.subscription_account.stripe_id:
+        try:
+            subscription = get_stripe_subscription(customer)
+        except Exception:
+            subscription = None
 
     d = {
         'customer': customer,
