@@ -31,9 +31,9 @@
                     <td style="white-space: nowrap;">
                         {% if ride.confirmation_required %}
                             {% if ride.is_confirmed %}
-                                <i class="fa fa-check-circle text-success" title="confirmed" data-toggle="tooltip"></i>
+                                <i class="fa fa-check-circle text-success" title="confirmed" data-toggle="tooltip" data-placement="right"></i>
                             {% else %}
-                                <i class="fa fa-warning text-danger" title="unconfirmed" data-toggle="tooltip"></i>
+                                <i class="fa fa-warning text-warning" title="unconfirmed" data-toggle="tooltip" data-placement="right"></i>
                             {% endif %}
                         {% endif %}
                         {{ ride.id }}

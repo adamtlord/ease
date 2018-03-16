@@ -17,7 +17,11 @@
         {% endif %}
     {% endif %}
     {% if ride.is_confirmed %}
-        <p>Confirmed: {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+        <p class="alert alert-success">
+            {% for confirmation in ride.confirmation.all %}
+            <strong>Confirmed:</strong> {{ confirmation.confirmed_date }} by {{ confirmation.confirmed_by }}{% if not forloop.last %}<br>{% endif %}
+            {% endfor %}
+        </p>
     {% else %}
         {% if ride.confirmation_required %}
             <p class="alert alert-warning">Please confirm</p>

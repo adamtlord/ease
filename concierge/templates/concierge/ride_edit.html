@@ -8,7 +8,11 @@
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
 <h3>Ride ID: {{ ride.id }}</h3>
 {% if ride.is_confirmed %}
-    <p class="alert alert-success"><strong>CONFIRMED:</strong> {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+    <p class="alert alert-success">
+        {% for confirmation in ride.confirmation.all %}
+            <strong>Confirmed:</strong> {{ confirmation.confirmed_date }} by {{ confirmation.confirmed_by }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+    </p>
 {% endif %}
 {% if ride.cancelled %}
     <span class="label label-danger">DELETED</span>
@@ -173,16 +177,13 @@
             {% render_form_field form.distance %}
             {% render_form_field form.fare_estimate %}
             {% render_form_field form.company %}
-            {% if ride.added_by %}
-                <p>Entered by {{ ride.added_by }}</p>
-            {% endif %}
             {% if ride.confirmation_required %}
-                <label class="control-label">{% if ride.is_confirmed %}Re-{% endif %}Confirm</label>
-                <div class="alert alert-warning">
+                <label class="control-label">Confirmation</label>
+                <div class="well well-sm">
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="is_confirmed" />
-                            <strong>Ride is {% if ride.is_confirmed %}re-{% endif %}confirmed</strong>
+                            <strong>Ride is confirmed{% if ride.is_confirmed %} (again){% endif %}</strong>
                         </label>
                     </div>
                     {% render_form_field confirmation_form.notes '' 'sub-field' %}
@@ -190,6 +191,10 @@
                     {{ confirmation_form.confirmed_by.as_hidden }}
                     <p>Ride was scheduled {{ ride.date_created }} by {{ ride.added_by }}</p>
                 </div>
+            {% else %}
+                {% if ride.added_by %}
+                    <p>Ride was scheduled {{ ride.date_created }} by {{ ride.added_by }}</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

@@ -7,7 +7,11 @@
     </div>
     <div class="modal-body">
         {% if ride.is_confirmed %}
-            <p class="alert alert-success">Confirmed: {{ ride.confirmation.first.confirmed_date }} by {{ ride.confirmation.first.confirmed_by }}</p>
+            <p class="alert alert-success">
+                {% for confirmation in ride.confirmation.all %}
+                    <strong>Confirmed:</strong> {{ confirmation.confirmed_date }} by {{ confirmation.confirmed_by }}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+            </p>
         {% endif %}
         {{ form.ride.as_hidden }}
         {% render_form_field form.confirmed_by %}
