@@ -10,7 +10,7 @@
 {% if ride.is_confirmed %}
     <p class="alert alert-success">
         {% for confirmation in ride.confirmation.all %}
-            <strong>Confirmed:</strong> {{ confirmation.confirmed_date }} by {{ confirmation.confirmed_by }}{% if not forloop.last %}<br>{% endif %}
+            <strong>Confirmed:</strong> {{ confirmation.confirmed_date }} by {{ confirmation.confirmed_by }} {% if confirmation.notes %} — <small>{{ confirmation.notes }}</small>{% endif %}{% if not forloop.last %}<br>{% endif %}
         {% endfor %}
     </p>
 {% endif %}

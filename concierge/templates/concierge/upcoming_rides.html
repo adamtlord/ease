@@ -76,7 +76,7 @@
                     <td>
                         {{ ride.company|default:'' }}
                     </td>
-                    <td>
+                    <td style="white-space: nowrap;">
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
                         {% if ride.confirmation_required %}
