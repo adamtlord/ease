@@ -12,7 +12,7 @@ from accounts.models import Customer
 from billing.models import Plan
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm
+from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm, ConfirmRideForm
 from rides.models import Ride
 
 
@@ -208,13 +208,23 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
 
     cancel_form = CancelRideForm(initial={
         'ride_id': ride_id,
-        'next_url': reverse('customer_detail', args=[customer.id])})
+        'next_url': reverse('customer_detail', args=[customer.id])
+    })
+
     errors = {}
 
     if request.method == 'GET':
         form = RideForm(instance=ride, customer=customer)
+        confirmation_form = ConfirmRideForm(
+            initial={
+                'ride': ride,
+                'confirmed_by': request.user,
+            },
+            prefix='conf'
+        )
     else:
         form = RideForm(request.POST, instance=ride, customer=customer)
+        confirmation_form = ConfirmRideForm(request.POST, prefix='conf')
         if form.is_valid():
             ride = form.save(commit=False)
             if ride.start.timezone:
@@ -227,6 +237,9 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
                 # set start_date to re-localized datetime
                 ride.start_date = localized_start_date
             ride.save()
+            if 'is_confirmed' in request.POST and confirmation_form.is_valid():
+                confirmation_form.save()
+                messages.success(request, "Ride confirmed")
             messages.success(request, "Ride saved successfully")
         else:
             errors = form.errors
@@ -236,6 +249,7 @@ def ride_edit(request, ride_id, template="concierge/ride_edit.html"):
         'ride': ride,
         'form': form,
         'cancel_form': cancel_form,
+        'confirmation_form': confirmation_form,
         'ride_page': True,
         'errors': errors
     }
@@ -302,4 +316,30 @@ def ride_detail_modal(request, ride_id, template="rides/fragments/ride_detail_mo
     d = {
         'ride': ride
     }
+    return render(request, template, d)
+
+
+@staff_member_required
+def ride_confirm_modal(request, ride_id, template="rides/fragments/ride_confirm_modal.html"):
+
+    ride = get_object_or_404(Ride, pk=ride_id)
+
+    if request.method == 'GET':
+        form = ConfirmRideForm(
+            initial={
+                'ride': ride,
+                'confirmed_by': request.user,
+            },
+        )
+
+    else:
+        form = ConfirmRideForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('upcoming_rides')
+    d = {
+        'ride': ride,
+        'form': form
+    }
+
     return render(request, template, d)

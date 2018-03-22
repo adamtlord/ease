@@ -1,8 +1,9 @@
 from django import forms
 
 from accounts.const import RESIDENCE_TYPE_CHOICES, SINGLE_FAMILY_HOME
-from accounts.models import Customer, Rider
-from rides.models import Destination, Ride
+from accounts.models import Customer, Rider, CustomUser
+from rides.models import Destination, Ride, RideConfirmation
+
 
 HOME_FIELDS = [
     'name',
@@ -230,6 +231,24 @@ class CancelRideForm(forms.Form):
     )
 
 
+class ConfirmRideForm(forms.ModelForm):
+    notes = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 2}),
+        required=False,
+        label="Confirmation notes",
+    )
+    confirmed_by = forms.ModelChoiceField(queryset=CustomUser.objects.filter(is_staff=True, is_active=True))
+
+    class Meta:
+        model = RideConfirmation
+        fields = ('ride', 'confirmed_by', 'notes',)
+
+    def __init__(self, *args, **kwargs):
+        super(ConfirmRideForm, self).__init__(*args, **kwargs)
+        self.fields['notes'].widget.attrs['class'] = 'form-control'
+        self.fields['confirmed_by'].widget.attrs['class'] = 'form-control'
+
+
 class AddRiderForm(forms.ModelForm):
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), widget=forms.HiddenInput(), required=False)
 
@@ -242,4 +261,3 @@ class AddRiderForm(forms.ModelForm):
         for field in RIDER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['notes'].widget.attrs['rows'] = 2
-

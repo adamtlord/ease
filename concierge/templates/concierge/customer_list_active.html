@@ -27,6 +27,9 @@
                     active: 'True'
                 }
             },
+            dom: "r<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+                 "<'row'<'col-sm-12't>>" +
+                 "<'row'<'col-sm-5'i><'col-sm-7'p>>",
             autoWidth: false,
             order: [[0, 'asc']],
             columns: [
@@ -81,8 +84,10 @@
             language: {
                 infoFiltered: "",
                 info: "Showing _START_ to _END_ of _TOTAL_ active customers",
+                processing: "Loading..."
             },
             serverSide: true,
+            processing: true
         });
     })
 </script>

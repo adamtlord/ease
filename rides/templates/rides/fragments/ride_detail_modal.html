@@ -4,7 +4,16 @@
 {% get_current_timezone as TIME_ZONE %}
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Ride {{ ride.id }}: {{ ride }}</h4>
+    <h4 class="modal-title">
+        {% if ride.confirmation_required %}
+            {% if ride.is_confirmed %}
+                <i class="fa fa-check-circle text-success" title="confirmed" data-toggle="tooltip" data-placement="right"></i>
+            {% else %}
+                <i class="fa fa-warning text-warning" title="unconfirmed" data-toggle="tooltip" data-placement="right"></i>
+            {% endif %}
+        {% endif %}
+        Ride {{ ride.id }}: {{ ride }}
+    </h4>
 </div>
 <div class="modal-body">
     {% if ride.cancelled %}
@@ -16,7 +25,14 @@
             </div>
         {% endif %}
     {% endif %}
+    {% if not ride.is_confirmed and ride.confirmation_required %}
+        <p class="alert alert-warning">Please confirm</p>
+    {% endif %}
     <table class="table table-striped">
+        <colgroup>
+           <col span="1" style="width: 30%;">
+           <col span="1">
+        </colgroup>
         <tbody>
             {% if ride.rider_link %}
                 <tr>
@@ -49,6 +65,18 @@
                 <tr>
                     <th>Scheduled By</th>
                     <td>{{ ride.added_by }}</td>
+                </tr>
+            {% endif %}
+            {% if ride.is_confirmed %}
+                <tr>
+                    <th>Confirmed By</th>
+                    <td>
+                        {% for confirmation in ride.confirmation.all %}
+                            {{ confirmation.confirmed_by }}, {{ confirmation.confirmed_date }}
+                            {% if confirmation.notes %}<br><small>{{ confirmation.notes }}</small>{% endif %}
+                            {% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </td>
                 </tr>
             {% endif %}
             <tr>

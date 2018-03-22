@@ -13,22 +13,31 @@
             <tr>
                 <th>ID</th>
                 <th width="10%">Customer</th>
-                <th width="20%">Start Time</th>
-                <th width="15%">Local Time</th>
-                <th>From</th>
-                <th>To</th>
+                <th>Start Time</th>
+                <th>Local Time</th>
+                <th width="20%">From</th>
+                <th width="20%">To</th>
                 {% if customer.plan.includes_rides %}
                     <th>Included</th>
                 {% endif %}
                 <th>Distance</th>
                 <th>Company</th>
-                <th width="200"></th>
+                <th width="220"></th>
             </tr>
         </thead>
         <tbody>
             {% for ride in rides %}
                 <tr{% if ride.is_today %} class="warning"{% endif %}>
-                    <td>{{ ride.id }}</td>
+                    <td style="white-space: nowrap;">
+                        {% if ride.confirmation_required %}
+                            {% if ride.is_confirmed %}
+                                <i class="fa fa-check-circle text-success" title="confirmed" data-toggle="tooltip" data-placement="right"></i>
+                            {% else %}
+                                <i class="fa fa-warning text-warning" title="unconfirmed" data-toggle="tooltip" data-placement="right"></i>
+                            {% endif %}
+                        {% endif %}
+                        {{ ride.id }}
+                    </td>
                     <td>
                         <a href="{% url 'customer_detail' ride.customer.id %}">{{ ride.customer }}</a>
                         {% if ride.rider_link %}<br><strong>Rider:</strong> {{ ride.rider_link }}{% endif %}
@@ -67,9 +76,12 @@
                     <td>
                         {{ ride.company|default:'' }}
                     </td>
-                    <td>
+                    <td style="white-space: nowrap;">
                         <a href="#viewRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-primary btn-sm">View</a>
                         <a href="{% url 'ride_edit' ride.id %}" class="btn btn-default btn-sm">Edit</a>
+                        {% if ride.confirmation_required %}
+                            <a href="#confirmRideModal" data-rideID="{{ ride.id }}" data-toggle="modal" class="btn btn-success btn-sm">Confirm</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -81,7 +93,13 @@
         <div class="modal-content"></div>
     </div>
 </div>
+<div class="modal fade" id="confirmRideModal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
 {% endblock rides_content %}
 {% block scripts %}
-<script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+    <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
+    <script src="{{ STATIC_URL }}js/apps/confirm_ride_modal.min.js"></script>
 {% endblock scripts %}

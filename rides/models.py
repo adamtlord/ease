@@ -149,6 +149,7 @@ class Ride(models.Model):
     start = models.ForeignKey('rides.Destination', related_name='starting_point', verbose_name='Starting point', on_delete=models.SET_NULL, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     total_cost = models.DecimalField(blank=True, null=True, decimal_places=2, max_digits=9)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
     in_progress = RidesInProgressManager()
@@ -220,6 +221,19 @@ class Ride(models.Model):
             cost += group.plan.arrive_fee
         return cost
 
+    @cached_property
+    def confirmation_required(self):
+        # the ride was scheduled for at least a day out and the date of the ride is in the future
+        return self.start_date.date() > self.date_created.date() and self.start_date > timezone.now()
+
+    @cached_property
+    def confirmation(self):
+        return self.confirmation.first()
+
+    @property
+    def is_confirmed(self):
+        return self.confirmation.count() > 0
+
     @property
     def is_today(self):
         tz = pytz.timezone(settings.TIME_ZONE)
@@ -246,3 +260,10 @@ class Notification(models.Model):
     ride = models.ForeignKey(Ride)
     lovedone = models.ForeignKey('accounts.LovedOne')
     sent = models.DateTimeField(blank=True, null=True)
+
+
+class RideConfirmation(models.Model):
+    ride = models.ForeignKey(Ride, related_name='confirmation')
+    confirmed_date = models.DateTimeField(auto_now_add=True)
+    confirmed_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='confirmed_by')
+    notes = models.TextField(blank=True, null=True)

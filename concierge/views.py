@@ -243,7 +243,10 @@ def customer_detail(request, customer_id, template='concierge/customer_detail.ht
     subscription = None
     customer = get_object_or_404(Customer.objects.select_related('user__profile'), pk=customer_id)
     if customer.subscription_account and customer.subscription_account.stripe_id:
-        subscription = get_stripe_subscription(customer)
+        try:
+            subscription = get_stripe_subscription(customer)
+        except Exception:
+            subscription = None
     rides_in_progress = Ride.in_progress.filter(customer=customer)
     tz_abbrev = ''
     customer_tz = None
