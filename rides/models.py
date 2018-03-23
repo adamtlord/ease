@@ -221,7 +221,7 @@ class Ride(models.Model):
             cost += group.plan.arrive_fee
         return cost
 
-    @cached_property
+    @property
     def confirmation_required(self):
         # the ride was scheduled for at least a day out and the date of the ride is in the future
         return self.start_date.date() > self.date_created.date() and self.start_date > timezone.now()
