@@ -223,8 +223,10 @@ class Ride(models.Model):
 
     @property
     def confirmation_required(self):
-        # the ride was scheduled for at least a day out and the date of the ride is in the future
-        return self.start_date.date() > self.date_created.date() and self.start_date > timezone.now()
+        # the ride was scheduled for at least 72 hours out and the date of the ride is in the future
+        delta = self.start_date - self.date_created
+        delta_hours = delta.total_seconds() / 3600
+        return delta_hours >= 72 and self.start_date > timezone.now()
 
     @cached_property
     def confirmation(self):
