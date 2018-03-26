@@ -29,7 +29,7 @@
             {% for ride in rides %}
                 <tr{% if ride.is_today %} class="warning"{% endif %}>
                     <td style="white-space: nowrap;">
-                        {% if ride.confirmation_required %}
+                        {% if ride.confirmation_required and not ride.is_confirmed %}
                             <i class="fa fa-warning text-warning" title="unconfirmed" data-toggle="tooltip" data-placement="right"></i>
                         {% endif %}
                         {% if ride.is_confirmed %}
