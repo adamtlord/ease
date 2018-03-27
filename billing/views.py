@@ -362,12 +362,18 @@ def group_billing(request, template="billing/group_billing.html"):
     group = None
     target_status = INVOICED
 
+    try:
+        tz = pytz.timezone(request.user.profile.timezone)
+    except:
+        tz = settings.TIME_ZONE
+
     if request.POST:
         action = request.POST.get('action')
         idlist = request.POST.getlist('ride')
         rides_to_bill = Ride.objects.filter(id__in=idlist)
 
         if action == EXPORT:
+
             customers = sort_rides_by_customer(rides_to_bill)
 
             response = HttpResponse(content_type='text/csv')
@@ -377,9 +383,13 @@ def group_billing(request, template="billing/group_billing.html"):
             writer.writerow([
                 'Customer',
                 'Ride ID',
+                'From',
+                'To',
                 'Date & Time',
                 'Distance',
-                'Fee',
+                'Cost',
+                'Fees',
+                'Cost to Group',
                 'Company',
                 'Notes'
             ])
@@ -389,9 +399,13 @@ def group_billing(request, template="billing/group_billing.html"):
                     writer.writerow([
                                     customer,
                                     ride.id,
-                                    formats.date_format(ride.start_date, "SHORT_DATETIME_FORMAT"),
+                                    ride.start.fullname,
+                                    ride.destination.fullname,
+                                    formats.date_format(ride.start_date.astimezone(tz), "SHORT_DATETIME_FORMAT"),
                                     '{} mi.'.format(ride.distance),
-                                    '${0:.2f}'.format(ride.customer.plan.arrive_fee),
+                                    '${0:.2f}'.format(ride.cost if ride.cost else 0),
+                                    '${0:.2f}'.format(ride.total_fees_estimate),
+                                    '${0:.2f}'.format(ride.cost_to_group),
                                     ride.company,
                                     ride.notes
                                     ])
@@ -407,10 +421,6 @@ def group_billing(request, template="billing/group_billing.html"):
 
     if request.GET:
         search_form = GroupMembershipFilterForm(request.GET)
-        try:
-            tz = pytz.timezone(request.user.profile.timezone)
-        except:
-            tz = settings.TIME_ZONE
 
         filters = {}
         group = None

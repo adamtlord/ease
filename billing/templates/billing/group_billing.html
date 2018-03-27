@@ -47,16 +47,15 @@
                     <th><input class="master" type="checkbox"></tH>
                     <th>Cust.</th>
                     <th>ID</th>
-                    <th>From</th>
-                    <th>To</th>
+                    <th width="10%">From</th>
+                    <th width="10%">To</th>
                     <th>Start Time</th>
                     <th>Distance</th>
-                    {% if group.includes_ride_cost %}
-                        <th>Ride Cost</th>
-                    {% endif %}
+                    <th>Cost</th>
+                    <th>Fees</th>
                     <th>Cost To Group</th>
                     <th>Company</th>
-                    <th>Notes</th>
+                    <th width="20%">Notes</th>
                     <th></th>
                 </tr>
             </thead>
@@ -65,9 +64,9 @@
                     <tr class="customer">
                         <td><input class="customer" data-customer="{{ customer.id }}" type="checkbox"></td>
                         <th {% if group.includes_ride_cost %}
-                                colspan="11"
+                                colspan="13"
                             {% else %}
-                                colspan="10"
+                                colspan="11"
                             {% endif %}>
                             <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
                             {% if customer.plan %}
@@ -90,14 +89,13 @@
                                     {{ ride.distance }} mi
                                 {% endif %}
                             </td>
-                            {% if group.includes_ride_cost %}
-                                <td>
-                                    {{ ride.cost|default:'0' }}
-                                    {% if ride.fees %}
-                                        + ${{ ride.fees }}
-                                    {% endif %}
-                                </td>
-                            {% endif %}
+                            <td>${{ ride.cost|default:'0' }}</td>
+                            <td>{% if ride.total_fees_estimate %}
+                                    ${{ ride.total_fees_estimate|floatformat:'2' }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </td>
                             <td>${{ ride.cost_to_group|default:'0' }}</td>
                             <td>{{ ride.company }}</td>
                             <td class="small">{{ ride.notes|default:'' }}</td>

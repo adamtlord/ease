@@ -216,9 +216,9 @@ class Ride(models.Model):
         if not group:
             return cost
         if group.includes_ride_cost:
-            cost += self.cost + self.fees
+            cost += (self.cost or 0) + (self.fees or 0)
         if group.includes_arrive_fee:
-            cost += group.plan.arrive_fee
+            cost += group.plan.arrive_fee or 0
         return cost
 
     @property
