@@ -41,18 +41,19 @@ class RideViewSet(viewsets.ModelViewSet):
         if search_value:
             for term in search_value.split():
                 queryset = queryset.filter(
+                    Q(id__contains=term) |
                     Q(customer__first_name__icontains=term) |
                     Q(customer__last_name__icontains=term) |
-                    Q(start__name__icontains=term) |
+                    # Q(start__name__icontains=term) |
                     Q(start__street1__icontains=term) |
-                    Q(start__street2__icontains=term) |
-                    Q(start__city__icontains=term) |
-                    Q(destination__name__icontains=term) |
+                    # Q(start__street2__icontains=term) |
+                    # Q(start__city__icontains=term) |
+                    # Q(destination__name__icontains=term) |
                     Q(destination__street1__icontains=term) |
-                    Q(destination__street2__icontains=term) |
-                    Q(destination__city__icontains=term) |
-                    Q(cost__icontains=term) |
-                    Q(total_cost__icontains=term) |
+                    # Q(destination__street2__icontains=term) |
+                    # Q(destination__city__icontains=term) |
+                    # Q(cost__icontains=term) |
+                    # Q(total_cost__icontains=term) |
                     Q(notes__icontains=term)
                 )
 

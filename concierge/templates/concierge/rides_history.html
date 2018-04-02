@@ -51,6 +51,7 @@
         }
         $('#rides_history').DataTable({
             serverSide: true,
+            processing: true,
             ajax: {
                 url: '{% url "ride-list" %}'
             },
