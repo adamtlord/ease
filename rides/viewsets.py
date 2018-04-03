@@ -168,9 +168,7 @@ def filter_ride_table(request_dict, queryset):
         filter_query = Q()
 
     combined_query = Q(global_query & filter_query)
-    print
-    print combined_query
-    print
+
     queryset = queryset.filter(combined_query)
 
     # We have our queryset, now order it based on which column(s) and direction is selected
