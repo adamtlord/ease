@@ -46,7 +46,7 @@
 <script src="{{ STATIC_URL }}js/apps/view_ride_modal.min.js"></script>
 <script>
     $(function(){
-        $('#invoiced_rides').DataTable({
+        var table = $('#invoiced_rides').DataTable({
             ajax: {
                 url: '{% url "ride-list" %}',
                 data: {
@@ -125,8 +125,11 @@
                 infoFiltered: "",
                 info: "Showing _START_ to _END_ of _TOTAL_ rides",
             },
-            serverSide: true
+            serverSide: true,
+            processing: true,
+            deferRender: true,
+            searchDelay: 500,
         });
-    })
+    });
 </script>
 {% endblock scripts %}

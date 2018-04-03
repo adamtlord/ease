@@ -49,26 +49,31 @@
                    data.id +
                    '/edit/" class="btn btn-default btn-sm">Edit</a> ';
         }
-        $('#rides_history').DataTable({
+        var table = $('#rides_history').DataTable({
             serverSide: true,
             processing: true,
             ajax: {
                 url: '{% url "ride-list" %}'
             },
+            searchDelay: 500,
+            deferRender: true,
             order: [[ 2, 'desc' ]],
             columns: [
                 { data: 'id',
                   render: function(data, type, full, meta){
                     var cancelled_str = full.cancelled ? '<br><div class="label label-danger">deleted</div>' : '';
                     return data + cancelled_str;
-                  }
+                  },
                 },
                 { data: 'customer.last_name',
                   render: function(data, type, full, meta){
                     var rider = full.rider && full.rider !== data ? '<br /><strong>Rider:</strong> ' + full.rider : '';
                     return '<a href="/concierge/customers/' + full.customer.id + '">' + full.customer.first_name + ' ' + full.customer.last_name + '</a>' + rider
-                  } },
-                { data: 'start_date' },
+                  },
+                },
+                { data: 'start_date',
+                  searchable: false
+                },
                 { data: 'start',
                   orderable: false,
                   render: function(data, type, full){
@@ -77,7 +82,7 @@
                     }else {
                         return '--';
                     }
-                  }
+                  },
                 },
                 { data: 'destination',
                   orderable: false,
@@ -87,28 +92,32 @@
                     }else {
                         return '--';
                     }
-                  }
+                  },
                 },
                 { data: 'included_in_plan',
                   render: function(data) {
                     return data == true ? '<i class="fa fa-check text-success"></i>' : ''
-                  }
+                  },
+                  searchable: false
                 },
                 { data: 'distance',
                   render: function (data) {
                     return parseFloat(data).toFixed(2) + ' mi';
-                  }
+                  },
+                  searchable: false
                 },
-                { data: 'company'},
+                { data: 'company',
+                  searchable: false
+                },
                 { data: null,
                   orderable: false,
                   render: function(data) {
                         return generateButtons(data);
-                  }
+                  },
+                  searchable: false
                 }
-
             ]
         });
-    })
+    });
 </script>
 {% endblock scripts %}
