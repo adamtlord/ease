@@ -13,6 +13,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone, formats
 from django.views.decorators.http import require_POST
+from django.template.defaultfilters import slugify
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm, GroupRegistrationForm
 from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, create_customer_subscription
@@ -1269,7 +1270,7 @@ def group_membership_add_customer(request, group_id, template="concierge/group_m
             new_user = group.user
             new_user.pk = None
             # This is... uh... fake. It won't be used because the account is managed by the group
-            new_user.email = '{}_{}@arriverides.com'.format(cd['first_name'], cd['last_name'])
+            new_user.email = '{}_{}@arriverides.com'.format(slugify(cd['first_name']), slugify(cd['last_name']))
             new_user.save()
 
             # populate and save customer
