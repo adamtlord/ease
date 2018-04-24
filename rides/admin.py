@@ -4,7 +4,7 @@ from rides.models import Destination, Ride, RideConfirmation
 
 
 class RideAdmin(admin.ModelAdmin):
-    raw_id_fields = ("destination", "start")
+    raw_id_fields = ("destination", "start", "customer", "rider_link")
 
 
 admin.site.register(Destination)
