@@ -69,10 +69,14 @@
                                 colspan="11"
                             {% endif %}>
                             <a href="{% url 'customer_history' customer.id %}">{{ customer }}</a>&nbsp;&nbsp;
-                            {% if customer.plan %}
-                                <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                            {% if customer.group_membership %}
+                                <span class="label plan-label group-plan-label {{ customer.plan.name|lower }}">Group: {{ customer.group_membership.display_name }}</span>
                             {% else %}
-                                <span class="label label-danger">No Plan Selected</span>
+                                {% if customer.plan %}
+                                    <span class="label plan-label {{ customer.plan.name|lower }}">{{ customer.plan }} Plan</span>
+                                {% else %}
+                                    <span class="label label-danger">No Plan Selected</span>
+                                {% endif %}
                             {% endif %}
                             <small>ID {{ customer.id }}</small>
                         </th>
