@@ -98,12 +98,14 @@ def send_subscription_receipt_email(user):
 
 def send_ride_receipt_email(customer, ride):
     user = customer.user
-    account = customer.ride_account
-    to_email = customer.email if customer.email else account.email if account.email else user.email
+    account_email = customer.ride_account.email if customer.ride_account else None
+    to_name = user.first_name if user.profile.on_behalf else customer.first_name
+    to_email = customer.email if customer.email else account_email if account_email else user.email
 
     d = {
         'ride': ride,
-        'customer': customer
+        'customer': customer,
+        'to_name': to_name
     }
 
     msg_plain = render_to_string('billing/email/ride_receipt_email.txt', d)
@@ -128,15 +130,15 @@ def send_ride_receipt_email(customer, ride):
 
 
 def send_included_rides_email(customer, rides):
-
     user = customer.user
-    account = customer.ride_account
-
-    to_email = customer.email if customer.email else account.email if account.email else user.email
+    account_email = customer.ride_account.email if customer.ride_account else None
+    to_name = user.first_name if user.profile.on_behalf else customer.first_name
+    to_email = customer.email if customer.email else account_email if account_email else user.email
 
     d = {
         'rides': rides,
-        'customer': customer
+        'customer': customer,
+        'to_name': to_name
     }
 
     msg_plain = render_to_string('billing/email/included_rides_email.txt', d)
