@@ -3,18 +3,18 @@
 {% block content %}
 <p>Hi {{ to_name }},<br /><br />
 
-Thanks for riding with Arrive Rides!<br /><br />
+Thanks for riding with Arrive Rides!<br />
 
 We have deducted the cost of your ride from your available funds.<br /><br />
 </p>
 <p>
 {{ ride.start_date|date:"DATETIME_FORMAT" }}<br />
-<strong>From:<strong> {{ ride.start.display_name }}<br />
+<strong>From:</strong> {{ ride.start.display_name }}<br />
 <strong>To:</strong> {{ ride.destination.display_name }}<br />
-<strong>Total Cost:</strong> ${{ ride.total_cost|currency }}
+<strong>Total Cost:</strong> {{ ride.total_cost|currency }}
 <br /><br />
 </p>
 <p>
-<strong>Available Balance:</strong> ${{ customer.balance.amount|currency }}<br /><br />
+<strong>Available Balance:</strong> {{ customer.balance.amount|currency }}<br /><br />
 The Arrive Rides Team</p>
 {% endblock %}

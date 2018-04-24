@@ -1,6 +1,7 @@
 {% extends 'base_email_txt.html' %}
+{% load billing_tags %}
 {% block content %}
-Hi{% if customer.first_name%} {{ customer.first_name }}{% endif %},
+Hi{% if to_name %} {{ to_name }}{% endif %},
 
 Thanks for riding with Arrive Rides!
 
@@ -8,12 +9,14 @@ We have deducted the cost of your ride from your available funds.
 
 ____________________________________________
 
-{{ ride.start_date|date:"DATETIME_FORMAT" }}: From {{ ride.start.display_name }} to {{ ride.destination.display_name }}
-Total Cost: ${{ ride.total_cost }}
+{{ ride.start_date|date:"DATETIME_FORMAT" }}
+From: {{ ride.start.display_name }}
+To: {{ ride.destination.display_name }}
+Total Cost: {{ ride.total_cost|currency }}
 
 ____________________________________________
 
-Available Balance: ${{ customer.balance.amount }}
+Available Balance: {{ customer.balance.amount|currency }}
 
 
 The Arrive Rides Team
