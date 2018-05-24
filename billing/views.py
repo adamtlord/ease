@@ -407,7 +407,7 @@ def group_billing(request, template="billing/group_billing.html"):
                                     '${0:.2f}'.format(ride.total_fees_estimate),
                                     '${0:.2f}'.format(ride.cost_to_group),
                                     ride.company,
-                                    ride.notes
+                                    ride.notes.encode('utf-8')
                                     ])
 
             return response
