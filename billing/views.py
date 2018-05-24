@@ -399,6 +399,7 @@ def group_billing(request, template="billing/group_billing.html"):
                     notes = ''
                     if ride.notes:
                         notes = ride.notes.encode('utf-8')
+                    print '{} - {}'.format(ride.id, notes)
                     writer.writerow([
                                     customer,
                                     ride.id,
