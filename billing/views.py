@@ -396,10 +396,8 @@ def group_billing(request, template="billing/group_billing.html"):
 
             for customer, rides in customers.items():
                 for ride in rides:
-                    notes = ''
                     if ride.notes:
-                        notes = ride.notes.encode('utf-8')
-                    print '{} - {}'.format(ride.id, notes)
+                        ride.notes = ride.notes.encode('utf-8')
                     writer.writerow([
                                     customer,
                                     ride.id,
@@ -411,7 +409,7 @@ def group_billing(request, template="billing/group_billing.html"):
                                     '${0:.2f}'.format(ride.total_fees_estimate),
                                     '${0:.2f}'.format(ride.cost_to_group),
                                     ride.company,
-                                    notes
+                                    ride.notes
                                     ])
 
             return response
