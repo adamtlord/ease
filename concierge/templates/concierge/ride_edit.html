@@ -6,7 +6,11 @@
 {% block customer_content %}
 
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
-<h3>Ride ID: {{ ride.id }}</h3>
+<h3>Ride ID: <span id="ride_id">{{ ride.id }}</span>
+<button type="button" class="btn btn-default copybtn" data-clipboard-target="#ride_id">
+    copy
+</button>
+</h3>
 {% if ride.is_confirmed %}
     <p class="alert alert-success">
         {% for confirmation in ride.confirmation.all %}
