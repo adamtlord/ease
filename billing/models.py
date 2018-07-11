@@ -121,6 +121,9 @@ class GroupMembership(AbstractEnumModel):
     phone = PhoneNumberField(blank=True, null=True)
     default_user_address = models.BooleanField(default=True)
 
+    def full_name(self):
+        return self.display_name
+
     def __unicode__(self):
         return self.display_name
 
