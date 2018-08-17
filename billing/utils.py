@@ -214,6 +214,13 @@ def debit_customer_balance(customer):
                     idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                 )
 
+                # If they have an Arrive subscription in addition to a Stripe one, we need to
+                # deactivate their Arrive subscription so they don't get double-charged.
+                # Monthly Billing will now be handled by Stripe.
+                if customer.subscription:
+                    customer.subscription.is_active = False
+                    customer.subscription.save()
+
             else:
                 # this will be negative:
                 customer.balance.amount -= monthly_cost
