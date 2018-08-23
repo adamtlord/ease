@@ -31,7 +31,7 @@ $(function() {
         return obj.display_name;
       },
       prefetch: {
-        url: '/api/group-memberships/?active=true',
+        url: '/api/group-memberships/?active=true&limit=999',
         cache: false,
         transform: function(response) {
           return response.results;
