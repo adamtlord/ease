@@ -15,6 +15,7 @@ class RidesReadyToBillManager(models.Manager):
             .exclude(invoiced=True) \
             .exclude(cost__isnull=True) \
             .exclude(invoice_id__isnull=False) \
+            .exclude(cancelled=True) \
             .prefetch_related('customer')
 
 
