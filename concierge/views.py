@@ -295,7 +295,6 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
                 rider_formset.is_valid()
                 ]):
             customer_form.save()
-            home_form.save()
             account_holder_form.save()
             rider_formset.save()
 
@@ -308,6 +307,14 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             if customer_form.cleaned_data['group_membership']:
                 customer.plan = customer_form.cleaned_data['group_membership'].plan
                 customer.save()
+
+            # populate and save home address
+            home_address = home_form.save(commit=False)
+            home_address.name = 'Home'
+            home_address.customer = customer
+            home_address.home = True
+            home_address.added_by = request.user
+            home_address.save()
 
             if '_activate' in request.POST:
                 customer.is_active = True
