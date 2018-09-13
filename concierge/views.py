@@ -177,7 +177,7 @@ def customer_create(request, template='concierge/customer_create.html'):
 
     if request.method == 'GET':
         register_form = CustomUserRegistrationForm(prefix='reg')
-        customer_form = CustomerForm(prefix='cust')
+        customer_form = CustomerForm(prefix='cust', initial={'plan': Plan.DEFAULT})
         home_form = HomeForm(prefix='home')
         rider_form = RiderForm(prefix='rider')
     else:
@@ -1289,6 +1289,7 @@ def group_membership_add_customer(request, group_id, template="concierge/group_m
             new_customer.group_membership = group
             new_customer.ride_account = group.ride_account
             new_customer.subscription_account = group.subscription_account
+            new_customer.plan = group.plan
             new_customer.save()
 
             # copy the group's home address to use as the customer's home address

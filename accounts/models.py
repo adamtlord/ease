@@ -159,7 +159,7 @@ class Customer(Contact):
     known_as = models.CharField(max_length=50, blank=True, null=True)
     last_ride = models.ForeignKey('rides.Ride', blank=True, null=True, related_name='last_ride')
     notes = models.TextField(blank=True, null=True)
-    plan = models.ForeignKey(Plan, blank=True, null=True, default=Plan.DEFAULT)
+    plan = models.ForeignKey(Plan, blank=True, null=True)
     preferred_phone = models.CharField(max_length=2, choices=PREFERRED_PHONE_CHOICES, default=HOME_PHONE)
     preferred_service = models.CharField(max_length=16, choices=PREFERRED_SERVICE_CHOICES, blank=True, null=True)
     registered_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name='registered_by')
