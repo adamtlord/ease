@@ -12,8 +12,15 @@ class GroupMembershipAdmin(admin.ModelAdmin):
 
 
 class StripeCustomerAdmin(admin.ModelAdmin):
-    list_display = ["first_name", "last_name", "customer"]
-    search_fields = ["first_name", "last_name", "customer__first_name", "customer__last_name"]
+    list_display = ["__unicode__", "stripe_id", "last_4_digits"]
+    search_fields = ["first_name",
+                     "last_name",
+                     "subscription_customer__first_name",
+                     "subscription_customer__last_name",
+                     "ride_customer__first_name",
+                     "ride_customer__last_name",
+                     "customer__first_name",
+                     "customer__last_name"]
     raw_id_fields = ["customer"]
 
 
