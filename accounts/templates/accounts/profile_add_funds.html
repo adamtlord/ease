@@ -25,7 +25,7 @@
     </p>
 {% endif %}
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-8 col-lg-6">
             <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
                 <h3 class="m-t-0">Add funds to {% if lovedone %}{{ customer.first_name }}'s{% else %}your{% endif %} Arrive&nbsp;account</h3>
                 {% if customer_stripe_accounts %}

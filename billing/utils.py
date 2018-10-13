@@ -48,11 +48,7 @@ def get_customer_stripe_accounts(customer):
     subscription_account = customer.subscription_account
     ride_account = customer.ride_account
     other_accounts = StripeCustomer.objects.filter(customer=customer)
-    all_accounts = list(other_accounts)
-    if subscription_account:
-        all_accounts.append(subscription_account)
-    if ride_account and subscription_account != ride_account:
-        all_accounts.append(ride_account)
+    all_accounts = set(list([subscription_account] + [ride_account] + list(other_accounts)))
     return all_accounts
 
 
