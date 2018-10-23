@@ -24,6 +24,10 @@ class StripeCustomerAdmin(admin.ModelAdmin):
     raw_id_fields = ["customer"]
 
 
+class BalanceAdmin(admin.ModelAdmin):
+    raw_id_fields = ['stripe_customer']
+
+
 admin.site.register(Plan)
 admin.site.register(StripeCustomer, StripeCustomerAdmin)
 admin.site.register(Invoice)
