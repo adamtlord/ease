@@ -13,6 +13,11 @@
 
 {% block customer_content %}
 <form action="" id="payment_form" class="form " method="POST" novalidate>{% csrf_token %}
+<pre>
+errors: {{ errors }}
+
+card errors: {{ card_errors }}
+</pre>
     <div class="row">
         <div class="col-sm-6">
             <h3 class="m-t-0">Add Funds</h3>
