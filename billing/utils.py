@@ -199,6 +199,15 @@ def debit_customer_balance(customer):
             if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
                 send_balance_alerts(customer, last_action='Monthly Subscription')
 
+            funds_touch = Touch(
+                customer=customer,
+                date=timezone.now(),
+                type=Touch.FUNDS,
+                notes='Debited subscription from customer balance'
+            )
+            funds_touch.full_clean()
+            funds_touch.save()
+
         else:
             deficit = monthly_cost - available_balance
             if customer.subscription_account:
@@ -210,18 +219,43 @@ def debit_customer_balance(customer):
                     idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat())
                 )
 
+                funds_touch1 = Touch(
+                    customer=customer,
+                    date=timezone.now(),
+                    type=Touch.FUNDS,
+                    notes='Charged subscription card for monthly balance shortfall of {}'.format(deficit)
+                )
+                funds_touch1.full_clean()
+                funds_touch1.save()
+
                 # If they have an Arrive subscription in addition to a Stripe one, we need to
                 # deactivate their Arrive subscription so they don't get double-charged.
                 # Monthly Billing will now be handled by Stripe.
                 if customer.subscription:
                     customer.subscription.is_active = False
                     customer.subscription.save()
+                    funds_touch2 = Touch(
+                        customer=customer,
+                        date=timezone.now(),
+                        type=Touch.FUNDS,
+                        notes='Deactivated empty Arrive subscription account in favor of subscription card payments'
+                    )
+                    funds_touch2.full_clean()
+                    funds_touch2.save()
 
             else:
                 # this will be negative:
                 customer.balance.amount -= monthly_cost
                 customer.balance.save()
                 send_balance_alerts(customer, last_action='Monthly Subscription')
+                funds_touch3 = Touch(
+                    customer=customer,
+                    date=timezone.now(),
+                    type=Touch.FUNDS,
+                    notes='Customer has a negative balance and no backup card!'
+                )
+                funds_touch3.full_clean()
+                funds_touch3.save()
 
         return True
 
