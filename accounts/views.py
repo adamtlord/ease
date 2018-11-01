@@ -159,7 +159,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
 
                     # now create the charge for the new or existing customer
                     create_stripe_charge = stripe.Charge.create(
-                        amount=int(request.POST['amount']) * 100,
+                        amount=int(float(request.POST['amount']) * 100),
                         currency="usd",
                         description='Add funds to customer account: {}'.format(customer.full_name),
                         receipt_email=stripe_customer.email,
@@ -1360,7 +1360,7 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
 
                 # now create the charge for the new or existing customer
                 create_stripe_charge = stripe.Charge.create(
-                    amount=int(request.POST['amount']) * 100,
+                    amount=int(float(request.POST['amount']) * 100),
                     currency="usd",
                     description='Add funds to customer account: {}'.format(customer.full_name),
                     receipt_email=stripe_customer.email,

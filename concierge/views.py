@@ -845,8 +845,9 @@ def customer_add_funds(request, customer_id, template="concierge/customer_add_fu
                     stripe_customer = StripeCustomer.objects.filter(stripe_id=request.POST['funds_source']).first()
 
                 # now create the charge for the new or existing customer
+
                 create_stripe_charge = stripe.Charge.create(
-                    amount=int(request.POST['amount']) * 100,
+                    amount=int(float(request.POST['amount']) * 100),
                     currency="usd",
                     description='Add funds to customer account: {}'.format(customer.full_name),
                     receipt_email=stripe_customer.email,
