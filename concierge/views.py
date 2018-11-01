@@ -2,6 +2,7 @@ import csv
 import datetime
 import pytz
 import stripe
+import decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -860,7 +861,7 @@ def customer_add_funds(request, customer_id, template="concierge/customer_add_fu
 
                 # now create the Balance object
                 if create_stripe_charge:
-                    charge_amount = create_stripe_charge['amount']/100
+                    charge_amount = decimal.Decimal(create_stripe_charge['amount']) / 100
 
                     try:
                         customer.balance.amount += charge_amount

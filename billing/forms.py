@@ -56,12 +56,10 @@ class StripeCustomerForm(forms.ModelForm):
 class AddFundsForm(StripeCustomerForm):
     amount = forms.DecimalField(
         label="Amount",
-        help_text="Must be at least $100",
-        min_value=100.00,
+        min_value=0,
         max_digits=6,
         decimal_places=2,
-        required=True,
-        error_messages={'min_value': 'Ensure this value is greater than or equal to $100.'}
+        required=True
     )
 
     class Meta(StripeCustomerForm):

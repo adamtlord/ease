@@ -1,6 +1,6 @@
 import datetime
 import stripe
-
+import decimal
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
@@ -172,7 +172,7 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
 
                     # now create the Balance object
                     if create_stripe_charge:
-                        charge_amount = create_stripe_charge['amount']/100
+                        charge_amount = decimal.Decimal(create_stripe_charge['amount']) / 100
 
                         try:
                             customer.balance.amount = charge_amount
@@ -1373,7 +1373,7 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
 
                 # now create the Balance object
                 if create_stripe_charge:
-                    charge_amount = create_stripe_charge['amount']/100
+                    charge_amount = decimal.Decimal(create_stripe_charge['amount']) / 100
 
                     try:
                         customer.balance.amount += charge_amount
@@ -1418,13 +1418,16 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
 
             # catch Stripe card validation errors
             except stripe.error.CardError as ex:
+                print(ex)
                 card_errors = 'We encountered a problem processing your credit card. The error we received was "{}" Please try a different card, or contact your bank.'.format(ex.json_body['error']['message'])
 
             # catch any other type of error
             except Exception as ex:
+                print(ex)
                 card_errors = 'We had trouble processing your credit card. You have not been charged. Please try again, or give us a call at 1-866-626-9879.'
 
         else:
+            print(errors)
             errors = payment_form.errors
 
     else:
@@ -1537,7 +1540,7 @@ def gift_purchase(request, customer_id, template='accounts/gift_purchase.html'):
 
                     # now create the Balance object
                     if create_stripe_charge:
-                        charge_amount = create_stripe_charge['amount']/100
+                        charge_amount = decimal.Decimal(create_stripe_charge['amount']) / 100
 
                         try:
                             customer.balance.amount += charge_amount
