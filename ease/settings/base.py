@@ -18,9 +18,10 @@ DEFAULT_CHARSET = 'utf-8'
 ROOT_URLCONF = 'ease.urls'
 
 # normal working hours: (start, end)
-ARRIVE_BUSINESS_HOURS = (9, 18)
+ARRIVE_WEEKDAY_BUSINESS_HOURS = (6, 18)
+ARRIVE_WEEKEND_BUSINESS_HOURS = (9, 18)
 # fee for rides outside normal working hours, in dollars
-ARRIVE_AFTER_HOURS_FEE = 7.00
+ARRIVE_AFTER_HOURS_FEE = 70.00
 
 # balance below which the user should be alerted
 BALANCE_ALERT_THRESHOLD_1 = 40.00

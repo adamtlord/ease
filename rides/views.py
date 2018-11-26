@@ -127,8 +127,13 @@ def ride_start(request, customer_id, template="rides/start_ride.html"):
             if customer.plan.after_hours_fee:
                 tz = pytz.timezone(settings.TIME_ZONE)
                 concierge_start_time = new_ride.start_date.astimezone(tz)
-                morning_cutoff = concierge_start_time.replace(hour=settings.ARRIVE_BUSINESS_HOURS[0], minute=0, second=0, microsecond=0)
-                evening_cutoff = concierge_start_time.replace(hour=settings.ARRIVE_BUSINESS_HOURS[1], minute=1, second=0, microsecond=0)
+
+                business_hours = settings.ARRIVE_WEEKDAY_BUSINESS_HOURS
+                if concierge_start_time.weekday() in [5, 6]:
+                    business_hours = settings.ARRIVE_WEEKEND_BUSINESS_HOURS
+
+                morning_cutoff = concierge_start_time.replace(hour=business_hours[0], minute=0, second=0, microsecond=0)
+                evening_cutoff = concierge_start_time.replace(hour=business_hours[1], minute=1, second=0, microsecond=0)
                 if not morning_cutoff < concierge_start_time < evening_cutoff:
                     new_ride.arrive_fee = new_ride.arrive_fee or 0
                     new_ride.arrive_fee += customer.plan.after_hours_fee
