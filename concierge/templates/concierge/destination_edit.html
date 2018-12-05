@@ -26,6 +26,10 @@
                 {% render_form_field destination_form.notes %}
                 {% render_form_field destination_form.included_in_plan %}
             </fieldset>
+            <fieldset>
+                <legend>Images</legend>
+                {{ attachment_formset }}
+            </fieldset>
             <div class="form-actions">
                 <input type="submit" class="btn btn-primary" value="Save Destination" />
                 <a href="{% url 'customer_destination_delete' customer.id destination.id %}" class="btn btn-danger pull-right">Delete Destination</a>

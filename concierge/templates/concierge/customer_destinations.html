@@ -3,6 +3,7 @@
 {% load map_tags %}
 {% block title %}Update Customer {{ customer }}{% endblock title %}
 {% block customer_content %}
+{% load thumbnail %}
 
 <table class="table table-striped table-fixed">
     <thead>
@@ -42,7 +43,7 @@
             </td>
         </tr>
     {% endwith %}
-    {% for destination in customer.destinations %}
+    {% for destination in destinations %}
         <tr>
             <td>{{ destination.fullname }}
                 {% if destination.added_by %}
@@ -72,7 +73,15 @@
                 <em class="small">{{ destination.notes|default:'' }}</em>
             </td>
             <td>
-                {% static_map destination %}
+                {% if destination.attachments.all %}
+                    {% thumbnail destination.attachments.first.image "360x270" crop="center" as im %}
+                        <div class="static-map">
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-responsive">
+                        </div>
+                    {% endthumbnail %}
+                {% else %}
+                    {% static_map destination %}
+                {% endif %}
             </td>
             <td>
                 <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm">Edit</a>
