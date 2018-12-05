@@ -4,7 +4,7 @@ from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
 
 from billing.models import GroupMembership
 from concierge.models import Touch
-from rides.models import Destination
+from rides.models import Destination, DestinationAttachment
 from registration.forms import RegistrationForm
 
 CUSTOM_USER_FIELDS = [
@@ -266,6 +266,12 @@ class DestinationForm(forms.ModelForm):
         if commit:
             dest.save()
         return dest
+
+
+class DestinationAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = DestinationAttachment
+        exclude = ('uploaded_data', 'uploaded_by', 'customer')
 
 
 class CreateHomeForm(forms.ModelForm):
