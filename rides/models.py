@@ -8,6 +8,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from sorl.thumbnail import ImageField
+
 from common.models import Location
 from common.utils import geocode_address, get_timezone
 
@@ -269,3 +271,18 @@ class RideConfirmation(models.Model):
     confirmed_date = models.DateTimeField(auto_now_add=True)
     confirmed_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='confirmed_by')
     notes = models.TextField(blank=True, null=True)
+
+
+class DestinationAttachment(models.Model):
+    destination = models.ForeignKey(Destination, related_name='attachments')
+    image = models.ImageField(upload_to="destinations/")
+    uploaded_by = models.ForeignKey('accounts.CustomUser', blank=True, null=True, related_name='uploaded_by')
+    caption = models.TextField(blank=True, null=True)
+    uploaded_date = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def filetype(self):
+        if self.file:
+            return self.file.name[-3:]
+        else:
+            return None
