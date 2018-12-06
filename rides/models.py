@@ -286,3 +286,6 @@ class DestinationAttachment(models.Model):
             return self.file.name[-3:]
         else:
             return None
+
+    class Meta:
+        ordering = ['-uploaded_date']

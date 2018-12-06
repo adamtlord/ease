@@ -396,17 +396,23 @@ def customer_destination_edit(request, customer_id, destination_id, template='co
                                               extra=1)
     if request.method == "POST":
         destination_form = DestinationForm(request.POST, instance=destination)
+        attachment_formset = AttachmentFormSet(request.POST,
+                                               request.FILES,
+                                               instance=destination,
+                                               initial=[{'uploaded_by': request.user}])
 
-        if destination_form.is_valid():
+        if destination_form.is_valid() and attachment_formset.is_valid():
 
             destination_form.save()
+            attachment_formset.save()
 
             messages.add_message(request, messages.SUCCESS, 'Customer {}\'s Destination {} successfully updated!'.format(customer, destination.name.encode('utf-8')))
             return redirect('customer_destinations', customer.id)
 
     else:
         destination_form = DestinationForm(instance=destination)
-        attachment_formset = AttachmentFormSet(instance=destination)
+        attachment_formset = AttachmentFormSet(instance=destination,
+                                               initial=[{'uploaded_by': request.user}])
 
     d = {
         'customer': customer,
@@ -414,7 +420,6 @@ def customer_destination_edit(request, customer_id, destination_id, template='co
         'destination_form': destination_form,
         'attachment_formset': attachment_formset
     }
-
     return render(request, template, d)
 
 

@@ -71,7 +71,7 @@
                     {% for attachment in ride.start.attachments.all %}
                         {% thumbnail attachment.image "134x100" crop="center" as im %}
                             <a href="{{ MEDIA_URL }}{{ attachment.image.name }}" data-caption="{{ attachment.caption }}"
-                                    data-creator="{{ attachment.uploaded_by }}"
+                                    data-creator="{{ attachment.uploaded_by|default:'' }}"
                                     data-uploaded="{{ attachment.uploaded_date|date:'M n, Y' }}">
                                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                             </a>
@@ -146,7 +146,7 @@
                     {% for attachment in ride.destination.attachments.all %}
                         {% thumbnail attachment.image "134x100" crop="center" as im %}
                             <a href="{{ MEDIA_URL }}{{ attachment.image.name }}" data-caption="{{ attachment.caption }}"
-                                    data-creator="{{ attachment.uploaded_by }}"
+                                    data-creator="{{ attachment.uploaded_by|default:'' }}"
                                     data-uploaded="{{ attachment.uploaded_date|date:'M n, Y' }}">
                                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                             </a>
@@ -282,7 +282,8 @@
                 image: {
                     titleSrc: function(item) {
                         var dataset = item.el[0].dataset;
-                        return dataset.caption + '<small>uploaded by ' + dataset.creator + ' on ' + dataset.uploaded + '</small>';
+                        var creator_str = dataset.creator ? ' by ' + dataset.creator : '';
+                        return dataset.caption + '<small>uploaded' + creator_str + ' on ' + dataset.uploaded + '</small>';
                     }
                 },
                 gallery: {
