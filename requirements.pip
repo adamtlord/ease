@@ -15,6 +15,8 @@ django-crispy-forms
 djangorestframework
 django_cron
 
+sorl-thumbnail==12.5.0
+Pillow==5.3.0
 googlemaps==2.4.4
 uber-rides==0.3.1
 stripe==1.42.0

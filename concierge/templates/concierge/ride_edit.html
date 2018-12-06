@@ -2,6 +2,7 @@
 {% load tz %}
 {% load custom_tags %}
 {% load map_tags %}
+{% load thumbnail %}
 {% block title %}{{ customer }}{% endblock title %}
 {% block customer_content %}
 
@@ -65,6 +66,19 @@
                     </div>
                 </div>
             {% endif %}
+            {% if ride.start.attachments.all %}
+                <div class="form-group attachments-container">
+                    {% for attachment in ride.start.attachments.all %}
+                        {% thumbnail attachment.image "134x100" crop="center" as im %}
+                            <a href="{{ MEDIA_URL }}{{ attachment.image.name }}" data-caption="{{ attachment.caption }}"
+                                    data-creator="{{ attachment.uploaded_by|default:'' }}"
+                                    data-uploaded="{{ attachment.uploaded_date|date:'M n, Y' }}">
+                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            </a>
+                        {% endthumbnail %}
+                    {% endfor %}
+                </div>
+            {% endif %}
             {% if ride.start.notes %}
                 <div class="form-group">
                     <label>Starting point notes</label>
@@ -125,6 +139,19 @@
                             </button>
                         </span>
                     </div>
+                </div>
+            {% endif %}
+            {% if ride.destination.attachments.all %}
+                <div class="form-group attachments-container">
+                    {% for attachment in ride.destination.attachments.all %}
+                        {% thumbnail attachment.image "134x100" crop="center" as im %}
+                            <a href="{{ MEDIA_URL }}{{ attachment.image.name }}" data-caption="{{ attachment.caption }}"
+                                    data-creator="{{ attachment.uploaded_by|default:'' }}"
+                                    data-uploaded="{{ attachment.uploaded_date|date:'M n, Y' }}">
+                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                            </a>
+                        {% endthumbnail %}
+                    {% endfor %}
                 </div>
             {% endif %}
             {% if ride.destination.notes %}
@@ -239,8 +266,31 @@
 {% endblock %}
 
 {% block scripts %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/lib/magnific-popup-min.css">
 <script src="{{ STATIC_URL }}js/lib/clipboard.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/bootstrap-datetimepicker.min.js"></script>
 <script src="{{ STATIC_URL }}js/lib/select2.min.js"></script>
+<script src="{{ STATIC_URL }}js/lib/magnific-popup.min.js"></script>
 <script src="{{ STATIC_URL }}js/apps/ride_edit.js"></script>
+<script>
+    $(function(){
+        $('.attachments-container').each(function() {
+            $(this).magnificPopup({
+                delegate: 'a',
+                type: 'image',
+                verticalFit: true,
+                image: {
+                    titleSrc: function(item) {
+                        var dataset = item.el[0].dataset;
+                        var creator_str = dataset.creator ? ' by ' + dataset.creator : '';
+                        return dataset.caption + '<small>uploaded' + creator_str + ' on ' + dataset.uploaded + '</small>';
+                    }
+                },
+                gallery: {
+                    enabled: true,
+                }
+            });
+        });
+    })
+</script>
 {% endblock %}

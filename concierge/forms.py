@@ -2,9 +2,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
 
-from billing.models import GroupMembership
 from concierge.models import Touch
-from rides.models import Destination
+from rides.models import Destination, DestinationAttachment
 from registration.forms import RegistrationForm
 
 CUSTOM_USER_FIELDS = [
@@ -266,6 +265,20 @@ class DestinationForm(forms.ModelForm):
         if commit:
             dest.save()
         return dest
+
+
+class DestinationAttachmentForm(forms.ModelForm):
+
+    class Meta:
+        model = DestinationAttachment
+        exclude = ()
+
+    def __init__(self, *args, **kwargs):
+        super(DestinationAttachmentForm, self).__init__(*args, **kwargs)
+        self.fields['caption'].widget.attrs = {
+            'class': 'form-control',
+            'rows': 3
+        }
 
 
 class CreateHomeForm(forms.ModelForm):

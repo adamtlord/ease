@@ -23,11 +23,12 @@ from billing.models import Plan, GroupMembership, Balance, StripeCustomer
 from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
-from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, ActivityForm, \
+from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, \
+    DestinationAttachmentForm, ActivityForm, \
     AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
 from rides.forms import HomeForm, GroupAddressForm
-from rides.models import Destination, Ride
+from rides.models import Destination, DestinationAttachment, Ride
 
 
 def dashboard(request, template='concierge/dashboard.html'):
@@ -371,10 +372,12 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
 @staff_member_required
 def customer_destinations(request, customer_id, template='concierge/customer_destinations.html'):
 
-    customer = get_object_or_404(Customer.objects.select_related('user').select_related('user__profile'), pk=customer_id)
+    customer = get_object_or_404(Customer.objects.select_related('user', 'user__profile'), pk=customer_id)
+    destinations = customer.destinations.all().prefetch_related('attachments')
 
     d = {
         'customer': customer,
+        'destinations': destinations,
         'destinations_page': True,
     }
 
@@ -386,26 +389,37 @@ def customer_destination_edit(request, customer_id, destination_id, template='co
 
     customer = get_object_or_404(Customer, pk=customer_id)
     destination = get_object_or_404(Destination, pk=destination_id)
-
+    AttachmentFormSet = inlineformset_factory(Destination,
+                                              DestinationAttachment,
+                                              form=DestinationAttachmentForm,
+                                              can_delete=True,
+                                              extra=1)
     if request.method == "POST":
         destination_form = DestinationForm(request.POST, instance=destination)
+        attachment_formset = AttachmentFormSet(request.POST,
+                                               request.FILES,
+                                               instance=destination,
+                                               initial=[{'uploaded_by': request.user}])
 
-        if destination_form.is_valid():
+        if destination_form.is_valid() and attachment_formset.is_valid():
 
             destination_form.save()
+            attachment_formset.save()
 
             messages.add_message(request, messages.SUCCESS, 'Customer {}\'s Destination {} successfully updated!'.format(customer, destination.name.encode('utf-8')))
             return redirect('customer_destinations', customer.id)
 
     else:
         destination_form = DestinationForm(instance=destination)
+        attachment_formset = AttachmentFormSet(instance=destination,
+                                               initial=[{'uploaded_by': request.user}])
 
     d = {
         'customer': customer,
         'destination': destination,
-        'destination_form': destination_form
+        'destination_form': destination_form,
+        'attachment_formset': attachment_formset
     }
-
     return render(request, template, d)
 
 

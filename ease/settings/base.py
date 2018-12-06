@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'django_filters',
     'crispy_forms',
     'django_cron',
+    'sorl.thumbnail',
 
     'accounts',
     'billing',
