@@ -36,7 +36,15 @@
                 {% endif %}
                 <em class="small">{{ destination.notes }}</em></td>
             <td>
-                {% static_map destination %}
+                {% if destination.attachments.all %}
+                    {% thumbnail destination.attachments.first.image "360x270" crop="center" as im %}
+                        <div class="static-map">
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" class="img-responsive">
+                        </div>
+                    {% endthumbnail %}
+                {% else %}
+                    {% static_map destination %}
+                {% endif %}
             </td>
             <td>
                 <a href="{% url 'customer_destination_edit' customer.id destination.id %}" class="btn btn-default btn-sm">Edit</a>
