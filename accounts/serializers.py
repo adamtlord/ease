@@ -47,8 +47,8 @@ class RiderSerializer(serializers.HyperlinkedModelSerializer):
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer()
-    riders = RiderSerializer(many=True)
-    group_membership = GroupMembershipSerializer()
+    # riders = RiderSerializer(many=True)
+    # group_membership = GroupMembershipSerializer()
     home = DestinationSerializer()
     ride_count = serializers.SerializerMethodField()
     plan = PlanSerializer()
@@ -56,12 +56,12 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     serializers.DateTimeField(source='last_ride.start_date')
 
     def get_last_ride(self, obj):
-        if obj.last_ride:
-            return u'{} ago'.format(timesince(obj.last_ride.start_date))
+        if obj.last_ride_at:
+            return u'{} ago'.format(timesince(obj.last_ride_at))
         return ''
 
     def get_ride_count(self, obj):
-        return obj.rides.count()
+        return obj.ride_count
 
     class Meta:
         model = Customer
@@ -70,7 +70,7 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
             'dob',
             'email',
             'full_name',
-            'group_membership',
+            # 'group_membership',
             'home',
             'home_phone',
             'id',
@@ -86,8 +86,8 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
             'residence_instructions',
             'residence_type',
             'ride_count',
-            'riders',
-            'send_updates',
+            # 'riders',
+            # 'send_updates',
             'special_assistance',
             'timezone',
             'user'

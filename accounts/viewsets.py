@@ -20,7 +20,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
             .select_related('user') \
             .select_related('user__profile') \
             .select_related('plan') \
-            .prefetch_related('rides') \
+            .prefetch_related('destination_set', 'rides',) \
             .annotate(ride_count=Count('rides')) \
             .annotate(last_ride_at=Max('rides__start_date'))
 
