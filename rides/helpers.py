@@ -6,11 +6,11 @@ from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
 from rides.models import Ride
 
-LYFT_COLUMNS = (
-    ('Amount'),
-    ('Ride ID'),
-    ('Company')
-)
+LYFT_COLUMNS = [
+    'Amount',
+    'Ride ID',
+    'Company'
+]
 
 COST_COL = LYFT_COLUMNS[0]
 ID_COL = LYFT_COLUMNS[1]
@@ -27,7 +27,8 @@ def handle_lyft_upload(uploaded_file):
         'total': 0
     }
 
-    reader = csv.DictReader(uploaded_file)
+    reader = csv.DictReader(uploaded_file, fieldnames=LYFT_COLUMNS)
+    headers = next(reader)
     for idx, row in enumerate(reader):
         results['total'] += 1
         try:
