@@ -90,6 +90,16 @@ def invoice_customer_rides(account, customers, request):
                                 ride.save()
                                 cost_to_bill = None
                                 customer.balance.amount -= ride.total_cost
+                                customer.balance.save()
+                                send_ride_receipt_email(customer, ride)
+                                new_touch = Touch(
+                                    customer=customer,
+                                    date=timezone.now(),
+                                    type=Touch.BILLING,
+                                    notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
+                                )
+                                new_touch.full_clean()
+                                new_touch.save()
                             else:
                                 # ride cost more than balance
                                 if stripe_id:
@@ -103,16 +113,8 @@ def invoice_customer_rides(account, customers, request):
                                     ride.full_clean()
                                     ride.save()
                                     customer.balance.amount -= ride.total_cost
-                            customer.balance.save()
-                            send_ride_receipt_email(customer, ride)
-                            new_touch = Touch(
-                                customer=customer,
-                                date=timezone.now(),
-                                type=Touch.BILLING,
-                                notes='Balance debit: ${} (Ride payment)'.format(ride.total_cost)
-                            )
-                            new_touch.full_clean()
-                            new_touch.save()
+                                    customer.balance.save()
+
                             if customer.balance.amount < settings.BALANCE_ALERT_THRESHOLD_1 and not customer.subscription_account:
                                 send_balance_alerts(customer, last_action='Ride {}, {}'.format(ride.id, ride.description))
 
