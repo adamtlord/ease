@@ -163,12 +163,16 @@ class GiftForm(forms.ModelForm):
 class CSVUploadForm(forms.Form):
     file_upload = forms.FileField()
 
-    def clean_file_upload(self):
-        file_object = self.cleaned_data['file_upload']
-        if file_object.content_type != 'text/csv':
-            raise ValidationError(
-                'Not a csv file?!',
-                code='invalid')
+    # Excel on Windows may send through csv files. Just skip this check
+    # with a strange content-type
+    # https://github.com/thoughtbot/paperclip/issues/2170
+    # https://stackoverflow.com/questions/7076042/what-mime-type-should-i-use-for-csv
+    # def clean_file_upload(self):
+    #     file_object = self.cleaned_data['file_upload']
+    #     if file_object.content_type != 'text/csv':
+    #         raise ValidationError(
+    #             'Not a csv file?!',
+    #             code='invalid')
 
 
 class GroupMembershipFilterForm(forms.Form):
