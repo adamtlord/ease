@@ -480,7 +480,6 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
         payment_form = AdminPaymentForm(request.POST, instance=customer.subscription_account)
 
         if payment_form.is_valid():
-
             # an existing customer already has a subscription account and is in Stripe
             existing_customer = customer.subscription_account and customer.subscription_account.stripe_id
             if not existing_customer:
@@ -588,13 +587,15 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
 
                 # if the customer wants to enter a different card for rides, go to that page
                 if payment_form.cleaned_data['same_card_for_both'] == '0':
-                    return redirect('payment_ride_account_edit', customer.id)
+                    return redirect('payment_ride_account_edit', customer.id, group_as_customer)
 
                 else:
                     customer.ride_account = customer.subscription_account
                     customer.save()
 
                 # otherwise take us back to their profile in concierge
+                if group_as_customer:
+                    return redirect('group_membership_detail', customer_id)
                 return redirect('customer_detail', customer.id)
 
         # form is invalid
@@ -692,7 +693,8 @@ def payment_ride_account_edit(request, customer_id, group_as_customer=False, tem
                         stripe_customer.save()
 
                         messages.add_message(request, messages.SUCCESS, 'Credit card saved')
-
+                        if group_as_customer:
+                            return redirect('group_membership_detail', customer_id)
                         return redirect('customer_detail', customer.id)
 
                 # catch Stripe card validation errors
@@ -716,6 +718,8 @@ def payment_ride_account_edit(request, customer_id, group_as_customer=False, tem
                     payment_form.save()
                     messages.add_message(request, messages.SUCCESS, 'Billing info updated')
 
+                    if group_as_customer:
+                        return redirect('group_membership_detail', customer_id)
                     return redirect('customer_detail', customer.id)
 
                 # catch Stripe card validation errors
