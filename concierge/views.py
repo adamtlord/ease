@@ -530,13 +530,15 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
                         if not valid_coupon:
                             coupon_code = None
 
-                        # now attach the customer to a plan (including the optional the coupon code)
-                        stripe.Subscription.create(
-                            customer=create_stripe_customer.id,
-                            plan=customer.plan.stripe_id,
-                            idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
-                            coupon=coupon_code
-                        )
+                        # if chosen plan has a monthly cost (ie, not a group membership) create a subsription
+                        # in Stripe and attach the customer to a plan (including the optional the coupon code)
+                        if customer.plan.monthly_cost and customer.plan.stripe_id:
+                            stripe.Subscription.create(
+                                customer=create_stripe_customer.id,
+                                plan=customer.plan.stripe_id,
+                                idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
+                                coupon=coupon_code
+                            )
 
                         # store the customer's stripe id in their record
                         new_stripe_customer.stripe_id = create_stripe_customer.id
@@ -546,8 +548,9 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
                         customer.save()
                         new_stripe_customer.save()
 
-                        # everything was successful, so we can send a receipt to the user
-                        send_subscription_receipt_email(user)
+                        if user:
+                            # everything was successful, so we can send a receipt to the user
+                            send_subscription_receipt_email(user)
 
                         messages.add_message(request, messages.SUCCESS, 'Plan selected, billing info saved')
 
@@ -621,13 +624,19 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
             })
 
         else:
-            payment_form = AdminPaymentForm(initial={
+            initial_dict = {
                 'plan': default_plan.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
                 'same_card_for_both': 1
-            })
+
+            }
+            if user:
+                initial_dict.update({
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'email': user.email,
+
+                })
+            payment_form = AdminPaymentForm(initial=initial_dict)
 
     # context
     d = {
