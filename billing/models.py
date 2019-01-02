@@ -20,6 +20,7 @@ class Plan(AbstractEnumModel):
     BROOKDALE_SP = 7
     STANDARD_2018 = 8
     COMMUNITY_2017 = 9
+    LIFE_2019 = 10
 
     DEFAULT = STANDARD_2018
 
@@ -32,7 +33,8 @@ class Plan(AbstractEnumModel):
         (COPPER, 'Copper (standard)'),
         (TERRACES, 'Terraces'),
         (BROOKDALE_SP, 'Brookdale San Pablo'),
-        (COMMUNITY_2017, 'Community 2017')
+        (COMMUNITY_2017, 'Community 2017'),
+        (LIFE_2019, 'Life 2019')
     )
 
     active = models.BooleanField(default=True)
@@ -62,7 +64,7 @@ class Plan(AbstractEnumModel):
         return self.included_rides_per_month > 0
 
     def __unicode__(self):
-        return self.name
+        return self.display_name
 
 
 class StripeCustomer(models.Model):
