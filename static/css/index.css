@@ -11375,6 +11375,9 @@ a.ride-preferences ul > li > i:focus {
 .label.plan-label.copper {
   background: #ad6f69;
 }
+.label.plan-label.life_2019 {
+  background: #f6a704;
+}
 .label.plan-label.none {
   background: #CD3C17;
 }
