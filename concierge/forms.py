@@ -227,7 +227,7 @@ class CustomerForm(forms.ModelForm):
         required=False,
         label="Should we send the Primary Rider ride updates via text message?"
     )
-    plan = forms.ModelChoiceField(queryset=Plan.objects.filter(active=True))
+    plan = forms.ModelChoiceField(queryset=Plan.objects.filter(active=True), empty_label=None)
 
     class Meta:
         model = Customer
