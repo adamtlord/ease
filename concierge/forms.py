@@ -1,10 +1,12 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
 
+from accounts.models import CustomUser, Customer, LovedOne, Rider, UserProfile
+from billing.models import Plan
 from concierge.models import Touch
 from rides.models import Destination, DestinationAttachment
 from registration.forms import RegistrationForm
+
 
 CUSTOM_USER_FIELDS = [
     'email',
@@ -225,6 +227,7 @@ class CustomerForm(forms.ModelForm):
         required=False,
         label="Should we send the Primary Rider ride updates via text message?"
     )
+    plan = forms.ModelChoiceField(queryset=Plan.objects.filter(active=True))
 
     class Meta:
         model = Customer
