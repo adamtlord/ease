@@ -26,13 +26,13 @@ class Plan(AbstractEnumModel):
 
     CHOICES = (
         (STANDARD_2018, 'Standard (2018)'),
-        (BRONZE, 'Bronze Membership'),
-        (SILVER, 'Silver Membership'),
-        (GOLD, 'Gold Membership'),
-        (INTRO_GIFT, 'Unlimited Gift Certificate'),
-        (COPPER, 'Copper (standard)'),
-        (TERRACES, 'Terraces'),
-        (BROOKDALE_SP, 'Brookdale San Pablo'),
+        # (BRONZE, 'Bronze Membership'),
+        # (SILVER, 'Silver Membership'),
+        # (GOLD, 'Gold Membership'),
+        # (INTRO_GIFT, 'Unlimited Gift Certificate'),
+        # (COPPER, 'Copper (standard)'),
+        # (TERRACES, 'Terraces'),
+        # (BROOKDALE_SP, 'Brookdale San Pablo'),
         (COMMUNITY_2017, 'Community 2017'),
         (LIFE_2019, 'Life 2019')
     )
