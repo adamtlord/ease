@@ -341,7 +341,6 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
                 return redirect('customer_detail', customer.id)
         else:
             errors = [customer_form.errors, home_form.errors, account_holder_form.errors, rider_formset.errors]
-            print errors
 
     else:
         customer_form = CustomerForm(instance=customer, prefix='cust')
@@ -475,6 +474,7 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
     user = customer.user
     errors = {}
     card_errors = None
+    customer_subscription = None
 
     if request.method == 'POST':
         payment_form = AdminPaymentForm(request.POST, instance=customer.subscription_account)
@@ -533,7 +533,7 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
                         # if chosen plan has a monthly cost (ie, not a group membership) create a subsription
                         # in Stripe and attach the customer to a plan (including the optional the coupon code)
                         if customer.plan.monthly_cost and customer.plan.stripe_id:
-                            stripe.Subscription.create(
+                            customer_subscription = stripe.Subscription.create(
                                 customer=create_stripe_customer.id,
                                 plan=customer.plan.stripe_id,
                                 idempotency_key='{}{}'.format(customer.id, datetime.datetime.now().isoformat()),
@@ -548,7 +548,7 @@ def payment_subscription_account_edit(request, customer_id, group_as_customer=Fa
                         customer.save()
                         new_stripe_customer.save()
 
-                        if user:
+                        if user and customer_subscription:
                             # everything was successful, so we can send a receipt to the user
                             send_subscription_receipt_email(user)
 
