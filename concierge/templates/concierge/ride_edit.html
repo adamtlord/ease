@@ -41,14 +41,18 @@
             {% render_form_field form.start %}
             <div class="form-group">
                 <label>Start address</label>
-                <div class="input-group">
+                {% if ride.start.address_for_gps %}
                     <input id="starting_point" readonly class="form-control monospace" value="{{ ride.start.fulladdress }}">
-                    <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
-                        <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point">
-                            copy
-                        </button>
-                    </span>
-                </div>
+                {% else %}
+                    <div class="input-group">
+                        <input id="starting_point" readonly class="form-control monospace" value="{{ ride.start.fulladdress }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#starting_point">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                {% endif %}
                 {% if form.start.errors %}
                     {{ form.start.errors }}
                 {% endif %}
@@ -116,14 +120,18 @@
             {% render_form_field form.destination %}
             <div class="form-group">
                 <label>Destination address</label>
-                <div class="input-group">
+                {% if ride.destination.address_for_gps %}
                     <input id="destination" class="form-control monospace" value="{{ ride.destination.fulladdress }}">
-                    <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
-                        <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination">
-                            copy
-                        </button>
-                    </span>
-                </div>
+                {% else %}
+                    <div class="input-group">
+                        <input id="destination" class="form-control monospace" value="{{ ride.destination.fulladdress }}">
+                        <span class="input-group-btn" data-toggle="tooltip" title="Copied!">
+                            <button type="button" class="btn btn-default copybtn" data-clipboard-target="#destination">
+                                copy
+                            </button>
+                        </span>
+                    </div>
+                {% endif %}
                 {% if form.destination.errors %}
                     {{ form.destination.errors }}
                 {% endif %}
