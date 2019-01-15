@@ -1290,10 +1290,11 @@ def group_membership_edit(request, group_id, template="concierge/group_membershi
 @staff_member_required
 def group_membership_add_customer(request, group_id, template="concierge/group_membership_customer_create.html"):
     group = get_object_or_404(GroupMembership, pk=group_id)
+    default_plan = group.plan or Plan.COMMUNITY_2017
     errors = []
     error_count = []
     if request.method == 'GET':
-        customer_form = CustomerForm()
+        customer_form = CustomerForm(initial={'plan': default_plan})
     else:
         customer_form = CustomerForm(request.POST)
 

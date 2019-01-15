@@ -4,6 +4,7 @@
 <h1>{% block pagetitle %}Add Customer to {{ group}}{% endblock %}</h1>
 {% block customer_list_content %}
 <form action="" class="form" method="POST" novalidate>{% csrf_token %}
+    {{ customer_form.plan.as_hidden }}
     {% if errors %}
         <p class="alert alert-danger">
             Please correct the error(s) below.
