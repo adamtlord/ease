@@ -5,7 +5,7 @@ import datetime
 import decimal
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
+from django.utils import timezone, formats
 from django.utils.functional import cached_property
 
 from sorl.thumbnail import ImageField
@@ -194,7 +194,7 @@ class Ride(models.Model):
             startstreet = self.start.street1
         if self.destination.street1:
             destinationstreet = self.destination.street1
-        return '{} to {}'.format(startstreet, destinationstreet)
+        return '{}, {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
 
     @cached_property
     def total_fees_estimate(self):
