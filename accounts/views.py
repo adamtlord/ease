@@ -213,7 +213,9 @@ def register_add_funds(request, template='accounts/register_add_funds.html'):
                         if not hasattr(customer, 'subscription'):
                             create_customer_subscription(customer)
 
-                        # Customer has a balance, consider active
+                        # Customer has a balance, consider active, make sure plan is selected
+                        if not customer.plan:
+                            customer.plan = Plan.objects.get(pk=Plan.DEFAULT)
                         customer.is_active = True
                         customer.save()
 
@@ -1394,7 +1396,9 @@ def profile_add_funds(request, template='accounts/profile_add_funds.html'):
                     if not hasattr(customer, 'subscription'):
                         create_customer_subscription(customer)
 
-                    # make sure customer is marked active
+                    # make sure customer is marked active and has a plan
+                    if not customer.plan:
+                        customer.plan = Plan.objects.get(pk=Plan.DEFAULT)
                     customer.is_active = True
                     customer.save()
 
