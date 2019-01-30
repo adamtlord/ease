@@ -40,9 +40,9 @@ def register_self(request, template='accounts/register.html'):
 
     if request.method == 'GET':
 
-        plan_selection = request.GET.get('plan', None)
-        if plan_selection:
-            request.session['plan'] = plan_selection
+        # plan_selection = request.GET.get('plan', None)
+        # if plan_selection:
+        #     request.session['plan'] = plan_selection
 
         gift_flow = request.GET.get('gift', None)
         if gift_flow:
@@ -324,7 +324,7 @@ def register_self_payment(request, template='accounts/register_payment.html'):
                     new_stripe_customer = payment_form.save()
                     customer.subscription_account = customer.ride_account = new_stripe_customer
                     # set our customer's plan
-                    customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+                    customer.plan = Plan.objects.get(pk=Plan.DEFAULT)
                     selected_plan = customer.plan
                     # if chosen plan has an upfront cost, create an invoice line-item
                     if customer.plan.signup_cost:
@@ -622,7 +622,7 @@ def register_lovedone_payment(request, gift=False, template='accounts/register_p
                     else:
                         customer.subscription_account = new_stripe_customer
 
-                    customer.plan = Plan.objects.get(pk=payment_form.cleaned_data['plan'])
+                    customer.plan = Plan.objects.get(pk=Plan.DEFAULT)
 
                     selected_plan = customer.plan
 
