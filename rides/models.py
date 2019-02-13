@@ -8,8 +8,6 @@ from django.db import models
 from django.utils import timezone, formats
 from django.utils.functional import cached_property
 
-from sorl.thumbnail import ImageField
-
 from common.models import Location
 from common.utils import geocode_address, get_timezone
 
@@ -194,7 +192,7 @@ class Ride(models.Model):
             startstreet = self.start.street1
         if self.destination.street1:
             destinationstreet = self.destination.street1
-        return '{}, {} to {}'.format(formats.date_format(timezone(self.start_date), "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
+        return '{}, {} to {}'.format(formats.date_format(timezone.localtime(self.start_date), "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
 
     @cached_property
     def total_fees_estimate(self):
