@@ -194,7 +194,7 @@ class Ride(models.Model):
             startstreet = self.start.street1
         if self.destination.street1:
             destinationstreet = self.destination.street1
-        return '{}, {} to {}'.format(formats.date_format(self.start_date, "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
+        return '{}, {} to {}'.format(formats.date_format(timezone(self.start_date), "SHORT_DATETIME_FORMAT"), startstreet, destinationstreet)
 
     @cached_property
     def total_fees_estimate(self):
