@@ -11,6 +11,7 @@ from django.utils import timezone, formats
 from django.urls import reverse
 
 from accounts.models import Customer
+from accounts.helpers import convert_date
 from common.utils import get_distance
 from concierge.forms import DestinationForm
 from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm, \
@@ -361,8 +362,8 @@ def ride_report(request, template="rides/ride_report.html"):
         except:
             tz = settings.TIME_ZONE
 
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
+        start_date = pytz.utc.localize(convert_date(request.POST.get('start_date')))
+        end_date = pytz.utc.localize(convert_date(request.POST.get('end_date')))
 
         rides = Ride.objects.filter(start_date__range=(start_date, end_date)) \
             .filter(complete=True) \

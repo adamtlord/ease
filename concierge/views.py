@@ -18,7 +18,8 @@ from django.views.decorators.http import require_POST
 from django.template.defaultfilters import slugify
 
 from accounts.forms import CustomUserForm, CustomUserProfileForm, GroupRegistrationForm
-from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, create_customer_subscription
+from accounts.helpers import send_subscription_receipt_email, create_customers_from_upload, \
+    create_customer_subscription, convert_date
 from accounts.models import Customer, Rider
 from billing.models import Plan, GroupMembership, Balance, StripeCustomer
 from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
@@ -1421,8 +1422,8 @@ def gift_credit_report(request, template="concierge/gift_credit_report.html"):
     if request.method == 'POST':
         search_form = GiftCreditForm(request.POST)
 
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
+        start_date = pytz.utc.localize(convert_date(request.POST.get('start_date')))
+        end_date = pytz.utc.localize(convert_date(request.POST.get('end_date')))
 
         customers_with_balances = Balance.objects.all().values_list('customer', flat=True)
         customer_balance_touches = Touch.objects.filter(customer__in=customers_with_balances)\
