@@ -1,9 +1,10 @@
-from django.db.models import Count, Max, Q
+from django.db.models import Count, Max, Q, Prefetch
 
 from rest_framework import viewsets
 from rest_framework.response import Response
 from accounts.models import CustomUser, Customer
 from accounts.serializers import UserSerializer, CustomerSerializer
+from rides.models import Destination
 from common.paginators import DataTablesPagination
 
 
@@ -16,11 +17,20 @@ class CustomerViewSet(viewsets.ModelViewSet):
     # filter_class = CustomerFilter
 
     def base_queryset(self):
+
         return Customer.objects.all() \
             .select_related('user') \
             .select_related('user__profile') \
             .select_related('plan') \
+            .select_related('group_membership') \
+            .prefetch_related(
+                Prefetch(
+                    'destination_set',
+                    Destination.objects.filter(home=True),
+                    to_attr='home_destinations'
+                )) \
             .prefetch_related('rides') \
+            .prefetch_related('riders') \
             .annotate(ride_count=Count('rides')) \
             .annotate(last_ride_at=Max('rides__start_date'))
 

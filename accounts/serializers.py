@@ -49,15 +49,21 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer()
     riders = RiderSerializer(many=True)
     group_membership = GroupMembershipSerializer()
-    home = DestinationSerializer()
+    home = serializers.SerializerMethodField()
     ride_count = serializers.SerializerMethodField()
     plan = PlanSerializer()
     last_ride = serializers.SerializerMethodField()
     serializers.DateTimeField(source='last_ride.start_date')
 
     def get_last_ride(self, obj):
-        if obj.last_ride:
-            return u'{} ago'.format(timesince(obj.last_ride.start_date))
+        if obj.last_ride_at:
+            return u'{} ago'.format(timesince(obj.last_ride_at))
+        return ''
+
+    def get_home(self, obj):
+        if len(obj.home_destinations):
+            home = obj.home_destinations[0]
+            return '{}, {}'.format(home.city, home.state)
         return ''
 
     def get_ride_count(self, obj):
