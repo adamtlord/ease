@@ -1,0 +1,36 @@
+{% extends 'rides/ride_base.html' %}
+
+{% block header_includes %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}js/lib/moment.min.js"></script>
+    <script src="{{ STATIC_URL }}js/lib/daterangepicker.js"></script>
+{% endblock %}
+
+{% block title %}Ride Report{% endblock %}
+{% block page_title %}Ride Report{% endblock %}
+
+{% block rides_content %}
+<div class="well well-sm">
+    <form action="" method="POST">{% csrf_token %}
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label>Date Range</label>
+                    <input type="text" id="range-picker" class="form-control" autocomplete="off" />
+                    {{ search_form.start_date.as_hidden }}
+                    {{ search_form.end_date.as_hidden }}
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-primary btn-block row-form-submit">Export</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<pre>{{ rides }}</pre>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ STATIC_URL }}js/apps/ride_report.min.js"></script>
+{% endblock %}

@@ -24,8 +24,7 @@ from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
 from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, \
-    DestinationAttachmentForm, ActivityForm, \
-    AccountHolderForm, CustomerUploadForm
+    DestinationAttachmentForm, ActivityForm, AccountHolderForm, CustomerUploadForm
 from concierge.models import Touch
 from rides.forms import HomeForm, GroupAddressForm
 from rides.models import Destination, DestinationAttachment, Ride

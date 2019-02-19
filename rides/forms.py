@@ -261,3 +261,9 @@ class AddRiderForm(forms.ModelForm):
         for field in RIDER_FIELDS:
             self.fields[field].widget.attrs['class'] = 'form-control'
         self.fields['notes'].widget.attrs['rows'] = 2
+
+
+class RideExportForm(forms.Form):
+    start_date = forms.DateField(widget=forms.DateInput(), required=False)
+    end_date = forms.DateField(widget=forms.DateInput(), required=False)
+

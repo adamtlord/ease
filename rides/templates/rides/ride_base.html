@@ -13,6 +13,7 @@
                     <li role="presentation" class="{% if upcoming_page %}active{% endif %}"><a href="{% url 'upcoming_rides' %}">Upcoming Rides</a></li>
                     <li role="presentation" class="{% if active_page %}active{% endif %}"><a href="{% url 'active_rides' %}">Active Rides <span class="badge">{{ active_count }}</span></a></li>
                     <li role="presentation" class="{% if history_page %}active{% endif %}"><a href="{% url 'rides_history' %}">History</a></li>
+                    <li role="presentation" class="{% if export_page %}active{% endif %}"><a href="{% url 'ride_report' %}">Export Rides</a></li>
                 </ul>
             </div>
         </div>

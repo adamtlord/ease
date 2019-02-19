@@ -1,18 +1,20 @@
 import pytz
+import csv
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone, formats
 from django.urls import reverse
 
 from accounts.models import Customer
-from billing.models import Plan
 from common.utils import get_distance
 from concierge.forms import DestinationForm
-from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm, ConfirmRideForm
+from rides.forms import StartRideForm, RideForm, CancelRideForm, AddRiderForm, \
+    ConfirmRideForm, RideExportForm
 from rides.models import Ride
 
 
@@ -345,6 +347,77 @@ def ride_confirm_modal(request, ride_id, template="rides/fragments/ride_confirm_
     d = {
         'ride': ride,
         'form': form
+    }
+
+    return render(request, template, d)
+
+
+def ride_report(request, template="rides/ride_report.html"):
+    rides = []
+    if request.method == 'POST':
+        search_form = RideExportForm(request.POST)
+        try:
+            tz = pytz.timezone(request.user.profile.timezone)
+        except:
+            tz = settings.TIME_ZONE
+
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        rides = Ride.objects.filter(start_date__range=(start_date, end_date)) \
+            .filter(complete=True) \
+            .select_related('customer', 'invoice')
+
+        response = HttpResponse(content_type='text/csv')
+        filename = 'Ride Report {} - {}.csv'.format(start_date, end_date)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Date/time',
+            'Ride ID',
+            'Company',
+            'Cost',
+            'Dispatch fee',
+            'Additional fees',
+            'Cost to customer',
+            'Customer name',
+            'Notes',
+            'Invoice ID',
+            'Cancelled'
+        ])
+
+        for ride in rides:
+            notes = ''
+            invoice = ''
+
+            if ride.notes:
+                notes = ride.notes.encode('utf-8')
+            if ride.invoice:
+                invoice = ride.invoice.stripe_id
+            writer.writerow([
+                            formats.date_format(ride.start_date, 'SHORT_DATETIME_FORMAT'),
+                            ride.id,
+                            ride.company,
+                            '{0:.2f}'.format(ride.cost if ride.cost else 0),
+                            '{0:.2f}'.format(ride.arrive_fee if ride.arrive_fee else 0),
+                            '{0:.2f}'.format(ride.fees if ride.fees else 0),
+                            '{0:.2f}'.format(ride.total_cost if ride.total_cost else 0),
+                            ride.customer,
+                            notes,
+                            invoice,
+                            ride.cancelled
+                            ])
+
+        return response
+
+    else:
+        search_form = RideExportForm()
+
+    d = {
+        'export_page': True,
+        'search_form': search_form,
+        'rides': len(rides)
     }
 
     return render(request, template, d)
