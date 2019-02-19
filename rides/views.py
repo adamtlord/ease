@@ -353,7 +353,7 @@ def ride_confirm_modal(request, ride_id, template="rides/fragments/ride_confirm_
 
 
 def ride_report(request, template="rides/ride_report.html"):
-    rides = []
+
     if request.method == 'POST':
         search_form = RideExportForm(request.POST)
         try:
@@ -396,7 +396,7 @@ def ride_report(request, template="rides/ride_report.html"):
             if ride.invoice:
                 invoice = ride.invoice.stripe_id
             writer.writerow([
-                            formats.date_format(ride.start_date, 'SHORT_DATETIME_FORMAT'),
+                            formats.date_format(ride.start_date.astimezone(tz), 'SHORT_DATETIME_FORMAT'),
                             ride.id,
                             ride.company,
                             '{0:.2f}'.format(ride.cost if ride.cost else 0),
@@ -416,8 +416,7 @@ def ride_report(request, template="rides/ride_report.html"):
 
     d = {
         'export_page': True,
-        'search_form': search_form,
-        'rides': len(rides)
+        'search_form': search_form
     }
 
     return render(request, template, d)
