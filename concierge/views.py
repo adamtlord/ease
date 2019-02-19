@@ -7,6 +7,7 @@ import decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Prefetch
 from django.forms import inlineformset_factory
@@ -24,7 +25,7 @@ from billing.forms import StripeCustomerForm, AdminPaymentForm, GiftForm
 from billing.utils import get_stripe_subscription, get_customer_stripe_accounts
 from common.utils import soon
 from concierge.forms import CustomUserRegistrationForm, RiderForm, CustomerForm, DestinationForm, \
-    DestinationAttachmentForm, ActivityForm, AccountHolderForm, CustomerUploadForm
+    DestinationAttachmentForm, ActivityForm, AccountHolderForm, CustomerUploadForm, GiftCreditForm
 from concierge.models import Touch
 from rides.forms import HomeForm, GroupAddressForm
 from rides.models import Destination, DestinationAttachment, Ride
@@ -1415,6 +1416,56 @@ def group_membership_add_customer(request, group_id, template="concierge/group_m
     return render(request, template, d)
 
 
+def gift_credit_report(request, template="concierge/gift_credit_report.html"):
+
+    if request.method == 'POST':
+        search_form = GiftCreditForm(request.POST)
+
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        customers_with_balances = Balance.objects.all().values_list('customer', flat=True)
+        customer_balance_touches = Touch.objects.filter(customer__in=customers_with_balances)\
+            .filter(type__in=Touch.CREDIT_RELATED) \
+            .filter(date__range=(start_date, end_date)) \
+            .exclude(notes__startswith='invoice.') \
+            .select_related('customer', 'customer__balance')
+
+        response = HttpResponse(content_type='text/csv')
+        filename = 'Gift Credit Report {} - {}.csv'.format(start_date, end_date)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Customer name',
+            'Activity',
+            'Date/time',
+            'Amount',
+            'Current gift credit balance',
+        ])
+
+        for touch in customer_balance_touches:
+
+            writer.writerow([
+                            touch.customer,
+                            touch.type,
+                            formats.date_format(touch.date, 'SHORT_DATETIME_FORMAT'),
+                            touch.notes,
+                            '{0:.2f}'.format(touch.customer.balance.amount or 0),
+                            ])
+
+        return response
+
+    else:
+        search_form = GiftCreditForm()
+
+    d = {
+        'export_page': True,
+        'search_form': search_form
+    }
+
+    return render(request, template, d)
+
 # AJAX VIEWS
 def customer_search_data(request):
     customers = Customer.active.select_related('user').select_related('user__profile').all()
@@ -1541,3 +1592,4 @@ def get_zip(customer):
     if len(customer.home) and customer.home[0].zip_code:
         return customer.home[0].zip_code
     return ''
+

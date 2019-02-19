@@ -21,7 +21,14 @@
                         <li role="presentation" class="{% if inactive_page %}active{% endif %}"><a href="{% url 'customer_list_inactive' %}">Inactive <span class="badge">{{ inactive_count }}</span></a></li>
                         <li role="presentation" class="{% if group_membership_page %}active{% endif %}"><a href="{% url 'group_membership_list' %}">Groups</a></li>
                         <li role="presentation" class="{% if register_page %}active{% endif %}"><a href="{% url 'customer_create' %}">Register a New Customer</a></li>
-                        <li role="presentation"><a href="{% url 'customer_data_export' %}">Export Data</a></li>
+                        <li role="presentation" class="dropdown {% if update_page %}active{% endif %}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports <span class="caret"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a href="{% url 'customer_data_export' %}">Customer Export</a></li>
+                                <li><a href="{% url 'ride_report' %}">Ride Report</a></li>
+                                <li><a href="{% url 'gift_credit_report' %}">Gift Credit Report</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>

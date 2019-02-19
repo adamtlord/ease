@@ -25,6 +25,8 @@ class Touch(models.Model):
     GIFT = 'GIFT'
     OTHER = 'OTHER'
 
+    CREDIT_RELATED = [BILLING, FUNDS, GIFT]
+
     TYPE_CHOICES = (
         (INTRO, 'Intro Call'),
         (PHONE, 'Phone Call'),

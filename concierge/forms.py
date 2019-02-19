@@ -403,3 +403,8 @@ class CustomerUploadForm(forms.Form):
                 'Not a csv file?!',
                 code='invalid')
 
+
+class GiftCreditForm(forms.Form):
+    start_date = forms.DateField(widget=forms.DateInput(), required=False)
+    end_date = forms.DateField(widget=forms.DateInput(), required=False)
+
