@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.forms import inlineformset_factory
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1053,7 +1053,20 @@ def customer_upload(request, template="concierge/customer_upload.html"):
 def customer_data_export(request, template="concierge/customer_export.html"):
 
     if request.method == 'POST':
-        customers = Customer.objects.all()
+        customers = Customer.objects.all() \
+            .select_related('user') \
+            .select_related('user__profile') \
+            .select_related('plan') \
+            .select_related('group_membership') \
+            .prefetch_related(
+                Prefetch(
+                    'destination_set',
+                    Destination.objects.filter(home=True),
+                    to_attr='home'
+                )) \
+            .prefetch_related('rides') \
+            .prefetch_related('riders')
+
         filters = request.POST
         filename = 'All'
 
@@ -1202,6 +1215,66 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     customer.first_name,
                                     customer.last_name
                                     ])
+
+        if filters['type'] == 'mc-users':
+            filename += ' End Users (Mailchimp)'
+            writer.writerow([
+                'Customer email',
+                'Customer first name',
+                'Customer last name',
+                'Account status',
+                'Plan type',
+                'Date registered',
+                'City',
+                'State',
+                'Zip'
+            ])
+
+            for customer in customers:
+                writer.writerow([
+                                customer.email,
+                                customer.first_name,
+                                customer.last_name,
+                                customer.status,
+                                customer.plan,
+                                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                                get_city(customer),
+                                get_state(customer),
+                                get_zip(customer)
+                                ])
+
+        if filters['type'] == 'mc-accounts':
+            filename += ' Account Holders (Mailchimp)'
+            writer.writerow([
+                'Customer email',
+                'Customer first name',
+                'Customer last name',
+                'Account status',
+                'Plan type',
+                'Date registered',
+                'Account manager first name',
+                'Account manager last name',
+                'Account manager email',
+                'City',
+                'State',
+                'Zip'
+            ])
+
+            for customer in customers:
+                writer.writerow([
+                                customer.email,
+                                customer.first_name,
+                                customer.last_name,
+                                customer.status,
+                                customer.plan,
+                                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                                customer.user.first_name,
+                                customer.user.last_name,
+                                user_email(customer),
+                                get_city(customer),
+                                get_state(customer),
+                                get_zip(customer)
+                                ])
 
         response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
         return response
@@ -1436,36 +1509,36 @@ def user_email(customer):
 
 
 def get_street1(customer):
-    if customer.home and customer.home.street1:
-        return customer.home.street1
+    if len(customer.home) and customer.home[0].street1:
+        return customer.home[0].street1
     return ''
 
 
 def get_street2(customer):
-    if customer.home and customer.home.street2:
-        return customer.home.street2
+    if len(customer.home) and customer.home[0].street2:
+        return customer.home[0].street2
     return ''
 
 
 def get_unit(customer):
-    if customer.home and customer.home.unit:
-        return customer.home.unit
+    if len(customer.home) and customer.home[0].unit:
+        return customer.home[0].unit
     return ''
 
 
 def get_city(customer):
-    if customer.home and customer.home.city:
-        return customer.home.city
+    if len(customer.home) and customer.home[0].city:
+        return customer.home[0].city
     return ''
 
 
 def get_state(customer):
-    if customer.home and customer.home.state:
-        return customer.home.state
+    if len(customer.home) and customer.home[0].state:
+        return customer.home[0].state
     return ''
 
 
 def get_zip(customer):
-    if customer.home and customer.home.zip_code:
-        return customer.home.zip_code
+    if len(customer.home) and customer.home[0].zip_code:
+        return customer.home[0].zip_code
     return ''
