@@ -370,7 +370,7 @@ def ride_report(request, template="rides/ride_report.html"):
             .select_related('customer', 'invoice')
 
         response = HttpResponse(content_type='text/csv')
-        filename = 'Ride Report {} - {}.csv'.format(start_date, end_date)
+        filename = 'Ride Report {} - {}.csv'.format(request.POST.get('start_date'), request.POST.get('end'))
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
 
         writer = csv.writer(response)

@@ -1433,7 +1433,7 @@ def gift_credit_report(request, template="concierge/gift_credit_report.html"):
             .select_related('customer', 'customer__balance')
 
         response = HttpResponse(content_type='text/csv')
-        filename = 'Gift Credit Report {} - {}.csv'.format(start_date, end_date)
+        filename = 'Gift Credit Report {} - {}.csv'.format(request.POST.get('start_date'), request.POST.get('end_date'))
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
 
         writer = csv.writer(response)
