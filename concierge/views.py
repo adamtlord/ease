@@ -1088,6 +1088,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Customer Email',
                 'Customer First Name',
                 'Customer Last Name',
+                'Customer DOB',
                 'Account Status',
                 'Plan Type',
                 'Date Registered',
@@ -1112,6 +1113,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 customer.email,
                                 customer.first_name,
                                 customer.last_name,
+                                get_dob(customer),
                                 customer.status,
                                 customer.plan,
                                 formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
@@ -1137,6 +1139,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Customer First',
                 'Customer Last',
                 'Customer Email',
+                'Customer DOB',
                 'User Email',
                 'Home Phone',
                 'Mobile Phone',
@@ -1154,6 +1157,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 customer.first_name,
                                 customer.last_name,
                                 customer.email,
+                                get_dob(customer),
                                 user_email(customer),
                                 customer.home_phone,
                                 customer.mobile_phone,
@@ -1594,3 +1598,10 @@ def get_zip(customer):
         return customer.home[0].zip_code
     return ''
 
+def get_dob(customer):
+    if customer.dob:
+        try:
+            return customer.dob.strftime('%m/%d/%Y')
+        except:
+            pass
+    return ''
