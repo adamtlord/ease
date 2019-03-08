@@ -12,7 +12,8 @@ ALLOWED_HOSTS = [
     '2605:de00:1:1:4a:14:0:44',
     '[2605:de00:1:1:4a:14:0:44]',
     'arriverides.com',
-    'www.arriverides.com'
+    'www.arriverides.com',
+    'www.app.arriverides.com'
 ]
 
 SSH_HOSTS = 'app.arriverides.com'
