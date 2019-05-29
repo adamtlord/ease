@@ -344,7 +344,10 @@ def customer_update(request, customer_id, template='concierge/customer_update.ht
             errors = [customer_form.errors, home_form.errors, account_holder_form.errors, rider_formset.errors]
 
     else:
-        customer_form = CustomerForm(instance=customer, prefix='cust')
+        customer_form = CustomerForm(instance=customer,
+            prefix='cust',
+            initial={'plan': customer.plan}
+        )
         account_holder_form = AccountHolderForm(instance=customer.user,
             prefix='user',
             initial={
