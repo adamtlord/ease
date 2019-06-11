@@ -1481,17 +1481,17 @@ def customer_search_data(request):
     for customer in customers:
 
         customer_obj = {
-            'name': customer.full_name.encode("utf-8"),
+            'name': customer.full_name,
             'home_phone': customer.home_phone,
             'mobile_phone': customer.mobile_phone,
             'id': customer.id,
-            'display': '{}'.format(customer.full_name.encode("utf-8")),
+            'display': '{}'.format(customer.full_name),
             'url': reverse('customer_detail', args=[customer.id])
         }
 
         tokens = [
-            customer.first_name.encode("utf-8"),
-            customer.last_name.encode("utf-8")
+            customer.first_name,
+            customer.last_name
         ]
 
         if customer.group_membership:
@@ -1529,7 +1529,7 @@ def customer_search_data(request):
                     tokens.append(customer.mobile_phone)
                     tokens.extend(customer.home_phone.split('-'))
                     tokens.append(customer.home_phone.replace('-', ''))
-                riders.append(rider.get_full_name())
+                riders.append(rider.get_full_name().encode("utf-8"))
             if len(riders):
                 customer_obj['display'] += ' | Riders: {}'.format(', '.join(riders))
 
