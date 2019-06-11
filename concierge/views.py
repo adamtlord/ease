@@ -1490,8 +1490,8 @@ def customer_search_data(request):
         }
 
         tokens = [
-            customer.first_name,
-            customer.last_name
+            customer.first_name.encode("utf-8"),
+            customer.last_name.encode("utf-8")
         ]
 
         if customer.group_membership:
@@ -1510,8 +1510,8 @@ def customer_search_data(request):
             customer_obj['display'] += ' {} (M)'.format(customer.mobile_phone)
 
         if customer.user.profile.on_behalf:
-            tokens.append(customer.user.first_name)
-            tokens.append(customer.user.last_name)
+            tokens.append(customer.user.first_name.encode("utf-8"))
+            tokens.append(customer.user.last_name.encode("utf-8"))
             customer_obj['display'] += ' | Account: {}'.format(customer.user.get_full_name())
 
             if customer.user.profile.phone:
@@ -1523,8 +1523,8 @@ def customer_search_data(request):
         if customer.riders:
             riders = []
             for rider in customer.riders.all():
-                tokens.append(rider.first_name)
-                tokens.append(rider.last_name)
+                tokens.append(rider.first_name.encode("utf-8"))
+                tokens.append(rider.last_name.encode("utf-8"))
                 if rider.mobile_phone:
                     tokens.append(customer.mobile_phone)
                     tokens.extend(customer.home_phone.split('-'))
