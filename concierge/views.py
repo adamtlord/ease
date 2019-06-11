@@ -1481,11 +1481,11 @@ def customer_search_data(request):
     for customer in customers:
 
         customer_obj = {
-            'name': customer.full_name,
+            'name': customer.full_name.encode("utf-8"),
             'home_phone': customer.home_phone,
             'mobile_phone': customer.mobile_phone,
             'id': customer.id,
-            'display': '{}'.format(customer.full_name),
+            'display': '{}'.format(customer.full_name.encode("utf-8")),
             'url': reverse('customer_detail', args=[customer.id])
         }
 
