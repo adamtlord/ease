@@ -6,11 +6,11 @@
     <div class="page-header customer-list">
         <h1>Export Records</h1>
     </div>
-    {% if errors %}
-        {% for error in errors %}
-            {{ error }}
+    {% for error in errors %}
+        {% for e, customer in error %}
+            {{ e }} - Customer {{ customer.id }} {{ customer }}
         {% endfor %}
-    {% endif %}
+    {% endfor %}
     <div class="row">
         <div class="col-sm-6">
             <form action="" method="POST">{% csrf_token %}
