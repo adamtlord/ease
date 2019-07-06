@@ -6,11 +6,6 @@
     <div class="page-header customer-list">
         <h1>Export Records</h1>
     </div>
-    {% if errors %}
-        {% for error in errors %}
-            {{ error }}
-        {% endfor %}
-    {% endif %}
     <div class="row">
         <div class="col-sm-6">
             <form action="" method="POST">{% csrf_token %}

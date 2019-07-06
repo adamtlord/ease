@@ -1056,8 +1056,6 @@ def customer_upload(request, template="concierge/customer_upload.html"):
 @staff_member_required
 def customer_data_export(request, template="concierge/customer_export.html"):
 
-    errors = []
-
     if request.method == 'POST':
         customers = Customer.objects.all() \
             .select_related('user') \
@@ -1114,33 +1112,29 @@ def customer_data_export(request, template="concierge/customer_export.html"):
             ])
 
             for customer in customers:
-                try:
-                    writer.writerow([
-                                    customer.email,
-                                    customer.first_name,
-                                    customer.last_name,
-                                    get_dob(customer),
-                                    customer.status,
-                                    customer.plan,
-                                    formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
-                                    customer.home_phone,
-                                    customer.mobile_phone,
-                                    customer.user.first_name,
-                                    customer.user.last_name,
-                                    user_email(customer),
-                                    customer.user.profile.phone,
-                                    rider_names(customer),
-                                    rider_phones(customer),
-                                    get_street1(customer),
-                                    get_street2(customer),
-                                    get_unit(customer),
-                                    get_city(customer),
-                                    get_state(customer),
-                                    get_zip(customer)
-                                    ])
-                except Exception as e:
-                    errors.append((e, customer))
-                    continue
+                writer.writerow([
+                                customer.email,
+                                customer.first_name,
+                                customer.last_name,
+                                get_dob(customer),
+                                customer.status,
+                                customer.plan,
+                                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                customer.user.first_name,
+                                customer.user.last_name,
+                                user_email(customer),
+                                customer.user.profile.phone,
+                                rider_names(customer),
+                                rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
+                                get_city(customer),
+                                get_state(customer),
+                                get_zip(customer)
+                                ])
 
         if filters['type'] == 'customer':
             filename += ' Customers'
@@ -1162,26 +1156,22 @@ def customer_data_export(request, template="concierge/customer_export.html"):
             ])
 
             for customer in customers:
-                try:
-                    writer.writerow([
-                                    customer.first_name,
-                                    customer.last_name,
-                                    customer.email,
-                                    get_dob(customer),
-                                    user_email(customer),
-                                    customer.home_phone,
-                                    customer.mobile_phone,
-                                    customer.user.profile.phone,
-                                    rider_phones(customer),
-                                    get_street1(customer),
-                                    get_street2(customer),
-                                    get_unit(customer),
-                                    get_city(customer),
-                                    get_state(customer)
-                                    ])
-                except Exception as e:
-                    errors.append((e, customer))
-                    continue
+                writer.writerow([
+                                customer.first_name,
+                                customer.last_name,
+                                customer.email,
+                                get_dob(customer),
+                                user_email(customer),
+                                customer.home_phone,
+                                customer.mobile_phone,
+                                customer.user.profile.phone,
+                                rider_phones(customer),
+                                get_street1(customer),
+                                get_street2(customer),
+                                get_unit(customer),
+                                get_city(customer),
+                                get_state(customer)
+                                ])
 
         if filters['type'] == 'user':
             filename += ' Account Holders'
@@ -1199,8 +1189,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                 'Customer State'
             ])
             for customer in customers:
-                try:
-                    writer.writerow([
+                writer.writerow([
                                 customer.user.first_name,
                                 customer.user.last_name,
                                 user_email(customer),
@@ -1213,9 +1202,6 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_city(customer),
                                 get_state(customer)
                                 ])
-                except Exception as e:
-                    errors.append((e, customer))
-                    continue
 
         if filters['type'] == 'rider':
             filename += ' Riders'
@@ -1229,8 +1215,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
             ])
             for customer in customers:
                 for rider in customer.riders.all():
-                    try:
-                        writer.writerow([
+                    writer.writerow([
                                     rider.first_name,
                                     rider.last_name,
                                     rider.relationship,
@@ -1238,8 +1223,6 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     customer.first_name,
                                     customer.last_name
                                     ])
-                    except Exception as e:
-                        errors.apend((e, customer))
 
         if filters['type'] == 'mc-users':
             filename += ' End Users (Mailchimp)'
@@ -1301,8 +1284,6 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_zip(customer)
                                 ])
 
-        if len(errors) > 0:
-            return render(request, template, {'errors': errors})
         response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
         return response
 
