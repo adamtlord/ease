@@ -1139,7 +1139,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     get_zip(customer)
                                     ])
                 except Exception as e:
-                    errors.append({'error': e, 'customer': customer})
+                    errors.append((e, customer))
                     continue
 
         if filters['type'] == 'customer':
@@ -1180,7 +1180,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     get_state(customer)
                                     ])
                 except Exception as e:
-                    errors.append({'error': e, 'customer': customer})
+                    errors.append((e, customer))
                     continue
 
         if filters['type'] == 'user':
@@ -1214,7 +1214,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_state(customer)
                                 ])
                 except Exception as e:
-                    errors.append({'error': e, 'customer': customer})
+                    errors.append((e, customer))
                     continue
 
         if filters['type'] == 'rider':
@@ -1239,8 +1239,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     customer.last_name
                                     ])
                     except Exception as e:
-                        errors.append({'error': e, 'customer': customer})
-                        continue
+                        errors.apend((e, customer))
 
         if filters['type'] == 'mc-users':
             filename += ' End Users (Mailchimp)'
@@ -1270,7 +1269,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_zip(customer)
                                 ])
                 except Exception as e:
-                    errors.append({'error': e, 'customer': customer})
+                    errors.append((e, customer))
                     continue
 
         if filters['type'] == 'mc-accounts':
@@ -1307,7 +1306,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_zip(customer)
                                 ])
                 except Exception as e:
-                    errors.append({'error': e, 'customer': customer})
+                    errors.append((e, customer))
                     continue
 
         if len(errors) > 0:
