@@ -7,7 +7,7 @@
         <h1>Export Records</h1>
     </div>
     {% for error in errors %}
-        {% for e, customer in error %}
+        {% for e, customer in error.items %}
             {{ e }} - Customer {{ customer.id }} {{ customer }}
         {% endfor %}
     {% endfor %}
