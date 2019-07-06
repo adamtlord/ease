@@ -1180,7 +1180,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     get_state(customer)
                                     ])
                 except Exception as e:
-                    errors.append(('error': e, 'customer': customer))
+                    errors.append({'error': e, 'customer': customer})
                     continue
 
         if filters['type'] == 'user':
@@ -1214,7 +1214,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_state(customer)
                                 ])
                 except Exception as e:
-                    errors.append(('error': e, 'customer': customer))
+                    errors.append({'error': e, 'customer': customer})
                     continue
 
         if filters['type'] == 'rider':
@@ -1239,7 +1239,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                     customer.last_name
                                     ])
                     except Exception as e:
-                        errors.append(('error': e, 'customer': customer))
+                        errors.append({'error': e, 'customer': customer})
                         continue
 
         if filters['type'] == 'mc-users':
@@ -1270,7 +1270,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_zip(customer)
                                 ])
                 except Exception as e:
-                    errors.append(('error': e, 'customer': customer))
+                    errors.append({'error': e, 'customer': customer})
                     continue
 
         if filters['type'] == 'mc-accounts':
@@ -1307,7 +1307,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
                                 get_zip(customer)
                                 ])
                 except Exception as e:
-                    errors.append(('error': e, 'customer': customer))
+                    errors.append({'error': e, 'customer': customer})
                     continue
 
         if len(errors) > 0:
