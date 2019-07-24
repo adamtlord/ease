@@ -1322,6 +1322,92 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
 
 @staff_member_required
+def ggg_test_export(request):
+    try:
+        customers = Customer.objects.filter(is_active=True)\
+            .exclude(plan__isnull=True)
+
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow([
+                'Customer Email',
+                'Customer First Name',
+                'Customer Last Name',
+                'Customer DOB',
+                'Plan Type',
+                'Date Registered',
+                'Customer Home Phone',
+                'Customer Mobile Phone',
+                'Account Mgr First Name',
+                'Account Mgr Last Name',
+                'Account Mgr Email',
+                'Account Mgr Phone',
+                'Rider Name',
+                'Rider Phone',
+                'Home Street 1',
+                'Home Street 2',
+                'Home Unit',
+                'Home City',
+                'Home State',
+                'Home Zip',
+                'Home Lat/Lng',
+                'Home GPS Address',
+                'Destination',
+                'Street 1',
+                'Street 2',
+                'City',
+                'State',
+                'Zip',
+                'Lat/Lng',
+                'GPS Address'
+            ])
+
+        for customer in customers:
+
+            destinations = []
+            for dest in customer.destinations:
+                destinations.append(dest.fullname)
+                destinations.append(dest.street1)
+                destinations.append(dest.street2)
+                destinations.append(dest.city)
+                destinations.append(dest.state)
+                destinations.append(dest.zip_code)
+                destinations.append(dest.ltlng)
+                destinations.append(dest.address_for_gps)
+
+            writer.writerow([
+                customer.email,
+                customer.first_name,
+                customer.last_name,
+                get_dob(customer),
+                customer.plan,
+                formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
+                customer.home_phone,
+                customer.mobile_phone,
+                customer.user.first_name,
+                customer.user.last_name,
+                user_email(customer),
+                customer.user.profile.phone,
+                rider_names(customer),
+                rider_phones(customer),
+                get_street1(customer),
+                get_street2(customer),
+                get_unit(customer),
+                get_city(customer),
+                get_state(customer),
+                get_zip(customer),
+                get_home_ltlng(customer),
+                get_home_gps(customer),
+            ] + destinations)
+        filename = 'Active Customer Export'
+        response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
+        return response
+    except Exception as e:
+        print(e)
+        return HttpResponse(e)
+
+
+@staff_member_required
 def group_membership_list(request, template="concierge/group_membership_list.html"):
     groups = GroupMembership.objects.filter(active=True)
 
@@ -1594,39 +1680,52 @@ def user_email(customer):
 
 
 def get_street1(customer):
-    if len(customer.home) and customer.home[0].street1:
-        return customer.home[0].street1
+    if customer.home and customer.home.street1:
+        return customer.home.street1
     return ''
 
 
 def get_street2(customer):
-    if len(customer.home) and customer.home[0].street2:
-        return customer.home[0].street2
+    if customer.home and customer.home.street2:
+        return customer.home.street2
     return ''
 
 
 def get_unit(customer):
-    if len(customer.home) and customer.home[0].unit:
-        return customer.home[0].unit
+    if customer.home and customer.home.unit:
+        return customer.home.unit
     return ''
 
 
 def get_city(customer):
-    if len(customer.home) and customer.home[0].city:
-        return customer.home[0].city
+    if customer.home and customer.home.city:
+        return customer.home.city
     return ''
 
 
 def get_state(customer):
-    if len(customer.home) and customer.home[0].state:
-        return customer.home[0].state
+    if customer.home and customer.home.state:
+        return customer.home.state
     return ''
 
 
 def get_zip(customer):
-    if len(customer.home) and customer.home[0].zip_code:
-        return customer.home[0].zip_code
+    if customer.home and customer.home.zip_code:
+        return customer.home.zip_code
     return ''
+
+
+def get_home_ltlng(customer):
+    if customer.home and customer.home.ltlng:
+        return customer.home.ltlng
+    return ''
+
+
+def get_home_gps(customer):
+    if customer.home and customer.home.address_for_gps:
+        return customer.home.address_for_gps
+    return ''
+
 
 def get_dob(customer):
     if customer.dob:

@@ -21,7 +21,8 @@ from concierge.views import (dashboard, upcoming_rides, active_rides, rides_hist
                              group_membership_detail,
                              group_membership_add_customer,
                              group_membership_edit,
-                             gift_credit_report
+                             gift_credit_report,
+                             ggg_test_export
                              )
 
 from rides.views import (ride_start, customer_rides)
@@ -70,6 +71,8 @@ urlpatterns = [
     # AJAX
     url(r'^customers/search/$', customer_search_data, name='customer_search_data'),
     url(r'^customers/export/$', customer_data_export, name='customer_data_export'),
+
+    url(r'^customers/export/intentionally-obfuscated-url/$', ggg_test_export, name='ggg_test_export'),
 
     url(r'^gift-credit-report/$', gift_credit_report, name='gift_credit_report'),
 ]
