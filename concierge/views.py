@@ -1322,7 +1322,7 @@ def customer_data_export(request, template="concierge/customer_export.html"):
 
 
 @staff_member_required
-def ggg_test_export(request):
+def ggg_customer_export(request):
     try:
         customers = Customer.objects.filter(is_active=True)\
             .exclude(plan__isnull=True)
@@ -1334,12 +1334,16 @@ def ggg_test_export(request):
                 'Customer First Name',
                 'Customer Last Name',
                 'Customer DOB',
+                'Customer Known As',
+                'Special Assistance',
+                'Customer Notes',
                 'Plan Type',
                 'Date Registered',
                 'Customer Home Phone',
                 'Customer Mobile Phone',
                 'Account Mgr First Name',
                 'Account Mgr Last Name',
+                'Account Mgr Relationship',
                 'Account Mgr Email',
                 'Account Mgr Phone',
                 'Rider Name',
@@ -1352,6 +1356,10 @@ def ggg_test_export(request):
                 'Home Zip',
                 'Home Lat/Lng',
                 'Home GPS Address',
+                'Home Notes',
+                'Subscription Stripe ID',
+                'Rides Stripe ID',
+                'Group Membership',
                 'Destination',
                 'Street 1',
                 'Street 2',
@@ -1367,8 +1375,8 @@ def ggg_test_export(request):
             destinations = []
             for dest in customer.destinations:
                 destinations.append(dest.fullname)
-                destinations.append(dest.street1)
-                destinations.append(dest.street2)
+                destinations.append(dest.street1.encode("utf-8"))
+                destinations.append(dest.street2.encode("utf-8"))
                 destinations.append(dest.city)
                 destinations.append(dest.state)
                 destinations.append(dest.zip_code)
@@ -1380,12 +1388,16 @@ def ggg_test_export(request):
                 customer.first_name,
                 customer.last_name,
                 get_dob(customer),
+                customer.known_as.encode("utf-8") if customer.known_as else '',
+                customer.special_assistance.encode("utf-8") if customer.special_assistance else '',
+                customer.notes.encode("utf-8") if customer.notes else '',
                 customer.plan,
                 formats.date_format(customer.user.date_joined, 'SHORT_DATE_FORMAT'),
                 customer.home_phone,
                 customer.mobile_phone,
                 customer.user.first_name,
                 customer.user.last_name,
+                customer.user.profile.relationship.encode("utf-8") if customer.user.profile.relationship else '',
                 user_email(customer),
                 customer.user.profile.phone,
                 rider_names(customer),
@@ -1398,8 +1410,59 @@ def ggg_test_export(request):
                 get_zip(customer),
                 get_home_ltlng(customer),
                 get_home_gps(customer),
+                get_home_notes(customer),
+                get_subscription_stripe_id(customer),
+                get_ride_stripe_id(customer),
+                get_group_membership(customer)
             ] + destinations)
         filename = 'Active Customer Export'
+        response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
+        return response
+    except Exception as e:
+        print(e)
+        return HttpResponse(e)
+
+
+@staff_member_required
+def ggg_group_export(request):
+    try:
+        groups = GroupMembership.objects.filter(active=True)
+
+        response = HttpResponse(content_type='text/csv')
+        writer = csv.writer(response)
+        writer.writerow([
+                'Group name',
+                'Group admin',
+                'Group admin email',
+                'Group admin phone',
+                'Rides billed to',
+                'Group Street 1',
+                'Group Street 2',
+                'Group City',
+                'Group State',
+                'Group Zip',
+                'Location notes',
+                'Location phone',
+                'Customer since'
+            ])
+
+        for group in groups:
+            writer.writerow([
+                group.display_name.encode("utf-8"),
+                group.user,
+                group.user.email if group.user else '',
+                group.user.profile.phone if group.user else '',
+                group.ride_account.stripe_id if group.ride_account else 'None',
+                group.address.street1.encode("utf-8") if group.address else '',
+                group.address.street2.encode("utf-8") if group.address else '',
+                group.address.city.encode("utf-8") if group.address else '',
+                group.address.state if group.address else '',
+                group.address.zip_code if group.address else '',
+                group.address.notes.encode("utf-8") if group.address else '',
+                group.phone,
+                group.user.date_joined if group.user else ''
+            ])
+        filename = 'Active Group Export'
         response['Content-Disposition'] = 'attachment; filename="{} {}.csv"'.format(filename, datetime.datetime.now().strftime("%Y-%m-%d %H-%M"))
         return response
     except Exception as e:
@@ -1680,50 +1743,56 @@ def user_email(customer):
 
 
 def get_street1(customer):
-    if customer.home and customer.home.street1:
-        return customer.home.street1
+    if len(customer.home) and customer.home[0].street1:
+        return customer.home[0].street1
     return ''
 
 
 def get_street2(customer):
-    if customer.home and customer.home.street2:
-        return customer.home.street2
+    if len(customer.home) and customer.home[0].street2:
+        return customer.home[0].street2
     return ''
 
 
 def get_unit(customer):
-    if customer.home and customer.home.unit:
-        return customer.home.unit
+    if len(customer.home) and customer.home[0].unit:
+        return customer.home[0].unit
     return ''
 
 
 def get_city(customer):
-    if customer.home and customer.home.city:
-        return customer.home.city
+    if len(customer.home) and customer.home[0].city:
+        return customer.home[0].city
     return ''
 
 
 def get_state(customer):
-    if customer.home and customer.home.state:
-        return customer.home.state
+    if len(customer.home) and customer.home[0].state:
+        return customer.home[0].state
     return ''
 
 
 def get_zip(customer):
-    if customer.home and customer.home.zip_code:
-        return customer.home.zip_code
+    if len(customer.home) and customer.home[0].zip_code:
+        return customer.home[0].zip_code
     return ''
 
 
 def get_home_ltlng(customer):
-    if customer.home and customer.home.ltlng:
-        return customer.home.ltlng
+    if len(customer.home) and customer.home[0].ltlng:
+        return customer.home[0].ltlng
     return ''
 
 
 def get_home_gps(customer):
-    if customer.home and customer.home.address_for_gps:
-        return customer.home.address_for_gps
+    if len(customer.home) and customer.home[0].address_for_gps:
+        return customer.home[0].address_for_gps
+    return ''
+
+
+def get_home_notes(customer):
+    if len(customer.home) and customer.home[0].notes:
+        return customer.home[0].notes.encode("utf-8")
     return ''
 
 
@@ -1731,6 +1800,24 @@ def get_dob(customer):
     if customer.dob:
         try:
             return customer.dob.strftime('%m/%d/%Y')
-        except:
+        except Exception:
             pass
+    return ''
+
+
+def get_group_membership(customer):
+    if customer.group_membership:
+        return customer.group_membership.display_name
+    return ''
+
+
+def get_subscription_stripe_id(customer):
+    if customer.subscription_account and customer.subscription_account.stripe_id:
+        return customer.subscription_account.stripe_id
+    return ''
+
+
+def get_ride_stripe_id(customer):
+    if customer.ride_account and customer.ride_account.stripe_id:
+        return customer.ride_account.stripe_id
     return ''
