@@ -57,7 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.encode('utf-8').strip()
+        return full_name.strip()
 
     def get_short_name(self):
         return self.first_name
@@ -73,7 +73,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.get_full_name()
 
     def __unicode__(self):
-        return self.get_full_name().encode('utf-8')
+        return self.get_full_name()
 
     class Meta:
         verbose_name = 'user'
@@ -179,11 +179,11 @@ class Customer(Contact):
 
     @cached_property
     def full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name).encode('utf-8')
+        return '{} {}'.format(self.first_name, self.last_name)
 
     @cached_property
     def name(self):
-        return self.full_name.encode('utf-8')
+        return self.full_name
 
     @cached_property
     def age(self):
@@ -371,7 +371,7 @@ class Rider(Contact):
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.encode('utf-8').strip()
+        return full_name.strip()
 
     @cached_property
     def full_name(self):

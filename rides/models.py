@@ -33,7 +33,7 @@ class Destination(Location):
 
     @cached_property
     def ltlng(self):
-        return '{},{}'.format(self.latitude, self.longitude).encode('utf-8')
+        return '{},{}'.format(self.latitude, self.longitude)
 
     def set_ltlng(self):
         address_string = '{} {} {} {}'.format(self.street1, self.city, self.state, self.zip_code)
@@ -90,23 +90,23 @@ class Destination(Location):
         if self.name:
             name = self.name
             if name and self.nickname:
-                return u'{} ({})'.format(self.nickname, name).encode('utf-8')
+                return u'{} ({})'.format(self.nickname, name)
             else:
-                return name.encode('utf-8')
+                return name
         else:
             if self.nickname:
-                return self.nickname.encode('utf-8')
+                return self.nickname
             else:
-                return self.street1.encode('utf-8')
+                return self.street1
 
     @cached_property
     def display_name(self):
-        return '{}, {}'.format(self.fullname, self.street1).encode('utf-8')
+        return '{}, {}'.format(self.fullname, self.street1)
 
     @cached_property
     def fulladdress(self):
         street2 = ' {}'.format(self.street2) if self.street2 else ''
-        return '{}{} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code).encode('utf-8')
+        return '{}{} {} {} {}'.format(self.street1, street2, self.city, self.state, self.zip_code)
 
     @cached_property
     def tz(self):
@@ -118,7 +118,7 @@ class Destination(Location):
         return tz_abbrev
 
     def __unicode__(self):
-        return '{} - {}'.format(self.fullname, self.customer).encode('utf-8')
+        return '{} - {}'.format(self.fullname, self.customer)
 
 
 class Ride(models.Model):
